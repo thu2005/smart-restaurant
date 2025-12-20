@@ -1,15 +1,8 @@
-import { Routes, Route } from 'react-router-dom'
-import { Toaster } from 'sonner'
+import React from "react";
+import Routes from "./Routes";
 
 function App() {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<div className="p-4 text-center">Welcome to Smart Restaurant 🍽️</div>} />
-      </Routes>
-      <Toaster position="bottom-right" />
-    </>
-  )
+  return <Routes />;
 }
 
-export default App
+export default App;
