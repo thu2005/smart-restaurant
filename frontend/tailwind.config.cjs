@@ -1,0 +1,12 @@
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
+        lexend: ["Lexend", "sans-serif"],
+      },
+    },
+  },
+  plugins: [],
+};
