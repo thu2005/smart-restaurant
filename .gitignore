@@ -77,6 +77,8 @@ backend/dist/
 backend/node_modules/
 backend/.env
 backend/logs/
+backend/uploads/
+backend/*.log
 
 # Docker
 .dockerignore
@@ -86,5 +88,4 @@ backend/logs/
 .gitkeep
 
 # Misc
-.env.example
 .DS_Store
