@@ -3,12 +3,12 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
-const connectDB = require("./src/config/database");
+const { connectDB, disconnectDB } = require("./src/config/database");
 
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
+// Connect to Database
 connectDB();
 
 // Initialize Express app
@@ -67,6 +67,23 @@ const server = app.listen(PORT, () => {
   console.log(
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
   );
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("\n🛑 Shutting down gracefully...");
+  await disconnectDB();
+  server.close(() => {
+    console.log("✅ Server closed");
+    process.exit(0);
+  });
+});
+
+process.on("SIGTERM", async () => {
+  await disconnectDB();
+  server.close(() => {
+    process.exit(0);
+  });
 });
 
 // Socket.IO setup (will be configured later)
