@@ -1,12 +1,12 @@
 # Smart Restaurant - Backend API
 
-RESTful API for Smart Restaurant QR Ordering System built with Node.js, Express, and MongoDB.
+RESTful API for Smart Restaurant QR Ordering System built with Node.js, Express, and PostgreSQL.
 
 ## Tech Stack
 
 - **Runtime:** Node.js 18+
 - **Framework:** Express.js
-- **Database:** MongoDB 7.0
+- **Database:** PostgreSQL 16 + Prisma ORM
 - **Authentication:** JWT + Passport.js
 - **Real-time:** Socket.IO
 - **Payment:** Stripe API
@@ -15,7 +15,7 @@ RESTful API for Smart Restaurant QR Ordering System built with Node.js, Express,
 
 - Node.js >= 18.x
 - Docker & Docker Compose
-- MongoDB (via Docker)
+- PostgreSQL (via Docker)
 
 ## Quick Start
 
@@ -31,19 +31,29 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` and update values if needed (MongoDB port, JWT secret, etc.)
+Edit `.env` and update values if needed (PostgreSQL port, JWT secret, etc.)
 
-### 3. Start MongoDB Container
+### 3. Start PostgreSQL Container
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start:
-- MongoDB on port `27018`
-- Mongo Express (Web UI) on `http://localhost:8081`
+- PostgreSQL on port `5432`
+- pgAdmin (Web UI) on `http://localhost:5050`
+  - Email: `admin@admin.com`
+  - Password: `admin`
 
-### 4. Run Development Server
+### 4. Run Prisma Migrations
+
+```bash
+npx prisma migrate dev
+```
+
+This creates all database tables from the Prisma schema.
+
+### 5. Run Development Server
 
 ```bash
 npm run dev
@@ -58,6 +68,9 @@ Server will run on `http://localhost:5001`
 | `npm run dev` | Start development server with nodemon |
 | `npm start` | Start production server |
 | `npm test` | Run tests (TBD) |
+| `npx prisma studio` | Open Prisma Studio (Database GUI) |
+| `npx prisma migrate dev` | Create and apply new migration |
+| `npx prisma generate` | Generate Prisma Client |
 
 ## API Endpoints
 
@@ -91,22 +104,37 @@ GET /
 
 ## Database Access
 
-### Via Mongo Express (Web UI)
-- URL: `http://localhost:8081`
-- No authentication required (development only)
-
-### Via MongoDB Client
+### Via Prisma Studio (Recommended)
 ```bash
-mongosh "mongodb://admin:admin123@localhost:27018/smart_restaurant?authSource=admin"
+npx prisma studio
+```
+Opens at `http://localhost:5555` - Best way to view/edit data during development
+
+### Via pgAdmin (Web UI)
+- URL: `http://localhost:5050`
+- Login: `admin@admin.com` / `admin`
+- Add server connection:
+  - Host: `postgres` (or `localhost` if connecting from host machine)
+  - Port: `5432`
+  - Database: `smart_restaurant`
+  - Username: `postgres`
+  - Password: `postgres123`
+
+### Via psql Client
+```bash
+psql postgresql://postgres:postgres123@localhost:5432/smart_restaurant
 ```
 
 ## Project Structure
 
 ```
 backend/
+├── prisma/
+│   ├── schema.prisma    # Database schema definition
+│   └── migrations/      # Database migrations
 ├── src/
 │   ├── config/          # Configuration files (database, jwt, etc.)
-│   ├── models/          # Mongoose models
+│   ├── models/          # (Not used - Prisma models in schema.prisma)
 │   ├── routes/          # API routes
 │   ├── controllers/     # Route handlers
 │   ├── middleware/      # Custom middleware (auth, validation)
@@ -115,8 +143,9 @@ backend/
 ├── uploads/             # Uploaded files (images)
 ├── .env                 # Environment variables (not committed)
 ├── .env.example         # Environment template
-├── docker-compose.yml   # MongoDB container config
+├── docker-compose.yml   # PostgreSQL container config
 ├── server.js            # Entry point
+├── DATABASE_SCHEMA.md   # Database schema documentation
 └── package.json
 ```
 
@@ -134,7 +163,7 @@ backend/
 
 ### Port Already in Use
 
-If port 5001 or 27018 is occupied:
+If port 5001, 5432, or 5050 is occupied:
 
 **Backend:**
 ```bash
@@ -142,33 +171,51 @@ If port 5001 or 27018 is occupied:
 PORT=5002
 ```
 
-**MongoDB:**
+**PostgreSQL:**
 ```bash
 # Edit docker-compose.yml ports section
 ports:
-  - "27019:27017"
+  - "5433:5432"  # Change host port
   
-# Update MONGODB_URI in .env
-MONGODB_URI=mongodb://admin:admin123@localhost:27019/...
+# Update DATABASE_URL in .env
+DATABASE_URL=postgresql://postgres:postgres123@localhost:5433/smart_restaurant
 ```
 
-### MongoDB Connection Failed
+### Database Connection Failed
 
 Check if container is running:
 ```bash
 docker ps
 ```
 
-Restart container:
+Restart containers:
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
-### Cannot Access Mongo Express
-
-Ensure MongoDB container is healthy:
+View PostgreSQL logs:
 ```bash
-docker-compose logs mongodb
+docker compose logs postgres
+```
+
+### Prisma Migration Issues
+
+Reset database (⚠️ DEV ONLY - deletes all data):
+```bash
+npx prisma migrate reset
+```
+
+Push schema without migration (for prototyping):
+```bash
+npx prisma db push
+```
+
+### Cannot Access pgAdmin
+
+Ensure containers are healthy:
+```bash
+docker compose ps
+docker compose logs pgadmin
 ```
 
 ## Development Workflow
