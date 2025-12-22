@@ -3,7 +3,11 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+const passport = require("passport");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc");
 const { connectDB, disconnectDB } = require("./src/config/database");
+const { jwtStrategy } = require("./src/config/passport");
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +30,38 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Passport Config
+passport.use(jwtStrategy);
+app.use(passport.initialize());
+
+// Swagger Config
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Smart Restaurant API",
+      version: "1.0.0",
+      description: "API Documentation for Smart Restaurant System",
+    },
+    servers: [
+      { url: `http://localhost:${process.env.PORT || 5000}` },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+  },
+  apis: ["./src/routes/*.js"],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));
 
@@ -35,13 +71,16 @@ app.get("/", (req, res) => {
     message: "Smart Restaurant API",
     version: "1.0.0",
     status: "running",
+    docs: "/api-docs",
   });
 });
 
-// API Routes will be added here
-// app.use('/api/auth', require('./src/routes/auth.routes'));
-// app.use('/api/menu', require('./src/routes/menu.routes'));
-// app.use('/api/orders', require('./src/routes/order.routes'));
+// API Routes
+app.use("/api/auth", require("./src/routes/auth.routes"));
+app.use("/api/restaurants", require("./src/routes/restaurant.routes"));
+app.use("/api/menu", require("./src/routes/menu.routes"));
+app.use("/api/orders", require("./src/routes/order.routes"));
+app.use("/api/payments", require("./src/routes/payment.routes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -67,7 +106,31 @@ const server = app.listen(PORT, () => {
   console.log(
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
   );
+  console.log(`📑 Swagger Docs available at http://localhost:${PORT}/api-docs`);
 });
+
+// Socket.IO setup (placeholder for now)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || "http://localhost:5174",
+    credentials: true
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('Socket connected:', socket.id);
+
+  socket.on('join_restaurant', (restaurantId) => {
+    socket.join(restaurantId);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Socket disconnected');
+  });
+});
+
+// Export io to be used in services
+app.set('io', io);
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
@@ -85,13 +148,5 @@ process.on("SIGTERM", async () => {
     process.exit(0);
   });
 });
-
-// Socket.IO setup (will be configured later)
-// const io = require('socket.io')(server, {
-//   cors: {
-//     origin: process.env.FRONTEND_URL,
-//     credentials: true
-//   }
-// });
 
 module.exports = { app, server };
