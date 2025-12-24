@@ -5,12 +5,18 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock'
 
 class PaymentService {
     async createPayment(data) {
+
         const { orderId, restaurantId, amount, method, tip } = data;
 
         // Check if order exists and is not already paid
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            include: { payment: true }
+            include: {
+                payment: true,
+                orderItems: {
+                    include: { menuItem: true }
+                }
+            }
         });
 
         if (!order) throw new Error('Order not found');
@@ -18,7 +24,19 @@ class PaymentService {
             throw new Error('Order already paid');
         }
 
+        // Calculate expected order total from order items
+        let expectedTotal = 0;
+        for (const item of order.orderItems) {
+            expectedTotal += (item.menuItem.price * item.quantity);
+        }
+        // Add tip if provided
         const total = parseFloat(amount) + (parseFloat(tip) || 0);
+        const expectedWithTip = expectedTotal + (parseFloat(tip) || 0);
+
+        // Validate payment amount matches order total
+        if (total < expectedWithTip) {
+            throw new Error(`Payment amount (${total}) does not match order total (${expectedWithTip})`);
+        }
 
         // Create pending payment
         const payment = await prisma.payment.create({
@@ -40,22 +58,21 @@ class PaymentService {
         try {
             if (method === 'STRIPE') {
                 // Create PaymentIntent
-                if (process.env.STRIPE_SECRET_KEY) {
+                if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'sk_test_mock') {
                     const intent = await stripe.paymentIntents.create({
                         amount: Math.round(total * 100), // cents
                         currency: 'usd', // or vnd
                         metadata: { orderId, paymentId: payment.id }
                     });
                     gatewayResponse = intent;
-                    // Client uses client_secret to complete on frontend
-                    // Webhook will update status later
+                    
                 } else {
                     // Mock success for development
                     status = 'COMPLETED';
                     gatewayResponse = { id: 'mock_tx_123', status: 'succeeded' };
                 }
             } else if (method === 'CASH') {
-                status = 'COMPLETED'; // Cash is "paid" when waiter confirms (different flow usually, but simplifying)
+                status = 'COMPLETED'; // Cash is "paid" when waiter confirms 
             } else {
                 // ZaloPay / MoMo - usually return a payment URL
                 gatewayResponse = { payUrl: `https://mock-gateway.com/pay/${payment.id}` };
@@ -65,7 +82,7 @@ class PaymentService {
             status = 'FAILED';
         }
 
-        // Update payment record if synchronous success (like mock)
+        // Update payment record if synchronous success 
         if (status !== 'PENDING') {
             await prisma.payment.update({
                 where: { id: payment.id },
@@ -79,7 +96,7 @@ class PaymentService {
             if (status === 'COMPLETED') {
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' } // or whatever final status
+                    data: { status: 'COMPLETED' } 
                 });
             }
         }
