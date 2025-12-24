@@ -15,36 +15,36 @@ datasource db {
 // ============================================
 
 enum UserRole {
-  SUPER_ADMIN   // System admin - manages all restaurants
-  ADMIN         // Restaurant owner
-  WAITER        // Waiter staff
-  KITCHEN       // Kitchen staff
-  CUSTOMER      // Registered customer
+  SUPER_ADMIN // System admin - manages all restaurants
+  ADMIN // Restaurant owner
+  WAITER // Waiter staff
+  KITCHEN // Kitchen staff
+  CUSTOMER // Registered customer
 }
 
 model User {
-  id            String      @id @default(uuid())
-  email         String      @unique
-  password      String      // Hashed password
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String // Hashed password
   fullName      String
   phone         String?
   role          UserRole
-  isActive      Boolean     @default(true)
-  emailVerified Boolean     @default(false)
-  
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+
   // Relations
-  restaurantId  String?     // Null for SUPER_ADMIN and CUSTOMER
-  restaurant    Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  
+  restaurantId String? // Null for SUPER_ADMIN and CUSTOMER
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
   // Customer-specific
-  orders        Order[]     @relation("CustomerOrders")
-  
+  orders Order[] @relation("CustomerOrders")
+
   // Staff-specific
-  acceptedOrders Order[]    @relation("WaiterAcceptedOrders")
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  acceptedOrders Order[] @relation("WaiterAcceptedOrders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([email])
   @@index([restaurantId, role])
 }
@@ -54,33 +54,33 @@ model User {
 // ============================================
 
 model Restaurant {
-  id            String      @id @default(uuid())
-  name          String
-  description   String?
-  timezone      String      @default("Asia/Ho_Chi_Minh")
-  currency      String      @default("VND")
-  
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  timezone    String  @default("Asia/Ho_Chi_Minh")
+  currency    String  @default("VND")
+
   // Contact info
-  phone         String?
-  email         String?
-  address       String?
-  
+  phone   String?
+  email   String?
+  address String?
+
   // Opening hours (JSON: {monday: {open: "08:00", close: "22:00"}, ...})
-  openingHours  Json?
-  
-  isActive      Boolean     @default(true)
-  
+  openingHours Json?
+
+  isActive Boolean @default(true)
+
   // Relations
-  users         User[]
-  categories    Category[]
-  menuItems     MenuItem[]
-  tables        Table[]
-  orders        Order[]
-  payments      Payment[]
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  users      User[]
+  categories Category[]
+  menuItems  MenuItem[]
+  tables     Table[]
+  orders     Order[]
+  payments   Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([isActive])
 }
 
@@ -96,26 +96,26 @@ enum TableStatus {
 }
 
 model Table {
-  id            String      @id @default(uuid())
-  tableNumber   String      // e.g., "5", "A1", "T12"
-  capacity      Int         @default(4)
-  location      String?     // e.g., "Ground Floor", "VIP Room"
-  status        TableStatus @default(AVAILABLE)
-  isActive      Boolean     @default(true)
-  
+  id          String      @id @default(uuid())
+  tableNumber String // e.g., "5", "A1", "T12"
+  capacity    Int         @default(4)
+  location    String? // e.g., "Ground Floor", "VIP Room"
+  status      TableStatus @default(AVAILABLE)
+  isActive    Boolean     @default(true)
+
   // QR Code data
-  qrCode        String      @unique // Unique token for QR code
-  qrCodeUrl     String?     // URL to QR image (if stored)
-  
-  restaurantId  String
-  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  
+  qrCode    String? @unique // Unique token for QR code
+  qrCodeUrl String? // URL to QR image (if stored)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
   // Relations
-  orders        Order[]
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([restaurantId, tableNumber])
   @@index([qrCode])
 }
@@ -125,53 +125,53 @@ model Table {
 // ============================================
 
 model Category {
-  id            String      @id @default(uuid())
-  name          String      // e.g., "Main Course", "Drinks", "Appetizers"
-  description   String?
-  displayOrder  Int         @default(0)
-  isActive      Boolean     @default(true)
-  
-  restaurantId  String
-  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  
+  id           String  @id @default(uuid())
+  name         String // e.g., "Main Course", "Drinks", "Appetizers"
+  description  String?
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
   // Relations
-  menuItems     MenuItem[]
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  menuItems MenuItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([restaurantId, isActive])
 }
 
 model MenuItem {
-  id            String      @id @default(uuid())
-  name          String
-  description   String?
-  price         Decimal     @db.Decimal(10, 2)
-  image         String?     // URL to image
-  
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal @db.Decimal(10, 2)
+  image       String? // URL to image
+
   // Metadata
-  prepTime      Int?        // Minutes
-  isPopular     Boolean     @default(false)
-  isChefRecommended Boolean @default(false)
-  dietary       String[]    // e.g., ["vegetarian", "gluten-free"]
-  
+  prepTime          Int? // Minutes
+  isPopular         Boolean  @default(false)
+  isChefRecommended Boolean  @default(false)
+  dietary           String[] // e.g., ["vegetarian", "gluten-free"]
+
   // Availability
-  isAvailable   Boolean     @default(true)
-  stockStatus   String      @default("available") // "available", "low-stock", "out-of-stock"
-  
-  categoryId    String
-  category      Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
-  restaurantId  String
-  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  
+  isAvailable Boolean @default(true)
+  stockStatus String  @default("available") // "available", "low-stock", "out-of-stock"
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
   // Relations
-  orderItems    OrderItem[]
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([restaurantId, categoryId, isAvailable])
 }
 
@@ -180,88 +180,88 @@ model MenuItem {
 // ============================================
 
 enum OrderStatus {
-  DRAFT           // In cart (not yet submitted)
-  SUBMITTED       // Customer submitted, waiting for waiter
-  REJECTED        // Waiter rejected
-  RECEIVED        // Waiter accepted
-  PREPARING       // Kitchen preparing
-  READY           // Ready to serve
-  SERVED          // Served to customer
+  DRAFT // In cart (not yet submitted)
+  SUBMITTED // Customer submitted, waiting for waiter
+  REJECTED // Waiter rejected
+  RECEIVED // Waiter accepted
+  PREPARING // Kitchen preparing
+  READY // Ready to serve
+  SERVED // Served to customer
   PAYMENT_PENDING // Customer requested bill
-  COMPLETED       // Payment completed
-  CANCELLED       // Cancelled
+  COMPLETED // Payment completed
+  CANCELLED // Cancelled
 }
 
 model Order {
-  id            String      @id @default(uuid())
-  orderNumber   String      // Display number: "ORD-0051"
-  
-  status        OrderStatus @default(SUBMITTED)
-  
+  id          String @id @default(uuid())
+  orderNumber String // Display number: "ORD-0051"
+
+  status OrderStatus @default(SUBMITTED)
+
   // Customer info (for guest orders)
   customerName  String?
   customerPhone String?
-  
+
   // Notes
   specialInstructions String?
-  rejectionReason     String?  // If waiter rejects
-  
+  rejectionReason     String? // If waiter rejects
+
   // Timing
-  submittedAt   DateTime?
-  acceptedAt    DateTime?
-  preparingAt   DateTime?
-  readyAt       DateTime?
-  servedAt      DateTime?
-  completedAt   DateTime?
-  
+  submittedAt DateTime?
+  acceptedAt  DateTime?
+  preparingAt DateTime?
+  readyAt     DateTime?
+  servedAt    DateTime?
+  completedAt DateTime?
+
   // Relations
-  tableId       String
-  table         Table       @relation(fields: [tableId], references: [id], onDelete: Cascade)
-  
-  customerId    String?     // Null for guest orders
-  customer      User?       @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: SetNull)
-  
-  acceptedById  String?     // Waiter who accepted
-  acceptedBy    User?       @relation("WaiterAcceptedOrders", fields: [acceptedById], references: [id], onDelete: SetNull)
-  
-  restaurantId  String
-  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  
+  tableId String
+  table   Table  @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  customerId String? // Null for guest orders
+  customer   User?   @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: SetNull)
+
+  acceptedById String? // Waiter who accepted
+  acceptedBy   User?   @relation("WaiterAcceptedOrders", fields: [acceptedById], references: [id], onDelete: SetNull)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
   // Relations
-  orderItems    OrderItem[]
-  payment       Payment?
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  orderItems OrderItem[]
+  payment    Payment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([restaurantId, orderNumber])
   @@index([tableId, status])
   @@index([restaurantId, status])
 }
 
 model OrderItem {
-  id            String      @id @default(uuid())
-  quantity      Int         @default(1)
-  unitPrice     Decimal     @db.Decimal(10, 2) // Price at order time
-  
+  id        String  @id @default(uuid())
+  quantity  Int     @default(1)
+  unitPrice Decimal @db.Decimal(10, 2) // Price at order time
+
   // Modifiers (stored as JSON array: ["Extra Cheese", "Thin Crust", "No Onions"])
-  modifiers     String[]
-  
+  modifiers String[]
+
   // Special instructions for this specific item
   specialInstructions String?
-  
+
   // Item status (for kitchen tracking)
-  itemStatus    String      @default("queued") // "queued", "cooking", "ready"
-  
-  orderId       String
-  order         Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  menuItemId    String
-  menuItem      MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  itemStatus String @default("queued") // "queued", "cooking", "ready"
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([orderId])
 }
 
@@ -287,29 +287,29 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id            String        @id @default(uuid())
-  amount        Decimal       @db.Decimal(10, 2)
-  tax           Decimal       @db.Decimal(10, 2) @default(0)
-  tip           Decimal       @db.Decimal(10, 2) @default(0)
-  total         Decimal       @db.Decimal(10, 2)
-  
-  method        PaymentMethod
-  status        PaymentStatus @default(PENDING)
-  
+  id     String  @id @default(uuid())
+  amount Decimal @db.Decimal(10, 2)
+  tax    Decimal @default(0) @db.Decimal(10, 2)
+  tip    Decimal @default(0) @db.Decimal(10, 2)
+  total  Decimal @db.Decimal(10, 2)
+
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+
   // Payment gateway response (store transaction IDs, etc.)
   gatewayTransactionId String?
   gatewayResponse      Json?
-  
+
   // Relations
-  orderId       String        @unique // One payment per order
-  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  restaurantId  String
-  restaurant    Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  
+  orderId String @unique // One payment per order
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   @@index([restaurantId, status])
 }
