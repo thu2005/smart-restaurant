@@ -101,6 +101,7 @@ model Table {
   capacity      Int         @default(4)
   location      String?     // e.g., "Ground Floor", "VIP Room"
   status        TableStatus @default(AVAILABLE)
+  isActive      Boolean     @default(true)
   
   // QR Code data
   qrCode        String      @unique // Unique token for QR code
