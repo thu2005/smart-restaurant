@@ -160,6 +160,32 @@ Create folders inside it:
 *   **URL**: `{{baseUrl}}/tables/{{tableId}}`
 *   **Auth**: Type `Bearer Token` -> Token: `{{token}}`
 
+**4. Generate QR for Table**
+*   **Method**: `POST`
+*   **URL**: `{{baseUrl}}/tables/{{tableId}}/qr/generate`
+*   **Auth**: Type `Bearer Token` -> Token: `{{token}}`
+
+**5. Download Single QR**
+*   **Method**: `GET`
+*   **URL**: `{{baseUrl}}/tables/{{tableId}}/qr/download?format=pdf`
+*   **Auth**: Type `Bearer Token` -> Token: `{{token}}`
+*   **Note**: Save response to a file to view the PDF.
+
+**6. Download All QR (PDF)**
+*   **Method**: `GET`
+*   **URL**: `{{baseUrl}}/tables/qr/download-all?format=pdf&layout=grid&restaurantId={{restaurantId}}`
+*   **Auth**: Type `Bearer Token` -> Token: `{{token}}`
+**7. Regenerate All QRs**
+*   **Method**: `POST`
+*   **URL**: `{{baseUrl}}/tables/qr/regenerate-all`
+*   **Auth**: Type `Bearer Token` -> Token: `{{token}}`
+*   **Body** (Raw JSON):
+    ```json
+    {
+      "restaurantId": "{{restaurantId}}"
+    }
+    ```
+
 ---
 
 ### 🍔 Folder: Menu

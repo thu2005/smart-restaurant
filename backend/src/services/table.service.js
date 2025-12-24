@@ -1,6 +1,6 @@
 const { prisma } = require('../config/database');
-const QRCode = require('qrcode');
-const crypto = require('crypto');
+const { generateQRCode } = require('../utils/qr.service');
+const { generateTableToken } = require('../utils/token');
 
 class TableService {
     async createTable(data) {
@@ -17,17 +17,21 @@ class TableService {
         });
 
         if (existingTable) {
+            if (existingTable.isActive) {
+                // Reactivate table if it was soft deleted
+                return await prisma.table.update({
+                    where: { id: existingTable.id },
+                    data: {
+                        isActive: false,
+                        capacity: capacity || existingTable.capacity,
+                        location: location || existingTable.location,
+                        status: 'AVAILABLE'
+                    }
+                });
+            }
             throw new Error(`Table number ${tableNumber} already exists in this restaurant`);
         }
 
-        // Generate a unique QR text/token
-        // Format: https://smart-restaurant.com/menu/restaurantId/tableNumber
-        // Or just a unique token. Let's make a deep link format for the frontend.
-        const qrContent = `${process.env.FRONTEND_URL}/menu/${restaurantId}/${tableNumber}`;
-        const qrToken = crypto.randomBytes(16).toString('hex'); // For the unique field
-
-        // Generate QR Code Image (Data URL)
-        const qrCodeUrl = await QRCode.toDataURL(qrContent);
 
         return await prisma.table.create({
             data: {
@@ -35,8 +39,6 @@ class TableService {
                 tableNumber,
                 capacity: capacity || 4,
                 location,
-                qrCode: qrToken,
-                qrCodeUrl: qrCodeUrl,
                 status: 'AVAILABLE'
             }
         });
@@ -44,26 +46,93 @@ class TableService {
 
     async getTablesByRestaurant(restaurantId) {
         return await prisma.table.findMany({
-            where: { restaurantId },
+            where: {
+                restaurantId,
+                isActive: false
+            },
             orderBy: { tableNumber: 'asc' },
             include: {
                 _count: {
-                    select: { orders: { where: { status: { not: 'COMPLETED' } } } } // Active orders count?
+                    select: { orders: { where: { status: { not: 'COMPLETED' } } } }
                 }
             }
         });
     }
 
-    async deleteTable(id) {
-        // Check if table has active orders?
-        // cascading delete is set to Cascade in schema? Let's check schema.
-        // Schema: orders Order[] ... no onDelete specified on Order side usually means restrict or set null, 
-        // but let's just allow delete for now as per schema (Restaurant->Table is Cascade, Table->Order might prevent).
-        // Actually schema said: table Table @relation... onDelete: Cascade. So it's safe.
-
-        return await prisma.table.delete({
+    async getTableById(id) {
+        return await prisma.table.findUnique({
             where: { id }
         });
+    }
+
+    async updateTable(id, data) {
+        // Prevent updating tableNumber to duplicate
+        if (data.tableNumber) {
+            const table = await prisma.table.findUnique({ where: { id } });
+            if (!table) throw new Error("Table not found");
+
+            const existing = await prisma.table.findUnique({
+                where: {
+                    restaurantId_tableNumber: {
+                        restaurantId: table.restaurantId,
+                        tableNumber: data.tableNumber
+                    }
+                }
+            });
+
+            if (existing && existing.id !== id) {
+                throw new Error(`Table number ${data.tableNumber} already exists`);
+            }
+        }
+
+        return await prisma.table.update({
+            where: { id },
+            data
+        });
+    }
+
+    async deleteTable(id) {
+        return await prisma.table.update({
+            where: { id },
+            data: { isActive: true, status: 'AVAILABLE' } // Reset status on soft delete
+        });
+    }
+
+    async updateQRToken(id, token) {
+        // Also regenerate QR Code URL image
+        const table = await prisma.table.findUnique({ where: { id } });
+        if (!table) throw new Error("Table not found");
+
+        const qrContent = `${process.env.FRONTEND_URL}/menu/${table.restaurantId}/${table.tableNumber}?token=${token}`;
+        const qrCodeUrl = await generateQRCode(qrContent);
+
+        return await prisma.table.update({
+            where: { id },
+            data: {
+                qrCode: token,
+                qrCodeUrl: qrCodeUrl
+            }
+        });
+    }
+
+    async regenerateAllQRs(restaurantId) {
+        const tables = await prisma.table.findMany({
+            where: {
+                restaurantId
+            }
+        });
+
+        let count = 0;
+        const updates = [];
+
+        for (const table of tables) {
+            const newToken = generateTableToken(table.id, table.tableNumber, restaurantId);
+            updates.push(this.updateQRToken(table.id, newToken));
+            count++;
+        }
+
+        await Promise.all(updates);
+        return count;
     }
 }
 
