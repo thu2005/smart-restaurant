@@ -23,6 +23,12 @@ import OrderStatusTracking from "./pages/customer/order-status-tracking";
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
 
+// Admin Menu Management Pages
+import CategoryList from "./pages/admin/menu/categories/CategoryList";
+import MenuItemList from "./pages/admin/menu/items/MenuItemList";
+import MenuItemForm from "./pages/admin/menu/items/MenuItemForm";
+import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
+
 const Routes = () => {
   return (
     <BrowserRouter>
@@ -44,6 +50,13 @@ const Routes = () => {
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
+            
+            {/* Menu Management Routes */}
+            <Route path="menu/categories" element={<CategoryList />} />
+            <Route path="menu/items" element={<MenuItemList />} />
+            <Route path="menu/items/new" element={<MenuItemForm />} />
+            <Route path="menu/items/:id" element={<MenuItemForm />} />
+            <Route path="menu/modifiers" element={<ModifierList />} />
           </Route>
           {/* Legacy redirect */}
           <Route

@@ -37,9 +37,19 @@ const AdminDashboardSidebar = ({
       section: "Management",
       items: [
         {
-          path: "/menu-browse",
-          label: "Menu Management",
+          path: "/admin/menu/items",
+          label: "Menu Items",
           icon: "UtensilsCrossed",
+        },
+        {
+          path: "/admin/menu/categories",
+          label: "Categories",
+          icon: "List",
+        },
+        {
+          path: "/admin/menu/modifiers",
+          label: "Modifiers",
+          icon: "Settings",
         },
         { path: "/orders", label: "Orders", icon: "ShoppingBag" },
         { path: "/tables", label: "Tables", icon: "Grid3x3" },
