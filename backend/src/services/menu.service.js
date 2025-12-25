@@ -57,9 +57,23 @@ class MenuService {
 
     async updateMenuItem(id, data) {
         await this.getMenuItemById(id);
+        const {
+            id: _id,
+            createdAt,
+            updatedAt,
+            categoryId,
+            category,
+            restaurantId: _restaurantId,
+            ...updateData
+        } = data;
+
+        if (data.categoryId) {
+            updateData.category = { connect: { id: data.categoryId } };
+        }
+
         return await prisma.menuItem.update({
             where: { id },
-            data,
+            data: updateData,
         });
     }
 
