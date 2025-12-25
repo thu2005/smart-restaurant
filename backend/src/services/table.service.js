@@ -47,8 +47,7 @@ class TableService {
     async getTablesByRestaurant(restaurantId) {
         return await prisma.table.findMany({
             where: {
-                restaurantId,
-                isActive: false
+                restaurantId
             },
             orderBy: { tableNumber: 'asc' },
             include: {
@@ -103,7 +102,8 @@ class TableService {
         const table = await prisma.table.findUnique({ where: { id } });
         if (!table) throw new Error("Table not found");
 
-        const qrContent = `${process.env.FRONTEND_URL}/menu/${table.restaurantId}/${table.tableNumber}?token=${token}`;
+        const baseURL = process.env.QR_BASE_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
+        const qrContent = `${baseURL}/menu/${table.restaurantId}/${table.tableNumber}?token=${token}`;
         const qrCodeUrl = await generateQRCode(qrContent);
 
         return await prisma.table.update({

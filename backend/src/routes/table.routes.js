@@ -200,4 +200,7 @@ router.post('/qr/regenerate-all', protect, authorize('ADMIN', 'SUPER_ADMIN'), ta
 router.put('/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), tableController.updateTable);
 
 
+// Get all tables by restaurantId
+router.get('/restaurant/:restaurantId', protect, tableController.getTables);
+
 module.exports = router;

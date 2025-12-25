@@ -4,7 +4,7 @@ const { prisma } = require('../config/database');
 const { generateQRBuffer } = require('../utils/qr.service');
 const archiver = require('archiver');
 
-const QR_BASE_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const QR_BASE_URL = process.env.QR_BASE_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
 
 const RESTAURANT_CONFIG = {
     name: "SMART BISTRO",
