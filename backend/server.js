@@ -43,9 +43,7 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API Documentation for Smart Restaurant System",
     },
-    servers: [
-      { url: `http://localhost:${process.env.PORT || 5000}` },
-    ],
+    servers: [{ url: `http://localhost:${process.env.PORT || 5001}` }],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -62,8 +60,13 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Serve uploaded files
-app.use("/uploads", express.static("uploads"));
+// Serve uploaded files with CORS headers
+app.use("/uploads", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET");
+  res.header("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+}, express.static("uploads"));
 
 // Routes
 app.get("/", (req, res) => {
@@ -103,7 +106,7 @@ app.use((req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, () => {
   console.log(
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
@@ -112,27 +115,27 @@ const server = app.listen(PORT, () => {
 });
 
 // Socket.IO setup (placeholder for now)
-const io = require('socket.io')(server, {
+const io = require("socket.io")(server, {
   cors: {
     origin: process.env.FRONTEND_URL || "http://localhost:5174",
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
-io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
+io.on("connection", (socket) => {
+  console.log("Socket connected:", socket.id);
 
-  socket.on('join_restaurant', (restaurantId) => {
+  socket.on("join_restaurant", (restaurantId) => {
     socket.join(restaurantId);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Socket disconnected');
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected");
   });
 });
 
 // Export io to be used in services
-app.set('io', io);
+app.set("io", io);
 
 // Graceful shutdown
 process.on("SIGINT", async () => {

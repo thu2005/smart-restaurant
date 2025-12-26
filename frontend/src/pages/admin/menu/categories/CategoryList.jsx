@@ -149,21 +149,25 @@ const CategoryList = () => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
               <tr>
-                <th className="px-6 py-3 font-medium">Order</th>
-                <th className="px-6 py-3 font-medium">Name</th>
-                <th className="px-6 py-3 font-medium">Description</th>
-                <th className="px-6 py-3 font-medium">Created Date</th>
-                <th className="px-6 py-3 font-medium">Status</th>
-                <th className="px-6 py-3 font-medium">Items</th>
-                <th className="px-6 py-3 font-medium text-right">Actions</th>
+                <th className="px-4 py-3 font-medium">Order</th>
+                <th className="px-4 py-3 font-medium">Name</th>
+                <th className="px-4 py-3 font-medium hidden lg:table-cell">
+                  Description
+                </th>
+                <th className="px-4 py-3 font-medium hidden xl:table-cell">
+                  Created Date
+                </th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Items</th>
+                <th className="px-4 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
                   <td
-                    colSpan="6"
-                    className="px-6 py-4 text-center text-gray-500"
+                    colSpan="7"
+                    className="px-4 py-4 text-center text-gray-500"
                   >
                     Loading...
                   </td>
@@ -171,8 +175,8 @@ const CategoryList = () => {
               ) : categories.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="6"
-                    className="px-6 py-4 text-center text-gray-500"
+                    colSpan="7"
+                    className="px-4 py-4 text-center text-gray-500"
                   >
                     No categories found.
                   </td>
@@ -180,21 +184,21 @@ const CategoryList = () => {
               ) : (
                 categories.map((category) => (
                   <tr key={category.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium">
+                    <td className="px-4 py-4 font-medium">
                       {category.display_order}
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">
+                    <td className="px-4 py-4 font-medium text-gray-900">
                       {category.name}
                     </td>
-                    <td className="px-6 py-4 text-gray-500 truncate max-w-xs">
+                    <td className="px-4 py-4 text-gray-500 truncate max-w-xs hidden lg:table-cell">
                       {category.description || "-"}
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="px-4 py-4 text-gray-500 hidden xl:table-cell">
                       {category.created_at
                         ? new Date(category.created_at).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           category.status === "active"
@@ -205,25 +209,27 @@ const CategoryList = () => {
                         {category.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="px-4 py-4 text-gray-500">
                       {category.items_count || 0}
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(category)}
-                      >
-                        <Icon name="Edit" className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => handleDelete(category.id)}
-                      >
-                        <Icon name="Trash2" className="w-4 h-4" />
-                      </Button>
+                    <td className="px-4 py-4 text-right space-x-2">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(category)}
+                        >
+                          <Icon name="Edit" className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleDelete(category.id)}
+                        >
+                          <Icon name="Trash2" className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))

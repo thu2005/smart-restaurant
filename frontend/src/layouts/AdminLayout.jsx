@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import RoleAdaptiveHeader from "../components/navigation/RoleAdaptiveHeader";
 import AdminDashboardSidebar from "../components/navigation/AdminDashboardSidebar";
 
 const AdminLayout = () => {

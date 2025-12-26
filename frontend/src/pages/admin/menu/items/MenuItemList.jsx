@@ -5,12 +5,17 @@ import Button from "components/ui/Button";
 import Input from "components/ui/Input";
 import Icon from "components/AppIcon";
 import { toast } from "sonner";
+import MenuItemModal from "./MenuItemModal";
 
 const MenuItemList = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItemId, setEditingItemId] = useState(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -46,35 +51,7 @@ const MenuItemList = () => {
       console.error("Failed to fetch items:", error);
       toast.error("Failed to load menu items");
       // Fallback data
-      setItems([
-        {
-          id: "1",
-          name: "Grilled Salmon",
-          category_name: "Main Course",
-          price: 24.99,
-          status: "available",
-          is_chef_recommended: true,
-          created_at: "2023-01-01T00:00:00Z",
-        },
-        {
-          id: "2",
-          name: "Caesar Salad",
-          category_name: "Appetizers",
-          price: 12.5,
-          status: "available",
-          is_chef_recommended: false,
-          created_at: "2023-01-02T00:00:00Z",
-        },
-        {
-          id: "3",
-          name: "Tiramisu",
-          category_name: "Desserts",
-          price: 8.0,
-          status: "sold_out",
-          is_chef_recommended: true,
-          created_at: "2023-01-03T00:00:00Z",
-        },
-      ]);
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -106,6 +83,28 @@ const MenuItemList = () => {
     }
   };
 
+  const handleCreate = () => {
+    setEditingItemId(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (id) => {
+    setEditingItemId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingItemId(null);
+  };
+
+  const handleModalSave = () => {
+    fetchItems();
+    // We don't close modal here because MenuItemModal might keep it open for photos
+    // But if it was a simple save, we might want to refresh.
+    // MenuItemModal calls onSave() after create/update.
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -115,7 +114,7 @@ const MenuItemList = () => {
             Manage your restaurant's menu items.
           </p>
         </div>
-        <Button onClick={() => navigate("/admin/menu/items/new")}>
+        <Button onClick={handleCreate}>
           <Icon name="Plus" className="w-4 h-4 mr-2" />
           Add Item
         </Button>
@@ -178,13 +177,27 @@ const MenuItemList = () => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
               <tr>
-                <th className="px-6 py-3 font-medium whitespace-nowrap">Name</th>
-                <th className="px-6 py-3 font-medium whitespace-nowrap">Category</th>
-                <th className="px-6 py-3 font-medium whitespace-nowrap">Price</th>
-                <th className="px-6 py-3 font-medium whitespace-nowrap">Created Date</th>
-                <th className="px-6 py-3 font-medium whitespace-nowrap">Status</th>
-                <th className="px-6 py-3 font-medium whitespace-nowrap">Tags</th>
-                <th className="px-6 py-3 font-medium text-right whitespace-nowrap">Actions</th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                  Name
+                </th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                  Category
+                </th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                  Price
+                </th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap hidden xl:table-cell">
+                  Created Date
+                </th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                  Status
+                </th>
+                <th className="px-4 py-3 font-medium whitespace-nowrap hidden lg:table-cell">
+                  Tags
+                </th>
+                <th className="px-4 py-3 font-medium text-right whitespace-nowrap">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -192,7 +205,7 @@ const MenuItemList = () => {
                 <tr>
                   <td
                     colSpan="7"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-4 py-4 text-center text-gray-500"
                   >
                     Loading...
                   </td>
@@ -201,7 +214,7 @@ const MenuItemList = () => {
                 <tr>
                   <td
                     colSpan="7"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-4 py-4 text-center text-gray-500"
                   >
                     No items found.
                   </td>
@@ -209,21 +222,24 @@ const MenuItemList = () => {
               ) : (
                 items.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    <td
+                      className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
+                      title={item.name}
+                    >
                       {item.name}
                     </td>
-                    <td className="px-6 py-4 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-4 text-gray-500 whitespace-nowrap">
                       {item.category_name || "-"}
                     </td>
-                    <td className="px-6 py-4 font-medium whitespace-nowrap">
+                    <td className="px-4 py-4 font-medium whitespace-nowrap">
                       ${Number(item.price).toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-4 text-gray-500 whitespace-nowrap hidden xl:table-cell">
                       {item.created_at
                         ? new Date(item.created_at).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           item.status === "available"
@@ -236,19 +252,19 @@ const MenuItemList = () => {
                         {item.status.replace("_", " ")}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
                       {item.is_chef_recommended && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                           Chef's Choice
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                    <td className="px-4 py-4 text-right whitespace-nowrap">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => navigate(`/admin/menu/items/${item.id}`)}
+                          onClick={() => handleEdit(item.id)}
                         >
                           <Icon name="Edit" className="w-4 h-4" />
                         </Button>
@@ -292,6 +308,13 @@ const MenuItemList = () => {
           </Button>
         </div>
       </div>
+
+      <MenuItemModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        itemId={editingItemId}
+        onSave={handleModalSave}
+      />
     </div>
   );
 };

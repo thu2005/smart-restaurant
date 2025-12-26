@@ -5,9 +5,8 @@ import { toast } from "sonner";
 
 const ModifierSelector = ({ itemId, attachedGroupIds = [], onUpdate }) => {
   const [allGroups, setAllGroups] = useState([]);
-  const [selectedIds, setSelectedIds] = useState(new Set(attachedGroupIds));
+  const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -25,33 +24,31 @@ const ModifierSelector = ({ itemId, attachedGroupIds = [], onUpdate }) => {
   }, []);
 
   useEffect(() => {
-    setSelectedIds(new Set(attachedGroupIds));
-  }, [attachedGroupIds]);
+    setSelectedIds(attachedGroupIds || []);
+  }, [itemId, attachedGroupIds]);
 
-  const handleToggle = (groupId) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(groupId)) {
-      newSelected.delete(groupId);
+  const isSelected = (groupId) => selectedIds.includes(groupId);
+
+  const handleToggle = async (groupId) => {
+    const previousSelected = [...selectedIds];
+    let newSelected;
+
+    if (isSelected(groupId)) {
+      newSelected = selectedIds.filter((id) => id !== groupId);
     } else {
-      newSelected.add(groupId);
+      newSelected = [...selectedIds, groupId];
     }
-    setSelectedIds(newSelected);
-  };
 
-  const handleSave = async () => {
+    setSelectedIds(newSelected);
+
+    // Auto-save when toggling
     try {
-      setSaving(true);
-      await menuService.attachModifierGroupToItem(
-        itemId,
-        Array.from(selectedIds)
-      );
-      toast.success("Modifiers updated successfully");
-      onUpdate();
+      await menuService.attachModifierGroupToItem(itemId, newSelected);
+      toast.success("Modifiers updated");
     } catch (error) {
       console.error(error);
       toast.error("Failed to update modifiers");
-    } finally {
-      setSaving(false);
+      setSelectedIds(previousSelected);
     }
   };
 
@@ -59,11 +56,11 @@ const ModifierSelector = ({ itemId, attachedGroupIds = [], onUpdate }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Attached Modifier Groups</h3>
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? "Saving..." : "Save Changes"}
-        </Button>
+      <div>
+        <h3 className="text-lg font-medium mb-4">Attached Modifier Groups</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Click on a modifier group to attach or detach it from this item.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -71,7 +68,7 @@ const ModifierSelector = ({ itemId, attachedGroupIds = [], onUpdate }) => {
           <div
             key={group.id}
             className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-              selectedIds.has(group.id)
+              isSelected(group.id)
                 ? "border-primary bg-primary/5 ring-1 ring-primary"
                 : "border-gray-200 hover:border-gray-300"
             }`}
@@ -86,9 +83,9 @@ const ModifierSelector = ({ itemId, attachedGroupIds = [], onUpdate }) => {
               </div>
               <input
                 type="checkbox"
-                checked={selectedIds.has(group.id)}
-                readOnly
-                className="h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary"
+                checked={isSelected(group.id)}
+                onChange={() => {}}
+                className="h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary pointer-events-none"
               />
             </div>
             <div className="mt-2 text-xs text-gray-500">

@@ -9,6 +9,10 @@ import FloatingCartButton from "./components/FloatingCartButton";
 import EmptyState from "./components/EmptyState";
 import Button from "../../../components/ui/Button";
 
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
+  "http://localhost:5001";
+
 const MenuBrowse = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,25 +64,27 @@ const MenuBrowse = () => {
         // Transform items for UI if needed
         // Assuming backend returns compatible structure or we map it
         const formattedItems = Array.isArray(itemsData)
-          ? itemsData.map((item) => ({
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              price: Number(item.price),
-              image:
-                item.primary_photo_url ||
-                item.photos?.[0]?.url ||
-                "https://via.placeholder.com/150",
-              imageAlt: item.name,
-              category: item.category_id,
-              rating: 4.5, // Mock rating
-              reviewCount: 10, // Mock count
-              prepTime: item.prep_time_minutes,
-              availability: item.status,
-              isPopular: false, // Mock
-              isChefRecommended: item.is_chef_recommended,
-              dietary: [], // Mock
-            }))
+          ? itemsData.map((item) => {
+              const photoUrl = item.primary_photo_url || item.photos?.[0]?.url;
+              return {
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                price: Number(item.price),
+                image: photoUrl
+                  ? `${BASE_URL}${photoUrl}`
+                  : "https://via.placeholder.com/150",
+                imageAlt: item.name,
+                category: item.category_id,
+                rating: 4.5, // Mock rating
+                reviewCount: 10, // Mock count
+                prepTime: item.prep_time_minutes,
+                availability: item.status,
+                isPopular: false, // Mock
+                isChefRecommended: item.is_chef_recommended,
+                dietary: [], // Mock
+              };
+            })
           : [];
 
         setMenuItems(formattedItems);

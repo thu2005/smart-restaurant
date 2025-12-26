@@ -49,7 +49,7 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{title}</h2>
