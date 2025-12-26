@@ -22,6 +22,7 @@ import OrderStatusTracking from "./pages/customer/order-status-tracking";
 
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
+import Login from "./pages/auth/Login";
 
 // Admin Menu Management Pages
 import CategoryList from "./pages/admin/menu/categories/CategoryList";
@@ -35,6 +36,9 @@ const Routes = () => {
       <ErrorBoundary>
         <ScrollToTop />
         <RouterRoutes>
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+
           {/* Customer Routes */}
           <Route path="/" element={<CustomerLayout />}>
             <Route index element={<Navigate to="/menu-browse" replace />} />
