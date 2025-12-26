@@ -65,7 +65,7 @@ const ModifierGroupModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8">
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white rounded-t-lg z-10">
           <h2 className="text-lg font-semibold">{title}</h2>
@@ -183,15 +183,13 @@ const ModifierGroupModal = ({
                       className="h-9"
                     />
                   </div>
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="text-red-500 h-9 w-9"
+                    className="h-9 w-9 flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                     onClick={() => remove(index)}
                   >
                     <Icon name="Trash2" className="w-4 h-4" />
-                  </Button>
+                  </button>
                 </div>
               ))}
             </div>

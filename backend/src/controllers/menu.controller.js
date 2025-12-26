@@ -183,6 +183,15 @@ exports.updateModifierGroup = async (req, res, next) => {
     }
 };
 
+exports.deleteModifierGroup = async (req, res, next) => {
+    try {
+        await menuService.deleteModifierGroup(req.params.id);
+        res.status(200).json({ success: true, message: 'Modifier group deleted' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.createModifierOption = async (req, res, next) => {
     try {
         const { groupId } = req.params;

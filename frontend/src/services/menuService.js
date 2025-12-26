@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 
 // Create axios instance with default config
 const api = axios.create({
@@ -348,6 +349,16 @@ const menuService = {
     }
   },
 
+  deleteModifierGroup: async (id) => {
+    try {
+      const response = await api.delete(`/menu/modifier-groups/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to delete modifier group:", error);
+      throw error;
+    }
+  },
+
   createModifierOption: async (groupId, data) => {
     try {
       const payload = {
@@ -375,6 +386,16 @@ const menuService = {
       return response.data.data || response.data;
     } catch (error) {
       console.error("Failed to update modifier option:", error);
+      throw error;
+    }
+  },
+
+  deleteModifierOption: async (id) => {
+    try {
+      const response = await api.delete(`/menu/modifier-options/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to delete modifier option:", error);
       throw error;
     }
   },

@@ -695,6 +695,31 @@ router.put(
 
 /**
  * @swagger
+ * /api/menu/modifier-groups/{id}:
+ *   delete:
+ *     summary: Delete a modifier group
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Group deleted
+ */
+router.delete(
+  "/modifier-groups/:id",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.deleteModifierGroup
+);
+
+/**
+ * @swagger
  * /api/menu/modifier-groups/{groupId}/options:
  *   post:
  *     summary: Add option to modifier group

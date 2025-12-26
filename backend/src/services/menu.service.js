@@ -301,13 +301,30 @@ class MenuService {
       where: { id },
       data: {
         name: groupData.name,
-        selectionType: groupData.selection_type,
-        isRequired: groupData.is_required,
-        minSelections: groupData.min_selections,
-        maxSelections: groupData.max_selections,
+        selectionType: groupData.selectionType,
+        isRequired: groupData.isRequired,
+        minSelections: groupData.minSelections,
+        maxSelections: groupData.maxSelections,
       },
     });
     return group;
+  }
+
+  async deleteModifierGroup(id) {
+    // Delete all options first (cascade should handle this, but explicit is safer)
+    await prisma.modifierOption.deleteMany({
+      where: { modifierGroupId: id },
+    });
+
+    // Delete all item associations
+    await prisma.menuItemModifierGroup.deleteMany({
+      where: { modifierGroupId: id },
+    });
+
+    // Delete the group
+    await prisma.modifierGroup.delete({
+      where: { id },
+    });
   }
 
   async createModifierOption(groupId, data) {

@@ -70,14 +70,28 @@ const ModifierList = () => {
     setIsModalOpen(true);
   };
 
+  const handleDelete = async (id) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this modifier group? This will also remove it from all menu items."
+      )
+    ) {
+      try {
+        await menuService.deleteModifierGroup(id);
+        toast.success("Modifier group deleted");
+        fetchGroups();
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete modifier group");
+      }
+    }
+  };
+
   const handleModalSubmit = async (data) => {
     try {
-      // This logic is simplified. In reality, we'd need to handle:
-      // 1. Create/Update Group
-      // 2. Create/Update/Delete Options
-
       let groupId;
       if (editingGroup) {
+        // Update existing group
         await menuService.updateModifierGroup(editingGroup.id, {
           name: data.name,
           selection_type: data.selection_type,
@@ -86,24 +100,58 @@ const ModifierList = () => {
           max_selections: data.max_selections,
         });
         groupId = editingGroup.id;
+
+        // Handle options for existing group
+        // Delete all existing options and recreate (simpler approach)
+        // In production, you'd want to do proper diff/patch
+        const existingOptions = editingGroup.options || [];
+
+        // Delete removed options
+        for (const existingOpt of existingOptions) {
+          const stillExists = data.options?.find(
+            (opt) => opt.id === existingOpt.id
+          );
+          if (!stillExists && existingOpt.id) {
+            try {
+              await menuService.deleteModifierOption?.(existingOpt.id);
+            } catch (err) {
+              console.warn("Failed to delete option:", err);
+            }
+          }
+        }
+
+        // Create or update options
+        if (data.options && data.options.length > 0) {
+          for (const opt of data.options) {
+            if (opt.id) {
+              // Update existing option
+              await menuService.updateModifierOption(opt.id, {
+                name: opt.name,
+                price_adjustment: opt.price_adjustment || 0,
+              });
+            } else {
+              // Create new option
+              await menuService.createModifierOption(groupId, {
+                name: opt.name,
+                price_adjustment: opt.price_adjustment || 0,
+              });
+            }
+          }
+        }
+
         toast.success("Modifier group updated");
       } else {
+        // Create new group with options
         const newGroup = await menuService.createModifierGroup({
           name: data.name,
           selection_type: data.selection_type,
           is_required: data.is_required,
           min_selections: data.min_selections,
           max_selections: data.max_selections,
+          options: data.options || [],
         });
         groupId = newGroup.id;
         toast.success("Modifier group created");
-      }
-
-      // Handle options (Mock implementation)
-      // In a real app, we would diff the options or send them all to a bulk endpoint
-      if (data.options && data.options.length > 0) {
-        // For each option, create or update
-        // await Promise.all(data.options.map(opt => ...));
       }
 
       setIsModalOpen(false);
@@ -149,13 +197,23 @@ const ModifierList = () => {
                   )}
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleEdit(group)}
-              >
-                <Icon name="Edit" className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEdit(group)}
+                >
+                  <Icon name="Edit" className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => handleDelete(group.id)}
+                >
+                  <Icon name="Trash2" className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="border-t pt-3">
