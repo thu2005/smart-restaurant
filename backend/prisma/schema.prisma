@@ -71,12 +71,13 @@ model Restaurant {
   isActive Boolean @default(true)
 
   // Relations
-  users      User[]
-  categories Category[]
-  menuItems  MenuItem[]
-  tables     Table[]
-  orders     Order[]
-  payments   Payment[]
+  users          User[]
+  categories     Category[]
+  menuItems      MenuItem[]
+  tables         Table[]
+  orders         Order[]
+  payments       Payment[]
+  modifierGroups ModifierGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -172,7 +173,62 @@ model MenuItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
+  photos         MenuItemPhoto[]
+  modifierGroups MenuItemModifierGroup[]
+
   @@index([restaurantId, categoryId, isAvailable])
+}
+
+model MenuItemPhoto {
+  id        String  @id @default(uuid())
+  url       String
+  isPrimary Boolean @default(false)
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ModifierGroup {
+  id            String  @id @default(uuid())
+  name          String
+  selectionType String // "single", "multiple"
+  isRequired    Boolean @default(false)
+  minSelections Int     @default(0)
+  maxSelections Int     @default(1)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  options   ModifierOption[]
+  menuItems MenuItemModifierGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ModifierOption {
+  id              String  @id @default(uuid())
+  name            String
+  priceAdjustment Decimal @db.Decimal(10, 2)
+
+  modifierGroupId String
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MenuItemModifierGroup {
+  menuItemId      String
+  menuItem        MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  modifierGroupId String
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@id([menuItemId, modifierGroupId])
 }
 
 // ============================================
