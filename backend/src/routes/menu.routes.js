@@ -1,7 +1,7 @@
-const express = require('express');
-const { check } = require('express-validator');
-const menuController = require('../controllers/menu.controller');
-const { protect, authorize } = require('../middlewares/auth.middleware');
+const express = require("express");
+const { check } = require("express-validator");
+const menuController = require("../controllers/menu.controller");
+const { protect, authorize } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ const router = express.Router();
  *       200:
  *         description: List of categories with items
  */
-router.get('/:restaurantId/categories', menuController.getCategories);
+router.get("/:restaurantId/categories", menuController.getCategories);
 
 /**
  * @swagger
@@ -50,8 +50,7 @@ router.get('/:restaurantId/categories', menuController.getCategories);
  *       200:
  *         description: List of menu items
  */
-router.get('/:restaurantId/items', menuController.getMenuItems);
-
+router.get("/:restaurantId/items", menuController.getMenuItems);
 
 /**
  * @swagger
@@ -96,7 +95,7 @@ router.get('/:restaurantId/items', menuController.getMenuItems);
  *                 message:
  *                   type: string
  */
-router.get('/:restaurantId/items/:id', menuController.getMenuItemById);
+router.get("/:restaurantId/items/:id", menuController.getMenuItemById);
 
 // --- Protected Routes (Admin) ---
 
@@ -127,10 +126,144 @@ router.get('/:restaurantId/items/:id', menuController.getMenuItemById);
  *         description: Category created
  */
 router.post(
-    '/categories',
-    protect,
-    authorize('ADMIN', 'SUPER_ADMIN'),
-    menuController.createCategory
+  "/categories",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.createCategory
+);
+
+/**
+ * @swagger
+ * /api/menu/categories/{id}:
+ *   put:
+ *     summary: Update a category
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               displayOrder:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Category updated
+ */
+router.put(
+  "/categories/:id",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.updateCategory
+);
+
+/**
+ * @swagger
+ * /api/menu/categories/{id}/status:
+ *   patch:
+ *     summary: Update category status
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isActive:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Category status updated
+ */
+router.patch(
+  "/categories/:id/status",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.updateCategoryStatus
+);
+
+/**
+ * @swagger
+ * /api/menu/categories:
+ *   get:
+ *     summary: Get all categories for the restaurant (admin)
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: restaurantId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
+router.get(
+  "/categories",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.getCategories
+);
+
+/**
+ * @swagger
+ * /api/menu/items:
+ *   get:
+ *     summary: Get all menu items for admin (with filters)
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: categoryId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of menu items with pagination
+ */
+router.get(
+  "/items",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.getMenuItems
 );
 
 /**
@@ -166,16 +299,16 @@ router.post(
  *         description: Item created
  */
 router.post(
-    '/items',
-    protect,
-    authorize('ADMIN', 'SUPER_ADMIN'),
-    [
-        check('name', 'Name is required').not().isEmpty(),
-        check('price', 'Price must be a number').isNumeric(),
-        check('categoryId', 'Category ID is required').not().isEmpty(),
-        check('restaurantId', 'Restaurant ID is required').not().isEmpty(),
-    ],
-    menuController.createMenuItem
+  "/items",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  [
+    check("name", "Name is required").not().isEmpty(),
+    check("price", "Price must be a number").isNumeric(),
+    check("categoryId", "Category ID is required").not().isEmpty(),
+    check("restaurantId", "Restaurant ID is required").not().isEmpty(),
+  ],
+  menuController.createMenuItem
 );
 
 /**
@@ -254,9 +387,12 @@ router.post(
  *                 message:
  *                   type: string
  */
-router.put('/:restaurantId/items/:id',
-    protect, authorize('ADMIN', 'SUPER_ADMIN'),
-    menuController.updateMenuItem);
+router.put(
+  "/:restaurantId/items/:id",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.updateMenuItem
+);
 
 /**
  * @swagger
@@ -303,40 +439,43 @@ router.put('/:restaurantId/items/:id',
  *                 message:
  *                   type: string
  */
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 // Ensure uploads directory exists
-const uploadDir = 'uploads/';
+const uploadDir = "uploads/";
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir);
 }
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir)
-    },
-    filename: function (req, file, cb) {
-        cb(null, 'menu-' + Date.now() + path.extname(file.originalname))
-    }
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, "menu-" + Date.now() + path.extname(file.originalname));
+  },
 });
 
 const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Not an image! Please upload an image.'), false);
-        }
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Not an image! Please upload an image."), false);
     }
+  },
 });
 
-router.delete('/:restaurantId/items/:id',
-    protect, authorize('ADMIN', 'SUPER_ADMIN'),
-    menuController.deleteMenuItem);
+router.delete(
+  "/:restaurantId/items/:id",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.deleteMenuItem
+);
 
 // --- Photos ---
 
@@ -370,10 +509,12 @@ router.delete('/:restaurantId/items/:id',
  *       200:
  *         description: Photos uploaded
  */
-router.post('/items/:id/photos',
-    protect, authorize('ADMIN', 'SUPER_ADMIN'),
-    upload.array('photos', 5),
-    menuController.uploadMenuItemPhotos
+router.post(
+  "/items/:id/photos",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  upload.array("photos", 5),
+  menuController.uploadMenuItemPhotos
 );
 
 /**
@@ -400,9 +541,11 @@ router.post('/items/:id/photos',
  *       200:
  *         description: Photo deleted
  */
-router.delete('/items/:id/photos/:photoId',
-    protect, authorize('ADMIN', 'SUPER_ADMIN'),
-    menuController.deleteMenuItemPhoto
+router.delete(
+  "/items/:id/photos/:photoId",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.deleteMenuItemPhoto
 );
 
 /**
@@ -429,9 +572,11 @@ router.delete('/items/:id/photos/:photoId',
  *       200:
  *         description: Primary photo updated
  */
-router.patch('/items/:id/photos/:photoId/primary',
-    protect, authorize('ADMIN', 'SUPER_ADMIN'),
-    menuController.setMenuItemPrimaryPhoto
+router.patch(
+  "/items/:id/photos/:photoId/primary",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.setMenuItemPrimaryPhoto
 );
 
 // --- Modifiers ---
@@ -454,7 +599,7 @@ router.patch('/items/:id/photos/:photoId/primary',
  *       200:
  *         description: List of modifier groups
  */
-router.get('/modifier-groups', protect, menuController.getModifierGroups);
+router.get("/modifier-groups", protect, menuController.getModifierGroups);
 
 /**
  * @swagger
@@ -500,7 +645,12 @@ router.get('/modifier-groups', protect, menuController.getModifierGroups);
  *       201:
  *         description: Group created
  */
-router.post('/modifier-groups', protect, authorize('ADMIN', 'SUPER_ADMIN'), menuController.createModifierGroup);
+router.post(
+  "/modifier-groups",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.createModifierGroup
+);
 
 /**
  * @swagger
@@ -536,7 +686,12 @@ router.post('/modifier-groups', protect, authorize('ADMIN', 'SUPER_ADMIN'), menu
  *       200:
  *         description: Group updated
  */
-router.put('/modifier-groups/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), menuController.updateModifierGroup);
+router.put(
+  "/modifier-groups/:id",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.updateModifierGroup
+);
 
 /**
  * @swagger
@@ -569,7 +724,12 @@ router.put('/modifier-groups/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), m
  *       201:
  *         description: Option created
  */
-router.post('/modifier-groups/:groupId/options', protect, authorize('ADMIN', 'SUPER_ADMIN'), menuController.createModifierOption);
+router.post(
+  "/modifier-groups/:groupId/options",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.createModifierOption
+);
 
 /**
  * @swagger
@@ -599,7 +759,12 @@ router.post('/modifier-groups/:groupId/options', protect, authorize('ADMIN', 'SU
  *       200:
  *         description: Option updated
  */
-router.put('/modifier-options/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), menuController.updateModifierOption);
+router.put(
+  "/modifier-options/:id",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.updateModifierOption
+);
 
 /**
  * @swagger
@@ -633,6 +798,11 @@ router.put('/modifier-options/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), 
  *       200:
  *         description: Groups attached
  */
-router.post('/items/:id/modifier-groups', protect, authorize('ADMIN', 'SUPER_ADMIN'), menuController.attachModifierGroupToItem);
+router.post(
+  "/items/:id/modifier-groups",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.attachModifierGroupToItem
+);
 
 module.exports = router;

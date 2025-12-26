@@ -8,12 +8,11 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <RoleAdaptiveHeader userRole="admin" />
       <AdminDashboardSidebar
         isMobileOpen={sidebarOpen}
         onMobileToggle={setSidebarOpen}
       />
-      <main className="lg:ml-64 p-6 pt-20">
+      <main className="lg:ml-64 p-6">
         <Outlet />
       </main>
     </div>

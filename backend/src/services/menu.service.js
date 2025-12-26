@@ -4,12 +4,18 @@ const path = require('path');
 
 class MenuService {
     // --- Categories ---
-    async getCategories(restaurantId) {
+    async getCategories(restaurantId, includeInactive = true) {
+        const where = { restaurantId };
+        // For admin, show all categories; for guest, only active ones
+        if (!includeInactive) {
+            where.isActive = true;
+        }
+        
         return await prisma.category.findMany({
-            where: { restaurantId, isActive: true },
+            where,
             include: {
                 menuItems: {
-                    where: { isAvailable: true }, // Optional: only available items
+                    select: { id: true } // Just count them
                 },
             },
             orderBy: { displayOrder: 'asc' },
@@ -19,6 +25,35 @@ class MenuService {
     async createCategory(data) {
         return await prisma.category.create({
             data,
+        });
+    }
+
+    async updateCategory(id, data) {
+        // Check if category exists
+        const category = await prisma.category.findUnique({
+            where: { id }
+        });
+        if (!category) throw new Error('Category not found');
+
+        return await prisma.category.update({
+            where: { id },
+            data: {
+                name: data.name,
+                description: data.description,
+                displayOrder: data.displayOrder
+            }
+        });
+    }
+
+    async updateCategoryStatus(id, isActive) {
+        const category = await prisma.category.findUnique({
+            where: { id }
+        });
+        if (!category) throw new Error('Category not found');
+
+        return await prisma.category.update({
+            where: { id },
+            data: { isActive }
         });
     }
 

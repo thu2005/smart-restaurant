@@ -3,8 +3,15 @@ const { validationResult } = require('express-validator');
 
 exports.getCategories = async (req, res, next) => {
     try {
-        const { restaurantId } = req.params;
-        const categories = await menuService.getCategories(restaurantId);
+        // For admin routes: get from query or user's restaurant
+        // For public routes: get from params
+        const restaurantId = req.params.restaurantId || req.query.restaurantId || req.user?.restaurantId;
+        
+        if (!restaurantId) {
+            return res.status(400).json({ success: false, message: 'Restaurant ID is required' });
+        }
+        
+        const categories = await menuService.getCategories(restaurantId, true);
         res.status(200).json({ success: true, data: categories });
     } catch (error) {
         next(error);
@@ -21,9 +28,37 @@ exports.createCategory = async (req, res, next) => {
     }
 };
 
+exports.updateCategory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const category = await menuService.updateCategory(id, req.body);
+        res.status(200).json({ success: true, data: category });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateCategoryStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+        const category = await menuService.updateCategoryStatus(id, isActive);
+        res.status(200).json({ success: true, data: category });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getMenuItems = async (req, res, next) => {
     try {
-        const { restaurantId } = req.params;
+        // For admin routes: get from query or user's restaurant
+        // For public routes: get from params
+        const restaurantId = req.params.restaurantId || req.query.restaurantId || req.user?.restaurantId;
+        
+        if (!restaurantId) {
+            return res.status(400).json({ success: false, message: 'Restaurant ID is required' });
+        }
+        
         const { categoryId } = req.query;
         const items = await menuService.getMenuItems(restaurantId, categoryId);
         res.status(200).json({ success: true, data: items });
