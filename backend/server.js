@@ -79,6 +79,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", require("./src/routes/auth.routes"));
 app.use("/api/restaurants", require("./src/routes/restaurant.routes"));
 app.use("/api/menu", require("./src/routes/menu.routes"));
+app.use("/api/admin/menu", require("./src/routes/menu.routes"));
 app.use("/api/tables", require("./src/routes/table.routes"));
 app.use("/api/orders", require("./src/routes/order.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
