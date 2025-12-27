@@ -1,0 +1,372 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User Management
+// ============================================
+
+enum UserRole {
+  SUPER_ADMIN // System admin - manages all restaurants
+  ADMIN // Restaurant owner
+  WAITER // Waiter staff
+  KITCHEN // Kitchen staff
+  CUSTOMER // Registered customer
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String // Hashed password
+  fullName      String
+  phone         String?
+  role          UserRole
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+
+  // Relations
+  restaurantId String? // Null for SUPER_ADMIN and CUSTOMER
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Customer-specific
+  orders Order[] @relation("CustomerOrders")
+
+  // Staff-specific
+  acceptedOrders Order[] @relation("WaiterAcceptedOrders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([restaurantId, role])
+}
+
+// ============================================
+// Restaurant Management (Multi-tenant)
+// ============================================
+
+model Restaurant {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  timezone    String  @default("Asia/Ho_Chi_Minh")
+  currency    String  @default("VND")
+
+  // Contact info
+  phone   String?
+  email   String?
+  address String?
+
+  // Opening hours (JSON: {monday: {open: "08:00", close: "22:00"}, ...})
+  openingHours Json?
+
+  isActive Boolean @default(true)
+
+  // Relations
+  users          User[]
+  categories     Category[]
+  menuItems      MenuItem[]
+  tables         Table[]
+  orders         Order[]
+  payments       Payment[]
+  modifierGroups ModifierGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+// ============================================
+// Table Management
+// ============================================
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  CLEANING
+}
+
+model Table {
+  id          String      @id @default(uuid())
+  tableNumber String // e.g., "5", "A1", "T12"
+  capacity    Int         @default(4)
+  location    String? // e.g., "Ground Floor", "VIP Room"
+  status      TableStatus @default(AVAILABLE)
+  isActive    Boolean     @default(true)
+
+  // QR Code data
+  qrCode    String? @unique // Unique token for QR code
+  qrCodeUrl String? // URL to QR image (if stored)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([restaurantId, tableNumber])
+  @@index([qrCode])
+}
+
+// ============================================
+// Menu Management
+// ============================================
+
+model Category {
+  id           String  @id @default(uuid())
+  name         String // e.g., "Main Course", "Drinks", "Appetizers"
+  description  String?
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  menuItems MenuItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([restaurantId, isActive])
+}
+
+model MenuItem {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal @db.Decimal(10, 2)
+  image       String? // URL to image
+
+  // Metadata
+  prepTime          Int? // Minutes
+  isPopular         Boolean  @default(false)
+  isChefRecommended Boolean  @default(false)
+  orderCount        Int      @default(0) // Track popularity by order count
+  dietary           String[] // e.g., ["vegetarian", "gluten-free"]
+
+  // Availability
+  isAvailable Boolean @default(true)
+  stockStatus String  @default("available") // "available", "low-stock", "out-of-stock"
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  photos         MenuItemPhoto[]
+  modifierGroups MenuItemModifierGroup[]
+
+  @@index([restaurantId, categoryId, isAvailable])
+}
+
+model MenuItemPhoto {
+  id        String  @id @default(uuid())
+  url       String
+  isPrimary Boolean @default(false)
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ModifierGroup {
+  id            String  @id @default(uuid())
+  name          String
+  selectionType String // "single", "multiple"
+  isRequired    Boolean @default(false)
+  minSelections Int     @default(0)
+  maxSelections Int     @default(1)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  options   ModifierOption[]
+  menuItems MenuItemModifierGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ModifierOption {
+  id              String  @id @default(uuid())
+  name            String
+  priceAdjustment Decimal @db.Decimal(10, 2)
+
+  modifierGroupId String
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MenuItemModifierGroup {
+  menuItemId      String
+  menuItem        MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  modifierGroupId String
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@id([menuItemId, modifierGroupId])
+}
+
+// ============================================
+// Order Management
+// ============================================
+
+enum OrderStatus {
+  DRAFT // In cart (not yet submitted)
+  SUBMITTED // Customer submitted, waiting for waiter
+  REJECTED // Waiter rejected
+  RECEIVED // Waiter accepted
+  PREPARING // Kitchen preparing
+  READY // Ready to serve
+  SERVED // Served to customer
+  PAYMENT_PENDING // Customer requested bill
+  COMPLETED // Payment completed
+  CANCELLED // Cancelled
+}
+
+model Order {
+  id          String @id @default(uuid())
+  orderNumber String // Display number: "ORD-0051"
+
+  status OrderStatus @default(SUBMITTED)
+
+  // Customer info (for guest orders)
+  customerName  String?
+  customerPhone String?
+
+  // Notes
+  specialInstructions String?
+  rejectionReason     String? // If waiter rejects
+
+  // Timing
+  submittedAt DateTime?
+  acceptedAt  DateTime?
+  preparingAt DateTime?
+  readyAt     DateTime?
+  servedAt    DateTime?
+  completedAt DateTime?
+
+  // Relations
+  tableId String
+  table   Table  @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  customerId String? // Null for guest orders
+  customer   User?   @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: SetNull)
+
+  acceptedById String? // Waiter who accepted
+  acceptedBy   User?   @relation("WaiterAcceptedOrders", fields: [acceptedById], references: [id], onDelete: SetNull)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  orderItems OrderItem[]
+  payment    Payment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([restaurantId, orderNumber])
+  @@index([tableId, status])
+  @@index([restaurantId, status])
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int     @default(1)
+  unitPrice Decimal @db.Decimal(10, 2) // Price at order time
+
+  // Modifiers (stored as JSON array: ["Extra Cheese", "Thin Crust", "No Onions"])
+  modifiers String[]
+
+  // Special instructions for this specific item
+  specialInstructions String?
+
+  // Item status (for kitchen tracking)
+  itemStatus String @default("queued") // "queued", "cooking", "ready"
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+}
+
+// ============================================
+// Payment Management
+// ============================================
+
+enum PaymentMethod {
+  ZALOPAY
+  MOMO
+  VNPAY
+  STRIPE
+  CASH
+  CARD_AT_COUNTER
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id     String  @id @default(uuid())
+  amount Decimal @db.Decimal(10, 2)
+  tax    Decimal @default(0) @db.Decimal(10, 2)
+  tip    Decimal @default(0) @db.Decimal(10, 2)
+  total  Decimal @db.Decimal(10, 2)
+
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+
+  // Payment gateway response (store transaction IDs, etc.)
+  gatewayTransactionId String?
+  gatewayResponse      Json?
+
+  // Relations
+  orderId String @unique // One payment per order
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([restaurantId, status])
+}

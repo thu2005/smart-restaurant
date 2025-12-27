@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Table" ALTER COLUMN "qrCode" DROP NOT NULL;
