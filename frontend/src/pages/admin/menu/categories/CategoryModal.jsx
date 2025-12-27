@@ -88,11 +88,21 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
               Description
             </label>
             <textarea
-              {...register("description")}
+              {...register("description", {
+                maxLength: {
+                  value: 500,
+                  message: "Description must not exceed 500 characters"
+                }
+              })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
               rows="3"
               placeholder="Optional description"
             />
+            {errors.description && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

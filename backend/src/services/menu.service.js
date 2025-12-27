@@ -89,6 +89,18 @@ class MenuService {
   }
 
   async createCategory(data) {
+    // Check if category name already exists for this restaurant
+    const existing = await prisma.category.findFirst({
+      where: {
+        restaurantId: data.restaurantId,
+        name: data.name,
+      },
+    });
+
+    if (existing) {
+      throw new Error("Category name already exists for this restaurant");
+    }
+
     return await prisma.category.create({
       data,
     });

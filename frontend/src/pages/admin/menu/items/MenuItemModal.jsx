@@ -208,7 +208,17 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
                       label="Item Name"
-                      {...register("name", { required: "Name is required" })}
+                      {...register("name", { 
+                        required: "Name is required",
+                        minLength: {
+                          value: 2,
+                          message: "Name must be at least 2 characters"
+                        },
+                        maxLength: {
+                          value: 80,
+                          message: "Name must not exceed 80 characters"
+                        }
+                      })}
                       error={errors.name?.message}
                     />
                     <div>
@@ -240,14 +250,31 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                       step="0.01"
                       {...register("price", {
                         required: "Price is required",
-                        min: { value: 0, message: "Price must be positive" },
+                        min: { 
+                          value: 0.01, 
+                          message: "Price must be at least $0.01" 
+                        },
+                        max: {
+                          value: 999999,
+                          message: "Price must not exceed $999,999"
+                        }
                       })}
                       error={errors.price?.message}
                     />
                     <Input
                       label="Prep Time (mins)"
                       type="number"
-                      {...register("prep_time_minutes")}
+                      {...register("prep_time_minutes", {
+                        min: {
+                          value: 0,
+                          message: "Prep time cannot be negative"
+                        },
+                        max: {
+                          value: 240,
+                          message: "Prep time must not exceed 240 minutes"
+                        }
+                      })}
+                      error={errors.prep_time_minutes?.message}
                     />
                   </div>
 
@@ -257,8 +284,18 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                     </label>
                     <textarea
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[100px]"
-                      {...register("description")}
+                      {...register("description", {
+                        maxLength: {
+                          value: 500,
+                          message: "Description must not exceed 500 characters"
+                        }
+                      })}
                     />
+                    {errors.description && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.description.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

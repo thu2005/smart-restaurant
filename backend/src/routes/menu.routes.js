@@ -129,6 +129,23 @@ router.post(
   "/categories",
   protect,
   authorize("ADMIN", "SUPER_ADMIN"),
+  [
+    check("name", "Name is required")
+      .not()
+      .isEmpty()
+      .trim()
+      .isLength({ min: 2, max: 50 })
+      .withMessage("Name must be between 2 and 50 characters"),
+    check("restaurantId", "Restaurant ID is required").not().isEmpty(),
+    check("displayOrder")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Display order must be a non-negative integer"),
+    check("description")
+      .optional()
+      .isLength({ max: 500 })
+      .withMessage("Description must not exceed 500 characters"),
+  ],
   menuController.createCategory
 );
 
@@ -166,6 +183,21 @@ router.put(
   "/categories/:id",
   protect,
   authorize("ADMIN", "SUPER_ADMIN"),
+  [
+    check("name")
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 50 })
+      .withMessage("Name must be between 2 and 50 characters"),
+    check("displayOrder")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Display order must be a non-negative integer"),
+    check("description")
+      .optional()
+      .isLength({ max: 500 })
+      .withMessage("Description must not exceed 500 characters"),
+  ],
   menuController.updateCategory
 );
 
@@ -303,10 +335,25 @@ router.post(
   protect,
   authorize("ADMIN", "SUPER_ADMIN"),
   [
-    check("name", "Name is required").not().isEmpty(),
-    check("price", "Price must be a number").isNumeric(),
+    check("name", "Name is required")
+      .not()
+      .isEmpty()
+      .trim()
+      .isLength({ min: 2, max: 80 })
+      .withMessage("Name must be between 2 and 80 characters"),
+    check("price", "Price is required")
+      .isFloat({ min: 0.01, max: 999999 })
+      .withMessage("Price must be between 0.01 and 999999"),
     check("categoryId", "Category ID is required").not().isEmpty(),
     check("restaurantId", "Restaurant ID is required").not().isEmpty(),
+    check("prepTime")
+      .optional()
+      .isInt({ min: 0, max: 240 })
+      .withMessage("Preparation time must be between 0 and 240 minutes"),
+    check("description")
+      .optional()
+      .isLength({ max: 500 })
+      .withMessage("Description must not exceed 500 characters"),
   ],
   menuController.createMenuItem
 );
@@ -391,6 +438,25 @@ router.put(
   "/:restaurantId/items/:id",
   protect,
   authorize("ADMIN", "SUPER_ADMIN"),
+  [
+    check("name")
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 80 })
+      .withMessage("Name must be between 2 and 80 characters"),
+    check("price")
+      .optional()
+      .isFloat({ min: 0.01, max: 999999 })
+      .withMessage("Price must be between 0.01 and 999999"),
+    check("prepTime")
+      .optional()
+      .isInt({ min: 0, max: 240 })
+      .withMessage("Preparation time must be between 0 and 240 minutes"),
+    check("description")
+      .optional()
+      .isLength({ max: 500 })
+      .withMessage("Description must not exceed 500 characters"),
+  ],
   menuController.updateMenuItem
 );
 
