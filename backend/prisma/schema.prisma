@@ -155,6 +155,7 @@ model MenuItem {
   prepTime          Int? // Minutes
   isPopular         Boolean  @default(false)
   isChefRecommended Boolean  @default(false)
+  orderCount        Int      @default(0) // Track popularity by order count
   dietary           String[] // e.g., ["vegetarian", "gluten-free"]
 
   // Availability

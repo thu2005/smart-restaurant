@@ -59,6 +59,18 @@ class OrderService {
             },
         });
 
+        // Increment orderCount for each menu item (for popularity tracking)
+        for (const item of items) {
+            await prisma.menuItem.update({
+                where: { id: item.menuItemId },
+                data: {
+                    orderCount: {
+                        increment: item.quantity
+                    }
+                }
+            });
+        }
+
         return order;
     }
 

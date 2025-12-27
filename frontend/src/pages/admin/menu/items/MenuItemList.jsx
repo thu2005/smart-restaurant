@@ -167,6 +167,7 @@ const MenuItemList = () => {
           <option value="name">Name (A-Z)</option>
           <option value="price">Price: Low to High</option>
           <option value="price_desc">Price: High to Low</option>
+          <option value="popularity">Most Popular</option>
         </select>
       </div>
 

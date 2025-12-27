@@ -175,6 +175,9 @@ class MenuService {
       case "name":
         orderBy = { name: "asc" };
         break;
+      case "popularity":
+        orderBy = { orderCount: "desc" };
+        break;
       case "createdAt":
       default:
         orderBy = { createdAt: "desc" };
