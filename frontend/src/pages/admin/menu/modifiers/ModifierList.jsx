@@ -10,47 +10,30 @@ const ModifierList = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const fetchGroups = async () => {
     try {
       setLoading(true);
-      // Assuming getGroups returns groups with their options
-      // If not, we might need to fetch options for each group
-      // For now, let's assume the API returns full structure or we mock it
-      const data = menuService.getModifierGroups
-        ? await menuService.getModifierGroups()
-        : [];
-      // Wait, I didn't implement getModifierGroups in menuService yet!
-      // I only implemented createModifierGroup.
-      // Let me check menuService.js content again or just add it now.
-      setGroups(Array.isArray(data) ? data : []);
+      const result = await menuService.getModifierGroups({ page, limit });
+
+      // Backend now returns { data, pagination } if pagination params are provided
+      if (result.pagination) {
+        setGroups(result.data || []);
+        setTotalPages(result.pagination.totalPages);
+        setTotal(result.pagination.total);
+      } else {
+        // Fallback for old API response format
+        const data = result.data || result;
+        setGroups(Array.isArray(data) ? data : []);
+      }
     } catch (error) {
       console.error("Failed to fetch modifier groups:", error);
-      // Fallback data
-      setGroups([
-        {
-          id: "1",
-          name: "Size",
-          selection_type: "single",
-          is_required: true,
-          options: [
-            { id: "o1", name: "Small", price_adjustment: 0 },
-            { id: "o2", name: "Medium", price_adjustment: 1.5 },
-            { id: "o3", name: "Large", price_adjustment: 3.0 },
-          ],
-        },
-        {
-          id: "2",
-          name: "Toppings",
-          selection_type: "multiple",
-          is_required: false,
-          max_selections: 3,
-          options: [
-            { id: "o4", name: "Cheese", price_adjustment: 0.5 },
-            { id: "o5", name: "Bacon", price_adjustment: 1.0 },
-          ],
-        },
-      ]);
+      toast.error("Failed to load modifier groups");
+      setGroups([]);
     } finally {
       setLoading(false);
     }
@@ -58,7 +41,7 @@ const ModifierList = () => {
 
   useEffect(() => {
     fetchGroups();
-  }, []);
+  }, [page, limit]);
 
   const handleCreate = () => {
     setEditingGroup(null);
@@ -239,6 +222,34 @@ const ModifierList = () => {
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4">
+          <div className="text-sm text-gray-500">
+            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)}{" "}
+            of {total} groups
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page >= totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       <ModifierGroupModal
         isOpen={isModalOpen}

@@ -21,7 +21,7 @@ const MenuItemList = () => {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [sortBy, setSortBy] = useState("created_at:desc");
+  const [sortBy, setSortBy] = useState("createdAt");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
@@ -41,7 +41,7 @@ const MenuItemList = () => {
         search,
         categoryId: selectedCategory,
         status: statusFilter,
-        sort: sortBy,
+        sortBy: sortBy,
         page,
         limit,
       };
@@ -163,11 +163,10 @@ const MenuItemList = () => {
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option value="created_at:desc">Newest First</option>
-          <option value="created_at:asc">Oldest First</option>
-          <option value="price:asc">Price: Low to High</option>
-          <option value="price:desc">Price: High to Low</option>
-          <option value="popularity:desc">Most Popular</option>
+          <option value="createdAt">Newest First</option>
+          <option value="name">Name (A-Z)</option>
+          <option value="price">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
         </select>
       </div>
 

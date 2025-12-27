@@ -51,13 +51,30 @@ const toCamelCase = (obj) => {
 
 const menuService = {
   // --- Categories ---
-  getCategories: async (params) => {
+  getCategories: async (params = {}) => {
     try {
       const response = await api.get("/menu/categories", { params });
-      const categories = response.data.data || response.data;
+      const result = response.data;
 
-      // Transform backend data to frontend format
-      return categories.map((category) => ({
+      // If pagination info is present, return full result
+      if (result.pagination) {
+        return {
+          data: (result.data || []).map((category) => ({
+            id: category.id,
+            name: category.name,
+            description: category.description,
+            display_order: category.displayOrder || 0,
+            status: category.isActive ? "active" : "inactive",
+            items_count: category.menuItems ? category.menuItems.length : 0,
+            created_at: category.createdAt,
+          })),
+          pagination: result.pagination,
+        };
+      }
+
+      // Old format without pagination
+      const categories = result.data || result;
+      return (categories || []).map((category) => ({
         id: category.id,
         name: category.name,
         description: category.description,
@@ -130,10 +147,10 @@ const menuService = {
         category_name: item.category?.name || "",
         category_id: item.categoryId,
         price: parseFloat(item.price),
-        status: item.isAvailable
-          ? item.stockStatus === "out-of-stock"
-            ? "sold_out"
-            : "available"
+        status: item.stockStatus === "out-of-stock"
+          ? "sold_out"
+          : item.isAvailable
+          ? "available"
           : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         created_at: item.createdAt,
@@ -160,10 +177,10 @@ const menuService = {
         price: parseFloat(item.price),
         description: item.description,
         prep_time_minutes: item.prepTime || 0,
-        status: item.isAvailable
-          ? item.stockStatus === "out-of-stock"
-            ? "sold_out"
-            : "available"
+        status: item.stockStatus === "out-of-stock"
+          ? "sold_out"
+          : item.isAvailable
+          ? "available"
           : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         photos:
@@ -188,7 +205,7 @@ const menuService = {
         price: parseFloat(data.price),
         categoryId: data.category_id,
         prepTime: data.prep_time_minutes || 0,
-        isAvailable: data.status === "available",
+        isAvailable: data.status !== "unavailable",
         stockStatus: data.status === "sold_out" ? "out-of-stock" : "available",
         isChefRecommended: data.is_chef_recommended || false,
         restaurantId: getRestaurantId(),
@@ -210,7 +227,7 @@ const menuService = {
         price: parseFloat(data.price),
         categoryId: data.category_id,
         prepTime: data.prep_time_minutes || 0,
-        isAvailable: data.status === "available",
+        isAvailable: data.status !== "unavailable",
         stockStatus: data.status === "sold_out" ? "out-of-stock" : "available",
         isChefRecommended: data.is_chef_recommended || false,
       };
@@ -280,16 +297,40 @@ const menuService = {
   },
 
   // --- Modifiers ---
-  getModifierGroups: async () => {
+  getModifierGroups: async (params = {}) => {
     try {
       const restaurantId = getRestaurantId();
       const response = await api.get("/menu/modifier-groups", {
-        params: { restaurantId },
+        params: { restaurantId, ...params },
       });
-      const groups = response.data.data || response.data;
+      const result = response.data;
+
+      // If pagination info is present, return full result
+      if (result.pagination) {
+        return {
+          data: (result.data || []).map((group) => ({
+            id: group.id,
+            name: group.name,
+            selection_type: group.selectionType,
+            is_required: group.isRequired,
+            min_selections: group.minSelections,
+            max_selections: group.maxSelections,
+            options:
+              group.options?.map((option) => ({
+                id: option.id,
+                name: option.name,
+                price_adjustment: parseFloat(option.priceAdjustment || 0),
+              })) || [],
+          })),
+          pagination: result.pagination,
+        };
+      }
+
+      // Old format without pagination
+      const groups = result.data || result;
 
       // Transform backend data to frontend format
-      return groups.map((group) => ({
+      return (groups || []).map((group) => ({
         id: group.id,
         name: group.name,
         selection_type: group.selectionType,

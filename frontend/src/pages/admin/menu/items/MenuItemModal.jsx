@@ -272,7 +272,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                       >
                         <option value="available">Available</option>
                         <option value="sold_out">Sold Out</option>
-                        <option value="hidden">Hidden</option>
+                        <option value="unavailable">Unavailable</option>
                       </select>
                     </div>
                     <div className="flex items-center space-x-2 pt-6">

@@ -11,59 +11,30 @@ const CategoryList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [sortBy, setSortBy] = useState("display_order"); // display_order, name, created_at
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const data = await menuService.getCategories();
+      const result = await menuService.getCategories({ page, limit, sortBy });
 
-      let sortedData = Array.isArray(data) ? [...data] : [];
-
-      sortedData.sort((a, b) => {
-        if (sortBy === "display_order") {
-          return a.display_order - b.display_order;
-        } else if (sortBy === "name") {
-          return a.name.localeCompare(b.name);
-        } else if (sortBy === "created_at") {
-          return new Date(b.created_at || 0) - new Date(a.created_at || 0); // Newest first
-        }
-        return 0;
-      });
-
-      setCategories(sortedData);
+      // Backend now returns { data, pagination } if pagination params are provided
+      if (result.pagination) {
+        setCategories(result.data || []);
+        setTotalPages(result.pagination.totalPages);
+        setTotal(result.pagination.total);
+      } else {
+        // Fallback for old API response format
+        const data = result.data || result;
+        setCategories(Array.isArray(data) ? data : []);
+      }
     } catch (error) {
       console.error("Failed to fetch categories:", error);
       toast.error("Failed to load categories");
-      // Fallback for demo if API fails
-      setCategories([
-        {
-          id: "1",
-          name: "Appetizers",
-          description: "Starters",
-          display_order: 1,
-          status: "active",
-          items_count: 5,
-          created_at: "2023-01-01T00:00:00Z",
-        },
-        {
-          id: "2",
-          name: "Main Course",
-          description: "Main dishes",
-          display_order: 2,
-          status: "active",
-          items_count: 12,
-          created_at: "2023-01-02T00:00:00Z",
-        },
-        {
-          id: "3",
-          name: "Desserts",
-          description: "Sweet treats",
-          display_order: 3,
-          status: "inactive",
-          items_count: 3,
-          created_at: "2023-01-03T00:00:00Z",
-        },
-      ]);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -71,7 +42,7 @@ const CategoryList = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, [sortBy]);
+  }, [sortBy, page, limit]);
 
   const handleCreate = () => {
     setEditingCategory(null);
@@ -238,7 +209,33 @@ const CategoryList = () => {
           </table>
         </div>
       </div>
-
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4">
+          <div className="text-sm text-gray-500">
+            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)}{" "}
+            of {total} categories
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page >= totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
       <CategoryModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

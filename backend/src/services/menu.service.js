@@ -4,22 +4,88 @@ const path = require("path");
 
 class MenuService {
   // --- Categories ---
-  async getCategories(restaurantId, includeInactive = true) {
+  async getCategories(restaurantId, options = {}) {
+    const {
+      includeInactive = true,
+      page,
+      limit,
+      sortBy = "displayOrder",
+      search,
+    } = options;
+
     const where = { restaurantId };
+
     // For admin, show all categories; for guest, only active ones
     if (!includeInactive) {
       where.isActive = true;
     }
 
-    return await prisma.category.findMany({
+    // Search by name or description
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    // Determine sort order
+    let orderBy = {};
+    switch (sortBy) {
+      case "name":
+        orderBy = { name: "asc" };
+        break;
+      case "createdAt":
+        orderBy = { createdAt: "desc" };
+        break;
+      case "displayOrder":
+      default:
+        orderBy = { displayOrder: "asc" };
+        break;
+    }
+
+    // If pagination is requested
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      const take = limit;
+
+      const [categories, total] = await Promise.all([
+        prisma.category.findMany({
+          where,
+          include: {
+            menuItems: {
+              select: { id: true },
+            },
+          },
+          orderBy,
+          skip,
+          take,
+        }),
+        prisma.category.count({ where }),
+      ]);
+
+      return {
+        data: categories,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    }
+
+    // No pagination - return all
+    const categories = await prisma.category.findMany({
       where,
       include: {
         menuItems: {
-          select: { id: true }, // Just count them
+          select: { id: true },
         },
       },
-      orderBy: { displayOrder: "asc" },
+      orderBy,
     });
+
+    return { data: categories };
   }
 
   async createCategory(data) {
@@ -58,14 +124,84 @@ class MenuService {
   }
 
   // --- Menu Items ---
-  async getMenuItems(restaurantId, categoryId = null) {
+  async getMenuItems(restaurantId, options = {}) {
+    const {
+      categoryId,
+      search,
+      status,
+      page = 1,
+      limit = 10,
+      sortBy = "createdAt",
+    } = options;
+
     const where = { restaurantId };
+
+    // Filter by category
     if (categoryId) where.categoryId = categoryId;
 
-    return await prisma.menuItem.findMany({
-      where,
-      include: { category: true },
-    });
+    // Filter by status - map frontend status to database fields
+    if (status) {
+      if (status === "available") {
+        where.isAvailable = true;
+        where.stockStatus = { not: "out-of-stock" };
+      } else if (status === "unavailable") {
+        where.isAvailable = false;
+      } else if (status === "sold_out") {
+        where.stockStatus = "out-of-stock";
+      }
+    }
+
+    // Search by name or description
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+    const take = limit;
+
+    // Determine sort order
+    let orderBy = {};
+    switch (sortBy) {
+      case "price":
+        orderBy = { price: "asc" };
+        break;
+      case "price_desc":
+        orderBy = { price: "desc" };
+        break;
+      case "name":
+        orderBy = { name: "asc" };
+        break;
+      case "createdAt":
+      default:
+        orderBy = { createdAt: "desc" };
+        break;
+    }
+
+    // Fetch items and total count
+    const [items, total] = await Promise.all([
+      prisma.menuItem.findMany({
+        where,
+        include: { category: true, photos: true },
+        orderBy,
+        skip,
+        take,
+      }),
+      prisma.menuItem.count({ where }),
+    ]);
+
+    return {
+      data: items,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getMenuItemById(id) {
@@ -255,11 +391,63 @@ class MenuService {
   }
 
   // --- Modifiers ---
-  async getModifierGroups(restaurantId) {
-    return await prisma.modifierGroup.findMany({
-      where: { restaurantId },
+  async getModifierGroups(restaurantId, options = {}) {
+    const { page, limit, search, sortBy = "createdAt" } = options;
+
+    const where = { restaurantId };
+
+    // Search by name
+    if (search) {
+      where.name = { contains: search, mode: "insensitive" };
+    }
+
+    // Determine sort order
+    let orderBy = {};
+    switch (sortBy) {
+      case "name":
+        orderBy = { name: "asc" };
+        break;
+      case "createdAt":
+      default:
+        orderBy = { createdAt: "desc" };
+        break;
+    }
+
+    // If pagination is requested
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      const take = limit;
+
+      const [groups, total] = await Promise.all([
+        prisma.modifierGroup.findMany({
+          where,
+          include: { options: true },
+          orderBy,
+          skip,
+          take,
+        }),
+        prisma.modifierGroup.count({ where }),
+      ]);
+
+      return {
+        data: groups,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    }
+
+    // No pagination - return all
+    const groups = await prisma.modifierGroup.findMany({
+      where,
       include: { options: true },
+      orderBy,
     });
+
+    return { data: groups };
   }
 
   async createModifierGroup(data) {
