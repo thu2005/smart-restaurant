@@ -12,8 +12,8 @@ const Login = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get return url from location state or default to admin dashboard
-  const from = location.state?.from?.pathname || "/admin/dashboard";
+  // Get return url from location state or default to menu items
+  const from = location.state?.from?.pathname || "/admin/menu/items";
 
   const {
     register,

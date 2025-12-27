@@ -8,6 +8,8 @@ import {
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "pages/NotFound";
+import ProtectedRoute from "components/ProtectedRoute";
+import authService from "services/authService";
 
 // Layouts
 import CustomerLayout from "./layouts/CustomerLayout";
@@ -35,12 +37,22 @@ const Routes = () => {
       <ErrorBoundary>
         <ScrollToTop />
         <RouterRoutes>
+          {/* Root redirect */}
+          <Route 
+            path="/" 
+            element={
+              authService.isAuthenticated() 
+                ? <Navigate to="/admin/menu/items" replace /> 
+                : <Navigate to="/login" replace />
+            } 
+          />
+
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
 
           {/* Customer Routes */}
-          <Route path="/" element={<CustomerLayout />}>
-            <Route index element={<Navigate to="/menu-browse" replace />} />
+          <Route path="/customer" element={<CustomerLayout />}>
+            <Route index element={<Navigate to="/customer/menu-browse" replace />} />
             <Route path="menu-browse" element={<MenuBrowse />} />
             <Route path="shopping-cart" element={<ShoppingCart />} />
             <Route path="menu-item-detail" element={<MenuItemDetail />} />
@@ -50,8 +62,16 @@ const Routes = () => {
             />
           </Route>
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
+          {/* Admin Routes - Protected */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/menu/items" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             
             {/* Menu Management Routes */}
@@ -65,8 +85,15 @@ const Routes = () => {
             element={<Navigate to="/admin/dashboard" replace />}
           />
 
-          {/* Kitchen Routes */}
-          <Route path="/kitchen" element={<KitchenLayout />}>
+          {/* Kitchen Routes - Protected */}
+          <Route 
+            path="/kitchen" 
+            element={
+              <ProtectedRoute>
+                <KitchenLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route path="dashboard" element={<KitchenDashboard />} />
           </Route>
           {/* Legacy redirect */}
