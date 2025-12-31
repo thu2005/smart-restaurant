@@ -2,7 +2,7 @@ const { prisma } = require('../config/database');
 
 class OrderService {
     async createOrder(data) {
-        const { restaurantId, tableId, items, customerId } = data;
+        const { restaurantId, tableId, items, customerId, customerName, customerPhone, specialInstructions } = data;
 
         // 1. Get Table to ensure it exists and belongs to restaurant
         const table = await prisma.table.findUnique({ where: { id: tableId } });
@@ -12,7 +12,6 @@ class OrderService {
 
         // 2. Fetch prices and prepare OrderItems
         // items = [{ menuItemId, quantity, modifiers, specialInstructions }]
-        let totalAmount = 0;
         const orderItemsData = [];
 
         for (const item of items) {
@@ -22,20 +21,33 @@ class OrderService {
 
             if (!menuItem) throw new Error(`Menu item ${item.menuItemId} not found`);
 
-            const unitPrice = menuItem.price;
+            let modifiersPrice = 0;
+            let modifierDetails = [];
+
+            if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
+                // Assume item.modifiers are IDs of ModifierOption
+                const options = await prisma.modifierOption.findMany({
+                    where: {
+                        id: { in: item.modifiers }
+                    }
+                });
+
+                modifiersPrice = options.reduce((sum, opt) => sum + Number(opt.priceAdjustment), 0);
+                modifierDetails = options.map(opt => `${opt.name} (+${Number(opt.priceAdjustment)})`);
+            }
+
+            const unitPrice = Number(menuItem.price) + modifiersPrice;
+
             orderItemsData.push({
                 menuItemId: item.menuItemId,
                 quantity: item.quantity,
                 unitPrice: unitPrice,
-                modifiers: item.modifiers || [],
+                modifiers: modifierDetails,
                 specialInstructions: item.specialInstructions,
             });
-            // Note: Total isn't stored on Order directly in schema (calculated from items or Payment will have it),
-            // but schema has Payment model with 'total'. Order model tracks status.
         }
 
         // 3. Create Order
-        // Generate simple order number (e.g., last + 1, or random. UUID is primary key)
         const count = await prisma.order.count({ where: { restaurantId } });
         const orderNumber = `ORD-${String(count + 1).padStart(4, '0')}`;
 
@@ -44,6 +56,9 @@ class OrderService {
                 restaurantId,
                 tableId,
                 customerId,
+                customerName,
+                customerPhone,
+                specialInstructions,
                 orderNumber,
                 status: 'SUBMITTED',
                 submittedAt: new Date(),

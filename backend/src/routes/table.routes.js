@@ -16,7 +16,7 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  *     requestBody:
- *       required: true
+ *       required: true 
  *       content:
  *         application/json:
  *           schema:

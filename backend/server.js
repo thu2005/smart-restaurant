@@ -27,6 +27,13 @@ app.use(
   })
 );
 app.use(morgan("dev"));
+
+// DEBUG: Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`🌍 INCOMING REQUEST: ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

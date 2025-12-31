@@ -25,6 +25,20 @@ exports.createPayment = async (req, res, next) => {
 };
 
 exports.webhook = async (req, res, next) => {
-    // Webhook handler
-    res.json({ received: true });
+    try {
+        // In a real app, verify Stripe signature header here
+        const result = await paymentService.handleWebhook('STRIPE', req.body);
+
+        if (result.success) {
+            const io = req.app.get('io');
+            if (io) {
+                io.to(result.restaurantId).emit('payment_received', { orderId: result.orderId });
+            }
+        }
+
+        res.json({ received: true });
+    } catch (err) {
+        console.error('Webhook Error:', err.message);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+    }
 }

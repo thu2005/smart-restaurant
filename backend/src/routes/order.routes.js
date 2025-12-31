@@ -42,6 +42,18 @@ const router = express.Router();
  *                       type: string
  *                     quantity:
  *                       type: integer
+ *                     specialInstructions:
+ *                       type: string
+ *                       description: Item-specific special instructions (optional)
+ *               customerName:
+ *                 type: string
+ *                 description: Name of the customer (optional)
+ *               customerPhone:
+ *                 type: string
+ *                 description: Phone number of the customer (optional)
+ *               specialInstructions:
+ *                 type: string
+ *                 description: Special instructions for the order (optional)
  *     responses:
  *       201:
  *         description: Order created
@@ -53,7 +65,10 @@ router.post(
         check('tableId', 'Table ID is required').not().isEmpty(),
         check('items', 'Items must be an array').isArray(),
         check('items.*.menuItemId', 'Menu Item ID is required').not().isEmpty(),
-        check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 })
+        check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 }),
+        check('customerName').optional().isString().isLength({ max: 100 }),
+        check('customerPhone').optional().isString().isLength({ max: 20 }),
+        check('specialInstructions').optional().isString().isLength({ max: 500 })
     ],
     orderController.createOrder
 );
