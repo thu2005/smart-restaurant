@@ -151,3 +151,39 @@ exports.printBill = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.updateOrderItemStatus = async (req, res, next) => {
+    try {
+        const { orderId, itemId } = req.params;
+        const { itemStatus } = req.body;
+        
+        const updatedItem = await orderService.updateOrderItemStatus(orderId, itemId, itemStatus);
+        res.status(200).json({ success: true, data: updatedItem });
+    } catch (error) {
+        if (error.message === 'Order not found' || error.message === 'Order item not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.getWaiterTables = async (req, res, next) => {
+    try {
+        const waiterId = req.user.id;
+        const tables = await orderService.getWaiterTables(waiterId);
+        res.status(200).json({ success: true, data: tables });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getWaiterOrders = async (req, res, next) => {
+    try {
+        const waiterId = req.user.id;
+        const { status } = req.query;
+        const orders = await orderService.getWaiterOrders(waiterId, status);
+        res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -313,4 +313,87 @@ router.get('/:id/bill/pdf', orderController.printBill);
  */
 router.get('/bill/:billId', orderController.getBillByBillId);
 
+/**
+ * @swagger
+ * /api/orders/{orderId}/items/{itemId}/status:
+ *   patch:
+ *     summary: Update individual order item status (accept/reject)
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemStatus:
+ *                 type: string
+ *                 enum: [queued, cooking, ready, rejected]
+ *     responses:
+ *       200:
+ *         description: Order item status updated
+ */
+router.patch(
+    '/:orderId/items/:itemId/status',
+    protect,
+    authorize('ADMIN', 'WAITER', 'KITCHEN'),
+    orderController.updateOrderItemStatus
+);
+
+/**
+ * @swagger
+ * /api/orders/waiter/my-tables:
+ *   get:
+ *     summary: Get tables with orders accepted by the logged-in waiter
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of tables assigned to waiter
+ */
+router.get(
+    '/waiter/my-tables',
+    protect,
+    authorize('WAITER'),
+    orderController.getWaiterTables
+);
+
+/**
+ * @swagger
+ * /api/orders/waiter/my-orders:
+ *   get:
+ *     summary: Get all orders accepted by the logged-in waiter
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of orders accepted by waiter
+ */
+router.get(
+    '/waiter/my-orders',
+    protect,
+    authorize('WAITER'),
+    orderController.getWaiterOrders
+);
+
 module.exports = router;

@@ -251,6 +251,67 @@ class OrderService {
         });
     }
 
+    async updateOrderItemStatus(orderId, itemId, itemStatus) {
+        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        if (!order) throw new Error('Order not found');
+
+        const orderItem = await prisma.orderItem.findUnique({ where: { id: itemId } });
+        if (!orderItem || orderItem.orderId !== orderId) throw new Error('Order item not found');
+
+        return await prisma.orderItem.update({
+            where: { id: itemId },
+            data: { itemStatus },
+            include: { menuItem: true }
+        });
+    }
+
+    async getWaiterTables(waiterId) {
+        // Get all tables with active orders accepted by this waiter
+        const orders = await prisma.order.findMany({
+            where: {
+                acceptedById: waiterId,
+                status: { notIn: ['COMPLETED', 'CANCELLED'] }
+            },
+            include: {
+                table: true,
+                orderItems: { include: { menuItem: true } }
+            },
+            distinct: ['tableId']
+        });
+
+        // Group by table
+        const tablesMap = new Map();
+        for (const order of orders) {
+            if (!tablesMap.has(order.tableId)) {
+                tablesMap.set(order.tableId, {
+                    table: order.table,
+                    orders: []
+                });
+            }
+            tablesMap.get(order.tableId).orders.push(order);
+        }
+
+        return Array.from(tablesMap.values());
+    }
+
+    async getWaiterOrders(waiterId, status) {
+        const where = {
+            acceptedById: waiterId
+        };
+
+        if (status) where.status = status;
+
+        return await prisma.order.findMany({
+            where,
+            include: {
+                orderItems: { include: { menuItem: true } },
+                table: true,
+                customer: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+
     // Helper to streamline PDF generation logic
     async generateBillPDF(orderId, res) {
         const PDFDocument = require('pdfkit');
