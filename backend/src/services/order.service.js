@@ -138,6 +138,188 @@ class OrderService {
             }
         });
     }
+    async createBill(orderId, userId) {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { orderItems: true }
+        });
+
+        if (!order) throw new Error('Order not found');
+
+        // Check if bill already exists
+        const existingBill = await prisma.bill.findUnique({ where: { orderId } });
+        if (existingBill) return this.getBillDetails(orderId);
+
+        // Calculate totals
+        let subtotal = 0;
+        for (const item of order.orderItems) {
+            subtotal += (Number(item.unitPrice) * item.quantity);
+        }
+        const discount = Number(order.discount) || 0;
+        const taxRate = 0.1;
+        const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+        const tax = subtotalAfterDiscount * taxRate;
+        const total = subtotalAfterDiscount + tax;
+
+        // Transaction: Update status + Create Bill
+        await prisma.$transaction([
+            prisma.order.update({
+                where: { id: orderId },
+                data: { status: 'PAYMENT_PENDING' }
+            }),
+            prisma.bill.create({
+                data: {
+                    orderId,
+                    restaurantId: order.restaurantId,
+                    billNumber: order.orderNumber.replace('ORD', 'BILL'),
+                    subtotal,
+                    discount,
+                    tax,
+                    total,
+                    createdBy: userId
+                }
+            })
+        ]);
+
+        return await this.getBillDetails(orderId);
+    }
+
+    async getBillDetails(orderId) {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                orderItems: { include: { menuItem: true } },
+                bill: true,
+                payment: true,
+                table: true
+            }
+        });
+
+        if (!order) throw new Error('Order not found');
+
+        // If bill exists in DB, use it. Otherwise calculate on fly (view only).
+        let billData = {};
+        if (order.bill) {
+            billData = {
+                subtotal: Number(order.bill.subtotal),
+                discount: Number(order.bill.discount),
+                tax: Number(order.bill.tax),
+                total: Number(order.bill.total)
+            };
+        } else {
+            let subtotal = 0;
+            for (const item of order.orderItems) {
+                subtotal += (Number(item.unitPrice) * item.quantity);
+            }
+            const discount = Number(order.discount) || 0;
+            const taxRate = 0.1;
+            const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+            const tax = subtotalAfterDiscount * taxRate;
+            const total = subtotalAfterDiscount + tax;
+
+            billData = { subtotal, discount, tax, total };
+        }
+
+        return {
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            billId: order.bill ? order.bill.id : null,
+            billNumber: order.bill ? order.bill.billNumber : null,
+            createdAt: order.bill ? order.bill.createdAt : null, // When bill was created
+            customerName: order.customerName,
+            items: order.orderItems.map(item => ({
+                name: item.menuItem.name,
+                quantity: item.quantity,
+                unitPrice: Number(item.unitPrice),
+                modifiers: item.modifiers,
+                total: Number(item.unitPrice) * item.quantity
+            })),
+            bill: billData
+        };
+    }
+
+    async applyDiscount(orderId, amount) {
+        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        if (!order) throw new Error('Order not found');
+
+        // Validate that discount doesn't exceed order total? 
+        // Logic can be added here.
+
+        return await prisma.order.update({
+            where: { id: orderId },
+            data: { discount: Number(amount) }
+        });
+    }
+
+    // Helper to streamline PDF generation logic
+    async generateBillPDF(orderId, res) {
+        const PDFDocument = require('pdfkit');
+        const billData = await this.getBillDetails(orderId);
+
+        const doc = new PDFDocument({ margin: 50 });
+
+        doc.pipe(res);
+
+        // Header
+        doc.fontSize(20).text('RESTAURANT BILL', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Order #: ${billData.orderNumber}`);
+        doc.text(`Date: ${new Date().toLocaleString()}`);
+        if (billData.customerName) doc.text(`Customer: ${billData.customerName}`);
+        doc.moveDown();
+
+        // Table Header
+        const yStart = doc.y;
+        doc.text('Item', 50, yStart);
+        doc.text('Qty', 250, yStart);
+        doc.text('Price', 350, yStart);
+        doc.text('Total', 450, yStart);
+        doc.moveDown();
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown(0.5);
+
+        // Items
+        billData.items.forEach(item => {
+            const y = doc.y;
+            doc.text(item.name, 50, y, { width: 190 });
+            doc.text(item.quantity.toString(), 250, y);
+            doc.text(item.unitPrice.toLocaleString('vi-VN') + ' đ', 350, y);
+            doc.text(item.total.toLocaleString('vi-VN') + ' đ', 450, y);
+
+            if (item.modifiers && item.modifiers.length > 0) {
+                doc.fontSize(10).fillColor('grey').text(`  ${item.modifiers.join(', ')}`, 50, doc.y + 10);
+                doc.fontSize(12).fillColor('black');
+            }
+            doc.moveDown();
+        });
+
+        doc.moveDown();
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown();
+
+        // Totals
+        const rightColX = 350;
+        doc.text('Subtotal:', rightColX);
+        doc.text(billData.bill.subtotal.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+
+        if (billData.bill.discount > 0) {
+            doc.text('Discount:', rightColX);
+            doc.text('-' + billData.bill.discount.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        }
+
+        doc.text('Tax (10%):', rightColX);
+        doc.text(billData.bill.tax.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+
+        doc.font('Helvetica-Bold').text('TOTAL:', rightColX, doc.y + 10);
+        doc.text(billData.bill.total.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+
+        // Footer
+        doc.moveDown(2);
+        doc.fontSize(10).text('Thank you for dining with us!', { align: 'center' });
+
+        doc.end();
+    }
+
 }
 
 module.exports = new OrderService();

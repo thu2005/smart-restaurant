@@ -127,4 +127,190 @@ router.patch(
     orderController.updateOrderStatus
 );
 
+/**
+ * @swagger
+ * /api/orders/{id}/bill:
+ *   post:
+ *     summary: Create/Generate bill for table (Updates status to PAYMENT_PENDING)
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Bill generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     orderId:
+ *                       type: string
+ *                     bill:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: number
+ */
+router.post(
+    '/:id/bill',
+    protect,
+    authorize('ADMIN', 'WAITER'),
+    orderController.createBill
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}/bill:
+ *   get:
+ *     summary: Get order bill details with subtotal, tax, discount, and total
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Bill details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     orderId:
+ *                       type: string
+ *                     bill:
+ *                       type: object
+ *                       properties:
+ *                         subtotal:
+ *                           type: number
+ *                         discount:
+ *                           type: number
+ *                         tax:
+ *                           type: number
+ *                         total:
+ *                           type: number
+ */
+router.get('/:id/bill', orderController.getBill);
+
+/**
+ * @swagger
+ * /api/orders/{id}/discount:
+ *   post:
+ *     summary: Apply a discount to an order
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 description: Discount amount to subtract
+ *     responses:
+ *       200:
+ *         description: Discount applied
+ *       400:
+ *         description: Invalid discount amount
+ */
+router.post(
+    '/:id/discount',
+    [check('amount', 'Amount must be positive').isFloat({ min: 0 })],
+    protect,
+    authorize('SUPER_ADMIN', 'ADMIN', 'WAITER'),
+    orderController.applyDiscount
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}/bill/pdf:
+ *   get:
+ *     summary: Download bill as PDF
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: PDF file stream
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ */
+router.get('/:id/bill/pdf', orderController.printBill);
+
+/**
+ * @swagger
+ * /api/orders/bill/{billId}:
+ *   get:
+ *     summary: Get bill details by billId
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: billId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bill ID
+ *     responses:
+ *       200:
+ *         description: Bill details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     billId:
+ *                       type: string
+ *                     billNumber:
+ *                       type: string
+ *                     subtotal:
+ *                       type: number
+ *                     discount:
+ *                       type: number
+ *                     tax:
+ *                       type: number
+ *                     total:
+ *                       type: number
+ */
+router.get('/bill/:billId', orderController.getBillByBillId);
+
 module.exports = router;

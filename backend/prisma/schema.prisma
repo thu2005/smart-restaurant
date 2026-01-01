@@ -81,6 +81,7 @@ model Restaurant {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  bills     Bill[]
 
   @@index([isActive])
 }
@@ -262,6 +263,7 @@ model Order {
   // Notes
   specialInstructions String?
   rejectionReason     String? // If waiter rejects
+  discount            Decimal @default(0) @db.Decimal(10, 2)
 
   // Timing
   submittedAt DateTime?
@@ -287,6 +289,7 @@ model Order {
   // Relations
   orderItems OrderItem[]
   payment    Payment?
+  bill       Bill?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -294,6 +297,28 @@ model Order {
   @@unique([restaurantId, orderNumber])
   @@index([tableId, status])
   @@index([restaurantId, status])
+}
+
+model Bill {
+  id         String @id @default(uuid())
+  billNumber String // e.g. BILL-1234
+
+  subtotal Decimal @db.Decimal(10, 2)
+  tax      Decimal @db.Decimal(10, 2)
+  discount Decimal @default(0) @db.Decimal(10, 2)
+  total    Decimal @db.Decimal(10, 2)
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  createdBy String? // Waiter ID
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([restaurantId, createdAt])
 }
 
 model OrderItem {
