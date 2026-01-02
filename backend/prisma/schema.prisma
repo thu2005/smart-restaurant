@@ -25,19 +25,27 @@ enum UserRole {
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
-  password      String // Hashed password
+  password      String? // Optional for Google users
   fullName      String
   phone         String?
+  avatar        String? // Profile photo URL
   role          UserRole
   isActive      Boolean  @default(true)
   emailVerified Boolean  @default(false)
+
+  // Auth fields
+  googleId            String?   @unique
+  verificationToken   String?
+  resetPasswordToken  String?
+  resetPasswordExpire DateTime?
 
   // Relations
   restaurantId String? // Null for SUPER_ADMIN and CUSTOMER
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   // Customer-specific
-  orders Order[] @relation("CustomerOrders")
+  orders  Order[]  @relation("CustomerOrders")
+  reviews Review[]
 
   // Staff-specific
   acceptedOrders Order[] @relation("WaiterAcceptedOrders")
@@ -81,6 +89,8 @@ model Restaurant {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  bills     Bill[]
+  reviews   Review[]
 
   @@index([isActive])
 }
@@ -177,6 +187,7 @@ model MenuItem {
   // Relations
   photos         MenuItemPhoto[]
   modifierGroups MenuItemModifierGroup[]
+  reviews        Review[]
 
   @@index([restaurantId, categoryId, isAvailable])
 }
@@ -262,6 +273,7 @@ model Order {
   // Notes
   specialInstructions String?
   rejectionReason     String? // If waiter rejects
+  discount            Decimal @default(0) @db.Decimal(10, 2)
 
   // Timing
   submittedAt DateTime?
@@ -287,6 +299,7 @@ model Order {
   // Relations
   orderItems OrderItem[]
   payment    Payment?
+  bill       Bill?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -294,6 +307,28 @@ model Order {
   @@unique([restaurantId, orderNumber])
   @@index([tableId, status])
   @@index([restaurantId, status])
+}
+
+model Bill {
+  id         String @id @default(uuid())
+  billNumber String // e.g. BILL-1234
+
+  subtotal Decimal @db.Decimal(10, 2)
+  tax      Decimal @db.Decimal(10, 2)
+  discount Decimal @default(0) @db.Decimal(10, 2)
+  total    Decimal @db.Decimal(10, 2)
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  createdBy String? // Waiter ID
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([restaurantId, createdAt])
 }
 
 model OrderItem {
@@ -369,4 +404,25 @@ model Payment {
   updatedAt DateTime  @updatedAt
 
   @@index([restaurantId, status])
+}
+
+model Review {
+  id      String  @id @default(uuid())
+  rating  Int // 1-5
+  comment String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([menuItemId, rating])
+  @@index([restaurantId, createdAt])
 }

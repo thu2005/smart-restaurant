@@ -9,7 +9,147 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Menu
- *   description: Menu management
+ *   description: Menu management endpoints
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         restaurantId:
+ *           type: string
+ *           format: uuid
+ *         displayOrder:
+ *           type: integer
+ *         isActive:
+ *           type: boolean
+ *         menuItems:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/MenuItem'
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     MenuItem:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         price:
+ *           type: number
+ *         categoryId:
+ *           type: string
+ *           format: uuid
+ *         restaurantId:
+ *           type: string
+ *           format: uuid
+ *         image:
+ *           type: string
+ *         prepTime:
+ *           type: integer
+ *           description: Preparation time in minutes
+ *         isPopular:
+ *           type: boolean
+ *         dietary:
+ *           type: array
+ *           items:
+ *             type: string
+ *         isAvailable:
+ *           type: boolean
+ *         stockStatus:
+ *           type: string
+ *           enum: [in_stock, low_stock, out_of_stock]
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     ModifierOption:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         priceAdjustment:
+ *           type: number
+ *         modifierGroupId:
+ *           type: string
+ *           format: uuid
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     ModifierGroup:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         selectionType:
+ *           type: string
+ *           enum: [single, multiple]
+ *         isRequired:
+ *           type: boolean
+ *         minSelections:
+ *           type: integer
+ *         maxSelections:
+ *           type: integer
+ *         restaurantId:
+ *           type: string
+ *           format: uuid
+ *         options:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/ModifierOption'
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     Pagination:
+ *       type: object
+ *       properties:
+ *         page:
+ *           type: integer
+ *         limit:
+ *           type: integer
+ *         total:
+ *           type: integer
+ *         totalPages:
+ *           type: integer
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         message:
+ *           type: string
+ *         errors:
+ *           type: array
+ *           items:
+ *             type: object
  */
 
 // --- Public Routes ---
@@ -18,7 +158,7 @@ const router = express.Router();
  * @swagger
  * /api/menu/{restaurantId}/categories:
  *   get:
- *     summary: Get all categories and items for a restaurant
+ *     summary: Get all categories and items for a restaurant (Public)
  *     tags: [Menu]
  *     parameters:
  *       - in: path
@@ -26,9 +166,56 @@ const router = express.Router();
  *         required: true
  *         schema:
  *           type: string
+ *         description: The ID of the restaurant
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, createdAt]
+ *         description: Field to sort by
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for category name
  *     responses:
  *       200:
- *         description: List of categories with items
+ *         description: Successfully retrieved categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       400:
+ *         description: Bad Request (Invalid ID)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:restaurantId/categories", menuController.getCategories);
 
@@ -36,19 +223,68 @@ router.get("/:restaurantId/categories", menuController.getCategories);
  * @swagger
  * /api/menu/{restaurantId}/items:
  *   get:
- *     summary: Get all menu items for a restaurant
+ *     summary: Get all menu items for a restaurant (Public)
  *     tags: [Menu]
  *     parameters:
  *       - in: path
  *         name: restaurantId
  *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the restaurant
  *       - in: query
  *         name: categoryId
  *         schema:
  *           type: string
+ *         description: Filter by category ID
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for item name
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive]
+ *         description: Filter by status
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Items per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *         description: Field to sort by (e.g., price, name)
  *     responses:
  *       200:
- *         description: List of menu items
+ *         description: Successfully retrieved menu items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MenuItem'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:restaurantId/items", menuController.getMenuItems);
 
@@ -56,7 +292,7 @@ router.get("/:restaurantId/items", menuController.getMenuItems);
  * @swagger
  * /api/menu/{restaurantId}/items/{id}:
  *   get:
- *     summary: Get a menu item by ID for a restaurant
+ *     summary: Get a single menu item by ID (Public)
  *     tags: [Menu]
  *     parameters:
  *       - in: path
@@ -73,7 +309,7 @@ router.get("/:restaurantId/items", menuController.getMenuItems);
  *         description: The menu item ID
  *     responses:
  *       200:
- *         description: Menu item found
+ *         description: Menu item details found
  *         content:
  *           application/json:
  *             schema:
@@ -82,18 +318,13 @@ router.get("/:restaurantId/items", menuController.getMenuItems);
  *                 success:
  *                   type: boolean
  *                 data:
- *                   type: object
+ *                   $ref: '#/components/schemas/MenuItem'
  *       404:
  *         description: Menu item not found
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:restaurantId/items/:id", menuController.getMenuItemById);
 
@@ -103,7 +334,7 @@ router.get("/:restaurantId/items/:id", menuController.getMenuItemById);
  * @swagger
  * /api/menu/categories:
  *   post:
- *     summary: Create a category
+ *     summary: Create a new category
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -121,9 +352,36 @@ router.get("/:restaurantId/items/:id", menuController.getMenuItemById);
  *                 type: string
  *               restaurantId:
  *                 type: string
+ *     
+ *               description:
+ *                 type: string
+
+ *               displayOrder:
+ *                 type: integer
+ *               isActive:
+ *                 type: boolean
  *     responses:
  *       201:
- *         description: Category created
+ *         description: Category created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Category'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.post(
   "/categories",
@@ -153,7 +411,7 @@ router.post(
  * @swagger
  * /api/menu/categories/{id}:
  *   put:
- *     summary: Update a category
+ *     summary: Update an existing category
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -164,6 +422,7 @@ router.post(
  *         schema:
  *           type: string
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -175,9 +434,36 @@ router.post(
  *                 type: string
  *               displayOrder:
  *                 type: integer
+ *               isActive:
+ *                 type: boolean
  *     responses:
  *       200:
- *         description: Category updated
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Category'
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.put(
   "/categories/:id",
@@ -205,7 +491,7 @@ router.put(
  * @swagger
  * /api/menu/categories/{id}/status:
  *   patch:
- *     summary: Update category status
+ *     summary: Update category status (active/inactive)
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -216,16 +502,44 @@ router.put(
  *         schema:
  *           type: string
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - isActive
  *             properties:
  *               isActive:
  *                 type: boolean
  *     responses:
  *       200:
  *         description: Category status updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Category'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch(
   "/categories/:id/status",
@@ -238,7 +552,7 @@ router.patch(
  * @swagger
  * /api/menu/categories:
  *   get:
- *     summary: Get all categories for the restaurant (admin)
+ *     summary: Get all categories for admin (Admin)
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -247,9 +561,25 @@ router.patch(
  *         name: restaurantId
  *         schema:
  *           type: string
+ *         description: Filter by restaurant ID
  *     responses:
  *       200:
  *         description: List of categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.get(
   "/categories",
@@ -262,7 +592,7 @@ router.get(
  * @swagger
  * /api/menu/items:
  *   get:
- *     summary: Get all menu items for admin (with filters)
+ *     summary: Get all menu items (Admin)
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -289,7 +619,24 @@ router.get(
  *           type: integer
  *     responses:
  *       200:
- *         description: List of menu items with pagination
+ *         description: List of menu items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MenuItem'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.get(
   "/items",
@@ -302,7 +649,7 @@ router.get(
  * @swagger
  * /api/menu/items:
  *   post:
- *     summary: Create a menu item
+ *     summary: Create a new menu item
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -326,9 +673,48 @@ router.get(
  *                 type: string
  *               restaurantId:
  *                 type: string
+ *     
+ *               prepTime:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *               isPopular:
+ *                 type: boolean
+ *               isChefRecommended:
+ *                 type: boolean
+ *               dietary:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               isAvailable:
+ *                 type: boolean
+ *               stockStatus:
+ *                 type: string
+ *                 enum: [in_stock, low_stock, out_of_stock]
  *     responses:
  *       201:
  *         description: Item created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/MenuItem'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.post(
   "/items",
@@ -362,7 +748,7 @@ router.post(
  * @swagger
  * /api/menu/{restaurantId}/items/{id}:
  *   put:
- *     summary: Update a menu item by ID for a restaurant
+ *     summary: Update a menu item
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -372,13 +758,11 @@ router.post(
  *         required: true
  *         schema:
  *           type: string
- *         description: The restaurant ID
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The menu item ID
  *     requestBody:
  *       required: true
  *       content:
@@ -388,11 +772,11 @@ router.post(
  *             properties:
  *               name:
  *                 type: string
- *               description:
- *                 type: string
  *               price:
  *                 type: number
- *               image:
+ *               categoryId:
+ *                 type: string
+ *               description:
  *                 type: string
  *               prepTime:
  *                 type: integer
@@ -404,12 +788,13 @@ router.post(
  *                 type: array
  *                 items:
  *                   type: string
+ *               image:
+ *                 type: string
  *               isAvailable:
  *                 type: boolean
  *               stockStatus:
  *                 type: string
- *               categoryId:
- *                 type: string
+ *                 enum: [in_stock, low_stock, out_of_stock]
  *     responses:
  *       200:
  *         description: Menu item updated
@@ -420,19 +805,24 @@ router.post(
  *               properties:
  *                 success:
  *                   type: boolean
- *                 data:
- *                   type: object
+ *                   data:
+ *                     $ref: '#/components/schemas/MenuItem'
  *       404:
- *         description: Menu item not found
+ *         description: Item not found
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.put(
   "/:restaurantId/items/:id",
@@ -460,56 +850,11 @@ router.put(
   menuController.updateMenuItem
 );
 
-/**
- * @swagger
- * /api/menu/{restaurantId}/items/{id}:
- *   delete:
- *     summary: Delete a menu item by ID for a restaurant
- *     tags: [Menu]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: restaurantId
- *         required: true
- *         schema:
- *           type: string
- *         description: The restaurant ID
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The menu item ID
- *     responses:
- *       200:
- *         description: Menu item deleted
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *       404:
- *         description: Menu item not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- */
+// Multer setup for image uploads
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Ensure uploads directory exists
 const uploadDir = "uploads/";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
@@ -536,6 +881,48 @@ const upload = multer({
   },
 });
 
+/**
+ * @swagger
+ * /api/menu/{restaurantId}/items/{id}:
+ *   delete:
+ *     summary: Delete a menu item
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Item deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 router.delete(
   "/:restaurantId/items/:id",
   protect,
@@ -559,10 +946,9 @@ router.delete(
  *         required: true
  *         schema:
  *           type: string
- *         description: Menu Item ID
  *     requestBody:
  *       content:
- *         transport/form-data:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -573,7 +959,34 @@ router.delete(
  *                   format: binary
  *     responses:
  *       200:
- *         description: Photos uploaded
+ *         description: Photos uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   "/items/:id/photos",
@@ -587,7 +1000,7 @@ router.post(
  * @swagger
  * /api/menu/items/{id}/photos/{photoId}:
  *   delete:
- *     summary: Delete a menu item photo
+ *     summary: Delete a photo from a menu item
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -597,7 +1010,6 @@ router.post(
  *         required: true
  *         schema:
  *           type: string
- *         description: Menu Item ID
  *       - in: path
  *         name: photoId
  *         required: true
@@ -606,6 +1018,25 @@ router.post(
  *     responses:
  *       200:
  *         description: Photo deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Photo/Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
   "/items/:id/photos/:photoId",
@@ -618,7 +1049,7 @@ router.delete(
  * @swagger
  * /api/menu/items/{id}/photos/{photoId}/primary:
  *   patch:
- *     summary: Set a photo as primary
+ *     summary: Set a photo as primary for a menu item
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -628,7 +1059,6 @@ router.delete(
  *         required: true
  *         schema:
  *           type: string
- *         description: Menu Item ID
  *       - in: path
  *         name: photoId
  *         required: true
@@ -637,6 +1067,25 @@ router.delete(
  *     responses:
  *       200:
  *         description: Primary photo updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Photo/Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch(
   "/items/:id/photos/:photoId/primary",
@@ -651,7 +1100,7 @@ router.patch(
  * @swagger
  * /api/menu/modifier-groups:
  *   get:
- *     summary: Get all modifier groups for the restaurant
+ *     summary: Get all modifier groups
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -660,10 +1109,24 @@ router.patch(
  *         name: restaurantId
  *         schema:
  *           type: string
- *         description: Optional for Super Admin
  *     responses:
  *       200:
  *         description: List of modifier groups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ModifierGroup'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       401:
+ *         description: Unauthorized
  */
 router.get("/modifier-groups", protect, menuController.getModifierGroups);
 
@@ -671,7 +1134,7 @@ router.get("/modifier-groups", protect, menuController.getModifierGroups);
  * @swagger
  * /api/menu/modifier-groups:
  *   post:
- *     summary: Create a modifier group
+ *     summary: Create a new modifier group
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -683,33 +1146,47 @@ router.get("/modifier-groups", protect, menuController.getModifierGroups);
  *             type: object
  *             required:
  *               - name
- *               - selection_type
+ *               - selectionType
  *             properties:
  *               name:
  *                 type: string
- *               selection_type:
+ *               selectionType:
  *                 type: string
  *                 enum: [single, multiple]
- *               is_required:
+ *               isRequired:
  *                 type: boolean
- *               min_selections:
+ *               minSelections:
  *                 type: integer
- *               max_selections:
+ *               maxSelections:
  *                 type: integer
  *               restaurantId:
  *                 type: string
  *               options:
  *                 type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     price_adjustment:
- *                       type: number
+ *                   $ref: '#/components/schemas/ModifierOption'
  *     responses:
  *       201:
- *         description: Group created
+ *         description: Modifier group created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/ModifierGroup'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
 router.post(
   "/modifier-groups",
@@ -733,6 +1210,7 @@ router.post(
  *         schema:
  *           type: string
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -740,17 +1218,37 @@ router.post(
  *             properties:
  *               name:
  *                 type: string
- *               selection_type:
+ *               selectionType:
  *                 type: string
- *               is_required:
- *                 type: boolean
- *               min_selections:
- *                 type: integer
- *               max_selections:
- *                 type: integer
+ *                 enum: [single, multiple]
  *     responses:
  *       200:
- *         description: Group updated
+ *         description: Modifier group updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/ModifierGroup'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Group not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put(
   "/modifier-groups/:id",
@@ -775,7 +1273,26 @@ router.put(
  *           type: string
  *     responses:
  *       200:
- *         description: Group deleted
+ *         description: Modifier group deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Group not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.delete(
   "/modifier-groups/:id",
@@ -788,7 +1305,7 @@ router.delete(
  * @swagger
  * /api/menu/modifier-groups/{groupId}/options:
  *   post:
- *     summary: Add option to modifier group
+ *     summary: Add an option to a modifier group
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -809,11 +1326,36 @@ router.delete(
  *             properties:
  *               name:
  *                 type: string
- *               price_adjustment:
+ *               priceAdjustment:
  *                 type: number
  *     responses:
  *       201:
  *         description: Option created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/ModifierOption'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Group not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   "/modifier-groups/:groupId/options",
@@ -826,7 +1368,7 @@ router.post(
  * @swagger
  * /api/menu/modifier-options/{id}:
  *   put:
- *     summary: Update modifier option
+ *     summary: Update a modifier option
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -837,6 +1379,7 @@ router.post(
  *         schema:
  *           type: string
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -844,11 +1387,36 @@ router.post(
  *             properties:
  *               name:
  *                 type: string
- *               price_adjustment:
+ *               priceAdjustment:
  *                 type: number
  *     responses:
  *       200:
  *         description: Option updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/ModifierOption'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Option not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put(
   "/modifier-options/:id",
@@ -861,7 +1429,7 @@ router.put(
  * @swagger
  * /api/menu/items/{id}/modifier-groups:
  *   post:
- *     summary: Attach modifier groups to item
+ *     summary: Attach modifier groups to a menu item
  *     tags: [Menu]
  *     security:
  *       - bearerAuth: []
@@ -871,7 +1439,6 @@ router.put(
  *         required: true
  *         schema:
  *           type: string
- *         description: Menu Item ID
  *     requestBody:
  *       required: true
  *       content:
@@ -887,7 +1454,32 @@ router.put(
  *                   type: string
  *     responses:
  *       200:
- *         description: Groups attached
+ *         description: groups attached successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   "/items/:id/modifier-groups",

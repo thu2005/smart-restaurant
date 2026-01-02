@@ -7,7 +7,7 @@ const passport = require("passport");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const { connectDB, disconnectDB } = require("./src/config/database");
-const { jwtStrategy } = require("./src/config/passport");
+const { jwtStrategy, googleStrategy } = require("./src/config/passport");
 
 // Load environment variables
 dotenv.config();
@@ -27,11 +27,19 @@ app.use(
   })
 );
 app.use(morgan("dev"));
+
+// DEBUG: Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`🌍 INCOMING REQUEST: ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Passport Config
 passport.use(jwtStrategy);
+passport.use(googleStrategy);
 app.use(passport.initialize());
 
 // Swagger Config
@@ -86,6 +94,8 @@ app.use("/api/admin/menu", require("./src/routes/menu.routes"));
 app.use("/api/tables", require("./src/routes/table.routes"));
 app.use("/api/orders", require("./src/routes/order.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
+app.use("/api/reviews", require("./src/routes/review.routes"));
+app.use("/api/reports", require("./src/routes/report.routes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
