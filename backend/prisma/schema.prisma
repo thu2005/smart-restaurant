@@ -28,6 +28,7 @@ model User {
   password      String? // Optional for Google users
   fullName      String
   phone         String?
+  avatar        String? // Profile photo URL
   role          UserRole
   isActive      Boolean  @default(true)
   emailVerified Boolean  @default(false)

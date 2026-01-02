@@ -106,3 +106,93 @@ exports.googleCallback = (req, res) => {
     // Redirect to frontend
     res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/oauth/callback?token=${token}`);
 };
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, errors: errors.array() });
+        }
+
+        const user = await authService.updateProfile(req.user.id, req.body);
+        res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update user avatar
+// @route   PUT /api/auth/avatar
+// @access  Private
+exports.updateAvatar = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+        const user = await authService.updateAvatar(req.user.id, avatarUrl);
+
+        res.status(200).json({
+            success: true,
+            message: 'Avatar updated successfully',
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Change password
+// @route   PUT /api/auth/password
+// @access  Private
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, errors: errors.array() });
+        }
+
+        const { oldPassword, newPassword } = req.body;
+        await authService.updatePassword(req.user.id, oldPassword, newPassword);
+
+        res.status(200).json({
+            success: true,
+            message: 'Password changed successfully'
+        });
+    } catch (error) {
+        if (error.message === 'Invalid old password') {
+            return res.status(401).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+// @desc    Create user avatar
+// @route   POST /api/auth/avatar
+// @access  Private
+exports.createAvatar = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+        const user = await authService.createAvatar(req.user.id, avatarUrl);
+
+        res.status(201).json({
+            success: true,
+            message: 'Avatar created successfully',
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};

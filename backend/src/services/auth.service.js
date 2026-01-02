@@ -187,10 +187,136 @@ class AuthService {
                 role: true,
                 phone: true,
                 restaurantId: true,
+                avatar: true,
                 createdAt: true
             }
         });
         return user;
+    }
+
+    /**
+     * Update user profile
+     * @param {String} userId
+     * @param {Object} updateData
+     * @returns {Object} updated user
+     */
+    async updateProfile(userId, updateData) {
+        // Allow updating more fields: fullName, phone, avatar, email, restaurantId, isActive, role
+        const allowedFields = [
+            'fullName', 'phone', 'email', 'restaurantId', 'isActive', 'role'
+        ];
+        const data = {};
+        for (const key of allowedFields) {
+            if (updateData[key] !== undefined) {
+                data[key] = updateData[key];
+            }
+        }
+        // Prevent updating id, password, createdAt, updatedAt, tokens, etc.
+        const user = await prisma.user.update({
+            where: { id: userId },
+            data,
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                role: true,
+                phone: true,
+                restaurantId: true,
+                avatar: true,
+                isActive: true,
+                createdAt: true
+            }
+        });
+        return user;
+    }
+
+    /**
+     * Update user avatar
+     * @param {String} userId
+     * @param {String} avatarUrl
+     * @returns {Object} updated user
+     */
+    async updateAvatar(userId, avatarUrl) {
+        const user = await prisma.user.update({
+            where: { id: userId },
+            data: { avatar: avatarUrl },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                role: true,
+                phone: true,
+                restaurantId: true,
+                avatar: true,
+                createdAt: true
+            }
+        });
+
+        return user;
+    }
+
+    /**
+     * Change password with old password verification
+     * @param {String} userId
+     * @param {String} oldPassword
+     * @param {String} newPassword
+     */
+    async updatePassword(userId, oldPassword, newPassword) {
+        // Get user
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Verify old password
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            throw new Error('Invalid old password');
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword }
+        });
+    }
+    /**
+     * Create user avatar (POST)
+     * @param {String} userId
+     * @param {String} avatarUrl
+     * @returns {Object} updated user
+     */
+    async createAvatar(userId, avatarUrl) {
+        // Only allow creation if avatar is not set
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { avatar: true }
+        });
+        if (user && user.avatar) {
+            throw new Error('Avatar already exists. Use update instead.');
+        }
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { avatar: avatarUrl },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                role: true,
+                phone: true,
+                restaurantId: true,
+                avatar: true,
+                createdAt: true
+            }
+        });
+        return updatedUser;
     }
 }
 

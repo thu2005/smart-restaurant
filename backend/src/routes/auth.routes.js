@@ -3,14 +3,94 @@ const { check } = require('express-validator');
 const authController = require('../controllers/auth.controller');
 const { protect } = require('../middlewares/auth.middleware');
 const passport = require('passport');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
+
+// Ensure uploads directory exists
+const uploadDir = 'uploads/avatars/';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for avatar uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'avatar-' + req.user.id + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not an image! Please upload an image.'), false);
+        }
+    }
+});
+
+// Create avatar (POST)
+router.post('/avatar', protect, upload.single('avatar'), authController.createAvatar);
 
 /**
  * @swagger
  * tags:
  *   name: Auth
  *   description: User authentication and management
+ */
+
+/**
+ * @swagger
+ * /api/auth/avatar:
+ *   post:
+ *     summary: Create user avatar
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: The avatar image file (max 5MB)
+ *     responses:
+ *       201:
+ *         description: Avatar created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: No file uploaded or avatar already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
  */
 
 /**
@@ -114,6 +194,126 @@ router.post(
  *         description: Not authorized
  */
 router.get('/me', protect, authController.getMe);
+
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   put:
+ *     summary: Update user profile
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               restaurantId:
+ *                 type: string
+ *               isActive:
+ *                 type: boolean
+ *               role:
+ *                 type: string
+ *                 enum: [SUPER_ADMIN, ADMIN, WAITER, KITCHEN, CUSTOMER]
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       401:
+ *         description: Not authorized
+ */
+router.put(
+    '/profile',
+    protect,
+    [
+        check('fullName')
+            .optional()
+            .trim()
+            .isLength({ min: 2 })
+            .withMessage('Full name must be at least 2 characters')
+            .matches(/^[A-Za-z\s]+$/)
+            .withMessage('Full name must only contain letters and spaces'),
+        check('phone')
+            .optional()
+            .matches(/^[0-9+\-\s()]+$/)
+            .withMessage('Phone number must be valid')
+    ],
+    authController.updateProfile
+);
+
+/**
+ * @swagger
+ * /api/auth/avatar:
+ *   put:
+ *     summary: Update user avatar
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Avatar updated successfully
+ *       401:
+ *         description: Not authorized
+ */
+router.put('/avatar', protect, upload.single('avatar'), authController.updateAvatar);
+
+/**
+ * @swagger
+ * /api/auth/password:
+ *   put:
+ *     summary: Change password (with old password verification)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       401:
+ *         description: Invalid old password or not authorized
+ */
+router.put(
+    '/password',
+    protect,
+    [
+        check('oldPassword', 'Old password is required').not().isEmpty(),
+        check('newPassword', 'New password is required').not().isEmpty(),
+        check('newPassword', 'New password must be at least 8 characters and include uppercase, lowercase, number, and special character.')
+            .isLength({ min: 8 })
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]).+$/)
+    ],
+    authController.updatePassword
+);
 
 // Google OAuth Routes
 
