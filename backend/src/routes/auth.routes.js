@@ -50,8 +50,16 @@ router.post(
     '/register',
     [
         check('email', 'Please include a valid email').isEmail(),
-        check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
+        check('email', 'Email is required').not().isEmpty(),
+        check('password', 'Password is required').not().isEmpty(),
+        check('password', 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.')
+            .isLength({ min: 8 })
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/),
         check('fullName', 'Full name is required').not().isEmpty(),
+        check('fullName', 'Full name must be at least 2 characters').isLength({ min: 2 }),
+        check('fullName', 'Full name must only contain letters and spaces').matches(/^[A-Za-z\s]+$/),
+        check('role', 'Role is required').not().isEmpty(),
+        check('role', 'Role must be one of CUSTOMER, WAITER, KITCHEN, ADMIN').isIn(['CUSTOMER', 'WAITER', 'KITCHEN', 'ADMIN'])
     ],
     authController.register
 );
