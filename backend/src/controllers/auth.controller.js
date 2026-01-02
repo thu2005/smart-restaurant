@@ -1,6 +1,8 @@
 const authService = require('../services/auth.service');
 const { validationResult } = require('express-validator');
 
+const { generateToken } = require('../utils/token');
+
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
@@ -11,13 +13,11 @@ exports.register = async (req, res, next) => {
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
-        const { user, token } = await authService.register(req.body);
+        const result = await authService.register(req.body);
 
         res.status(201).json({
             success: true,
-            message: 'User registered successfully',
-            data: user,
-            token,
+            ...result
         });
     } catch (error) {
         if (error.message === 'Email already registered') {
@@ -47,7 +47,7 @@ exports.login = async (req, res, next) => {
             token,
         });
     } catch (error) {
-        if (error.message === 'Invalid credentials' || error.message === 'Account is deactivated') {
+        if (error.message === 'Invalid credentials' || error.message === 'Account is deactivated' || error.message === 'Please verify your email address.') {
             return res.status(401).json({ success: false, message: error.message });
         }
         next(error);
@@ -67,4 +67,42 @@ exports.getMe = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+exports.verifyEmail = async (req, res, next) => {
+    try {
+        await authService.verifyEmail(req.params.token);
+        res.status(200).json({ success: true, message: 'Email verified successfully' });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        await authService.forgotPassword(req.body.email);
+        res.status(200).json({ success: true, message: 'Email sent' });
+    } catch (error) {
+        // Don't reveal valid emails? usually we say 'If email exists, sent'
+        // But for dev debugging let's return error if invalid for now or standard msg
+        res.status(200).json({ success: true, message: 'Email sent' });
+    }
+};
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+        await authService.resetPassword(token, password);
+        res.status(200).json({ success: true, message: 'Password reset successfully' });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+exports.googleCallback = (req, res) => {
+    // Generate token
+    const token = generateToken(req.user.id, req.user.role);
+    // Redirect to frontend
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/oauth/callback?token=${token}`);
 };

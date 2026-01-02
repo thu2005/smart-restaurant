@@ -7,7 +7,7 @@ const passport = require("passport");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const { connectDB, disconnectDB } = require("./src/config/database");
-const { jwtStrategy } = require("./src/config/passport");
+const { jwtStrategy, googleStrategy } = require("./src/config/passport");
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Passport Config
 passport.use(jwtStrategy);
+passport.use(googleStrategy);
 app.use(passport.initialize());
 
 // Swagger Config
