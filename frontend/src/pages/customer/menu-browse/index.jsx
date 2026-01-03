@@ -33,13 +33,42 @@ const MenuBrowse = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [catsData, itemsData] = await Promise.all([
-          menuService.getCategories(),
-          menuService.getGuestMenu({
+
+        // Get restaurantId from localStorage or use default
+        const restaurantId =
+          localStorage.getItem("restaurantId") || "default-restaurant-id";
+
+        const [catsResponse, itemsResponse] = await Promise.all([
+          menuService.getCategories({
+            limit: 50, // Get all categories without pagination for filter
+          }),
+          menuService.getItems({
+            restaurantId,
             categoryId: activeCategory === "all" ? undefined : activeCategory,
-            q: searchQuery,
+            search: searchQuery || undefined,
+            status: "available", // Only show available items for customers
+            page: 1,
+            limit: 100, // Get more items per page for customer browsing
           }),
         ]);
+
+        // Handle categories - check if paginated response or direct array
+        let catsData = [];
+        if (catsResponse && typeof catsResponse === "object") {
+          catsData = catsResponse.data || catsResponse;
+        }
+        if (Array.isArray(catsResponse)) {
+          catsData = catsResponse;
+        }
+
+        // Handle items - get from paginated response
+        let itemsData = [];
+        if (itemsResponse && typeof itemsResponse === "object") {
+          itemsData = itemsResponse.data || itemsResponse;
+        }
+        if (Array.isArray(itemsResponse)) {
+          itemsData = itemsResponse;
+        }
 
         // Transform categories for UI
         const formattedCats = [
@@ -47,49 +76,80 @@ const MenuBrowse = () => {
             value: "all",
             label: "All Items",
             icon: "UtensilsCrossed",
-            count: itemsData.length,
-          }, // Count might be inaccurate if paginated
+            count: Array.isArray(itemsData) ? itemsData.length : 0,
+          },
           ...(Array.isArray(catsData)
-            ? catsData.map((c) => ({
-                value: c.id,
-                label: c.name,
-                icon: "UtensilsCrossed", // Default icon
-                count: c.items_count || 0,
-              }))
+            ? catsData
+                .filter((c) => c.status === "active") // Only show active categories
+                .map((c) => ({
+                  value: c.id,
+                  label: c.name,
+                  icon: "UtensilsCrossed",
+                  count: c.items_count || 0,
+                }))
             : []),
         ];
         setCategories(formattedCats);
 
-        // Transform items for UI if needed
-        // Assuming backend returns compatible structure or we map it
+        // Transform items for UI
         const formattedItems = Array.isArray(itemsData)
           ? itemsData.map((item) => {
-              const photoUrl = item.primary_photo_url || item.photos?.[0]?.url;
+              // Handle image URL properly
+              let imageUrl =
+                "https://via.placeholder.com/300x200?text=No+Image";
+
+              if (
+                item.photos &&
+                Array.isArray(item.photos) &&
+                item.photos.length > 0
+              ) {
+                const primaryPhoto =
+                  item.photos.find((p) => p.is_primary) || item.photos[0];
+                if (primaryPhoto && primaryPhoto.url) {
+                  imageUrl = primaryPhoto.url.startsWith("http")
+                    ? primaryPhoto.url
+                    : `${BASE_URL}${primaryPhoto.url}`;
+                }
+              } else if (item.image) {
+                imageUrl = item.image.startsWith("http")
+                  ? item.image
+                  : `${BASE_URL}${item.image}`;
+              }
+
               return {
                 id: item.id,
                 name: item.name,
-                description: item.description,
+                description:
+                  item.description ||
+                  "Delicious dish made with fresh ingredients",
                 price: Number(item.price),
-                image: photoUrl
-                  ? `${BASE_URL}${photoUrl}`
-                  : "https://via.placeholder.com/150",
+                image: imageUrl,
                 imageAlt: item.name,
                 category: item.category_id,
-                rating: 4.5, // Mock rating
-                reviewCount: 10, // Mock count
-                prepTime: item.prep_time_minutes,
+                rating: 4.5, // Mock rating for now
+                reviewCount: Math.floor(Math.random() * 50) + 5, // Mock count
+                prepTime: item.prep_time_minutes || 15,
                 availability: item.status,
-                isPopular: false, // Mock
-                isChefRecommended: item.is_chef_recommended,
-                dietary: [], // Mock
+                isPopular: Math.random() > 0.7, // Random popular items
+                isChefRecommended: item.is_chef_recommended || false,
+                dietary: [], // TODO: Add dietary info from backend
               };
             })
           : [];
 
         setMenuItems(formattedItems);
       } catch (error) {
-        console.error("Failed to load menu", error);
-        // Fallback to empty or error state
+        console.error("Failed to load menu:", error);
+        // Set empty state on error
+        setCategories([
+          {
+            value: "all",
+            label: "All Items",
+            icon: "UtensilsCrossed",
+            count: 0,
+          },
+        ]);
+        setMenuItems([]);
       } finally {
         setLoading(false);
       }

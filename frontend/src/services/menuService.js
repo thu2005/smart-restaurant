@@ -11,7 +11,15 @@ const api = axios.create({
   },
 });
 
-// Add interceptor for auth token if needed (assuming stored in localStorage)
+// Create separate instance for public endpoints (no auth required)
+const publicApi = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Add interceptor for auth token only to authenticated API
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -53,7 +61,13 @@ const menuService = {
   // --- Categories ---
   getCategories: async (params = {}) => {
     try {
-      const response = await api.get("/menu/categories", { params });
+      // For public access (customer menu), use restaurant-specific endpoint
+      const restaurantId = params.restaurantId || getRestaurantId();
+      const { restaurantId: _, ...queryParams } = params;
+      
+      const response = await publicApi.get(`/menu/${restaurantId}/categories`, { 
+        params: queryParams 
+      });
       const result = response.data;
 
       // If pagination info is present, return full result
@@ -135,27 +149,64 @@ const menuService = {
   },
 
   // --- Menu Items ---
-  getItems: async (params) => {
+  getItems: async (params = {}) => {
     try {
-      const response = await api.get("/menu/items", { params });
-      const items = response.data.data || response.data;
+      // Use restaurant-specific endpoint
+      const restaurantId = params.restaurantId || getRestaurantId();
+      const { restaurantId: _, ...queryParams } = params; // Remove restaurantId from query params
 
-      // Transform backend data to frontend format
-      return items.map((item) => ({
+      const response = await publicApi.get(`/menu/${restaurantId}/items`, { 
+        params: queryParams,
+      });
+
+      const result = response.data;
+
+      // Handle both paginated and non-paginated responses
+      if (result.pagination) {
+        return {
+          data: (result.data || []).map((item) => ({
+            id: item.id,
+            name: item.name,
+            category_name: item.category?.name || "",
+            category_id: item.categoryId,
+            price: parseFloat(item.price),
+            status:
+              item.stockStatus === "out-of-stock"
+                ? "sold_out"
+                : item.isAvailable
+                ? "available"
+                : "unavailable",
+            is_chef_recommended: item.isChefRecommended || false,
+            created_at: item.createdAt,
+            description: item.description,
+            prep_time_minutes: item.prepTime || 0,
+            photos: item.photos || [],
+            image: item.image,
+          })),
+          pagination: result.pagination,
+        };
+      }
+
+      // Old format without pagination
+      const items = result.data || result;
+      return (items || []).map((item) => ({
         id: item.id,
         name: item.name,
         category_name: item.category?.name || "",
         category_id: item.categoryId,
         price: parseFloat(item.price),
-        status: item.stockStatus === "out-of-stock"
-          ? "sold_out"
-          : item.isAvailable
-          ? "available"
-          : "unavailable",
+        status:
+          item.stockStatus === "out-of-stock"
+            ? "sold_out"
+            : item.isAvailable
+            ? "available"
+            : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         created_at: item.createdAt,
         description: item.description,
         prep_time_minutes: item.prepTime || 0,
+        photos: item.photos || [],
+        image: item.image,
       }));
     } catch (error) {
       console.error("Failed to fetch items:", error);
@@ -177,11 +228,12 @@ const menuService = {
         price: parseFloat(item.price),
         description: item.description,
         prep_time_minutes: item.prepTime || 0,
-        status: item.stockStatus === "out-of-stock"
-          ? "sold_out"
-          : item.isAvailable
-          ? "available"
-          : "unavailable",
+        status:
+          item.stockStatus === "out-of-stock"
+            ? "sold_out"
+            : item.isAvailable
+            ? "available"
+            : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         photos:
           item.photos?.map((photo) => ({
