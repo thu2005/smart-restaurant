@@ -29,9 +29,19 @@ const Login = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      await authService.login(data.email, data.password);
+      const response = await authService.login(data.email, data.password);
       toast.success("Login successful!");
-      navigate(from, { replace: true });
+      
+      // Determine redirect path based on role if no specific return url
+      let targetPath = from;
+      if (targetPath === "/admin/menu/items") { // Default value check
+        const userRole = response.data?.role;
+        if (userRole === "CUSTOMER") {
+          targetPath = "/customer/menu-browse";
+        }
+      }
+      
+      navigate(targetPath, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
       toast.error(

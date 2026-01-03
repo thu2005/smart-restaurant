@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import menuService from "services/menuService";
-import CustomerOrderProgress from "../../../components/navigation/CustomerOrderProgress";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import FilterPanel from "./components/FilterPanel";
@@ -173,7 +172,6 @@ const MenuBrowse = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <CustomerOrderProgress />
       <main className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 pb-24 lg:pb-12">
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">

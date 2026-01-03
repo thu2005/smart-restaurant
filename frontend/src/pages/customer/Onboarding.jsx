@@ -16,10 +16,10 @@ const Onboarding = () => {
       const manualTable = prompt("No table detected. Enter Table ID to test (e.g., 1):", "1");
       if (manualTable) {
         sessionStorage.setItem('tableId', manualTable);
-        navigate("/menu");
+        navigate("/customer/menu-browse");
       }
     } else {
-      navigate("/menu");
+      navigate("/customer/menu-browse");
     }
   };
 
