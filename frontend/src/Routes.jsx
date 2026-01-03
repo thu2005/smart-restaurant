@@ -25,6 +25,8 @@ import OrderStatusTracking from "./pages/customer/order-status-tracking";
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
 import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Onboarding from "./pages/customer/Onboarding";
 
 // Admin Menu Management Pages
 import CategoryList from "./pages/admin/menu/categories/CategoryList";
@@ -43,12 +45,13 @@ const Routes = () => {
             element={
               authService.isAuthenticated() 
                 ? <Navigate to="/admin/menu/items" replace /> 
-                : <Navigate to="/login" replace />
+                : <Onboarding />
             } 
           />
 
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>

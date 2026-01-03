@@ -1,42 +1,43 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import authService from "../../services/authService";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import AppImage from "../../components/AppImage";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-
-  // Get return url from location state or default to menu items
-  const from = location.state?.from?.pathname || "/admin/menu/items";
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "admin@cafepoirot.com",
-      password: "password123",
+      role: "CUSTOMER",
     },
   });
+
+  const password = watch("password");
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      await authService.login(data.email, data.password);
-      toast.success("Login successful!");
-      navigate(from, { replace: true });
+      // Ensure role is set to CUSTOMER
+      const payload = {
+        ...data,
+        role: "CUSTOMER",
+      };
+
+      await authService.register(payload);
+      toast.success("Registration successful! Please login.");
+      navigate("/login");
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error(
-        error.message || "Failed to login. Please check your credentials."
-      );
+      console.error("Registration error:", error);
+      toast.error(error.message || "Failed to register. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -54,15 +55,31 @@ const Login = () => {
             />
           </div>
           <h2 className="mt-[-20px] text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Create an account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Smart Restaurant Management System
+            Join Smart Restaurant today
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
+            <Input
+              id="fullName"
+              label="Full Name"
+              type="text"
+              autoComplete="name"
+              required
+              error={errors.fullName?.message}
+              {...register("fullName", {
+                required: "Full name is required",
+                minLength: {
+                  value: 2,
+                  message: "Name must be at least 2 characters",
+                },
+              })}
+            />
+
             <Input
               id="email"
               label="Email Address"
@@ -83,23 +100,47 @@ const Login = () => {
               id="password"
               label="Password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               required
               error={errors.password?.message}
-              {...register("password", { required: "Password is required" })}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+            />
+
+            <Input
+              id="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              autoComplete="new-password"
+              required
+              error={errors.confirmPassword?.message}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) =>
+                  value === password || "Passwords do not match",
+              })}
             />
           </div>
 
           <div>
             <Button type="submit" className="w-full" isLoading={isLoading}>
-              Sign in
+              Sign up
             </Button>
           </div>
 
-          <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-700">
-            <p className="font-semibold">Test Credentials:</p>
-            <p>Email: admin@cafepoirot.com</p>
-            <p>Password: password123</p>
+          <div className="text-center text-sm">
+            <span className="text-gray-600">Already have an account? </span>
+            <Link
+              to="/login"
+              className="font-medium text-primary hover:text-primary-600"
+            >
+              Sign in
+            </Link>
           </div>
         </form>
       </div>
@@ -107,4 +148,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

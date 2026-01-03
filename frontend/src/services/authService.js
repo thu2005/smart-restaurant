@@ -30,6 +30,15 @@ const authService = {
     }
   },
 
+  register: async (userData) => {
+    try {
+      const response = await api.post("/auth/register", userData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

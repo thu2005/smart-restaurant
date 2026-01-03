@@ -113,25 +113,43 @@ const AdminDashboardSidebar = ({
         ${!mobileOpen ? "mobile-hidden" : ""}
       `}
       >
-        <div className="admin-sidebar-header">
-          <div className="admin-sidebar-logo">
-            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center transition-smooth">
-              <Icon
-                name="UtensilsCrossed"
-                size={24}
-                color="var(--color-primary)"
+        <div
+          className={`admin-sidebar-header transition-all duration-300 ${
+            collapsed ? "px-2 justify-center" : "px-4 justify-between"
+          }`}
+        >
+          <div
+            className={`flex items-center ${
+              collapsed ? "justify-center" : "flex-1"
+            }`}
+          >
+            <div
+              className={`${
+                collapsed ? "w-10 h-10" : "w-12 h-12"
+              } bg-primary/5 rounded-lg flex items-center justify-center transition-all duration-300 overflow-hidden flex-shrink-0`}
+            >
+              <img
+                src="https://ik.imagekit.io/thu2005/Gemini_Generated_Image_cl11tdcl11tdcl11-removebg-preview.png"
+                alt="Logo"
+                className="w-full h-full object-contain"
               />
             </div>
-            <span className="text-lg font-heading font-semibold text-foreground">
-              Smart Restaurant
-            </span>
+            {!collapsed && (
+              <span className="ml-3 font-bold text-lg tracking-tight text-foreground whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
+                Smart Restaurant
+              </span>
+            )}
           </div>
           <Button
             variant="ghost"
             size="icon"
             iconName={collapsed ? "ChevronRight" : "ChevronLeft"}
             onClick={toggleCollapse}
-            className="hidden lg:flex"
+            className={`hidden lg:flex transition-all duration-300 ${
+              collapsed
+                ? "absolute -right-3 top-1/2 -translate-y-1/2 bg-white border shadow-sm rounded-full z-50"
+                : ""
+            }`}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           />
         </div>
