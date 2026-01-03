@@ -7,9 +7,20 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   const handleDineNow = () => {
-    // In a real app, this might open a QR scanner or ask for table number
-    // For now, we'll redirect to the menu browsing page
-    navigate("/menu");
+    // Check if we have a table ID from the URL entry
+    const tableId = sessionStorage.getItem('tableId');
+    
+    if (!tableId) {
+      // For development/testing without scanning, we can prompt or set a default
+      // In production, this might show an error or ask to scan again
+      const manualTable = prompt("No table detected. Enter Table ID to test (e.g., 1):", "1");
+      if (manualTable) {
+        sessionStorage.setItem('tableId', manualTable);
+        navigate("/menu");
+      }
+    } else {
+      navigate("/menu");
+    }
   };
 
   const handleLogin = () => {
@@ -61,8 +72,8 @@ const Onboarding = () => {
             onClick={handleDineNow}
             className="w-full h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
           >
-            <Icon name="QrCode" className="w-6 h-6 mr-2" />
-            Scan QR / Dine Now
+            <Icon name="Utensils" className="w-6 h-6 mr-2" />
+            Dine as Guest
           </Button>
 
           <div className="relative mt-6">

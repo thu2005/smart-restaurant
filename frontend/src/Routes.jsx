@@ -27,6 +27,7 @@ import KitchenDashboard from "./pages/kitchen/dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Onboarding from "./pages/customer/Onboarding";
+import TableEntry from "./pages/customer/TableEntry";
 
 // Admin Menu Management Pages
 import CategoryList from "./pages/admin/menu/categories/CategoryList";
@@ -39,6 +40,9 @@ const Routes = () => {
       <ErrorBoundary>
         <ScrollToTop />
         <RouterRoutes>
+          {/* Table Entry Route - Captures table ID from QR code */}
+          <Route path="/table/:tableId" element={<TableEntry />} />
+
           {/* Root redirect */}
           <Route 
             path="/" 
