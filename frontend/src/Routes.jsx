@@ -62,7 +62,7 @@ const Routes = () => {
             <Route index element={<Navigate to="/customer/menu-browse" replace />} />
             <Route path="menu-browse" element={<MenuBrowse />} />
             <Route path="shopping-cart" element={<ShoppingCart />} />
-            <Route path="menu-item-detail" element={<MenuItemDetail />} />
+            <Route path="menu-item-detail/:itemId" element={<MenuItemDetail />} />
             <Route
               path="order-status-tracking"
               element={<OrderStatusTracking />}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import CustomerOrderProgress from "../../../components/navigation/CustomerOrderProgress";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import menuService from "../../../services/menuService";
+import orderService from "../../../services/orderService";
 import ImageGallery from "./components/ImageGallery";
 import ItemInfo from "./components/ItemInfo";
 import CustomizationPanel from "./components/CustomizationPanel";
@@ -16,9 +17,169 @@ import Icon from "../../../components/AppIcon";
 const MenuItemDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [cartItemCount] = useState(3);
+  const { itemId } = useParams();
 
-  const mockMenuItem = {
+  const [cartItemCount] = useState(3);
+  const [menuItem, setMenuItem] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedModifiers, setSelectedModifiers] = useState({
+    size: "regular",
+    extras: [],
+  });
+  const [quantity, setQuantity] = useState(1);
+  const [specialInstructions, setSpecialInstructions] = useState("");
+
+  useEffect(() => {
+    const fetchMenuItem = async () => {
+      if (!itemId) {
+        setError("Menu item ID not found");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const item = await menuService.getItemById(itemId);
+        setMenuItem(item);
+      } catch (err) {
+        console.error("Failed to fetch menu item:", err);
+        setError("Failed to load menu item details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItem();
+  }, [itemId]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!itemId) return;
+
+      try {
+        setReviewsLoading(true);
+        const reviewsData = await menuService.getReviews(itemId);
+        setReviews(reviewsData);
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+        // Don't set error, just use empty reviews
+        setReviews([]);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [itemId]);
+
+  // Scroll to top on load
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  // Event handlers
+  const handleModifierChange = (type, value) => {
+    setSelectedModifiers((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  };
+
+  const calculateTotalPrice = () => {
+    let total = menuItem?.basePrice || menuItem?.price || 0;
+
+    const selectedSize = mockModifiers?.sizes?.find(
+      (s) => s?.value === selectedModifiers?.size
+    );
+    if (selectedSize) {
+      total += selectedSize?.priceModifier;
+    }
+
+    selectedModifiers?.extras?.forEach((extraId) => {
+      const extra = mockModifiers?.extras?.find((e) => e?.id === extraId);
+      if (extra) {
+        total += extra?.price;
+      }
+    });
+
+    return total * quantity;
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const orderItem = {
+        menuItemId: menuItem.id,
+        quantity,
+        specialInstructions,
+      };
+
+      // For now, create order immediately (single item)
+      // Later can be modified to add to a cart before checkout
+      const orderData = {
+        items: [orderItem],
+        customerName: localStorage.getItem('customerName') || '',
+        customerPhone: localStorage.getItem('customerPhone') || '',
+        specialInstructions: `Added ${menuItem.name} with modifiers: ${JSON.stringify(selectedModifiers)}`
+      };
+
+      const result = await orderService.createOrder(orderData);
+      console.log("Order created:", result);
+      
+      // Navigate to order confirmation or back to menu
+      navigate("/customer/menu", { 
+        state: { 
+          message: `Order placed successfully! Order ID: ${result.data?.id}`,
+          orderData: result.data 
+        } 
+      });
+    } catch (error) {
+      console.error("Failed to create order:", error);
+      alert("Failed to place order. Please try again.");
+    }
+  };
+
+  const handleBackToMenu = () => {
+    navigate("/customer/menu-browse");
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading menu item...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !menuItem) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 mb-4">
+            <Icon name="AlertCircle" size={48} />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Item Not Found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            {error || "The requested menu item could not be found."}
+          </p>
+          <Button onClick={() => navigate("/customer/menu-browse")}>
+            Back to Menu
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const mockModifierGroups = {
     id: "item-001",
     name: "Grilled Salmon with Herb Butter",
     description:
@@ -238,66 +399,10 @@ const MenuItemDetail = () => {
     "Black Pepper",
   ];
 
-  const [selectedModifiers, setSelectedModifiers] = useState({
-    size: "regular",
-    extras: [],
-  });
-  const [quantity, setQuantity] = useState(1);
-  const [specialInstructions, setSpecialInstructions] = useState("");
-
-  const handleModifierChange = (type, value) => {
-    setSelectedModifiers((prev) => ({
-      ...prev,
-      [type]: value,
-    }));
-  };
-
-  const calculateTotalPrice = () => {
-    let total = mockMenuItem?.basePrice;
-
-    const selectedSize = mockModifiers?.sizes?.find(
-      (s) => s?.value === selectedModifiers?.size
-    );
-    if (selectedSize) {
-      total += selectedSize?.priceModifier;
-    }
-
-    selectedModifiers?.extras?.forEach((extraId) => {
-      const extra = mockModifiers?.extras?.find((e) => e?.id === extraId);
-      if (extra) {
-        total += extra?.price;
-      }
-    });
-
-    return total * quantity;
-  };
-
-  const handleAddToCart = () => {
-    const cartItem = {
-      item: mockMenuItem,
-      modifiers: selectedModifiers,
-      quantity,
-      specialInstructions,
-      totalPrice: calculateTotalPrice(),
-    };
-
-    console.log("Adding to cart:", cartItem);
-    navigate("/shopping-cart");
-  };
-
-  const handleBackToMenu = () => {
-    navigate("/menu-browse");
-  };
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-
-  const isAvailable = mockMenuItem?.availability === "available";
+  const isAvailable = menuItem?.availability === "available";
 
   return (
     <div className="min-h-screen bg-background">
-      <CustomerOrderProgress />
       <main className="pb-24 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
           <button
@@ -312,15 +417,15 @@ const MenuItemDetail = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 mb-8 md:mb-12">
             <div>
-              <ImageGallery images={mockMenuItem?.images} />
+              <ImageGallery images={menuItem?.images} />
             </div>
 
             <div className="space-y-4 md:space-y-6">
-              <ItemInfo item={mockMenuItem} />
+              <ItemInfo item={menuItem} />
 
               <div className="p-4 md:p-6 bg-card rounded-lg md:rounded-xl border border-border space-y-4 md:space-y-6">
                 <CustomizationPanel
-                  modifiers={mockModifiers}
+                  modifiers={menuItem?.modifier_groups || []}
                   selectedModifiers={selectedModifiers}
                   onModifierChange={handleModifierChange}
                 />
@@ -371,9 +476,10 @@ const MenuItemDetail = () => {
             />
 
             <ReviewSection
-              reviews={mockReviews}
-              overallRating={mockMenuItem?.rating}
+              reviews={reviews}
+              overallRating={menuItem?.rating}
               ratingDistribution={mockRatingDistribution}
+              loading={reviewsLoading}
             />
 
             <RelatedItems items={mockRelatedItems} />

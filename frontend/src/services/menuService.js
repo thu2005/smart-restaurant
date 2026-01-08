@@ -64,9 +64,9 @@ const menuService = {
       // For public access (customer menu), use restaurant-specific endpoint
       const restaurantId = params.restaurantId || getRestaurantId();
       const { restaurantId: _, ...queryParams } = params;
-      
-      const response = await publicApi.get(`/menu/${restaurantId}/categories`, { 
-        params: queryParams 
+
+      const response = await publicApi.get(`/menu/${restaurantId}/categories`, {
+        params: queryParams,
       });
       const result = response.data;
 
@@ -155,7 +155,7 @@ const menuService = {
       const restaurantId = params.restaurantId || getRestaurantId();
       const { restaurantId: _, ...queryParams } = params; // Remove restaurantId from query params
 
-      const response = await publicApi.get(`/menu/${restaurantId}/items`, { 
+      const response = await publicApi.get(`/menu/${restaurantId}/items`, {
         params: queryParams,
       });
 
@@ -177,6 +177,8 @@ const menuService = {
                 ? "available"
                 : "unavailable",
             is_chef_recommended: item.isChefRecommended || false,
+            is_popular: item.isPopular || false,
+            dietary: item.dietary || [],
             created_at: item.createdAt,
             description: item.description,
             prep_time_minutes: item.prepTime || 0,
@@ -202,6 +204,8 @@ const menuService = {
             ? "available"
             : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
+        is_popular: item.isPopular || false,
+        dietary: item.dietary || [],
         created_at: item.createdAt,
         description: item.description,
         prep_time_minutes: item.prepTime || 0,
@@ -214,34 +218,73 @@ const menuService = {
     }
   },
 
-  getItemById: async (id) => {
+  getItemById: async (id, restaurantId) => {
     try {
-      const restaurantId = getRestaurantId();
-      const response = await api.get(`/menu/${restaurantId}/items/${id}`);
+      const restId = restaurantId || getRestaurantId();
+      const response = await publicApi.get(`/menu/${restId}/items/${id}`);
       const item = response.data.data || response.data;
 
       // Transform backend data to frontend format
       return {
         id: item.id,
         name: item.name,
-        category_id: item.categoryId,
-        price: parseFloat(item.price),
         description: item.description,
+        price: parseFloat(item.price),
+        basePrice: parseFloat(item.price), // alias for compatibility
+        category_id: item.categoryId,
+        category: item.category,
         prep_time_minutes: item.prepTime || 0,
+        prepTime: item.prepTime || 0, // alias for compatibility
+        calories: item.calories || null,
         status:
           item.stockStatus === "out-of-stock"
             ? "sold_out"
             : item.isAvailable
             ? "available"
             : "unavailable",
+        availability:
+          item.stockStatus === "out-of-stock"
+            ? "sold_out"
+            : item.isAvailable
+            ? "available"
+            : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
-        photos:
-          item.photos?.map((photo) => ({
-            id: photo.id,
-            url: photo.url,
-            is_primary: photo.isPrimary,
-          })) || [],
-        modifier_groups: item.modifier_groups || [],
+        isChefRecommended: item.isChefRecommended || false, // alias
+        is_popular: item.isPopular || false,
+        isPopular: item.isPopular || false, // alias
+        dietary: item.dietary || [],
+        allergens: item.allergens || [],
+        created_at: item.createdAt,
+        images: (item.photos || []).map((photo) => ({
+          url: photo.url?.startsWith("http")
+            ? photo.url
+            : `${
+                process.env.VITE_API_BASE_URL?.replace("/api", "") ||
+                "http://localhost:5001"
+              }${photo.url}`,
+          alt: item.name,
+          is_primary: photo.isPrimary,
+        })),
+        photos: item.photos || [], // raw photos array
+        modifier_groups: (item.modifier_groups || []).map((group) => ({
+          id: group.id,
+          name: group.name,
+          description: group.description,
+          isRequired: group.isRequired,
+          maxSelections: group.maxSelections,
+          minSelections: group.minSelections,
+          options: (group.options || []).map((option) => ({
+            id: option.id,
+            name: option.name,
+            description: option.description,
+            price: parseFloat(option.price || 0),
+            isAvailable: option.isAvailable !== false,
+          })),
+        })),
+        // Mock data for features not yet in backend
+        rating: 4.5,
+        reviewCount: Math.floor(Math.random() * 100) + 10,
+        isSpicy: false,
       };
     } catch (error) {
       console.error("Failed to fetch item:", error);
@@ -527,6 +570,62 @@ const menuService = {
       }));
     } catch (error) {
       console.error("Failed to fetch guest menu:", error);
+      throw error;
+    }
+  },
+
+  // --- Chef Recommendations ---
+  getChefRecommendations: async (params = {}) => {
+    try {
+      const restaurantId = params.restaurantId || getRestaurantId();
+      const { restaurantId: _, ...queryParams } = params;
+
+      const response = await publicApi.get(`/menu/${restaurantId}/items`, {
+        params: { ...queryParams, isChefRecommended: true },
+      });
+      const result = response.data;
+
+      const items = result.data || result;
+      return (items || [])
+        .filter((item) => item.isChefRecommended)
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+          description: item.description || "",
+          price: parseFloat(item.price) || 0,
+          image: item.image || item.photos?.[0]?.url || "",
+          category_id: item.categoryId,
+          category_name: item.category?.name || "",
+          prep_time: item.prepTime || 15,
+          is_popular: item.isPopular || false,
+          is_chef_recommended: true,
+          dietary_info: item.dietary || [],
+          is_available: item.isAvailable !== false,
+          stock_status: item.stockStatus || "available",
+        }));
+    } catch (error) {
+      console.error("Error getting chef recommendations:", error);
+      throw error;
+    }
+  },
+
+  // --- Reviews ---
+  getReviews: async (menuItemId) => {
+    try {
+      const response = await publicApi.get(`/reviews/${menuItemId}`);
+      return response.data.data || [];
+    } catch (error) {
+      console.error("Error getting reviews:", error);
+      throw error;
+    }
+  },
+
+  createReview: async (reviewData) => {
+    try {
+      const response = await api.post("/reviews", reviewData);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating review:", error);
       throw error;
     }
   },

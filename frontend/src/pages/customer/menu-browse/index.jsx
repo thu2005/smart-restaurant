@@ -126,13 +126,13 @@ const MenuBrowse = () => {
                 image: imageUrl,
                 imageAlt: item.name,
                 category: item.category_id,
-                rating: 4.5, // Mock rating for now
-                reviewCount: Math.floor(Math.random() * 50) + 5, // Mock count
+                rating: item.averageRating || 0,
+                reviewCount: item.reviewCount || 0,
                 prepTime: item.prep_time_minutes || 15,
                 availability: item.status,
-                isPopular: Math.random() > 0.7, // Random popular items
+                isPopular: item.is_popular || false,
                 isChefRecommended: item.is_chef_recommended || false,
-                dietary: [], // TODO: Add dietary info from backend
+                dietary: item.dietary || [],
               };
             })
           : [];
