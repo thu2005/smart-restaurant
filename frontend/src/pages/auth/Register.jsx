@@ -32,9 +32,19 @@ const Register = () => {
         role: "CUSTOMER",
       };
 
-      await authService.register(payload);
-      toast.success("Registration successful! Please login.");
-      navigate("/login");
+      const response = await authService.register(payload);
+      
+      // If token is returned, auto-login
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        toast.success("Registration successful! Welcome!");
+        navigate("/"); // Redirect to home
+      } else {
+        // Email verification required
+        toast.success("Registration successful! Please check your email to verify.");
+        navigate("/login");
+      }
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(error.message || "Failed to register. Please try again.");
@@ -77,6 +87,10 @@ const Register = () => {
                   value: 2,
                   message: "Name must be at least 2 characters",
                 },
+                pattern: {
+                  value: /^[A-Za-z\s]+$/,
+                  message: "Name must only contain letters and spaces",
+                },
               })}
             />
 
@@ -96,21 +110,32 @@ const Register = () => {
               })}
             />
 
-            <Input
-              id="password"
-              label="Password"
-              type="password"
-              autoComplete="new-password"
-              required
-              error={errors.password?.message}
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-            />
+            <div>
+              <Input
+                id="password"
+                label="Password"
+                type="password"
+                autoComplete="new-password"
+                required
+                error={errors.password?.message}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                  pattern: {
+                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/,
+                    message: "Password must include uppercase, lowercase, number, and special character",
+                  },
+                })}
+              />
+              {!errors.password && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Must be 8+ characters with uppercase, lowercase, number, and special character
+                </p>
+              )}
+            </div>
 
             <Input
               id="confirmPassword"

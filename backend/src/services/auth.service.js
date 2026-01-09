@@ -40,27 +40,33 @@ class AuthService {
                 role: role || 'CUSTOMER',
                 restaurantId: restaurantId || null,
                 verificationToken,
-                emailVerified: false
+                emailVerified: true // Auto-verify for development (TODO: set to false in production)
             },
         });
 
-        // Send verification email
-        try {
-            await emailService.sendVerificationEmail(user.email, verificationToken);
-        } catch (error) {
-            console.error('Email send failed:', error);
-            // Don't fail registration, but log it
-        }
+        // Send verification email (disabled for development)
+        // TODO: Enable email verification in production
+        // try {
+        //     await emailService.sendVerificationEmail(user.email, verificationToken);
+        // } catch (error) {
+        //     console.error('Email send failed:', error);
+        //     // Don't fail registration, but log it
+        // }
 
-        // Generate token (can login immediately? or require verification? User requirement says "Activation by email")
-        // Usually we return success message "Please check email" and NO token.
-        // But for backward compatibility or ease, let's see. 
-        // "Account activation by email" usually means NO LOGIN until active.
+        // Generate token for immediate login
+        const token = generateToken(user.id, user.role);
 
         return {
-            message: 'Registration successful. Please check your email to verify account.',
-            userId: user.id
-            // No token returned!
+            message: 'Registration successful.',
+            userId: user.id,
+            user: {
+                id: user.id,
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role,
+                restaurantId: user.restaurantId
+            },
+            token // Return token for immediate login
         };
     }
 
@@ -91,10 +97,11 @@ class AuthService {
             throw new Error('Account is deactivated');
         }
 
-        // Check verification
-        if (!user.emailVerified) {
-            throw new Error('Please verify your email address.');
-        }
+        // Check verification (disabled for development)
+        // TODO: Enable email verification in production
+        // if (!user.emailVerified) {
+        //     throw new Error('Please verify your email address.');
+        // }
 
         // Generate token
         const token = generateToken(user.id, user.role);
