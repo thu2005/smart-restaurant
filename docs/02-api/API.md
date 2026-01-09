@@ -1,22 +1,5 @@
 ## Missing APIs - TO BE IMPLEMENTED
 
-### 1. Customer Menu Filters & Sorting ✅ ALREADY SUPPORTED
-**Backend already supports these query parameters:**
-- `search`: Text search on item name/description
-- `categoryId`: Filter by category
-- `status`: Filter availability (`available`, `unavailable`, `sold_out`)
-- `isChefRecommended`: Filter by chef recommendations
-- `sortBy`: Sort options (`createdAt`, `price`, `price_desc`, `name`, `popularity`)
-- `page`, `limit`: Pagination with response `{ page, limit, total, totalPages }`
-
-**Frontend TODO:** Implement customer menu with:
-- Search bar → API `?search=...`
-- Category tabs → API `?categoryId=...`
-- Availability filter → API `?status=available`
-- Chef Recommended toggle → API `?isChefRecommended=true`
-- Sort dropdown → API `?sortBy=popularity|price|createdAt`
-- Pagination UI → API `?page=X&limit=Y`
-
 ### 2. Average Rating & Review Count ⚠️ NEW
 **Requirements:**
 - Bổ sung thông tin đánh giá vào `MenuItem` object:
