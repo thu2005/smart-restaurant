@@ -51,8 +51,8 @@ const AdminDashboardSidebar = ({
           label: "Modifiers",
           icon: "Settings",
         },
-        { path: "/orders", label: "Orders", icon: "ShoppingBag" },
-        { path: "/tables", label: "Tables", icon: "Grid3x3" },
+        { path: "/admin/orders", label: "Orders", icon: "ShoppingBag" },
+        { path: "/admin/tables", label: "Tables", icon: "Grid3x3" },
       ],
     },
     {
@@ -75,7 +75,7 @@ const AdminDashboardSidebar = ({
     { path: "/admin-dashboard", label: "Dashboard", icon: "LayoutDashboard" },
     { path: "/kitchen-display-system", label: "Kitchen", icon: "ChefHat" },
     { path: "/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
-    { path: "/orders", label: "Orders", icon: "ShoppingBag" },
+    { path: "/admin/orders", label: "Orders", icon: "ShoppingBag" },
   ];
 
   const handleNavigation = (path) => {

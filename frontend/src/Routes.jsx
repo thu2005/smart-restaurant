@@ -30,6 +30,7 @@ import Login from "./pages/auth/Login";
 import CategoryList from "./pages/admin/menu/categories/CategoryList";
 import MenuItemList from "./pages/admin/menu/items/MenuItemList";
 import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
+import TableManagement from "./pages/admin/tables/TableList";
 
 const Routes = () => {
   return (
@@ -38,13 +39,13 @@ const Routes = () => {
         <ScrollToTop />
         <RouterRoutes>
           {/* Root redirect */}
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              authService.isAuthenticated() 
-                ? <Navigate to="/admin/menu/items" replace /> 
+              authService.isAuthenticated()
+                ? <Navigate to="/admin/menu/items" replace />
                 : <Navigate to="/login" replace />
-            } 
+            }
           />
 
           {/* Auth Routes */}
@@ -63,8 +64,8 @@ const Routes = () => {
           </Route>
 
           {/* Admin Routes - Protected */}
-          <Route 
-            path="/admin" 
+          <Route
+            path="/admin"
             element={
               <ProtectedRoute>
                 <AdminLayout />
@@ -73,11 +74,12 @@ const Routes = () => {
           >
             <Route index element={<Navigate to="/admin/menu/items" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
-            
+
             {/* Menu Management Routes */}
             <Route path="menu/categories" element={<CategoryList />} />
             <Route path="menu/items" element={<MenuItemList />} />
             <Route path="menu/modifiers" element={<ModifierList />} />
+            <Route path="tables" element={<TableManagement />} />
           </Route>
           {/* Legacy redirect */}
           <Route
@@ -86,8 +88,8 @@ const Routes = () => {
           />
 
           {/* Kitchen Routes - Protected */}
-          <Route 
-            path="/kitchen" 
+          <Route
+            path="/kitchen"
             element={
               <ProtectedRoute>
                 <KitchenLayout />
