@@ -31,6 +31,7 @@ import CategoryList from "./pages/admin/menu/categories/CategoryList";
 import MenuItemList from "./pages/admin/menu/items/MenuItemList";
 import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
+import OrderList from "./pages/admin/orders/OrderList";
 
 const Routes = () => {
   return (
@@ -80,6 +81,7 @@ const Routes = () => {
             <Route path="menu/items" element={<MenuItemList />} />
             <Route path="menu/modifiers" element={<ModifierList />} />
             <Route path="tables" element={<TableManagement />} />
+            <Route path="orders" element={<OrderList />} />
           </Route>
           {/* Legacy redirect */}
           <Route

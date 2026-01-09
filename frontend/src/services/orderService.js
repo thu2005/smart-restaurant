@@ -10,9 +10,9 @@ const api = axios.create({
     },
 });
 
-// Add auth token
+// Add auth token (use 'token' to match authService.js)
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("token");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
