@@ -45,8 +45,14 @@ const MenuItemList = () => {
         page,
         limit,
       };
-      const data = await menuService.getItems(params);
-      setItems(Array.isArray(data) ? data : []);
+      const result = await menuService.getItems(params);
+
+      // Handle both paginated and non-paginated responses
+      if (result.data && result.pagination) {
+        setItems(result.data || []);
+      } else {
+        setItems(Array.isArray(result) ? result : []);
+      }
     } catch (error) {
       console.error("Failed to fetch items:", error);
       toast.error("Failed to load menu items");
@@ -154,8 +160,9 @@ const MenuItemList = () => {
         >
           <option value="">All Statuses</option>
           <option value="available">Available</option>
-          <option value="unavailable">Unavailable</option>
+          <option value="low_stock">Low Stock</option>
           <option value="sold_out">Sold Out</option>
+          <option value="unavailable">Unavailable</option>
         </select>
 
         <select
@@ -244,6 +251,8 @@ const MenuItemList = () => {
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           item.status === "available"
                             ? "bg-green-100 text-green-800"
+                            : item.status === "low_stock"
+                            ? "bg-yellow-100 text-yellow-800"
                             : item.status === "sold_out"
                             ? "bg-orange-100 text-orange-800"
                             : "bg-gray-100 text-gray-800"

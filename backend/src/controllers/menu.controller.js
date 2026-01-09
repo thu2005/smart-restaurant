@@ -90,11 +90,13 @@ exports.getMenuItems = async (req, res, next) => {
         .json({ success: false, message: "Restaurant ID is required" });
     }
 
-    const { categoryId, search, status, page, limit, sortBy } = req.query;
+    const { page, limit, sortBy, search, categoryId, status, isChefRecommended, isPopular } = req.query;
     const result = await menuService.getMenuItems(restaurantId, {
       categoryId,
       search,
       status,
+      isChefRecommended,
+      isPopular,
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 10,
       sortBy,
