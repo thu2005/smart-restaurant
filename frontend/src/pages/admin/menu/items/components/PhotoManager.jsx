@@ -82,7 +82,7 @@ const PhotoManager = ({ itemId, photos = [], onUpdate }) => {
             className="relative group border rounded-lg overflow-hidden aspect-square"
           >
             <img
-              src={`${BASE_URL}${photo.url}`}
+              src={photo.url?.startsWith("http") ? photo.url : `${BASE_URL}${photo.url}`}
               alt="Menu Item"
               className="w-full h-full object-cover"
             />
