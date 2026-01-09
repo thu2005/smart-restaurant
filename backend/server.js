@@ -96,6 +96,7 @@ app.use("/api/orders", require("./src/routes/order.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
 app.use("/api/reviews", require("./src/routes/review.routes"));
 app.use("/api/reports", require("./src/routes/report.routes"));
+app.use("/api/carts", require("./src/routes/cart.routes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
