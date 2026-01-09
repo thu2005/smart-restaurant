@@ -63,7 +63,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
     // No QR data - show generate prompt
     if (!qrData) {
         return (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div className="bg-card rounded-xl shadow-2xl max-w-md w-full p-8">
                     <div className="text-center">
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-muted rounded-full mb-4">
@@ -98,7 +98,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
     }
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
                 {/* Header */}
                 <div className="bg-primary px-6 py-4 flex justify-between items-center">

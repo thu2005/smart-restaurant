@@ -357,7 +357,7 @@ const TableManagement = () => {
 
             {/* Regenerate All Confirmation Modal */}
             {showRegenModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-card rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
                         {/* Warning Header */}
                         <div className="bg-error/10 px-6 py-4 border-b border-error/20 flex items-center gap-3">

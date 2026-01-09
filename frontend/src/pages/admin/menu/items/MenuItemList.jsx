@@ -16,6 +16,7 @@ const MenuItemList = () => {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -72,15 +73,24 @@ const MenuItemList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      try {
-        await menuService.deleteItem(id);
-        toast.success("Item deleted");
-        fetchItems();
-      } catch (error) {
-        toast.error("Failed to delete item");
-      }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+    try {
+      await menuService.deleteItem(deleteConfirm);
+      toast.success("Item deleted");
+      fetchItems();
+    } catch (error) {
+      toast.error("Failed to delete item");
+    } finally {
+      setDeleteConfirm(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleCreate = () => {
@@ -315,6 +325,26 @@ const MenuItemList = () => {
         itemId={editingItemId}
         onSave={handleModalSave}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold mb-4">Delete menu item?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this menu item? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={cancelDelete}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

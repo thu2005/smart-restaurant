@@ -14,6 +14,7 @@ const ModifierList = () => {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const fetchGroups = async () => {
     try {
@@ -54,20 +55,25 @@ const ModifierList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this modifier group? This will also remove it from all menu items."
-      )
-    ) {
-      try {
-        await menuService.deleteModifierGroup(id);
-        toast.success("Modifier group deleted");
-        fetchGroups();
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to delete modifier group");
-      }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+    try {
+      await menuService.deleteModifierGroup(deleteConfirm);
+      toast.success("Modifier group deleted");
+      fetchGroups();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete modifier group");
+    } finally {
+      setDeleteConfirm(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleModalSubmit = async (data) => {
@@ -258,6 +264,26 @@ const ModifierList = () => {
         initialData={editingGroup}
         title={editingGroup ? "Edit Modifier Group" : "New Modifier Group"}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold mb-4">Delete modifier group?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this modifier group? This will also remove it from all menu items. This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={cancelDelete}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -19,6 +19,8 @@ connectDB();
 const app = express();
 
 // Middleware
+// Serve uploads folder as static files
+app.use('/uploads', express.static('uploads'));
 app.use(helmet());
 app.use(
   cors({

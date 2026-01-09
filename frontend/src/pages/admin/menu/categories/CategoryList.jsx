@@ -15,6 +15,7 @@ const CategoryList = () => {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const fetchCategories = async () => {
     try {
@@ -55,17 +56,26 @@ const CategoryList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      try {
-        // Note: In a real app, we might check if it has items first or handle soft delete
-        // The assignment says "Soft delete or mark as inactive"
-        await menuService.updateCategoryStatus(id, "inactive");
-        toast.success("Category deactivated");
-        fetchCategories();
-      } catch (error) {
-        toast.error("Failed to delete category");
-      }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+    try {
+      // Note: In a real app, we might check if it has items first or handle soft delete
+      // The assignment says "Soft delete or mark as inactive"
+      await menuService.updateCategoryStatus(deleteConfirm, "inactive");
+      toast.success("Category deactivated");
+      fetchCategories();
+    } catch (error) {
+      toast.error("Failed to delete category");
+    } finally {
+      setDeleteConfirm(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleModalSubmit = async (data) => {
@@ -243,6 +253,26 @@ const CategoryList = () => {
         initialData={editingCategory}
         title={editingCategory ? "Edit Category" : "New Category"}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold mb-4">Delete category?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this category? This will deactivate the category. This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={cancelDelete}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

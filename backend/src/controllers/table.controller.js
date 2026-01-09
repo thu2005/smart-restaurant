@@ -81,8 +81,8 @@ exports.generateQR = async (req, res, next) => {
         res.json({
             success: true,
             data: {
-                qrCode: updatedTable.qrCodeUrl, 
-                qrContent: qrContent,           
+                qrCode: updatedTable.qrCodeUrl,
+                qrContent: qrContent,
                 token,
                 tableId: table.id,
                 tableNumber: table.tableNumber
