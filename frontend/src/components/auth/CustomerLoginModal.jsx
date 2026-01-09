@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import Icon from "../AppIcon";
 
 /**
@@ -58,7 +59,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
         setError(null);
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
                 {/* Header */}
@@ -79,8 +80,8 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                     <button
                         onClick={() => switchTab("login")}
                         className={`flex-1 py-3 text-center font-medium transition-colors ${activeTab === "login"
-                                ? "text-primary border-b-2 border-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         Sign In
@@ -88,8 +89,8 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                     <button
                         onClick={() => switchTab("register")}
                         className={`flex-1 py-3 text-center font-medium transition-colors ${activeTab === "register"
-                                ? "text-primary border-b-2 border-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         Register
@@ -209,7 +210,8 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                     </p>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

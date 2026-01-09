@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
 import Icon from "components/AppIcon";
@@ -266,7 +267,7 @@ const ModifierList = () => {
       />
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
+      {deleteConfirm && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-lg font-semibold mb-4">Delete modifier group?</h3>
@@ -282,7 +283,8 @@ const ModifierList = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

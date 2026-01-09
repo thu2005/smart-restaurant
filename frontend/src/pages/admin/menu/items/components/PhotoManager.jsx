@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
 import Icon from "components/AppIcon";
@@ -96,33 +97,33 @@ const PhotoManager = ({ itemId, photos = [], onUpdate }) => {
               alt="Menu Item"
               className="w-full h-full object-cover"
             />
-              {(photo.is_primary || photo.isPrimary) && (
-                <div className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded shadow">
-                  Primary
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {!(photo.is_primary || photo.isPrimary) && (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => handleSetPrimary(photo.id)}
-                    title="Set as Primary"
-                  >
-                    <Icon name="Star" className="w-4 h-4" />
-                  </Button>
-                )}
+            {(photo.is_primary || photo.isPrimary) && (
+              <div className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded shadow">
+                Primary
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              {!(photo.is_primary || photo.isPrimary) && (
                 <Button
                   size="sm"
-                  variant="destructive"
-                  onClick={() => handleDelete(photo.id)}
-                  title="Delete"
+                  variant="secondary"
+                  onClick={() => handleSetPrimary(photo.id)}
+                  title="Set as Primary"
                 >
-                  <Icon name="Trash2" className="w-4 h-4" />
+                  <Icon name="Star" className="w-4 h-4" />
                 </Button>
-              </div>
+              )}
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => handleDelete(photo.id)}
+                title="Delete"
+              >
+                <Icon name="Trash2" className="w-4 h-4" />
+              </Button>
             </div>
-          ))}
+          </div>
+        ))}
         {photos.length === 0 && (
           <div className="col-span-full text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
             No photos uploaded yet.
@@ -131,7 +132,7 @@ const PhotoManager = ({ itemId, photos = [], onUpdate }) => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
+      {deleteConfirm && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-lg font-semibold mb-4">Delete this photo?</h3>
@@ -147,7 +148,8 @@ const PhotoManager = ({ itemId, photos = [], onUpdate }) => {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

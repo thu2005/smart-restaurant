@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import Icon from "../../../../components/AppIcon";
 import { tableAPI } from "../../../../services/tableService";
 
@@ -62,7 +63,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
 
     // No QR data - show generate prompt
     if (!qrData) {
-        return (
+        return createPortal(
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div className="bg-card rounded-xl shadow-2xl max-w-md w-full p-8">
                     <div className="text-center">
@@ -93,11 +94,12 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>,
+            document.body
         );
     }
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-card rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
                 {/* Header */}
@@ -218,7 +220,8 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

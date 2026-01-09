@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
 import Icon from "components/AppIcon";
@@ -181,11 +182,10 @@ const CategoryList = () => {
                     </td>
                     <td className="px-4 py-4">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          category.status === "active"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${category.status === "active"
                             ? "bg-green-100 text-green-800"
                             : "bg-gray-100 text-gray-800"
-                        }`}
+                          }`}
                       >
                         {category.status}
                       </span>
@@ -255,7 +255,7 @@ const CategoryList = () => {
       />
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
+      {deleteConfirm && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-lg font-semibold mb-4">Delete category?</h3>
@@ -271,7 +271,8 @@ const CategoryList = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

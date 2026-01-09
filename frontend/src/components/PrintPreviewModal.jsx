@@ -1,5 +1,6 @@
 import { X, Printer, Grid, FileText, Download } from "lucide-react";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { tableAPI } from "../services/tableService";
 
 const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
@@ -80,8 +81,8 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4 animate-fade-in">
+  return createPortal(
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75 p-4 animate-fade-in">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
@@ -108,11 +109,10 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={() => setLayout("single")}
-                    className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                      layout === "single"
-                        ? "bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500"
-                        : "bg-white border-gray-200"
-                    }`}
+                    className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${layout === "single"
+                      ? "bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500"
+                      : "bg-white border-gray-200"
+                      }`}
                   >
                     <FileText size={20} />
                     <div className="text-left">
@@ -123,11 +123,10 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
 
                   <button
                     onClick={() => setLayout("grid")}
-                    className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                      layout === "grid"
-                        ? "bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500"
-                        : "bg-white border-gray-200"
-                    }`}
+                    className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${layout === "grid"
+                      ? "bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500"
+                      : "bg-white border-gray-200"
+                      }`}
                   >
                     <Grid size={20} />
                     <div className="text-left">
@@ -183,7 +182,8 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

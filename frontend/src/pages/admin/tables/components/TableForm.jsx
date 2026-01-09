@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Icon from "../../../../components/AppIcon";
 import { LOCATIONS, STATUS_OPTIONS, validateTableData } from "../../../../utils/tableConstants";
 
@@ -70,8 +71,8 @@ const TableForm = ({ table, onSubmit, onClose }) => {
         }
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    return createPortal(
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[110]">
             <div className="bg-card rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                 <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-foreground">
@@ -184,7 +185,8 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

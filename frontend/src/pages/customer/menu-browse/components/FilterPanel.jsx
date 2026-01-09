@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 
 import Button from "../../../../components/ui/Button";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -35,7 +36,7 @@ const FilterPanel = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <div
         className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
@@ -103,8 +104,8 @@ const FilterPanel = ({
                     const newAvailability = e?.target?.checked
                       ? [...filters?.availability, option?.value]
                       : filters?.availability?.filter(
-                          (a) => a !== option?.value
-                        );
+                        (a) => a !== option?.value
+                      );
                     onFilterChange("availability", newAvailability);
                   }}
                 />
@@ -133,7 +134,8 @@ const FilterPanel = ({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 

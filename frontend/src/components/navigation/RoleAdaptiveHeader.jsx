@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
@@ -77,10 +78,9 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
                   className={`
                     relative flex items-center gap-2 px-4 py-2 rounded-md
                     transition-smooth touch-target
-                    ${
-                      isActivePath(item?.path)
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
+                    ${isActivePath(item?.path)
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-muted"
                     }
                   `}
                 >
@@ -120,8 +120,16 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
           </div>
         </div>
       </header>
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[90] bg-background md:hidden">
+      {mobileMenuOpen && createPortal(
+        <div className="fixed inset-0 z-[120] bg-background md:hidden">
+          <div className="absolute top-4 right-6">
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-md hover:bg-muted transition-smooth"
+            >
+              <Icon name="X" size={32} />
+            </button>
+          </div>
           <nav className="flex flex-col gap-2 p-6 pt-20">
             {navItems?.map((item) => (
               <button
@@ -130,10 +138,9 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
                 className={`
                   relative flex items-center gap-3 px-6 py-4 rounded-md
                   transition-smooth touch-target-lg
-                  ${
-                    isActivePath(item?.path)
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground hover:bg-muted"
+                  ${isActivePath(item?.path)
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground hover:bg-muted"
                   }
                 `}
               >
@@ -147,7 +154,8 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
               </button>
             ))}
           </nav>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
