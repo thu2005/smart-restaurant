@@ -61,7 +61,7 @@ const ItemInfo = ({ item }) => {
         </div>
         <div className="text-right flex-shrink-0">
           <div className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-primary data-text">
-            ${item?.basePrice?.toFixed(2)}
+            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.basePrice || item?.price || 0)}
           </div>
         </div>
       </div>

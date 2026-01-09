@@ -59,7 +59,7 @@ const RelatedItems = ({ items }) => {
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-lg md:text-xl font-heading font-bold text-primary data-text">
-                    ${item?.price?.toFixed(2)}
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price)}
                   </span>
                   <Button
                     variant="outline"

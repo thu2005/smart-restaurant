@@ -184,7 +184,7 @@ const MenuItemDetail = () => {
     name: "Grilled Salmon with Herb Butter",
     description:
       "Fresh Atlantic salmon fillet grilled to perfection, topped with house-made herb butter and served with seasonal vegetables and garlic mashed potatoes. Our signature dish features sustainably sourced salmon, seasoned with a blend of Mediterranean herbs and finished with a touch of lemon zest.",
-    basePrice: 24.99,
+    basePrice: 250000,
     rating: 4.7,
     reviewCount: 156,
     prepTime: 25,
@@ -226,14 +226,14 @@ const MenuItemDetail = () => {
         value: "large",
         label: "Large",
         description: "9 oz portion",
-        priceModifier: 6.0,
+        priceModifier: 60000,
       },
       {
         id: "size-family",
         value: "family",
         label: "Family Size",
         description: "16 oz portion",
-        priceModifier: 12.0,
+        priceModifier: 120000,
       },
     ],
 
@@ -242,25 +242,25 @@ const MenuItemDetail = () => {
         id: "extra-001",
         label: "Extra Herb Butter",
         description: "Additional serving of house-made herb butter",
-        price: 2.5,
+        price: 25000,
       },
       {
         id: "extra-002",
         label: "Grilled Asparagus",
         description: "Fresh asparagus spears with olive oil",
-        price: 4.5,
+        price: 45000,
       },
       {
         id: "extra-003",
         label: "Caesar Salad",
         description: "Classic Caesar with parmesan and croutons",
-        price: 5.0,
+        price: 50000,
       },
       {
         id: "extra-004",
         label: "Garlic Bread",
         description: "Toasted bread with garlic butter",
-        price: 3.5,
+        price: 35000,
       },
     ],
   };
@@ -334,7 +334,7 @@ const MenuItemDetail = () => {
         "Pan-seared sea bass fillet with crispy skin on white plate with lemon wedges",
       rating: 4.6,
       reviewCount: 89,
-      price: 26.99,
+      price: 270000,
       isNew: false,
     },
     {
@@ -346,7 +346,7 @@ const MenuItemDetail = () => {
         "Grilled lobster tail with melted butter and fresh herbs on elegant plate",
       rating: 4.9,
       reviewCount: 124,
-      price: 34.99,
+      price: 350000,
       isNew: true,
     },
     {
@@ -358,7 +358,7 @@ const MenuItemDetail = () => {
         "Linguine pasta with large shrimp in garlic butter sauce with parsley",
       rating: 4.5,
       reviewCount: 76,
-      price: 22.99,
+      price: 230000,
       isNew: false,
     },
     {
@@ -369,7 +369,7 @@ const MenuItemDetail = () => {
         "Seared tuna steak with sesame crust and Asian vegetables on black plate",
       rating: 4.7,
       reviewCount: 92,
-      price: 28.99,
+      price: 290000,
       isNew: false,
     },
   ];
@@ -449,7 +449,7 @@ const MenuItemDetail = () => {
                         Total ({quantity} {quantity === 1 ? "item" : "items"})
                       </p>
                       <p className="text-3xl font-heading font-bold text-primary data-text">
-                        ${calculateTotalPrice()?.toFixed(2)}
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculateTotalPrice())}
                       </p>
                     </div>
                   </div>

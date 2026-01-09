@@ -54,7 +54,7 @@ const CustomizationPanel = ({
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {size?.priceModifier > 0 && (
                       <span className="text-sm md:text-base font-medium text-primary data-text">
-                        +${size?.priceModifier?.toFixed(2)}
+                        +{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(size?.priceModifier)}
                       </span>
                     )}
                     <div
@@ -107,7 +107,7 @@ const CustomizationPanel = ({
                         )}
                       </div>
                       <span className="text-sm md:text-base font-medium text-primary data-text flex-shrink-0">
-                        +${extra?.price?.toFixed(2)}
+                        +{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(extra?.price)}
                       </span>
                     </div>
                   }

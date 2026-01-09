@@ -102,7 +102,29 @@ const MenuBrowse = () => {
                 }))
             : []),
         ];
-        setCategories(formattedCats);
+
+        // Helper to get icon by category name
+        const getCategoryIcon = (categoryName) => {
+          const name = categoryName?.toLowerCase() || "";
+          if (name.includes("appetizer") || name.includes("starter")) return "Utensils";
+          if (name.includes("soup") || name.includes("salad")) return "Soup";
+          if (name.includes("main") || name.includes("meat") || name.includes("beef") || name.includes("steak") || name.includes("chicken")) return "ChefHat";
+          if (name.includes("seafood") || name.includes("fish") || name.includes("shrimp")) return "Fish";
+          if (name.includes("drink") || name.includes("beverage") || name.includes("tea") || name.includes("coffee")) return "Coffee";
+          if (name.includes("dessert") || name.includes("cake") || name.includes("sweet") || name.includes("ice cream")) return "IceCream";
+          if (name.includes("breakfast")) return "Croissant";
+          if (name.includes("pizza")) return "Pizza";
+          if (name.includes("burger") || name.includes("sandwich")) return "Sandwich";
+          if (name.includes("pasta") || name.includes("noodle")) return "UtensilsCrossed";
+          return "Menu"; // Default
+        };
+
+        const updatedCats = formattedCats.map(cat => ({
+          ...cat,
+          icon: cat.value === "all" ? "LayoutGrid" : getCategoryIcon(cat.label)
+        }));
+        
+        setCategories(updatedCats);
 
         // Transform items for UI
         const formattedItems = Array.isArray(itemsData)
