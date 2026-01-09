@@ -204,7 +204,7 @@
   }
 
   .admin-sidebar {
-    @apply fixed lg:fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-[100] transition-transform duration-250;
+    @apply fixed lg:fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-40 transition-transform duration-250;
   }
 
   .admin-sidebar.collapsed {

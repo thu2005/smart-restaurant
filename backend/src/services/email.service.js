@@ -19,7 +19,7 @@ class EmailService {
 
         try {
             const data = await this.resend.emails.send({
-                from: 'Smart Restaurant <onboarding@resend.dev>', // Default sender for testing
+                from: 'Smart Restaurant <noreply@restaurant.thunguyen.io.vn>', 
                 to,
                 subject,
                 html,
