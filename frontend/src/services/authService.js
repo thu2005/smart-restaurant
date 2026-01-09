@@ -30,6 +30,15 @@ const authService = {
     }
   },
 
+  verifyEmail: async (token) => {
+    try {
+      const response = await api.get(`/auth/verify-email/${token}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
