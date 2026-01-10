@@ -13,12 +13,12 @@ const OrderList = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-    const getRestaurantId = () => {
+
+    const getUserData = () => {
         try {
-            const userData = JSON.parse(localStorage.getItem("user") || "{}");
-            return userData.restaurantId;
+            return JSON.parse(localStorage.getItem("user") || "{}");
         } catch {
-            return null;
+            return {};
         }
     };
 
@@ -30,18 +30,24 @@ const OrderList = () => {
         try {
             setLoading(true);
             setError(null);
-            const restaurantId = getRestaurantId();
-            if (!restaurantId) {
-                throw new Error("Restaurant ID not found. Please log in.");
+            const userData = getUserData();
+            if (userData.role === "CUSTOMER") {
+                // Customers: fetch only their own orders
+                const response = await orderService.getMyOrders();
+                setOrders(response.data || []);
+            } else {
+                // Staff/Admin: require restaurantId
+                const restaurantId = userData.restaurantId;
+                if (!restaurantId) {
+                    throw new Error("Restaurant ID not found. Please log in.");
+                }
+                const params = { restaurantId };
+                if (statusFilter) {
+                    params.status = statusFilter;
+                }
+                const response = await orderService.getOrders(params);
+                setOrders(response.data || []);
             }
-
-            const params = { restaurantId };
-            if (statusFilter) {
-                params.status = statusFilter;
-            }
-
-            const response = await orderService.getOrders(params);
-            setOrders(response.data || []);
         } catch (err) {
             const message = err.response?.data?.message || err.message || "Failed to load orders";
             setError(message);

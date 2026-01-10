@@ -33,15 +33,15 @@ const TableManagement = () => {
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [showRegenModal, setShowRegenModal] = useState(false);
 
-    // Get restaurantId from localStorage or user context
-    const getRestaurantId = () => {
+    // Get user data from localStorage
+    const getUserData = () => {
         try {
-            const userData = JSON.parse(localStorage.getItem("user") || "{}");
-            return userData.restaurantId;
+            return JSON.parse(localStorage.getItem("user") || "{}");
         } catch {
-            return null;
+            return {};
         }
     };
+
 
     useEffect(() => {
         fetchTables();
@@ -51,12 +51,16 @@ const TableManagement = () => {
         try {
             setLoading(true);
             setError(null);
-
-            const restaurantId = getRestaurantId();
+            const userData = getUserData();
+            if (userData.role === "CUSTOMER") {
+                setError("Customers do not have access to restaurant tables.");
+                setTables([]);
+                return;
+            }
+            const restaurantId = userData.restaurantId;
             if (!restaurantId) {
                 throw new Error("Restaurant ID not found. Please log in.");
             }
-
             const result = await tableAPI.getAllTables(restaurantId);
             setTables(result.data || []);
         } catch (err) {
