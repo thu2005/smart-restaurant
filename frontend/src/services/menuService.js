@@ -150,8 +150,8 @@ const menuService = {
         status: item.stockStatus === "out-of-stock"
           ? "sold_out"
           : item.isAvailable
-          ? "available"
-          : "unavailable",
+            ? "available"
+            : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         created_at: item.createdAt,
         description: item.description,
@@ -180,8 +180,8 @@ const menuService = {
         status: item.stockStatus === "out-of-stock"
           ? "sold_out"
           : item.isAvailable
-          ? "available"
-          : "unavailable",
+            ? "available"
+            : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         photos:
           item.photos?.map((photo) => ({

@@ -13,6 +13,7 @@ const MenuItemList = () => {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [noRestaurant, setNoRestaurant] = useState(false);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,9 +50,16 @@ const MenuItemList = () => {
       };
       const data = await menuService.getItems(params);
       setItems(Array.isArray(data) ? data : []);
+      setNoRestaurant(false);
     } catch (error) {
       console.error("Failed to fetch items:", error);
-      toast.error("Failed to load menu items");
+      // Check if it's because of missing restaurant
+      if (error.response?.data?.message?.includes("No restaurant assigned")) {
+        setNoRestaurant(true);
+        toast.error("No restaurant assigned to your account");
+      } else {
+        toast.error("Failed to load menu items");
+      }
       // Fallback data
       setItems([]);
     } finally {
@@ -225,9 +233,22 @@ const MenuItemList = () => {
                 <tr>
                   <td
                     colSpan="7"
-                    className="px-4 py-4 text-center text-gray-500"
+                    className="px-4 py-8 text-center"
                   >
-                    No items found.
+                    {noRestaurant ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <Icon name="alert-circle" className="w-12 h-12 text-amber-500" />
+                        <div>
+                          <p className="text-gray-700 font-medium mb-1">No Restaurant Assigned</p>
+                          <p className="text-gray-500 text-sm">
+                            Your account doesn't have a restaurant assigned yet. 
+                            Please contact the administrator to set up your restaurant.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-500">No items found.</p>
+                    )}
                   </td>
                 </tr>
               ) : (

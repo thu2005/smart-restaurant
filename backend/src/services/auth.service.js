@@ -30,6 +30,25 @@ class AuthService {
         // Generate verification token
         const verificationToken = crypto.randomBytes(32).toString('hex');
 
+        // If role is ADMIN and no restaurantId provided, auto-assign an existing restaurant
+        let finalRestaurantId = restaurantId || null;
+        if ((role === 'ADMIN' || role === 'WAITER' || role === 'KITCHEN') && !restaurantId) {
+            const existingRestaurant = await prisma.restaurant.findFirst();
+            if (existingRestaurant) {
+                finalRestaurantId = existingRestaurant.id;
+            } else {
+                // Fallback: create a new restaurant if none exist
+                const restaurant = await prisma.restaurant.create({
+                    data: {
+                        name: `${fullName}'s Restaurant`,
+                        description: 'Welcome to your restaurant! Update your details in settings.',
+                        isActive: true,
+                    },
+                });
+                finalRestaurantId = restaurant.id;
+            }
+        }
+
         // Create user
         const user = await prisma.user.create({
             data: {
@@ -38,7 +57,7 @@ class AuthService {
                 fullName,
                 phone,
                 role: role || 'CUSTOMER',
-                restaurantId: restaurantId || null,
+                restaurantId: finalRestaurantId,
                 verificationToken,
                 emailVerified: false
             },
