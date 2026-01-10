@@ -51,8 +51,8 @@ exports.updateTable = async (req, res, next) => {
 
 exports.deleteTable = async (req, res, next) => {
     try {
-        await tableService.deleteTable(req.params.id);
-        res.status(200).json({ success: true, message: 'Table deactivated successfully' });
+        const updatedTable = await tableService.toggleTableActive(req.params.id);
+        res.status(200).json({ success: true, data: updatedTable, message: 'Table status updated successfully' });
     } catch (error) {
         if (error.code === 'P2025') {
             return res.status(404).json({ success: false, message: 'Table not found' });

@@ -2,7 +2,7 @@ import React from "react";
 import Icon from "../../../../components/AppIcon";
 
 const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => {
-    const isActive = table.status === "AVAILABLE" || table.status === "OCCUPIED";
+    const isActive = table.isActive;
 
     const getStatusBadge = () => {
         const statusMap = {

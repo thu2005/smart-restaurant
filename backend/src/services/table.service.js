@@ -91,9 +91,21 @@ class TableService {
     }
 
     async deleteTable(id) {
+        // Soft delete by setting isActive to false
         return await prisma.table.update({
             where: { id },
-            data: { isActive: true, status: 'AVAILABLE' } // Reset status on soft delete
+            data: { isActive: false }
+        });
+    }
+
+    async toggleTableActive(id) {
+        // Get current state and toggle
+        const table = await prisma.table.findUnique({ where: { id } });
+        if (!table) throw new Error("Table not found");
+        
+        return await prisma.table.update({
+            where: { id },
+            data: { isActive: !table.isActive }
         });
     }
 

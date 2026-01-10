@@ -96,12 +96,16 @@ const TableManagement = () => {
     };
 
     const handleToggleStatus = async (table) => {
-        const newStatus = table.status === "AVAILABLE" ? "MAINTENANCE" : "AVAILABLE";
         try {
-            await tableAPI.updateTableStatus(table.id, newStatus);
-            await fetchTables();
+            const response = await tableAPI.toggleTableActive(table.id);
+            // Update only the specific table in state
+            setTables(prevTables => 
+                prevTables.map(t => 
+                    t.id === table.id ? { ...t, isActive: !t.isActive } : t
+                )
+            );
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to update status");
+            setError(err.response?.data?.message || "Failed to toggle table status");
         }
     };
 

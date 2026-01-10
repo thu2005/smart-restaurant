@@ -46,6 +46,12 @@ export const tableAPI = {
         return response.data;
     },
 
+    toggleTableActive: async (id) => {
+        // Toggle table active/inactive status
+        const response = await api.delete(`/tables/${id}`);
+        return response.data;
+    },
+
     deleteTable: async (id) => {
         const response = await api.delete(`/tables/${id}`);
         return response.data;
