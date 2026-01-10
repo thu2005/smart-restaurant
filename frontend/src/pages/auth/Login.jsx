@@ -15,6 +15,9 @@ const Login = () => {
   // Get return url from location state or default to menu items
   const from = location.state?.from?.pathname || "/admin/menu/items";
 
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -75,10 +78,12 @@ const Login = () => {
             <Input
               id="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               required
               error={errors.password?.message}
+              showPassword={showPassword}
+              onTogglePassword={() => setShowPassword((v) => !v)}
               {...register("password", { required: "Password is required" })}
             />
           </div>
