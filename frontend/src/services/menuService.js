@@ -458,10 +458,10 @@ const menuService = {
   },
 
   // --- Guest Menu ---
-  getGuestMenu: async (params) => {
+  getGuestMenu: async (params, restaurantId = null) => {
     try {
-      const restaurantId = getRestaurantId();
-      const response = await api.get(`/menu/${restaurantId}/items`, { params });
+      const resolvedRestaurantId = restaurantId || getRestaurantId();
+      const response = await api.get(`/menu/${resolvedRestaurantId}/items`, { params });
       const items = response.data.data || response.data;
 
       // Transform backend data to frontend format for guest menu

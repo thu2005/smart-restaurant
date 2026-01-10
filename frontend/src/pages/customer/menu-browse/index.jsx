@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import menuService from "services/menuService";
 import CustomerOrderProgress from "../../../components/navigation/CustomerOrderProgress";
 import CategoryFilter from "./components/CategoryFilter";
@@ -14,6 +15,7 @@ const BASE_URL =
   "http://localhost:5000";
 
 const MenuBrowse = () => {
+  const { restaurantId, tableNumber } = useParams();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -29,18 +31,28 @@ const MenuBrowse = () => {
   ]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const restaurantId = localStorage.getItem("restaurantId") || "default-restaurant-id";
+        setError(null);
+        // Use restaurantId from URL if present (QR deep link), else fallback to localStorage
+        const resolvedRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+
+        if (!resolvedRestaurantId) {
+          setError("No restaurant ID found. Please scan the QR code again.");
+          setLoading(false);
+          return;
+        }
+
         const [catsData, itemsData] = await Promise.all([
-          menuService.getCategories({}, restaurantId),
+          menuService.getCategories({}, resolvedRestaurantId),
           menuService.getGuestMenu({
             categoryId: activeCategory === "all" ? undefined : activeCategory,
             q: searchQuery,
-          }),
+          }, resolvedRestaurantId),
         ]);
 
         // Transform categories for UI
@@ -53,11 +65,11 @@ const MenuBrowse = () => {
           }, // Count might be inaccurate if paginated
           ...(Array.isArray(catsData)
             ? catsData.map((c) => ({
-                value: c.id,
-                label: c.name,
-                icon: "UtensilsCrossed", // Default icon
-                count: c.items_count || 0,
-              }))
+              value: c.id,
+              label: c.name,
+              icon: "UtensilsCrossed", // Default icon
+              count: c.items_count || 0,
+            }))
             : []),
         ];
         setCategories(formattedCats);
@@ -66,39 +78,39 @@ const MenuBrowse = () => {
         // Assuming backend returns compatible structure or we map it
         const formattedItems = Array.isArray(itemsData)
           ? itemsData.map((item) => {
-              const photoUrl = item.primary_photo_url || item.photos?.[0]?.url;
-              return {
-                id: item.id,
-                name: item.name,
-                description: item.description,
-                price: Number(item.price),
-                image: photoUrl
-                  ? `${BASE_URL}${photoUrl}`
-                  : "/assets/images/no_image.svg",
-                imageAlt: item.name,
-                category: item.category_id,
-                rating: 4.5, // Mock rating
-                reviewCount: 10, // Mock count
-                prepTime: item.prep_time_minutes,
-                availability: item.status,
-                isPopular: false, // Mock
-                isChefRecommended: item.is_chef_recommended,
-                dietary: [], // Mock
-              };
-            })
+            const photoUrl = item.primary_photo_url || item.photos?.[0]?.url;
+            return {
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              price: Number(item.price),
+              image: photoUrl
+                ? `${BASE_URL}${photoUrl}`
+                : "/assets/images/no_image.svg",
+              imageAlt: item.name,
+              category: item.category_id,
+              rating: 4.5, // Mock rating
+              reviewCount: 10, // Mock count
+              prepTime: item.prep_time_minutes,
+              availability: item.status,
+              isPopular: false, // Mock
+              isChefRecommended: item.is_chef_recommended,
+              dietary: [], // Mock
+            };
+          })
           : [];
 
         setMenuItems(formattedItems);
       } catch (error) {
         console.error("Failed to load menu", error);
-        // Fallback to empty or error state
+        setError(`Failed to load menu: ${error.message || "Unknown error"}. API: ${BASE_URL}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [activeCategory, searchQuery]); // Re-fetch when category or search changes
+  }, [activeCategory, searchQuery, restaurantId]); // Re-fetch when category or search changes
 
   // Filter logic (client-side for now for other filters)
   const filteredItems = menuItems.filter((item) => {
@@ -186,6 +198,11 @@ const MenuBrowse = () => {
         </div>
 
         <div className="mb-6 md:mb-8">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
           <CategoryFilter
             categories={categories}
             activeCategory={activeCategory}
@@ -258,7 +275,7 @@ const MenuBrowse = () => {
         onClose={() => setIsFilterOpen(false)}
         filters={filters}
         onFilterChange={handleFilterChange}
-        onApplyFilters={() => {}}
+        onApplyFilters={() => { }}
         onResetFilters={handleResetFilters}
       />
 

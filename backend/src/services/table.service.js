@@ -115,7 +115,8 @@ class TableService {
         if (!table) throw new Error("Table not found");
 
         const baseURL = process.env.QR_BASE_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
-        const qrContent = `${baseURL}/menu/${table.restaurantId}/${table.tableNumber}?token=${token}`;
+        // Pass restaurantId, tableNumber, and token in the customer path
+        const qrContent = `${baseURL}/customer/menu-browse/ab386fe4-b539-40e7-8c7a-fa0d725d7c13/${table.tableNumber}?token=${token}`;
         const qrCodeUrl = await generateQRCode(qrContent);
 
         return await prisma.table.update({
