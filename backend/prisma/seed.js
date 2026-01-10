@@ -721,6 +721,53 @@ async function main() {
         }
     });
 
+
+    // --- Create Bulk Reviews ---
+    console.log('Seeding reviews...');
+    const allMenuItems = await prisma.menuItem.findMany();
+    const allUsers = await prisma.user.findMany();
+    
+    const reviewComments = [
+        { rating: 5, comment: "Absolutely delicious! The flavors were perfectly balanced." },
+        { rating: 4, comment: "Great taste, but the portion was a bit small for the price." },
+        { rating: 5, comment: "Best I've ever had! Highly recommended." },
+        { rating: 3, comment: "It was okay, not as good as I expected based on the photos." },
+        { rating: 5, comment: "Fresh ingredients and amazing presentation. Will order again!" },
+        { rating: 4, comment: "Tasty and well-cooked. Service was quick too." },
+        { rating: 2, comment: "Too salty for my taste. Disappointed." },
+        { rating: 5, comment: "A masterpiece! The chef really knows what they are doing." },
+        { rating: 4, comment: "Good value for money. Solid choice." },
+        { rating: 1, comment: "Food arrived cold and looked nothing like the picture." }
+    ];
+
+    if (allUsers.length > 0 && allMenuItems.length > 0) {
+        for (const item of allMenuItems) {
+            // Create 3-7 random reviews for each item
+            const numberOfReviews = Math.floor(Math.random() * 5) + 3;
+
+            for (let i = 0; i < numberOfReviews; i++) {
+                const randomReview = reviewComments[Math.floor(Math.random() * reviewComments.length)];
+                const randomUser = allUsers[Math.floor(Math.random() * allUsers.length)];
+                
+                // Random date within last 30 days
+                const randomDate = new Date();
+                randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
+
+                await prisma.review.create({
+                    data: {
+                        rating: randomReview.rating,
+                        comment: randomReview.comment,
+                        menuItemId: item.id,
+                        userId: randomUser.id,
+                        restaurantId: item.restaurantId,
+                        createdAt: randomDate
+                    }
+                });
+            }
+        }
+        console.log('Reviews seeded successfully.');
+    }
+
     console.log('✅ Seed completed successfully!');
     console.log('');
     console.log('📊 Summary:');
