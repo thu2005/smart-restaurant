@@ -34,7 +34,13 @@ const Login = () => {
     try {
       await authService.login(data.email, data.password);
       toast.success("Login successful!");
-      navigate(from, { replace: true });
+      // Get user from localStorage
+      const user = authService.getCurrentUser();
+      if (user?.role === "CUSTOMER") {
+        navigate("/customer/menu-browse", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error(

@@ -10,15 +10,15 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const customerNavItems = [
-    { path: "/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
+    { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
     {
-      path: "/shopping-cart",
+      path: "/customer/shopping-cart",
       label: "Cart",
       icon: "ShoppingCart",
       badge: cartItemCount,
     },
     {
-      path: "/order-status-tracking",
+      path: "/customer/order-status-tracking",
       label: "Order Status",
       icon: "ClipboardList",
     },
@@ -31,7 +31,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
       label: "Kitchen Display",
       icon: "ChefHat",
     },
-    { path: "/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
+    { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
   ];
 
   const navItems = userRole === "admin" ? adminNavItems : customerNavItems;
@@ -54,7 +54,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
               className="flex items-center gap-3 cursor-pointer"
               onClick={() =>
                 handleNavigation(
-                  userRole === "admin" ? "/admin/dashboard" : "/menu-browse"
+                  userRole === "admin" ? "/admin/dashboard" : "/customer/menu-browse"
                 )
               }
             >
@@ -103,7 +103,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
                 size="default"
                 iconName="ShoppingCart"
                 iconPosition="left"
-                onClick={() => handleNavigation("/shopping-cart")}
+                onClick={() => handleNavigation("/customer/shopping-cart")}
                 className="hidden md:flex"
               >
                 View Cart ({cartItemCount})

@@ -34,7 +34,7 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
   const availabilityConfig = getAvailabilityConfig(item?.availability);
 
   const handleCardClick = () => {
-    navigate("/menu-item-detail", { state: { itemId: item?.id } });
+    navigate("/customer/menu-item-detail", { state: { itemId: item?.id } });
   };
 
   const handleQuickAdd = (e) => {

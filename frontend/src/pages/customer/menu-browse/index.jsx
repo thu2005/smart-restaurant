@@ -10,8 +10,8 @@ import EmptyState from "./components/EmptyState";
 import Button from "../../../components/ui/Button";
 
 const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
-  "http://localhost:5001";
+  import.meta.env.VITE_API_URL?.replace("/api", "") ||
+  "http://localhost:5000";
 
 const MenuBrowse = () => {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -34,8 +34,9 @@ const MenuBrowse = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        const restaurantId = localStorage.getItem("restaurantId") || "default-restaurant-id";
         const [catsData, itemsData] = await Promise.all([
-          menuService.getCategories(),
+          menuService.getCategories({}, restaurantId),
           menuService.getGuestMenu({
             categoryId: activeCategory === "all" ? undefined : activeCategory,
             q: searchQuery,
@@ -73,7 +74,7 @@ const MenuBrowse = () => {
                 price: Number(item.price),
                 image: photoUrl
                   ? `${BASE_URL}${photoUrl}`
-                  : "https://via.placeholder.com/150",
+                  : "/assets/images/no_image.svg",
                 imageAlt: item.name,
                 category: item.category_id,
                 rating: 4.5, // Mock rating

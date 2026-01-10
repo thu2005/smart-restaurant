@@ -51,9 +51,13 @@ const toCamelCase = (obj) => {
 
 const menuService = {
   // --- Categories ---
-  getCategories: async (params = {}) => {
+  getCategories: async (params = {}, restaurantId = null) => {
     try {
-      const response = await api.get("/menu/categories", { params });
+      // Use public route if restaurantId is provided, otherwise admin route
+      const endpoint = restaurantId 
+        ? `/menu/${restaurantId}/categories` 
+        : "/menu/categories";
+      const response = await api.get(endpoint, { params });
       const result = response.data;
 
       // If pagination info is present, return full result

@@ -282,11 +282,11 @@ const MenuItemDetail = () => {
     };
 
     console.log("Adding to cart:", cartItem);
-    navigate("/shopping-cart");
+    navigate("/customer/shopping-cart");
   };
 
   const handleBackToMenu = () => {
-    navigate("/menu-browse");
+    navigate("/customer/menu-browse");
   };
 
   useEffect(() => {
