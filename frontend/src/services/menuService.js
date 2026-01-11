@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Create axios instance with default config
 const api = axios.create({
@@ -59,7 +58,7 @@ const toCamelCase = (obj) => {
 
 const menuService = {
   // --- Categories ---
-  getCategories: async (params = {}) => {
+  getCategories: async (params = {}, restaurantId = null) => {
     try {
       // For public access (customer menu), use restaurant-specific endpoint
       const restaurantId = params.restaurantId || getRestaurantId();
@@ -549,10 +548,12 @@ const menuService = {
   },
 
   // --- Guest Menu ---
-  getGuestMenu: async (params) => {
+  getGuestMenu: async (params, restaurantId = null) => {
     try {
-      const restaurantId = getRestaurantId();
-      const response = await api.get(`/menu/${restaurantId}/items`, { params });
+      const resolvedRestaurantId = restaurantId || getRestaurantId();
+      const response = await api.get(`/menu/${resolvedRestaurantId}/items`, {
+        params,
+      });
       const items = response.data.data || response.data;
 
       // Transform backend data to frontend format for guest menu

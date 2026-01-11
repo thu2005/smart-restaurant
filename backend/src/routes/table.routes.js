@@ -193,12 +193,34 @@ router.post('/qr/regenerate-all', protect, authorize('ADMIN', 'SUPER_ADMIN'), ta
  *                 type: integer
  *               location:
  *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [AVAILABLE, OCCUPIED, RESERVED, CLEANING]
  *     responses:
  *       200:
  *         description: Table updated
  */
 router.put('/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), tableController.updateTable);
 
+/**
+ * @swagger
+ * /api/tables/{id}:
+ *   delete:
+ *     summary: Delete (soft delete) a table
+ *     tags: [Tables]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Table deleted successfully
+ *       404:
+ *         description: Table not found
+ */
+router.delete('/:id', protect, authorize('ADMIN', 'SUPER_ADMIN'), tableController.deleteTable);
 
 // Get all tables by restaurantId
 router.get('/restaurant/:restaurantId', protect, tableController.getTables);

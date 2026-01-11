@@ -123,7 +123,7 @@ const OrderStatusTracking = () => {
   };
 
   const handleBackToMenu = () => {
-    navigate("/menu-browse");
+    navigate("/customer/menu-browse");
   };
 
   const getOverallProgress = () => {

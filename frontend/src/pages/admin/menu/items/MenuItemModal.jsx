@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
@@ -125,9 +126,9 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col m-4 overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="text-xl font-semibold">
@@ -144,32 +145,29 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
         {/* Tabs */}
         <div className="flex border-b px-6">
           <button
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "details"
-                ? "border-primary text-primary"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "details"
+              ? "border-primary text-primary"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
             onClick={() => setActiveTab("details")}
           >
             Details
           </button>
           <button
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "photos"
-                ? "border-primary text-primary"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            } ${!isEditMode ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "photos"
+              ? "border-primary text-primary"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+              } ${!isEditMode ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => isEditMode && setActiveTab("photos")}
             disabled={!isEditMode}
           >
             Photos
           </button>
           <button
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "modifiers"
-                ? "border-primary text-primary"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            } ${!isEditMode ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "modifiers"
+              ? "border-primary text-primary"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+              } ${!isEditMode ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => isEditMode && setActiveTab("modifiers")}
             disabled={!isEditMode}
           >
@@ -208,7 +206,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
                       label="Item Name"
-                      {...register("name", { 
+                      {...register("name", {
                         required: "Name is required",
                         minLength: {
                           value: 2,
@@ -250,9 +248,9 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                       step="0.01"
                       {...register("price", {
                         required: "Price is required",
-                        min: { 
-                          value: 0.01, 
-                          message: "Price must be at least $0.01" 
+                        min: {
+                          value: 0.01,
+                          message: "Price must be at least $0.01"
                         },
                         max: {
                           value: 999999,
@@ -363,14 +361,15 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
               {isSubmitting
                 ? "Saving..."
                 : isEditMode
-                ? "Save Changes"
-                : "Create Item"}
+                  ? "Save Changes"
+                  : "Create Item"}
             </Button>
           )}
           {activeTab !== "details" && <Button onClick={onClose}>Done</Button>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

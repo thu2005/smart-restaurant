@@ -15,6 +15,8 @@ const Login = () => {
   // Get return url from location state or default to menu items
   const from = location.state?.from?.pathname || "/admin/menu/items";
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -31,16 +33,17 @@ const Login = () => {
     try {
       const response = await authService.login(data.email, data.password);
       toast.success("Login successful!");
-      
+
       // Determine redirect path based on role if no specific return url
       let targetPath = from;
-      if (targetPath === "/admin/menu/items") { // Default value check
+      if (targetPath === "/admin/menu/items") {
+        // Default value check
         const userRole = response.data?.role;
         if (userRole === "CUSTOMER") {
           targetPath = "/customer/menu-browse";
         }
       }
-      
+
       navigate(targetPath, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
@@ -92,10 +95,12 @@ const Login = () => {
             <Input
               id="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               required
               error={errors.password?.message}
+              showPassword={showPassword}
+              onTogglePassword={() => setShowPassword((v) => !v)}
               {...register("password", { required: "Password is required" })}
             />
           </div>

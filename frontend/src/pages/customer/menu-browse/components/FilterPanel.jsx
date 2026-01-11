@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 
 import Button from "../../../../components/ui/Button";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -37,7 +38,7 @@ const FilterPanel = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <div
         className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
@@ -83,7 +84,9 @@ const FilterPanel = ({
               <Checkbox
                 label="Chef Recommendations"
                 checked={filters?.isChefRecommended}
-                onChange={(e) => onFilterChange("isChefRecommended", e.target.checked)}
+                onChange={(e) =>
+                  onFilterChange("isChefRecommended", e.target.checked)
+                }
               />
             </div>
           </div>
@@ -151,7 +154,8 @@ const FilterPanel = ({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 

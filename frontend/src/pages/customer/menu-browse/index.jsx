@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import menuService from "services/menuService";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
@@ -10,10 +11,10 @@ import Button from "../../../components/ui/Button";
 import LucideIcon from "../../../components/ui/LucideIcon";
 
 const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
-  "http://localhost:5001";
+  import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const MenuBrowse = () => {
+  const { restaurantId, tableNumber } = useParams();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -31,6 +32,7 @@ const MenuBrowse = () => {
   ]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +44,7 @@ const MenuBrowse = () => {
           localStorage.getItem("restaurantId") || "default-restaurant-id";
 
         console.log("Fetching with filters:", filters);
-        
+
         const [catsResponse, itemsResponse] = await Promise.all([
           menuService.getCategories({
             limit: 50, // Get all categories without pagination for filter
@@ -106,24 +108,51 @@ const MenuBrowse = () => {
         // Helper to get icon by category name
         const getCategoryIcon = (categoryName) => {
           const name = categoryName?.toLowerCase() || "";
-          if (name.includes("appetizer") || name.includes("starter")) return "Utensils";
+          if (name.includes("appetizer") || name.includes("starter"))
+            return "Utensils";
           if (name.includes("soup") || name.includes("salad")) return "Soup";
-          if (name.includes("main") || name.includes("meat") || name.includes("beef") || name.includes("steak") || name.includes("chicken")) return "ChefHat";
-          if (name.includes("seafood") || name.includes("fish") || name.includes("shrimp")) return "Fish";
-          if (name.includes("drink") || name.includes("beverage") || name.includes("tea") || name.includes("coffee")) return "Coffee";
-          if (name.includes("dessert") || name.includes("cake") || name.includes("sweet") || name.includes("ice cream")) return "IceCream";
+          if (
+            name.includes("main") ||
+            name.includes("meat") ||
+            name.includes("beef") ||
+            name.includes("steak") ||
+            name.includes("chicken")
+          )
+            return "ChefHat";
+          if (
+            name.includes("seafood") ||
+            name.includes("fish") ||
+            name.includes("shrimp")
+          )
+            return "Fish";
+          if (
+            name.includes("drink") ||
+            name.includes("beverage") ||
+            name.includes("tea") ||
+            name.includes("coffee")
+          )
+            return "Coffee";
+          if (
+            name.includes("dessert") ||
+            name.includes("cake") ||
+            name.includes("sweet") ||
+            name.includes("ice cream")
+          )
+            return "IceCream";
           if (name.includes("breakfast")) return "Croissant";
           if (name.includes("pizza")) return "Pizza";
-          if (name.includes("burger") || name.includes("sandwich")) return "Sandwich";
-          if (name.includes("pasta") || name.includes("noodle")) return "UtensilsCrossed";
+          if (name.includes("burger") || name.includes("sandwich"))
+            return "Sandwich";
+          if (name.includes("pasta") || name.includes("noodle"))
+            return "UtensilsCrossed";
           return "Menu"; // Default
         };
 
-        const updatedCats = formattedCats.map(cat => ({
+        const updatedCats = formattedCats.map((cat) => ({
           ...cat,
-          icon: cat.value === "all" ? "LayoutGrid" : getCategoryIcon(cat.label)
+          icon: cat.value === "all" ? "LayoutGrid" : getCategoryIcon(cat.label),
         }));
-        
+
         setCategories(updatedCats);
 
         // Transform items for UI
@@ -191,7 +220,14 @@ const MenuBrowse = () => {
     };
 
     fetchData();
-  }, [activeCategory, searchQuery, filters.isChefRecommended, filters.isPopular, filters.availability, filters.sortBy]); // Re-fetch when criteria changes
+  }, [
+    activeCategory,
+    searchQuery,
+    filters.isChefRecommended,
+    filters.isPopular,
+    filters.availability,
+    filters.sortBy,
+  ]); // Re-fetch when criteria changes
 
   // Filter logic (client-side for now for other filters)
   const filteredItems = menuItems.filter((item) => {
@@ -293,7 +329,9 @@ const MenuBrowse = () => {
       };
       tags.push({
         id: "availability",
-        label: availabilityLabels[filters.availability[0]] || filters.availability[0],
+        label:
+          availabilityLabels[filters.availability[0]] ||
+          filters.availability[0],
         color: "orange",
         onRemove: () => handleFilterChange("availability", ["available"]),
       });
@@ -347,6 +385,14 @@ const MenuBrowse = () => {
         </div>
 
         <div className="mb-6 md:mb-8">
+          {error && (
+            <div
+              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4"
+              role="alert"
+            >
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
           <CategoryFilter
             categories={categories}
             activeCategory={activeCategory}

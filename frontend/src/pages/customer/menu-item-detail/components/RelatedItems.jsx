@@ -8,7 +8,7 @@ const RelatedItems = ({ items }) => {
   const navigate = useNavigate();
 
   const handleItemClick = (itemId) => {
-    navigate("/menu-item-detail", { state: { itemId } });
+    navigate("/customer/menu-item-detail", { state: { itemId } });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

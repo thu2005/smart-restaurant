@@ -99,7 +99,7 @@ const MenuItemDetail = () => {
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [selectedModifiers, setSelectedModifiers] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [specialInstructions, setSpecialInstructions] = useState("");
@@ -116,21 +116,24 @@ const MenuItemDetail = () => {
         setLoading(true);
         const item = await menuService.getItemById(itemId);
         setMenuItem(item);
-        
+
         // Init default modifiers
         if (item?.modifier_groups) {
           const initialModifiers = {};
-          item.modifier_groups.forEach(group => {
-              if (group.selectionType === 'single' && group.isRequired && group.options?.length > 0) {
-                   // Auto-select first option if required single
-                   initialModifiers[group.id] = group.options[0].id;
-              } else if (group.selectionType === 'multiple') {
-                  initialModifiers[group.id] = [];
-              }
+          item.modifier_groups.forEach((group) => {
+            if (
+              group.selectionType === "single" &&
+              group.isRequired &&
+              group.options?.length > 0
+            ) {
+              // Auto-select first option if required single
+              initialModifiers[group.id] = group.options[0].id;
+            } else if (group.selectionType === "multiple") {
+              initialModifiers[group.id] = [];
+            }
           });
           setSelectedModifiers(initialModifiers);
         }
-
       } catch (err) {
         console.error("Failed to fetch menu item:", err);
         setError("Failed to load menu item details");
@@ -179,20 +182,20 @@ const MenuItemDetail = () => {
 
     if (menuItem?.modifier_groups) {
       Object.entries(selectedModifiers).forEach(([groupId, selection]) => {
-          const group = menuItem.modifier_groups.find(g => g.id === groupId);
-          if (!group) return;
+        const group = menuItem.modifier_groups.find((g) => g.id === groupId);
+        if (!group) return;
 
-          if (Array.isArray(selection)) {
-              // Multiple
-              selection.forEach(optId => {
-                  const opt = group.options?.find(o => o.id === optId);
-                  if (opt) total += (opt.priceAdjustment || 0);
-              });
-          } else {
-               // Single
-               const opt = group.options?.find(o => o.id === selection);
-               if (opt) total += (opt.priceAdjustment || 0);
-          }
+        if (Array.isArray(selection)) {
+          // Multiple
+          selection.forEach((optId) => {
+            const opt = group.options?.find((o) => o.id === optId);
+            if (opt) total += opt.priceAdjustment || 0;
+          });
+        } else {
+          // Single
+          const opt = group.options?.find((o) => o.id === selection);
+          if (opt) total += opt.priceAdjustment || 0;
+        }
       });
     }
 
@@ -204,7 +207,11 @@ const MenuItemDetail = () => {
       // Validate required modifiers
       if (menuItem?.modifier_groups) {
         for (const group of menuItem.modifier_groups) {
-          if (group.isRequired && group.selectionType === 'single' && !selectedModifiers[group.id]) {
+          if (
+            group.isRequired &&
+            group.selectionType === "single" &&
+            !selectedModifiers[group.id]
+          ) {
             alert(`Please select a ${group.name}`);
             return;
           }
@@ -215,24 +222,26 @@ const MenuItemDetail = () => {
         menuItemId: menuItem.id,
         quantity,
         specialInstructions,
-        modifiers: selectedModifiers 
+        modifiers: selectedModifiers,
       };
 
       const orderData = {
         items: [orderItem],
-        customerName: localStorage.getItem('customerName') || 'Guest',
-        customerPhone: localStorage.getItem('customerPhone') || '',
-        specialInstructions: `Added ${menuItem.name} (${JSON.stringify(selectedModifiers)}) ${specialInstructions ? ': ' + specialInstructions : ''}`
+        customerName: localStorage.getItem("customerName") || "Guest",
+        customerPhone: localStorage.getItem("customerPhone") || "",
+        specialInstructions: `Added ${menuItem.name} (${JSON.stringify(
+          selectedModifiers
+        )}) ${specialInstructions ? ": " + specialInstructions : ""}`,
       };
 
       const result = await orderService.createOrder(orderData);
       console.log("Order created:", result);
-      
-      navigate("/customer/menu", { 
-        state: { 
+
+      navigate("/customer/menu", {
+        state: {
           message: `Order placed successfully! Order ID: ${result.data?.id}`,
-          orderData: result.data 
-        } 
+          orderData: result.data,
+        },
       });
     } catch (error) {
       console.error("Failed to create order:", error);
@@ -244,9 +253,8 @@ const MenuItemDetail = () => {
     navigate("/customer/menu-browse");
   };
 
-
-
-  const isAvailable = menuItem?.availability === "available" || menuItem?.isAvailable;
+  const isAvailable =
+    menuItem?.availability === "available" || menuItem?.isAvailable;
 
   // Loading state
   if (loading) {
@@ -330,7 +338,10 @@ const MenuItemDetail = () => {
                         Total ({quantity} {quantity === 1 ? "item" : "items"})
                       </p>
                       <p className="text-3xl font-heading font-bold text-primary data-text">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculateTotalPrice())}
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(calculateTotalPrice())}
                       </p>
                     </div>
                   </div>
@@ -355,7 +366,7 @@ const MenuItemDetail = () => {
               nutritionalData={mockNutritionalData}
               ingredients={mockIngredients}
             />
-            
+
             <ReviewSection
               reviews={reviews}
               overallRating={menuItem?.rating}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
@@ -12,10 +13,12 @@ const MenuItemList = () => {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [noRestaurant, setNoRestaurant] = useState(false);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -55,7 +58,13 @@ const MenuItemList = () => {
       }
     } catch (error) {
       console.error("Failed to fetch items:", error);
-      toast.error("Failed to load menu items");
+      // Check if it's because of missing restaurant
+      if (error.response?.data?.message?.includes("No restaurant assigned")) {
+        setNoRestaurant(true);
+        toast.error("No restaurant assigned to your account");
+      } else {
+        toast.error("Failed to load menu items");
+      }
       // Fallback data
       setItems([]);
     } finally {
@@ -78,15 +87,24 @@ const MenuItemList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      try {
-        await menuService.deleteItem(id);
-        toast.success("Item deleted");
-        fetchItems();
-      } catch (error) {
-        toast.error("Failed to delete item");
-      }
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+    try {
+      await menuService.deleteItem(deleteConfirm);
+      toast.success("Item deleted");
+      fetchItems();
+    } catch (error) {
+      toast.error("Failed to delete item");
+    } finally {
+      setDeleteConfirm(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
   };
 
   const handleCreate = () => {
@@ -219,11 +237,27 @@ const MenuItemList = () => {
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="px-4 py-4 text-center text-gray-500"
-                  >
-                    No items found.
+                  <td colSpan="7" className="px-4 py-8 text-center">
+                    {noRestaurant ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <Icon
+                          name="alert-circle"
+                          className="w-12 h-12 text-amber-500"
+                        />
+                        <div>
+                          <p className="text-gray-700 font-medium mb-1">
+                            No Restaurant Assigned
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            Your account doesn't have a restaurant assigned yet.
+                            Please contact the administrator to set up your
+                            restaurant.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-500">No items found.</p>
+                    )}
                   </td>
                 </tr>
               ) : (
@@ -324,6 +358,29 @@ const MenuItemList = () => {
         itemId={editingItemId}
         onSave={handleModalSave}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm &&
+        createPortal(
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+              <h3 className="text-lg font-semibold mb-4">Delete menu item?</h3>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to delete this menu item? This action
+                cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={cancelDelete}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={confirmDelete}>
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

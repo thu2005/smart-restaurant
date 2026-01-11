@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import Button from "components/ui/Button";
 import Input from "components/ui/Input";
@@ -48,9 +49,9 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
     { value: "inactive", label: "Inactive" },
   ];
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button
@@ -145,7 +146,8 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

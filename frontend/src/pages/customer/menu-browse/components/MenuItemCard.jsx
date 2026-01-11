@@ -62,7 +62,7 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
             <Icon name={availabilityConfig?.icon} size={14} />
             <span>{availabilityConfig?.label}</span>
           </div>
-          
+
           <div className="flex flex-col gap-1 items-end">
             {item?.isPopular && (
               <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-sm">
@@ -71,7 +71,10 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
               </div>
             )}
             {item?.isChefRecommended && (
-              <div className="bg-primary text-primary-foreground p-1.5 rounded-md shadow-sm" title="Chef Recommended">
+              <div
+                className="bg-primary text-primary-foreground p-1.5 rounded-md shadow-sm"
+                title="Chef Recommended"
+              >
                 <Icon name="ChefHat" size={16} />
               </div>
             )}
@@ -84,7 +87,10 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
             {item?.name}
           </h3>
           <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap data-text">
-            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price)}
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(item?.price)}
           </span>
         </div>
 

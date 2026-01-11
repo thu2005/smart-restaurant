@@ -19,10 +19,12 @@ connectDB();
 const app = express();
 
 // Middleware
+// Serve uploads folder as static files
+app.use('/uploads', express.static('uploads'));
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5174",
+    origin: true, // Allow all origins for development/testing
     credentials: true,
   })
 );
@@ -96,6 +98,7 @@ app.use("/api/orders", require("./src/routes/order.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
 app.use("/api/reviews", require("./src/routes/review.routes"));
 app.use("/api/reports", require("./src/routes/report.routes"));
+app.use("/api/carts", require("./src/routes/cart.routes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -117,7 +120,7 @@ app.use((req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 5001;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
   );

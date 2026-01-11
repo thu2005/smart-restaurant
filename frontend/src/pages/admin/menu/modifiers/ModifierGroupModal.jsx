@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import Button from "components/ui/Button";
 import Input from "components/ui/Input";
@@ -64,9 +65,9 @@ const ModifierGroupModal = ({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8">
+  return createPortal(
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8 max-h-[90vh] overflow-y-auto flex flex-col">
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white rounded-t-lg z-10">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button
@@ -205,7 +206,8 @@ const ModifierGroupModal = ({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
