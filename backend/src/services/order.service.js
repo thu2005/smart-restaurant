@@ -93,7 +93,15 @@ class OrderService {
         const { status, tableId } = filters;
         const where = { restaurantId };
 
-        if (status) where.status = status;
+        // Handle multiple statuses (comma-separated string)
+        if (status) {
+            if (status.includes(',')) {
+                // Split comma-separated statuses into array
+                where.status = { in: status.split(',').map(s => s.trim()) };
+            } else {
+                where.status = status;
+            }
+        }
         if (tableId) where.tableId = tableId;
 
         return await prisma.order.findMany({
@@ -108,6 +116,7 @@ class OrderService {
             orderBy: { createdAt: 'desc' },
         });
     }
+
 
     async updateStatus(orderId, status, userId) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
