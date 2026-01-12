@@ -73,10 +73,10 @@ exports.getOrders = async (req, res, next) => {
 
 exports.updateOrderStatus = async (req, res, next) => {
     try {
-        const { status } = req.body;
+        const { status, rejectionReason } = req.body;
         const { id } = req.params;
 
-        const order = await orderService.updateStatus(id, status, req.user.id);
+        const order = await orderService.updateStatus(id, status, req.user.id, rejectionReason);
 
         const io = req.app.get('io');
         if (io) {
@@ -156,7 +156,7 @@ exports.updateOrderItemStatus = async (req, res, next) => {
     try {
         const { orderId, itemId } = req.params;
         const { itemStatus } = req.body;
-        
+
         const updatedItem = await orderService.updateOrderItemStatus(orderId, itemId, itemStatus);
         res.status(200).json({ success: true, data: updatedItem });
     } catch (error) {

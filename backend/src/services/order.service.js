@@ -109,7 +109,7 @@ class OrderService {
         });
     }
 
-    async updateStatus(orderId, status, userId) {
+    async updateStatus(orderId, status, userId, rejectionReason = null) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
         if (!order) throw new Error('Order not found');
 
@@ -119,6 +119,8 @@ class OrderService {
         if (status === 'RECEIVED') {
             updateData.acceptedAt = now;
             updateData.acceptedById = userId; // Waiter
+        } else if (status === 'REJECTED') {
+            updateData.rejectionReason = rejectionReason;
         } else if (status === 'PREPARING') {
             updateData.preparingAt = now;
         } else if (status === 'READY') {
