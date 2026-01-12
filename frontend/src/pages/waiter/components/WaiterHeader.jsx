@@ -48,7 +48,7 @@ const WaiterHeader = () => {
     };
 
     return (
-        <div className="bg-primary text-primary-foreground px-4 md:px-6 py-4 flex items-center justify-between shadow-warm">
+        <div className="bg-primary-foreground text-foreground px-4 md:px-6 py-4 flex items-center justify-between shadow-warm">
             <h1 className="text-lg md:text-xl font-heading font-bold">
                 Waiter Dashboard
             </h1>
@@ -57,7 +57,7 @@ const WaiterHeader = () => {
             <div className="relative" ref={dropdownRef}>
                 <button
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/30 flex items-center justify-center font-semibold text-sm md:text-base transition-smooth focus-ring"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center font-semibold text-sm md:text-base transition-smooth focus-ring"
                     aria-label="User menu"
                 >
                     {getInitials(user?.fullName)}

@@ -81,7 +81,8 @@ async function main() {
             fullName: 'John Waiter',
             role: 'WAITER',
             restaurantId: restaurant.id,
-            isActive: true
+            isActive: true,
+            emailVerified: true
         }
     });
 
@@ -93,7 +94,8 @@ async function main() {
             fullName: 'Gordon Chef',
             role: 'KITCHEN',
             restaurantId: restaurant.id,
-            isActive: true
+            isActive: true,
+            emailVerified: true
         }
     });
 
@@ -105,7 +107,8 @@ async function main() {
             fullName: 'Alice Customer',
             role: 'CUSTOMER',
             restaurantId: null,
-            isActive: true
+            isActive: true,
+            emailVerified: true
         }
     });
 

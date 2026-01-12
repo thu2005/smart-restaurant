@@ -42,7 +42,7 @@ const waiterService = {
      */
     getWaiterOrders: async (status = null) => {
         const params = status ? { status } : {};
-        const response = await api.get("/orders/waiter/orders", { params });
+        const response = await api.get("/orders/waiter/my-orders", { params });
         return response.data;
     },
 
@@ -51,7 +51,7 @@ const waiterService = {
      * @returns {Promise} Tables with active orders
      */
     getWaiterTables: async () => {
-        const response = await api.get("/orders/waiter/tables");
+        const response = await api.get("/orders/waiter/my-tables");
         return response.data;
     },
 

@@ -36,9 +36,16 @@ const Login = () => {
       toast.success("Login successful!");
       // Get user from localStorage
       const user = authService.getCurrentUser();
+
+      // Role-based redirect
       if (user?.role === "CUSTOMER") {
         navigate("/customer/menu-browse", { replace: true });
+      } else if (user?.role === "WAITER") {
+        navigate("/waiter", { replace: true });
+      } else if (user?.role === "KITCHEN") {
+        navigate("/kitchen/dashboard", { replace: true });
       } else {
+        // ADMIN or SUPER_ADMIN
         navigate(from, { replace: true });
       }
     } catch (error) {
