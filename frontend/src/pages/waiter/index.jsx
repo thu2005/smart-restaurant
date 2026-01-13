@@ -4,6 +4,9 @@ import WaiterHeader from "./components/WaiterHeader";
 import OrderTabs from "./components/OrderTabs";
 import OrderCard from "./components/OrderCard";
 import RejectModal from "./components/RejectModal";
+import BillSummary from "./components/BillSummary";
+import DiscountModal from "./components/DiscountModal";
+import PaymentModal from "./components/PaymentModal";
 import waiterService from "../../services/waiterService";
 import authService from "../../services/authService";
 
@@ -22,6 +25,12 @@ const WaiterDashboard = () => {
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [socket, setSocket] = useState(null);
+
+    // Bill management state
+    const [bills, setBills] = useState({});  // { orderId: billData }
+    const [discountModalOpen, setDiscountModalOpen] = useState(false);
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [selectedOrderForBill, setSelectedOrderForBill] = useState(null);
 
     const user = authService.getCurrentUser();
     const restaurantId = user?.restaurantId;
@@ -80,7 +89,12 @@ const WaiterDashboard = () => {
                     response = await waiterService.getPendingOrders(restaurantId);
                     break;
                 case "accepted":
-                    response = await waiterService.getWaiterOrders("RECEIVED");
+                    // Show both RECEIVED and PREPARING (in-kitchen) orders
+                    const receivedRes = await waiterService.getWaiterOrders("RECEIVED");
+                    const preparingRes = await waiterService.getWaiterOrders("PREPARING");
+                    response = {
+                        data: [...(receivedRes.data || []), ...(preparingRes.data || [])]
+                    };
                     break;
                 case "ready":
                     response = await waiterService.getWaiterOrders("READY");
@@ -93,12 +107,13 @@ const WaiterDashboard = () => {
 
             // Update counts
             const pendingRes = await waiterService.getPendingOrders(restaurantId);
-            const acceptedRes = await waiterService.getWaiterOrders("RECEIVED");
+            const receivedCount = await waiterService.getWaiterOrders("RECEIVED");
+            const preparingCount = await waiterService.getWaiterOrders("PREPARING");
             const readyRes = await waiterService.getWaiterOrders("READY");
 
             setCounts({
                 pending: pendingRes.data?.length || 0,
-                accepted: acceptedRes.data?.length || 0,
+                accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
                 ready: readyRes.data?.length || 0,
                 tables: tables.length,
             });
@@ -162,6 +177,85 @@ const WaiterDashboard = () => {
         } catch (err) {
             console.error("Error marking order as served:", err);
             alert("Failed to mark order as served. Please try again.");
+        }
+    };
+
+    // ============================================
+    // Bill Management Handlers
+    // ============================================
+
+    const handleCreateBill = async (order) => {
+        try {
+            const response = await waiterService.createBill(order.id);
+            // Ensure bill data is properly parsed
+            const billData = response.data?.bill || response.data;
+            setBills(prev => ({ ...prev, [order.id]: billData }));
+        } catch (err) {
+            console.error("Error creating bill:", err);
+            alert("Failed to create bill. Please try again.");
+        }
+    };
+
+    const handleApplyDiscount = (order) => {
+        setSelectedOrderForBill(order);
+        setDiscountModalOpen(true);
+    };
+
+    const handleConfirmDiscount = async (discountAmount) => {
+        if (!selectedOrderForBill) return;
+
+        try {
+            await waiterService.applyDiscount(selectedOrderForBill.id, discountAmount);
+            // Refresh bill
+            const response = await waiterService.getBill(selectedOrderForBill.id);
+            const billData = response.data?.bill || response.data;
+            setBills(prev => ({ ...prev, [selectedOrderForBill.id]: billData }));
+        } catch (err) {
+            console.error("Error applying discount:", err);
+            alert("Failed to apply discount. Please try again.");
+        }
+    };
+
+    const handlePrintBill = async (order) => {
+        try {
+            await waiterService.printBill(order.id);
+        } catch (err) {
+            console.error("Error printing bill:", err);
+            alert("Failed to print bill. Please try again.");
+        }
+    };
+
+    const handleProcessPayment = (order) => {
+        setSelectedOrderForBill(order);
+        setPaymentModalOpen(true);
+    };
+
+    const handleConfirmPayment = async (paymentMethod) => {
+        if (!selectedOrderForBill) return;
+
+        const bill = bills[selectedOrderForBill.id];
+        if (!bill) return;
+
+        try {
+            await waiterService.processPayment(selectedOrderForBill.id, {
+                method: paymentMethod,
+                amount: bill.subtotal,
+                tax: bill.tax,
+                total: bill.total
+            });
+
+            // Remove bill from state and refresh tables
+            setBills(prev => {
+                const newBills = { ...prev };
+                delete newBills[selectedOrderForBill.id];
+                return newBills;
+            });
+
+            fetchTables();
+            alert("Payment processed successfully!");
+        } catch (err) {
+            console.error("Error processing payment:", err);
+            alert("Failed to process payment. Please try again.");
         }
     };
 
@@ -240,11 +334,50 @@ const WaiterDashboard = () => {
                                             </span>
                                         </div>
                                         {tableData.orders.map((order) => (
-                                            <OrderCard
-                                                key={order.id}
-                                                order={order}
-                                                showActions={false}
-                                            />
+                                            <div key={order.id} className="space-y-3">
+                                                <OrderCard
+                                                    order={order}
+                                                    showActions={false}
+                                                />
+
+                                                {/* Bill Management Section */}
+                                                {order.status === 'SERVED' && (
+                                                    <div className="bg-muted/20 rounded-lg p-4 space-y-3">
+                                                        {!bills[order.id] ? (
+                                                            <button
+                                                                onClick={() => handleCreateBill(order)}
+                                                                className="w-full px-4 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-semibold text-sm transition-smooth"
+                                                            >
+                                                                Create Bill
+                                                            </button>
+                                                        ) : (
+                                                            <>
+                                                                <BillSummary bill={bills[order.id]} />
+                                                                <div className="grid grid-cols-2 gap-2">
+                                                                    <button
+                                                                        onClick={() => handleApplyDiscount(order)}
+                                                                        className="px-3 py-2 border border-border text-foreground bg-card hover:bg-muted rounded-lg font-semibold text-sm transition-smooth"
+                                                                    >
+                                                                        Apply Discount
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handlePrintBill(order)}
+                                                                        className="px-3 py-2 border border-border text-foreground bg-card hover:bg-muted rounded-lg font-semibold text-sm transition-smooth"
+                                                                    >
+                                                                        Print Bill
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => handleProcessPayment(order)}
+                                                                    className="w-full px-4 py-3 bg-success text-success-foreground hover:bg-success/90 rounded-lg font-semibold text-sm transition-smooth"
+                                                                >
+                                                                    Process Payment
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         ))}
                                     </div>
                                 ))}
@@ -259,6 +392,21 @@ const WaiterDashboard = () => {
                 onClose={() => setRejectModalOpen(false)}
                 onConfirm={handleConfirmReject}
                 order={selectedOrder}
+            />
+
+            <DiscountModal
+                isOpen={discountModalOpen}
+                onClose={() => setDiscountModalOpen(false)}
+                onConfirm={handleConfirmDiscount}
+                order={selectedOrderForBill}
+                currentBill={selectedOrderForBill ? bills[selectedOrderForBill.id] : null}
+            />
+
+            <PaymentModal
+                isOpen={paymentModalOpen}
+                onClose={() => setPaymentModalOpen(false)}
+                onConfirm={handleConfirmPayment}
+                bill={selectedOrderForBill ? bills[selectedOrderForBill.id] : null}
             />
         </div>
     );
