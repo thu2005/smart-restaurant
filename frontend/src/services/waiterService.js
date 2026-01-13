@@ -61,7 +61,7 @@ const waiterService = {
      * @returns {Promise} Updated order
      */
     acceptOrder: async (orderId) => {
-        const response = await api.put(`/orders/${orderId}/status`, {
+        const response = await api.patch(`/orders/${orderId}/status`, {
             status: "RECEIVED",
         });
         return response.data;
@@ -74,7 +74,7 @@ const waiterService = {
      * @returns {Promise} Updated order
      */
     rejectOrder: async (orderId, reason) => {
-        const response = await api.put(`/orders/${orderId}/status`, {
+        const response = await api.patch(`/orders/${orderId}/status`, {
             status: "REJECTED",
             rejectionReason: reason,
         });
@@ -87,7 +87,7 @@ const waiterService = {
      * @returns {Promise} Updated order
      */
     sendToKitchen: async (orderId) => {
-        const response = await api.put(`/orders/${orderId}/status`, {
+        const response = await api.patch(`/orders/${orderId}/status`, {
             status: "PREPARING",
         });
         return response.data;
@@ -99,7 +99,7 @@ const waiterService = {
      * @returns {Promise} Updated order
      */
     markAsServed: async (orderId) => {
-        const response = await api.put(`/orders/${orderId}/status`, {
+        const response = await api.patch(`/orders/${orderId}/status`, {
             status: "SERVED",
         });
         return response.data;

@@ -294,10 +294,10 @@ async function main() {
         }
     });
 
-    // 8. Create Order
-    console.log('Creating Sample Order...');
+    // 8. Create Orders
+    console.log('Creating Sample Orders...');
 
-    // Active Order on Table 1
+    // Order 1: Pending order on Table 1 (SUBMITTED)
     await prisma.order.create({
         data: {
             orderNumber: 'ORD-001',
@@ -305,6 +305,7 @@ async function main() {
             tableId: tables[0].id,
             restaurantId: restaurant.id,
             customerName: 'Guest John',
+            submittedAt: new Date(),
             orderItems: {
                 create: [
                     {
@@ -313,6 +314,158 @@ async function main() {
                         unitPrice: 12.99,
                         modifiers: ['Medium', 'French Fries'],
                         specialInstructions: 'No onions please'
+                    }
+                ]
+            }
+        }
+    });
+
+    // Order 2: Ready to serve on Table 2 (READY) - accepted by waiter
+    await prisma.order.create({
+        data: {
+            orderNumber: 'ORD-002',
+            status: 'READY',
+            tableId: tables[1].id,
+            restaurantId: restaurant.id,
+            customerName: 'Alice Smith',
+            acceptedById: waiter.id,
+            submittedAt: new Date(Date.now() - 30 * 60000), // 30 mins ago
+            acceptedAt: new Date(Date.now() - 28 * 60000),
+            preparingAt: new Date(Date.now() - 25 * 60000),
+            readyAt: new Date(Date.now() - 5 * 60000),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: burger.id,
+                        quantity: 1,
+                        unitPrice: 12.99,
+                        modifiers: ['Hot', 'Salad'],
+                        specialInstructions: 'Extra crispy'
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Spring Rolls' } })).id,
+                        quantity: 1,
+                        unitPrice: 5.99,
+                        modifiers: [],
+                        specialInstructions: null
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Fresh Lemonade' } })).id,
+                        quantity: 2,
+                        unitPrice: 3.50,
+                        modifiers: [],
+                        specialInstructions: 'Extra ice'
+                    }
+                ]
+            }
+        }
+    });
+
+    // Order 3: In kitchen on Table 3 (PREPARING) - accepted by waiter
+    await prisma.order.create({
+        data: {
+            orderNumber: 'ORD-003',
+            status: 'PREPARING',
+            tableId: tables[2].id,
+            restaurantId: restaurant.id,
+            customerName: 'Bob Johnson',
+            acceptedById: waiter.id,
+            submittedAt: new Date(Date.now() - 15 * 60000), // 15 mins ago
+            acceptedAt: new Date(Date.now() - 14 * 60000),
+            preparingAt: new Date(Date.now() - 12 * 60000),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Premium Steak' } })).id,
+                        quantity: 1,
+                        unitPrice: 24.99,
+                        modifiers: [],
+                        specialInstructions: 'Medium rare'
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Truffle Mushroom Pasta' } })).id,
+                        quantity: 1,
+                        unitPrice: 18.50,
+                        modifiers: [],
+                        specialInstructions: 'No garlic'
+                    }
+                ]
+            }
+        }
+    });
+
+    // Order 4: Another ready order on Table 4 (READY) - accepted by waiter
+    await prisma.order.create({
+        data: {
+            orderNumber: 'ORD-004',
+            status: 'READY',
+            tableId: tables[3].id,
+            restaurantId: restaurant.id,
+            customerName: 'Carol White',
+            acceptedById: waiter.id,
+            submittedAt: new Date(Date.now() - 25 * 60000),
+            acceptedAt: new Date(Date.now() - 23 * 60000),
+            preparingAt: new Date(Date.now() - 20 * 60000),
+            readyAt: new Date(Date.now() - 3 * 60000),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Classic Caesar Salad' } })).id,
+                        quantity: 2,
+                        unitPrice: 10.99,
+                        modifiers: [],
+                        specialInstructions: 'Dressing on the side'
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Classic Tiramisu' } })).id,
+                        quantity: 1,
+                        unitPrice: 7.99,
+                        modifiers: [],
+                        specialInstructions: null
+                    }
+                ]
+            }
+        }
+    });
+
+    // Order 5: Pending multi-item order on Table 5 (SUBMITTED)
+    await prisma.order.create({
+        data: {
+            orderNumber: 'ORD-005',
+            status: 'SUBMITTED',
+            tableId: tables[4].id,
+            restaurantId: restaurant.id,
+            customerName: 'David Brown',
+            submittedAt: new Date(),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: burger.id,
+                        quantity: 3,
+                        unitPrice: 12.99,
+                        modifiers: ['Extra Hot', 'French Fries', 'Mashed Potato'],
+                        specialInstructions: 'Make it spicy!'
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Spring Rolls' } })).id,
+                        quantity: 2,
+                        unitPrice: 5.99,
+                        modifiers: [],
+                        specialInstructions: 'Vegetarian only'
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'Fresh Lemonade' } })).id,
+                        quantity: 3,
+                        unitPrice: 3.50,
+                        modifiers: [],
+                        specialInstructions: 'No sugar'
+                    },
+                    {
+                        menuItemId: (await prisma.menuItem.findFirst({ where: { name: 'New York Cheesecake' } })).id,
+                        quantity: 1,
+                        unitPrice: 8.50,
+                        modifiers: [],
+                        specialInstructions: null
                     }
                 ]
             }
