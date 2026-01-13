@@ -3,6 +3,20 @@ import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 
 const ActiveOrderCard = ({ order, onStatusUpdate }) => {
+  // Map backend status to frontend display status
+  const mapStatus = (backendStatus) => {
+    const statusMap = {
+      SUBMITTED: "pending",
+      RECEIVED: "preparing",
+      PREPARING: "preparing",
+      READY: "ready",
+      SERVED: "served",
+      CANCELLED: "cancelled",
+      REJECTED: "rejected",
+    };
+    return statusMap[backendStatus] || backendStatus?.toLowerCase();
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       pending: "bg-warning/10 text-warning border-warning/20",
@@ -23,13 +37,13 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
     return icons?.[status] || "Clock";
   };
 
-  const isOverdue = order?.status === "overdue" || order?.prepTime > 30;
+  const displayStatus = mapStatus(order?.status);
+  const isOverdue = displayStatus === "overdue" || order?.prepTime > 30;
 
   return (
     <div
-      className={`bg-card rounded-lg border ${
-        isOverdue ? "border-error" : "border-border"
-      } p-3 md:p-4 hover:shadow-warm transition-smooth`}
+      className={`bg-card rounded-lg border ${isOverdue ? "border-error" : "border-border"
+        } p-3 md:p-4 hover:shadow-warm transition-smooth`}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2 md:gap-3">
@@ -47,12 +61,12 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
         </div>
         <div
           className={`px-2 md:px-3 py-1 rounded-full border text-xs md:text-sm font-medium ${getStatusColor(
-            order?.status
+            displayStatus
           )}`}
         >
           <div className="flex items-center gap-1">
-            <Icon name={getStatusIcon(order?.status)} size={14} />
-            <span className="capitalize">{order?.status}</span>
+            <Icon name={getStatusIcon(displayStatus)} size={14} />
+            <span className="capitalize">{displayStatus}</span>
           </div>
         </div>
       </div>
@@ -87,9 +101,8 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
             }
           />
           <span
-            className={`text-xs md:text-sm font-medium data-text ${
-              isOverdue ? "text-error" : "text-muted-foreground"
-            }`}
+            className={`text-xs md:text-sm font-medium data-text ${isOverdue ? "text-error" : "text-muted-foreground"
+              }`}
           >
             {order?.prepTime} min
           </span>
