@@ -688,32 +688,34 @@ async function main() {
         }
     });
 
-    // 9. Create Sample Order
+    // 9. Create Sample Orders
     console.log('📦 Creating Sample Orders...');
-    // Create all sample orders in a single function for clarity
+    // Create diverse orders matching kitchen dashboard requirements
     const sampleOrders = [
         {
             orderNumber: 'ORD-001',
             status: 'SUBMITTED',
-            tableId: tables[0].id,
+            tableId: tables[4].id, // Table 5
             restaurantId: restaurant.id,
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
+            specialInstructions: 'Customer celebrating anniversary - please ensure presentation is excellent',
+            submittedAt: new Date(), // Now
             orderItems: {
                 create: [
                     {
-                        menuItemId: beefSteak.id,
-                        quantity: 1,
-                        unitPrice: 450000,
-                        modifiers: ['French Fries', 'Garden Salad'],
-                        specialInstructions: 'Medium rare please'
+                        menuItemId: grilledSalmon.id,
+                        quantity: 2,
+                        unitPrice: 245000,
+                        modifiers: ['Extra Lemon', 'No Butter'],
+                        specialInstructions: 'Well done, customer has fish allergy concerns'
                     },
                     {
-                        menuItemId: vietnameseCoffee.id,
-                        quantity: 2,
-                        unitPrice: 45000,
-                        modifiers: ['Medium'],
+                        menuItemId: caesarSalad.id,
+                        quantity: 1,
+                        unitPrice: 70000,
+                        modifiers: ['No Croutons', 'Dressing on Side'],
                         specialInstructions: ''
                     }
                 ]
@@ -721,46 +723,59 @@ async function main() {
         },
         {
             orderNumber: 'ORD-002',
-            status: 'SUBMITTED',
-            tableId: tables[1].id,
+            status: 'PREPARING',
+            tableId: tables[11].id, // Table 12
             restaurantId: restaurant.id,
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
+            submittedAt: new Date(), // Now
+            acceptedAt: new Date(),
+            preparingAt: new Date(),
             orderItems: {
                 create: [
                     {
-                        menuItemId: grilledSalmon.id,
-                        quantity: 2,
-                        unitPrice: 320000,
-                        modifiers: ['Mild'],
-                        specialInstructions: 'No lemon'
+                        menuItemId: springRolls.id,
+                        quantity: 1,
+                        unitPrice: 65000,
+                        modifiers: ['Extra Cheese', 'Thin Crust'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: friedCalamari.id,
+                        quantity: 3,
+                        unitPrice: 85000,
+                        modifiers: ['Spicy', 'Ranch Dressing'],
+                        specialInstructions: ''
                     }
                 ]
             }
         },
         {
             orderNumber: 'ORD-003',
-            status: 'SUBMITTED',
-            tableId: tables[2].id,
+            status: 'PREPARING',
+            tableId: tables[7].id, // Table 8
             restaurantId: restaurant.id,
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
+            submittedAt: new Date(), // Now
+            acceptedAt: new Date(),
+            preparingAt: new Date(),
             orderItems: {
                 create: [
                     {
-                        menuItemId: tiramisu.id,
-                        quantity: 1,
-                        unitPrice: 65000,
-                        modifiers: [],
-                        specialInstructions: ''
+                        menuItemId: beefSteak.id,
+                        quantity: 2,
+                        unitPrice: 450000,
+                        modifiers: ['Medium Rare', 'Extra Pickles', 'No Onions'],
+                        specialInstructions: 'One burger without cheese for dietary restrictions'
                     },
                     {
-                        menuItemId: vietnameseCoffee.id,
-                        quantity: 1,
-                        unitPrice: 45000,
-                        modifiers: ['Small'],
+                        menuItemId: mangoSmoothie.id,
+                        quantity: 2,
+                        unitPrice: 55000,
+                        modifiers: ['Large Size'],
                         specialInstructions: ''
                     }
                 ]
@@ -768,26 +783,96 @@ async function main() {
         },
         {
             orderNumber: 'ORD-004',
-            status: 'SUBMITTED',
-            tableId: tables[3].id,
+            status: 'READY',
+            tableId: tables[2].id, // Table 3
             restaurantId: restaurant.id,
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
+            submittedAt: new Date(), // Now
+            acceptedAt: new Date(),
+            preparingAt: new Date(),
+            readyAt: new Date(),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: chickenCurry.id,
+                        quantity: 1,
+                        unitPrice: 125000,
+                        modifiers: ['Extra Spicy', 'Brown Rice'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: springRolls.id,
+                        quantity: 4,
+                        unitPrice: 65000,
+                        modifiers: ['Vegetarian'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-005',
+            status: 'SUBMITTED',
+            tableId: tables[14].id, // Table 15
+            restaurantId: restaurant.id,
+            customerId: customer1.id,
+            customerName: customer1.fullName,
+            customerPhone: customer1.phone,
+            submittedAt: new Date(), // Now
             orderItems: {
                 create: [
                     {
                         menuItemId: beefSteak.id,
                         quantity: 1,
                         unitPrice: 450000,
-                        modifiers: ['Hot'],
-                        specialInstructions: 'Well done'
+                        modifiers: ['Medium', 'Garlic Butter'],
+                        specialInstructions: 'Customer prefers thicker cut'
                     },
                     {
-                        menuItemId: grilledSalmon.id,
+                        menuItemId: veganBowl.id,
                         quantity: 1,
-                        unitPrice: 320000,
-                        modifiers: ['Medium'],
+                        unitPrice: 95000,
+                        modifiers: ['Extra Gravy'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: garlicShrimp.id,
+                        quantity: 1,
+                        unitPrice: 185000,
+                        modifiers: [],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-006',
+            status: 'READY',
+            tableId: tables[6].id, // Table 7
+            restaurantId: restaurant.id,
+            customerId: customer2.id,
+            customerName: customer2.fullName,
+            customerPhone: customer2.phone,
+            submittedAt: new Date(), // Now
+            acceptedAt: new Date(),
+            preparingAt: new Date(),
+            readyAt: new Date(),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: phoBeef.id,
+                        quantity: 2,
+                        unitPrice: 75000,
+                        modifiers: ['Extra Croutons'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: friedCalamari.id,
+                        quantity: 1,
+                        unitPrice: 85000,
+                        modifiers: [],
                         specialInstructions: ''
                     }
                 ]

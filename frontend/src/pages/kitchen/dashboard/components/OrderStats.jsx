@@ -38,24 +38,27 @@ const OrderStats = ({ stats }) => {
       {statCards?.map((stat, index) => (
         <div
           key={index}
-          className="bg-card rounded-lg border border-border shadow-warm p-4 md:p-6 transition-smooth hover:shadow-warm-md"
+          className={`flex items-center gap-2 px-4 py-3 min-h-[120px] bg-${stat.color}/10 border border-gray-200 
+          rounded-lg shadow-md transition-all duration-300 group hover:shadow-lg hover:border-${stat.color}/50 
+          hover:scale-[1.01] ${stat.color === 'accent' ? 'border-l-4 border-l-accent' : stat.color === 'warning' ? 'border-l-4 border-l-warning' : stat.color === 'primary' ? 'border-l-4 border-l-primary' : stat.color === 'success' ? 'border-l-4 border-l-success' : ''}`}
         >
-          <div className="flex items-center justify-between mb-3">
-            <div
-              className={`w-10 h-10 md:w-12 md:h-12 ${stat?.bgColor} rounded-lg flex items-center justify-center`}
-            >
-              <Icon
-                name={stat?.icon}
-                size={20}
-                color={`var(--color-${stat?.color})`}
-              />
+          <div
+            className={`w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-${stat.color}/10 to-${stat.color}/20 
+            rounded-lg flex items-center justify-center shadow group-hover:scale-105 transition-transform duration-300`}
+          >
+            <Icon
+              name={stat?.icon}
+              size={20}
+              color={`var(--color-${stat?.color})`}
+            />
+          </div>
+          <div>
+            <div className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-1 data-text">
+              {stat?.value}
             </div>
-          </div>
-          <div className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-1 data-text">
-            {stat?.value}
-          </div>
-          <div className="text-xs md:text-sm text-muted-foreground font-medium">
-            {stat?.label}
+            <div className={`text-xs md:text-sm font-bold uppercase tracking-widest text-${stat.color}`}>
+              {stat?.label}
+            </div>
           </div>
         </div>
       ))}
