@@ -117,8 +117,7 @@ class OrderService {
         });
     }
 
-
-    async updateStatus(orderId, status, userId) {
+    async updateStatus(orderId, status, userId, rejectionReason = null) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
         if (!order) throw new Error('Order not found');
 
@@ -128,6 +127,8 @@ class OrderService {
         if (status === 'RECEIVED') {
             updateData.acceptedAt = now;
             updateData.acceptedById = userId; // Waiter
+        } else if (status === 'REJECTED') {
+            updateData.rejectionReason = rejectionReason;
         } else if (status === 'PREPARING') {
             updateData.preparingAt = now;
         } else if (status === 'READY') {
@@ -248,15 +249,50 @@ class OrderService {
     }
 
     async applyDiscount(orderId, amount) {
-        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { bill: true }
+        });
         if (!order) throw new Error('Order not found');
 
-        // Validate that discount doesn't exceed order total? 
-        // Logic can be added here.
-
-        return await prisma.order.update({
+        // Update order discount
+        await prisma.order.update({
             where: { id: orderId },
             data: { discount: Number(amount) }
+        });
+
+        // If bill exists, update bill as well
+        if (order.bill) {
+            // Recalculate bill totals
+            const orderWithItems = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: { orderItems: true }
+            });
+
+            let subtotal = 0;
+            for (const item of orderWithItems.orderItems) {
+                subtotal += (Number(item.unitPrice) * item.quantity);
+            }
+
+            const discount = Number(amount);
+            const taxRate = 0.1;
+            const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+            const tax = subtotalAfterDiscount * taxRate;
+            const total = subtotalAfterDiscount + tax;
+
+            await prisma.bill.update({
+                where: { id: order.bill.id },
+                data: {
+                    discount,
+                    tax,
+                    total
+                }
+            });
+        }
+
+        return await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { bill: true, orderItems: { include: { menuItem: true } } }
         });
     }
 
@@ -353,8 +389,8 @@ class OrderService {
             const y = doc.y;
             doc.text(item.name, 50, y, { width: 190 });
             doc.text(item.quantity.toString(), 250, y);
-            doc.text(item.unitPrice.toLocaleString('vi-VN') + ' đ', 350, y);
-            doc.text(item.total.toLocaleString('vi-VN') + ' đ', 450, y);
+            doc.text('$' + item.unitPrice.toFixed(2), 350, y);
+            doc.text('$' + item.total.toFixed(2), 450, y);
 
             if (item.modifiers && item.modifiers.length > 0) {
                 doc.fontSize(10).fillColor('grey').text(`  ${item.modifiers.join(', ')}`, 50, doc.y + 10);
@@ -370,18 +406,18 @@ class OrderService {
         // Totals
         const rightColX = 350;
         doc.text('Subtotal:', rightColX);
-        doc.text(billData.bill.subtotal.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        doc.text('$' + billData.bill.subtotal.toFixed(2), 450, doc.y - doc.currentLineHeight());
 
         if (billData.bill.discount > 0) {
             doc.text('Discount:', rightColX);
-            doc.text('-' + billData.bill.discount.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+            doc.text('-$' + billData.bill.discount.toFixed(2), 450, doc.y - doc.currentLineHeight());
         }
 
         doc.text('Tax (10%):', rightColX);
-        doc.text(billData.bill.tax.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        doc.text('$' + billData.bill.tax.toFixed(2), 450, doc.y - doc.currentLineHeight());
 
         doc.font('Helvetica-Bold').text('TOTAL:', rightColX, doc.y + 10);
-        doc.text(billData.bill.total.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        doc.text('$' + billData.bill.total.toFixed(2), 450, doc.y - doc.currentLineHeight());
 
         // Footer
         doc.moveDown(2);

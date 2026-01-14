@@ -46,6 +46,10 @@ const Login = () => {
         if (userRole === "CUSTOMER") {
           // If QR scan was done, go to menu-browse, otherwise default customer page
           targetPath = (restaurantId && tableId) ? `/customer/menu-browse/${restaurantId}/${tableId}` : "/customer/menu-browse";
+        } else if (userRole === "WAITER") {
+          targetPath = "/waiter";
+        } else if (userRole === "KITCHEN") {
+          targetPath = "/kitchen/dashboard";
         }
       }
 
