@@ -89,6 +89,136 @@ class OrderService {
         return order;
     }
 
+    /**
+     * Get active order for a table (not completed/cancelled)
+     * Used to check if table has ongoing order before creating new one
+     */
+    async getActiveOrderByTable(tableId, restaurantId) {
+        const order = await prisma.order.findFirst({
+            where: {
+                tableId,
+                restaurantId,
+                status: {
+                    notIn: ['COMPLETED', 'CANCELLED', 'REJECTED']
+                }
+            },
+            include: {
+                orderItems: {
+                    include: { menuItem: true }
+                },
+                table: true,
+                customer: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return order;
+    }
+
+    /**
+     * Add new items to existing order (for "add more items" flow)
+     * This maintains single order per table session
+     */
+    async addItemsToOrder(orderId, newItems) {
+        // 1. Verify order exists and can accept new items
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { orderItems: true }
+        });
+
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        if (['COMPLETED', 'CANCELLED', 'REJECTED'].includes(order.status)) {
+            throw new Error('Cannot add items to completed/cancelled order');
+        }
+
+        // 2. Prepare new order items (same logic as createOrder)
+        const orderItemsData = [];
+
+        for (const item of newItems) {
+            const menuItem = await prisma.menuItem.findUnique({
+                where: { id: item.menuItemId },
+            });
+
+            if (!menuItem) throw new Error(`Menu item ${item.menuItemId} not found`);
+
+            let modifiersPrice = 0;
+            let modifierDetails = [];
+
+            if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
+                const options = await prisma.modifierOption.findMany({
+                    where: {
+                        id: { in: item.modifiers }
+                    }
+                });
+
+                modifiersPrice = options.reduce((sum, opt) => sum + Number(opt.priceAdjustment), 0);
+                modifierDetails = options.map(opt => `${opt.name} (+${Number(opt.priceAdjustment)})`);
+            }
+
+            const unitPrice = Number(menuItem.price) + modifiersPrice;
+
+            orderItemsData.push({
+                orderId: orderId,
+                menuItemId: item.menuItemId,
+                quantity: item.quantity,
+                unitPrice: unitPrice,
+                modifiers: modifierDetails,
+                specialInstructions: item.specialInstructions,
+            });
+        }
+
+        // 3. Add new items to order
+        await prisma.orderItem.createMany({
+            data: orderItemsData
+        });
+
+        // 4. Update order timestamp and reset to SUBMITTED if it was already accepted
+        // (waiter needs to review new items)
+        const updateData = {
+            updatedAt: new Date()
+        };
+
+        // If order was already in progress, keep status but notify waiter
+        // If you don't want waiter to re-accept new items, comment below:
+        if (order.status !== 'SUBMITTED') {
+            updateData.status = 'SUBMITTED';
+        }
+
+        await prisma.order.update({
+            where: { id: orderId },
+            data: updateData
+        });
+
+        // 5. Increment orderCount for popularity tracking
+        for (const item of newItems) {
+            await prisma.menuItem.update({
+                where: { id: item.menuItemId },
+                data: {
+                    orderCount: {
+                        increment: item.quantity
+                    }
+                }
+            });
+        }
+
+        // 6. Return updated order
+        const updatedOrder = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                orderItems: {
+                    include: { menuItem: true }
+                },
+                table: true,
+                customer: true
+            }
+        });
+
+        return updatedOrder;
+    }
+
     async getOrders(restaurantId, filters = {}) {
         const { status, tableId } = filters;
         const where = { restaurantId };
