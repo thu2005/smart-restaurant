@@ -19,6 +19,10 @@ coverage/
 .env.test.local
 .env.production.local
 
+# Allow .env.production for deployment
+!.env.production
+!frontend/.env.production
+
 # IDE & Editor
 .vscode/
 .idea/

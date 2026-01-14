@@ -34,7 +34,7 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
   const availabilityConfig = getAvailabilityConfig(item?.availability);
 
   const handleCardClick = () => {
-    navigate("/menu-item-detail", { state: { itemId: item?.id } });
+    navigate(`/customer/menu-item-detail/${item?.id}`);
   };
 
   const handleQuickAdd = (e) => {
@@ -55,25 +55,31 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
           alt={item?.imageAlt}
           className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
         />
-        <div className="absolute top-2 left-2 right-2 flex items-start justify-between gap-2">
+        <div className="absolute top-2 left-2 right-2 flex items-start justify-between gap-2 pointer-events-none">
           <div
-            className={`${availabilityConfig?.bg} ${availabilityConfig?.color} px-2 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium`}
+            className={`${availabilityConfig?.bg} ${availabilityConfig?.color} px-2 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium backdrop-blur-sm bg-opacity-90`}
           >
             <Icon name={availabilityConfig?.icon} size={14} />
             <span>{availabilityConfig?.label}</span>
           </div>
-          {item?.isPopular && (
-            <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium">
-              <Icon name="TrendingUp" size={14} />
-              <span>Popular</span>
-            </div>
-          )}
-        </div>
-        {item?.isChefRecommended && (
-          <div className="absolute top-2 right-2 bg-primary text-primary-foreground p-1.5 rounded-full">
-            <Icon name="ChefHat" size={16} />
+
+          <div className="flex flex-col gap-1 items-end">
+            {item?.isPopular && (
+              <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-sm">
+                <Icon name="TrendingUp" size={14} />
+                <span>Popular</span>
+              </div>
+            )}
+            {item?.isChefRecommended && (
+              <div
+                className="bg-primary text-primary-foreground p-1.5 rounded-md shadow-sm"
+                title="Chef Recommended"
+              >
+                <Icon name="ChefHat" size={16} />
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
       <div className="p-3 md:p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -81,7 +87,10 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
             {item?.name}
           </h3>
           <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap data-text">
-            ${item?.price?.toFixed(2)}
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(item?.price)}
           </span>
         </div>
 

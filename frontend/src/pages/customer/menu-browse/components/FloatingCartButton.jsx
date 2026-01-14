@@ -13,7 +13,7 @@ const FloatingCartButton = ({ itemCount, totalAmount }) => {
       <Button
         variant="default"
         size="lg"
-        onClick={() => navigate("/shopping-cart")}
+        onClick={() => navigate("/customer/shopping-cart")}
         className="shadow-warm-xl hover:shadow-warm-lg transition-smooth rounded-full px-6 py-3 md:px-8 md:py-4"
       >
         <div className="flex items-center gap-3">

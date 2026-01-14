@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Table" ADD COLUMN     "isActive" BOOLEAN NOT NULL DEFAULT true;

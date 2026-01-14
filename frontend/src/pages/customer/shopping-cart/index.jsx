@@ -84,7 +84,7 @@ const ShoppingCart = () => {
   };
 
   const handleTableEdit = () => {
-    navigate("/menu-browse");
+    navigate("/customer/menu-browse");
   };
 
   const calculateSubtotal = () => {
@@ -105,7 +105,7 @@ const ShoppingCart = () => {
     setTimeout(() => {
       setIsProcessing(false);
       alert("Order placed successfully! Redirecting to order tracking...");
-      navigate("/menu-browse");
+      navigate("/customer/menu-browse");
     }, 2000);
   };
 
@@ -169,7 +169,7 @@ const ShoppingCart = () => {
                     size="sm"
                     iconName="Plus"
                     iconPosition="left"
-                    onClick={() => navigate("/menu-browse")}
+                    onClick={() => navigate("/customer/menu-browse")}
                   >
                     Add More
                   </Button>
@@ -223,7 +223,7 @@ const ShoppingCart = () => {
                   fullWidth
                   iconName="ArrowLeft"
                   iconPosition="left"
-                  onClick={() => navigate("/menu-browse")}
+                  onClick={() => navigate("/customer/menu-browse")}
                 >
                   Continue Shopping
                 </Button>
