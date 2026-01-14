@@ -26,7 +26,7 @@ const EmptyCartState = () => {
         size="lg"
         iconName="UtensilsCrossed"
         iconPosition="left"
-        onClick={() => navigate("/menu-browse")}
+        onClick={() => navigate("/customer/menu-browse")}
       >
         Browse Menu
       </Button>

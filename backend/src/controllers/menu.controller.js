@@ -11,6 +11,15 @@ exports.getCategories = async (req, res, next) => {
       req.user?.restaurantId;
 
     if (!restaurantId) {
+      // If user is authenticated but has no restaurant, return empty result
+      if (req.user) {
+        return res.status(200).json({ 
+          success: true, 
+          data: [],
+          message: "No restaurant assigned to user"
+        });
+      }
+      // For public routes without params, return 400
       return res
         .status(400)
         .json({ success: false, message: "Restaurant ID is required" });
@@ -85,16 +94,28 @@ exports.getMenuItems = async (req, res, next) => {
       req.user?.restaurantId;
 
     if (!restaurantId) {
+      // If user is authenticated but has no restaurant, return empty result
+      if (req.user) {
+        return res.status(200).json({ 
+          success: true, 
+          data: [],
+          pagination: { total: 0, page: 1, limit: 10, totalPages: 0 },
+          message: "No restaurant assigned to user"
+        });
+      }
+      // For public routes without params, return 400
       return res
         .status(400)
         .json({ success: false, message: "Restaurant ID is required" });
     }
 
-    const { categoryId, search, status, page, limit, sortBy } = req.query;
+    const { page, limit, sortBy, search, categoryId, status, isChefRecommended, isPopular } = req.query;
     const result = await menuService.getMenuItems(restaurantId, {
       categoryId,
       search,
       status,
+      isChefRecommended,
+      isPopular,
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 10,
       sortBy,

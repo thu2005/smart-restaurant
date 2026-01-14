@@ -7,9 +7,9 @@ const CustomerOrderProgress = () => {
   const location = useLocation();
 
   const steps = [
-    { path: "/menu-browse", label: "Browse Menu", icon: "UtensilsCrossed" },
-    { path: "/menu-item-detail", label: "Item Details", icon: "FileText" },
-    { path: "/shopping-cart", label: "Cart", icon: "ShoppingCart" },
+    { path: "/customer/menu-browse", label: "Browse Menu", icon: "UtensilsCrossed" },
+    { path: "/customer/menu-item-detail", label: "Item Details", icon: "FileText" },
+    { path: "/customer/shopping-cart", label: "Cart", icon: "ShoppingCart" },
   ];
 
   const getCurrentStepIndex = () => {

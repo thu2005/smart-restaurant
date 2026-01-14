@@ -141,6 +141,8 @@ class MenuService {
       categoryId,
       search,
       status,
+      isChefRecommended,
+      isPopular,
       page = 1,
       limit = 10,
       sortBy = "createdAt",
@@ -151,15 +153,27 @@ class MenuService {
     // Filter by category
     if (categoryId) where.categoryId = categoryId;
 
+    // Filter by chef recommendation
+    if (isChefRecommended === "true" || isChefRecommended === true) {
+      where.isChefRecommended = true;
+    }
+
+    // Filter by popular items
+    if (isPopular === "true" || isPopular === true) {
+      where.isPopular = true;
+    }
+
     // Filter by status - map frontend status to database fields
     if (status) {
       if (status === "available") {
         where.isAvailable = true;
-        where.stockStatus = { not: "out-of-stock" };
+        where.stockStatus = { notIn: ["sold_out", "low_stock"] };
+      } else if (status === "low_stock") {
+        where.stockStatus = "low_stock";
+      } else if (status === "sold_out") {
+        where.stockStatus = "sold_out";
       } else if (status === "unavailable") {
         where.isAvailable = false;
-      } else if (status === "sold_out") {
-        where.stockStatus = "out-of-stock";
       }
     }
 
@@ -187,10 +201,12 @@ class MenuService {
       case "name":
         orderBy = { name: "asc" };
         break;
-      case "popularity":
+      case "createdAt":
+        orderBy = { createdAt: "desc" };
+        break;
+      case "orderCount":
         orderBy = { orderCount: "desc" };
         break;
-      case "createdAt":
       default:
         orderBy = { createdAt: "desc" };
         break;
@@ -208,8 +224,25 @@ class MenuService {
       prisma.menuItem.count({ where }),
     ]);
 
+    // Transform items to include computed status field
+    const transformedItems = items.map(item => {
+      let status = 'available';
+      if (item.stockStatus === 'sold_out') {
+        status = 'sold_out';
+      } else if (item.stockStatus === 'low_stock') {
+        status = 'low_stock';
+      } else if (!item.isAvailable) {
+        status = 'unavailable';
+      }
+      
+      return {
+        ...item,
+        status, // Add computed status field
+      };
+    });
+
     return {
-      data: items,
+      data: transformedItems,
       pagination: {
         page,
         limit,

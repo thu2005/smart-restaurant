@@ -6,7 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_mock'
 class PaymentService {
     async createPayment(data) {
 
-        const { orderId, restaurantId, amount, method, tip } = data;
+        const { orderId, restaurantId, amount, method, tip, tax } = data;
 
         // Check if order exists and is not already paid
         const order = await prisma.order.findUnique({
@@ -27,15 +27,16 @@ class PaymentService {
         // Calculate expected order total from order items
         let expectedTotal = 0;
         for (const item of order.orderItems) {
-            expectedTotal += (item.menuItem.price * item.quantity);
+            // Use unitPrice which includes modifiers now
+            expectedTotal += (Number(item.unitPrice) * item.quantity);
         }
-        // Add tip if provided
-        const total = parseFloat(amount) + (parseFloat(tip) || 0);
-        const expectedWithTip = expectedTotal + (parseFloat(tip) || 0);
+        // Add tip and tax if provided
+        const totalPaid = parseFloat(amount);
+        const expectedWithExtras = expectedTotal + (parseFloat(tax) || 0) + (parseFloat(tip) || 0);
 
-        // Validate payment amount matches order total
-        if (total < expectedWithTip) {
-            throw new Error(`Payment amount (${total}) does not match order total (${expectedWithTip})`);
+        // Validate payment amount matches order total (within small margin for floating point)
+        if (totalPaid < expectedWithExtras) {
+            throw new Error(`Payment amount (${totalPaid}) does not match order total (${expectedWithExtras})`);
         }
 
         // Create pending payment
@@ -43,9 +44,10 @@ class PaymentService {
             data: {
                 orderId,
                 restaurantId,
-                amount,
+                amount, // The total amount paid
                 tip: tip || 0,
-                total,
+                tax: tax || 0,
+                total: totalPaid,
                 method,
                 status: 'PENDING',
             }
@@ -60,12 +62,13 @@ class PaymentService {
                 // Create PaymentIntent
                 if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'sk_test_mock') {
                     const intent = await stripe.paymentIntents.create({
-                        amount: Math.round(total * 100), // cents
+                        amount: Math.round(totalPaid * 100), // cents
                         currency: 'usd', // or vnd
-                        metadata: { orderId, paymentId: payment.id }
+                        metadata: { orderId: String(orderId), paymentId: String(payment.id) }
                     });
+                    console.log('💳 Stripe PaymentIntent Created. Data:', { orderId, paymentId: payment.id, intentId: intent.id });
                     gatewayResponse = intent;
-                    
+
                 } else {
                     // Mock success for development
                     status = 'COMPLETED';
@@ -96,7 +99,7 @@ class PaymentService {
             if (status === 'COMPLETED') {
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' } 
+                    data: { status: 'COMPLETED' }
                 });
             }
         }
@@ -105,9 +108,56 @@ class PaymentService {
     }
 
     async handleWebhook(gateway, payload) {
-        // Logic to update payment status based on webhook
+        if (gateway === 'STRIPE') {
+            const event = payload;
+            console.log('🔔 Webhook Received:', event.type);
+
+            if (event.type === 'payment_intent.succeeded') {
+                const paymentIntent = event.data.object;
+                console.log('📋 Payment Intent Metadata:', paymentIntent.metadata);
+
+                const { paymentId, orderId } = paymentIntent.metadata || {};
+
+                if (!paymentId || !orderId) {
+                    console.error('❌ Missing paymentId or orderId in metadata');
+                    return { received: true, error: 'Missing metadata' };
+                }
+
+                try {
+                    console.log(`💰 Updating Status for Payment ${paymentId} / Order ${orderId}`);
+
+                    // 1. Update Payment Status
+                    const updatedPayment = await prisma.payment.update({
+                        where: { id: paymentId },
+                        data: {
+                            status: 'COMPLETED',
+                            gatewayResponse: paymentIntent,
+                            paidAt: new Date()
+                        }
+                    });
+
+                    // 2. Update Order Status
+                    await prisma.order.update({
+                        where: { id: orderId },
+                        data: { status: 'COMPLETED' }
+                    });
+
+                    console.log('✅ Database Updated Successfully');
+
+                    return {
+                        success: true,
+                        orderId,
+                        restaurantId: updatedPayment.restaurantId
+                    };
+                } catch (dbError) {
+                    console.error('❌ Database Update Failed:', dbError.message);
+                    return { received: true, error: dbError.message };
+                }
+            }
+        }
         return { received: true };
     }
 }
 
 module.exports = new PaymentService();
+

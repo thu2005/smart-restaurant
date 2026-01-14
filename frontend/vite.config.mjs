@@ -11,8 +11,10 @@ export default defineConfig({
     },
   },
   server: {
+    host: true, // Listen on all network interfaces
     port: 5173,
-    open: true,
+    open: "/login",
+    strictPort: true,
   },
   build: {
     sourcemap: true,

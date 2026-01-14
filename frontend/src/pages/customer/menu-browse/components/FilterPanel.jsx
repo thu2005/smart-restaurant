@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 
 import Button from "../../../../components/ui/Button";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -20,22 +21,24 @@ const FilterPanel = ({
     { value: "nut-free", label: "Nut Free" },
   ];
 
-  const priceRanges = [
-    { value: "all", label: "All Prices" },
-    { value: "0-10", label: "Under $10" },
-    { value: "10-20", label: "$10 - $20" },
-    { value: "20-30", label: "$20 - $30" },
-    { value: "30+", label: "Above $30" },
+  const sortOptions = [
+    { value: "createdAt", label: "Newest Items" },
+    { value: "price", label: "Price: Low to High" },
+    { value: "price_desc", label: "Price: High to Low" },
+    { value: "name", label: "Name: A to Z" },
+    { value: "orderCount", label: "Most Ordered" },
   ];
 
   const availabilityOptions = [
     { value: "available", label: "Available Now" },
-    { value: "low-stock", label: "Low Stock" },
+    { value: "low_stock", label: "Low Stock" },
+    { value: "sold_out", label: "Sold Out" },
+    { value: "unavailable", label: "Unavailable" },
   ];
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <div
         className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
@@ -58,14 +61,34 @@ const FilterPanel = ({
         <div className="p-4 md:p-6 space-y-6">
           <div>
             <h3 className="text-base md:text-lg font-heading font-semibold text-foreground mb-3">
-              Price Range
+              Sort By
             </h3>
             <Select
-              options={priceRanges}
-              value={filters?.priceRange}
-              onChange={(value) => onFilterChange("priceRange", value)}
-              placeholder="Select price range"
+              options={sortOptions}
+              value={filters?.sortBy || "createdAt"}
+              onChange={(value) => onFilterChange("sortBy", value)}
+              placeholder="Select sorting"
             />
+          </div>
+
+          <div>
+            <h3 className="text-base md:text-lg font-heading font-semibold text-foreground mb-3">
+              Special Options
+            </h3>
+            <div className="space-y-2">
+              <Checkbox
+                label="Popular Items Only"
+                checked={filters?.isPopular}
+                onChange={(e) => onFilterChange("isPopular", e.target.checked)}
+              />
+              <Checkbox
+                label="Chef Recommendations"
+                checked={filters?.isChefRecommended}
+                onChange={(e) =>
+                  onFilterChange("isChefRecommended", e.target.checked)
+                }
+              />
+            </div>
           </div>
 
           <div>
@@ -98,14 +121,12 @@ const FilterPanel = ({
                 <Checkbox
                   key={option?.value}
                   label={option?.label}
-                  checked={filters?.availability?.includes(option?.value)}
+                  checked={filters?.availability?.[0] === option?.value}
                   onChange={(e) => {
-                    const newAvailability = e?.target?.checked
-                      ? [...filters?.availability, option?.value]
-                      : filters?.availability?.filter(
-                          (a) => a !== option?.value
-                        );
-                    onFilterChange("availability", newAvailability);
+                    // Single select behavior for availability
+                    if (e?.target?.checked) {
+                      onFilterChange("availability", [option?.value]);
+                    }
                   }}
                 />
               ))}
@@ -133,7 +154,8 @@ const FilterPanel = ({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 

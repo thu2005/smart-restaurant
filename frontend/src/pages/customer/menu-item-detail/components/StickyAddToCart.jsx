@@ -15,7 +15,7 @@ const StickyAddToCart = ({
             Total ({quantity} {quantity === 1 ? "item" : "items"})
           </p>
           <p className="text-xl md:text-2xl font-heading font-bold text-primary data-text">
-            ${totalPrice?.toFixed(2)}
+            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)}
           </p>
         </div>
         <Button

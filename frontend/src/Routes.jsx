@@ -25,11 +25,17 @@ import OrderStatusTracking from "./pages/customer/order-status-tracking";
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
 import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Onboarding from "./pages/customer/Onboarding";
+import TableEntry from "./pages/customer/TableEntry";
+import VerifyEmail from "./pages/auth/VerifyEmail";
 
 // Admin Menu Management Pages
 import CategoryList from "./pages/admin/menu/categories/CategoryList";
 import MenuItemList from "./pages/admin/menu/items/MenuItemList";
 import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
+import TableManagement from "./pages/admin/tables/TableList";
+import OrderList from "./pages/admin/orders/OrderList";
 
 const Routes = () => {
   return (
@@ -37,25 +43,42 @@ const Routes = () => {
       <ErrorBoundary>
         <ScrollToTop />
         <RouterRoutes>
+          {/* Table Entry Route - Captures table ID from QR code */}
+          <Route path="/table/:tableId" element={<TableEntry />} />
+
           {/* Root redirect */}
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              authService.isAuthenticated() 
-                ? <Navigate to="/admin/menu/items" replace /> 
-                : <Navigate to="/login" replace />
-            } 
+              authService.isAuthenticated() ? (
+                <Navigate to="/admin/menu/items" replace />
+              ) : (
+                <Onboarding />
+              )
+            }
           />
 
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
           {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>
-            <Route index element={<Navigate to="/customer/menu-browse" replace />} />
+            <Route
+              index
+              element={<Navigate to="/customer/menu-browse" replace />}
+            />
             <Route path="menu-browse" element={<MenuBrowse />} />
+            <Route
+              path="menu-browse/:restaurantId/:tableNumber"
+              element={<MenuBrowse />}
+            />
             <Route path="shopping-cart" element={<ShoppingCart />} />
-            <Route path="menu-item-detail" element={<MenuItemDetail />} />
+            <Route
+              path="menu-item-detail/:itemId"
+              element={<MenuItemDetail />}
+            />
             <Route
               path="order-status-tracking"
               element={<OrderStatusTracking />}
@@ -63,21 +86,26 @@ const Routes = () => {
           </Route>
 
           {/* Admin Routes - Protected */}
-          <Route 
-            path="/admin" 
+          <Route
+            path="/admin"
             element={
               <ProtectedRoute>
                 <AdminLayout />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/admin/menu/items" replace />} />
+            <Route
+              index
+              element={<Navigate to="/admin/menu/items" replace />}
+            />
             <Route path="dashboard" element={<AdminDashboard />} />
-            
+
             {/* Menu Management Routes */}
             <Route path="menu/categories" element={<CategoryList />} />
             <Route path="menu/items" element={<MenuItemList />} />
             <Route path="menu/modifiers" element={<ModifierList />} />
+            <Route path="tables" element={<TableManagement />} />
+            <Route path="orders" element={<OrderList />} />
           </Route>
           {/* Legacy redirect */}
           <Route
@@ -86,8 +114,8 @@ const Routes = () => {
           />
 
           {/* Kitchen Routes - Protected */}
-          <Route 
-            path="/kitchen" 
+          <Route
+            path="/kitchen"
             element={
               <ProtectedRoute>
                 <KitchenLayout />

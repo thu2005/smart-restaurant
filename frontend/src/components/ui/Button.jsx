@@ -52,11 +52,15 @@ const Button = React.forwardRef(
       iconSize = null,
       fullWidth = false,
       disabled = false,
+      isLoading,
       ...props
     },
     ref
   ) => {
     const Comp = asChild ? Slot : "button";
+
+    // Use either 'loading' or 'isLoading' prop
+    const isButtonLoading = loading || isLoading;
 
     // Icon size mapping based on button size
     const iconSizeMap = {
@@ -118,10 +122,10 @@ const Button = React.forwardRef(
           fullWidth && "w-full"
         )}
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled || isButtonLoading}
         {...props}
       >
-        {loading && <LoadingSpinner />}
+        {isButtonLoading && <LoadingSpinner />}
         {iconName && iconPosition === "left" && renderIcon()}
         {children}
         {iconName && iconPosition === "right" && renderIcon()}
@@ -142,7 +146,7 @@ const Button = React.forwardRef(
         }
         const content = (
           <>
-            {loading && <LoadingSpinner />}
+            {isButtonLoading && <LoadingSpinner />}
             {iconName && iconPosition === "left" && renderIcon()}
             {child?.props?.children}
             {iconName && iconPosition === "right" && renderIcon()}
@@ -155,7 +159,7 @@ const Button = React.forwardRef(
             fullWidth && "w-full",
             child?.props?.className
           ),
-          disabled: disabled || loading || child?.props?.disabled,
+          disabled: disabled || isButtonLoading || child?.props?.disabled,
           children: content,
         });
 
@@ -176,10 +180,10 @@ const Button = React.forwardRef(
           fullWidth && "w-full"
         )}
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled || isButtonLoading}
         {...props}
       >
-        {loading && <LoadingSpinner />}
+        {isButtonLoading && <LoadingSpinner />}
         {iconName && iconPosition === "left" && renderIcon()}
         {children}
         {iconName && iconPosition === "right" && renderIcon()}

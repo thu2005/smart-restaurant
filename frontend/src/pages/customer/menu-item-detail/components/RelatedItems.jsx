@@ -8,7 +8,7 @@ const RelatedItems = ({ items }) => {
   const navigate = useNavigate();
 
   const handleItemClick = (itemId) => {
-    navigate("/menu-item-detail", { state: { itemId } });
+    navigate("/customer/menu-item-detail", { state: { itemId } });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -59,7 +59,7 @@ const RelatedItems = ({ items }) => {
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-lg md:text-xl font-heading font-bold text-primary data-text">
-                    ${item?.price?.toFixed(2)}
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price)}
                   </span>
                   <Button
                     variant="outline"

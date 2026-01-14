@@ -7,7 +7,7 @@ const passport = require("passport");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const { connectDB, disconnectDB } = require("./src/config/database");
-const { jwtStrategy } = require("./src/config/passport");
+const { jwtStrategy, googleStrategy } = require("./src/config/passport");
 
 // Load environment variables
 dotenv.config();
@@ -19,19 +19,29 @@ connectDB();
 const app = express();
 
 // Middleware
+// Serve uploads folder as static files
+app.use('/uploads', express.static('uploads'));
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5174",
+    origin: true, // Allow all origins for development/testing
     credentials: true,
   })
 );
 app.use(morgan("dev"));
+
+// DEBUG: Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`🌍 INCOMING REQUEST: ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Passport Config
 passport.use(jwtStrategy);
+passport.use(googleStrategy);
 app.use(passport.initialize());
 
 // Swagger Config
@@ -86,6 +96,9 @@ app.use("/api/admin/menu", require("./src/routes/menu.routes"));
 app.use("/api/tables", require("./src/routes/table.routes"));
 app.use("/api/orders", require("./src/routes/order.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
+app.use("/api/reviews", require("./src/routes/review.routes"));
+app.use("/api/reports", require("./src/routes/report.routes"));
+app.use("/api/carts", require("./src/routes/cart.routes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -107,7 +120,7 @@ app.use((req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 5001;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`
   );

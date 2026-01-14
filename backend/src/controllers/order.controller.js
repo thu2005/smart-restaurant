@@ -1,3 +1,27 @@
+const { prisma } = require('../config/database');
+exports.getBillByBillId = async (req, res, next) => {
+    try {
+        const bill = await prisma.bill.findUnique({
+            where: { id: req.params.billId },
+            include: {
+                order: {
+                    include: {
+                        orderItems: { include: { menuItem: true } },
+                        table: true,
+                        customer: true
+                    }
+                },
+                restaurant: true
+            }
+        });
+        if (!bill) {
+            return res.status(404).json({ success: false, message: 'Bill not found' });
+        }
+        res.status(200).json({ success: true, data: bill });
+    } catch (error) {
+        next(error);
+    }
+};
 const orderService = require('../services/order.service');
 const { validationResult } = require('express-validator');
 
@@ -68,6 +92,98 @@ exports.updateOrderStatus = async (req, res, next) => {
         if (error.message === 'Order not found') {
             return res.status(404).json({ success: false, message: error.message });
         }
+        next(error);
+    }
+};
+
+exports.createBill = async (req, res, next) => {
+    try {
+        const bill = await orderService.createBill(req.params.id, req.user.id);
+        res.status(200).json({ success: true, data: bill });
+    } catch (error) {
+        if (error.message === 'Order not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.getBill = async (req, res, next) => {
+    try {
+        const bill = await orderService.getBillDetails(req.params.id);
+        res.status(200).json({ success: true, data: bill });
+    } catch (error) {
+        if (error.message === 'Order not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.applyDiscount = async (req, res, next) => {
+    try {
+        const { amount } = req.body;
+        // Basic validation
+        if (amount == null || amount < 0) {
+            return res.status(400).json({ success: false, message: 'Invalid discount amount' });
+        }
+        const order = await orderService.applyDiscount(req.params.id, amount);
+        res.status(200).json({ success: true, data: order });
+    } catch (error) {
+        if (error.message === 'Order not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.printBill = async (req, res, next) => {
+    try {
+        // Set headers for PDF download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=bill-${req.params.id}.pdf`);
+
+        await orderService.generateBillPDF(req.params.id, res);
+    } catch (error) {
+        if (error.message === 'Order not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.updateOrderItemStatus = async (req, res, next) => {
+    try {
+        const { orderId, itemId } = req.params;
+        const { itemStatus } = req.body;
+        
+        const updatedItem = await orderService.updateOrderItemStatus(orderId, itemId, itemStatus);
+        res.status(200).json({ success: true, data: updatedItem });
+    } catch (error) {
+        if (error.message === 'Order not found' || error.message === 'Order item not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.getWaiterTables = async (req, res, next) => {
+    try {
+        const waiterId = req.user.id;
+        const tables = await orderService.getWaiterTables(waiterId);
+        res.status(200).json({ success: true, data: tables });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getWaiterOrders = async (req, res, next) => {
+    try {
+        const waiterId = req.user.id;
+        const { status } = req.query;
+        const orders = await orderService.getWaiterOrders(waiterId, status);
+        res.status(200).json({ success: true, data: orders });
+    } catch (error) {
         next(error);
     }
 };
