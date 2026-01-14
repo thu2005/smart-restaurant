@@ -102,7 +102,7 @@ jobs:
       run: npm install
 
     - name: Install ESLint dependencies
-      run: npm install eslint @eslint/js
+      run: npm install eslint @eslint/js globals
 
     - name: Create .env file
       run: |
