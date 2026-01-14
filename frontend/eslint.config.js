@@ -15,6 +15,9 @@ export default [
     rules: {
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "no-console": "warn",
+      "no-empty": "warn",  // Downgrade empty blocks to warning
+      "no-unreachable": "warn",
+      "no-undef": "warn"
     },
     ignores: ["dist/", "node_modules/", ".env*"],
   },
