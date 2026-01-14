@@ -63,7 +63,6 @@ jobs:
     - name: Setup Prisma
       run: |
         npx prisma generate
-        npx prisma db push --skip-generate
 
     - name: Lint backend code
       run: npm run lint || echo "Backend lint warnings found - continuing..." || echo "Backend lint warnings found - continuing..."
