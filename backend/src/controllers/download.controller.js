@@ -101,7 +101,7 @@ exports.downloadQR = async (req, res) => {
         if (!table || !table.qrCode) return res.status(404).json({ message: 'QR Code not generated yet' });
 
         // Use table.qrCode as the token in the URL
-        const qrURL = `${QR_BASE_URL}/customer/menu-browse/${table.restaurantId}/${table.tableNumber}?token=${table.qrCode}`;
+        const qrURL = `${QR_BASE_URL}/qr/${table.restaurantId}/${table.id}?token=${table.qrCode}`;
         const qrBuffer = await generateQRBuffer(qrURL);
 
         if (format === 'pdf') {
@@ -168,7 +168,7 @@ exports.downloadAllQR = async (req, res) => {
                     const x = colIndex * cellWidth;
                     const y = rowIndex * cellHeight;
 
-                    const qrURL = `${QR_BASE_URL}/customer/menu-browse/${table.restaurantId}/${table.tableNumber}?token=${table.qrCode}`;
+                    const qrURL = `${QR_BASE_URL}/qr/${table.restaurantId}/${table.id}?token=${table.qrCode}`;
                     const qrBuffer = await generateQRBuffer(qrURL);
 
                     drawGridItem(doc, table, qrBuffer, x, y, cellWidth, cellHeight);
@@ -179,7 +179,7 @@ exports.downloadAllQR = async (req, res) => {
                 // 1 table per page
                 for (let i = 0; i < tables.length; i++) {
                     if (i > 0) doc.addPage();
-                    const qrURL = `${QR_BASE_URL}/customer/menu-browse/${tables[i].restaurantId}/${tables[i].tableNumber}?token=${tables[i].qrCode}`;
+                    const qrURL = `${QR_BASE_URL}/qr/${tables[i].restaurantId}/${tables[i].id}?token=${tables[i].qrCode}`;
                     const qrBuffer = await generateQRBuffer(qrURL);
                     drawSinglePage(doc, tables[i], qrBuffer, logoBuffer);
                 }
@@ -194,7 +194,7 @@ exports.downloadAllQR = async (req, res) => {
             res.setHeader('Content-Disposition', 'attachment; filename="All-Tables-QR-Images.zip"');
             archive.pipe(res);
             for (const table of tables) {
-                const qrURL = `${QR_BASE_URL}/customer/menu-browse/${table.restaurantId}/${table.tableNumber}?token=${table.qrCode}`;
+                const qrURL = `${QR_BASE_URL}/qr/${table.restaurantId}/${table.id}?token=${table.qrCode}`;
                 const qrBuffer = await generateQRBuffer(qrURL);
                 archive.append(qrBuffer, { name: `table-${table.tableNumber}.png` });
             }
