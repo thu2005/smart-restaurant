@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: smart-restaurant-neon
+    runtime: node
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: ./render-build.sh
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://smart-restaurant-neon.vercel.app
+      - key: QR_BASE_URL
+        value: https://smart-restaurant-neon.vercel.app
+      - key: STRIPE_SECRET_KEY
+        value: false # Set manually in Render dashboard
+      - key: STRIPE_WEBHOOK_SECRET
+        value: false # Set manually in Render dashboard
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: UPLOAD_PATH
+        value: ./uploads
