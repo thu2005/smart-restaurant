@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import menuService from "services/menuService";
+import menuService, { getRestaurantId } from "services/menuService";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import FilterPanel from "./components/FilterPanel";
@@ -14,7 +14,7 @@ const BASE_URL =
   import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const MenuBrowse = () => {
-  const { restaurantId, tableNumber } = useParams();
+  const { restaurantId: paramRestaurantId, tableNumber } = useParams();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -39,10 +39,25 @@ const MenuBrowse = () => {
       try {
         setLoading(true);
 
-        // Get restaurantId from localStorage or use default
-        const restaurantId =
-          localStorage.getItem("restaurantId") || "default-restaurant-id";
+        // Get restaurantId from URL params, localStorage, or user data
+        let restaurantId = paramRestaurantId || localStorage.getItem("restaurantId");
+        
+        // If still no restaurantId, try to get from logged-in user
+        if (!restaurantId) {
+          try {
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+            restaurantId = userData.restaurantId;
+          } catch (e) {
+            console.error("Error parsing user data:", e);
+          }
+        }
 
+        // Last resort - use getRestaurantId helper which has fallback logic
+        if (!restaurantId) {
+          restaurantId = getRestaurantId();
+        }
+
+        console.log("Using restaurantId:", restaurantId);
         console.log("Fetching with filters:", filters);
 
         const [catsResponse, itemsResponse] = await Promise.all([

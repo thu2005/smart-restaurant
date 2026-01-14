@@ -28,6 +28,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Onboarding from "./pages/customer/Onboarding";
 import TableEntry from "./pages/customer/TableEntry";
+import QREntry from "./pages/customer/QREntry";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 
 // Admin Menu Management Pages
@@ -43,7 +44,10 @@ const Routes = () => {
       <ErrorBoundary>
         <ScrollToTop />
         <RouterRoutes>
-          {/* Table Entry Route - Captures table ID from QR code */}
+          {/* QR Entry Route - New format with restaurantId and tableId */}
+          <Route path="/qr/:restaurantId/:tableId" element={<QREntry />} />
+          
+          {/* Table Entry Route - Legacy format (kept for backward compatibility) */}
           <Route path="/table/:tableId" element={<TableEntry />} />
 
           {/* Root redirect */}
@@ -62,6 +66,9 @@ const Routes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          
+          {/* Dedicated Customer Onboarding Route - for QR scans */}
+          <Route path="/customer-onboarding" element={<Onboarding />} />
 
           {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>

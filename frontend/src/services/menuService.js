@@ -27,9 +27,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Helper function to get restaurantId (assuming stored in localStorage)
+// Helper function to get restaurantId (from localStorage, user data, or fallback)
 const getRestaurantId = () => {
-  return localStorage.getItem("restaurantId") || "default-restaurant-id";
+  // First try to get from QR scan or direct storage
+  let restaurantId = localStorage.getItem("restaurantId");
+  
+  // If not found, try to get from logged-in user
+  if (!restaurantId) {
+    try {
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      restaurantId = userData.restaurantId;
+    } catch (e) {
+      console.error("Error getting restaurantId from user data:", e);
+    }
+  }
+  
+  // Fallback to environment variable or default
+  return restaurantId || import.meta.env.VITE_DEFAULT_RESTAURANT_ID || null;
 };
 
 // Helper functions to transform data between camelCase (backend) and snake_case (frontend)
@@ -633,3 +647,4 @@ const menuService = {
 };
 
 export default menuService;
+export { getRestaurantId };
