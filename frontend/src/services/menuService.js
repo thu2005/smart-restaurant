@@ -633,3 +633,4 @@ const menuService = {
 };
 
 export default menuService;
+export { getRestaurantId };
