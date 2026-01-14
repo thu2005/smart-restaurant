@@ -49,9 +49,27 @@ const authService = {
   },
 
   logout: () => {
+    const userStr = localStorage.getItem("user");
+    let isStaff = false;
+    
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        // Check if user is admin/staff (has role other than CUSTOMER)
+        isStaff = user.role && user.role !== "CUSTOMER";
+      } catch (e) {
+        // Ignore parse error
+      }
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    localStorage.removeItem("restaurantId");
+    
+    // Only clear restaurant context if it was a staff session
+    // Customers need to keep restaurantId/tableId to continue ordering as guest or re-login
+    if (isStaff) {
+      localStorage.removeItem("restaurantId");
+    }
   },
 
   getCurrentUser: () => {
