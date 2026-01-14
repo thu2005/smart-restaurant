@@ -34,13 +34,18 @@ const Login = () => {
       const response = await authService.login(data.email, data.password);
       toast.success("Login successful!");
 
+      // Check if user came from QR scan (has restaurantId and tableId)
+      const restaurantId = localStorage.getItem('restaurantId');
+      const tableId = localStorage.getItem('tableId');
+
       // Determine redirect path based on role if no specific return url
       let targetPath = from;
       if (targetPath === "/admin/menu/items") {
         // Default value check
         const userRole = response.data?.role;
         if (userRole === "CUSTOMER") {
-          targetPath = "/customer/menu-browse";
+          // If QR scan was done, go to menu-browse, otherwise default customer page
+          targetPath = (restaurantId && tableId) ? `/customer/menu-browse/${restaurantId}/${tableId}` : "/customer/menu-browse";
         }
       }
 

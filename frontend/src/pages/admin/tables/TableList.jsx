@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Icon from "../../../components/AppIcon";
 import { tableAPI } from "../../../services/tableService";
+import { getRestaurantId } from '../../../services/menuService';
 import TableCard from "./components/TableCard";
 import TableForm from "./components/TableForm";
 import QRPreviewContainer from "./components/QRPreviewContainer";

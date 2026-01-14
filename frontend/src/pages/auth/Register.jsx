@@ -33,13 +33,20 @@ const Register = () => {
       };
 
       const response = await authService.register(payload);
-      
+
       // If token is returned, auto-login
       if (response.token) {
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.user));
         toast.success("Registration successful! Welcome!");
-        navigate("/"); // Redirect to home
+
+        // Check if user came from QR scan
+        const restaurantId = localStorage.getItem('restaurantId');
+        const tableId = localStorage.getItem('tableId');
+
+        // Navigate to menu if QR scan was done, otherwise go to root
+        // Navigate to menu if QR scan was done, otherwise go to root
+        navigate((restaurantId && tableId) ? `/customer/menu-browse/${restaurantId}/${tableId}` : "/");
       } else {
         // Email verification required
         toast.success("Registration successful! Please check your email to verify.");
