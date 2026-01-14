@@ -73,7 +73,6 @@ jobs:
         npm start &
         SERVER_PID=$!
         sleep 5
-        # Test if server is running
         curl -f http://localhost:5001/ || curl -f http://localhost:5001/api/ || echo "Server started but no root endpoint - OK"
         kill $SERVER_PID
 
@@ -127,73 +126,3 @@ jobs:
         ls -la dist/
         du -sh dist/
         echo "Frontend build successful ✅"
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: test_password
-          POSTGRES_USER: test_user
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20.x
-        cache: 'npm'
-
-    - name: Install backend dependencies
-      working-directory: ./backend
-      run: npm ci
-
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: npm ci
-
-    - name: Setup backend environment
-      working-directory: ./backend
-      run: |
-        echo "NODE_ENV=test" > .env
-        echo "PORT=5001" >> .env
-        echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env
-        echo "JWT_SECRET=test_jwt_secret_key_for_ci" >> .env
-        echo "JWT_REFRESH_SECRET=test_refresh_secret_key_for_ci" >> .env
-        echo "FRONTEND_URL=http://localhost:5173" >> .env
-
-    - name: Setup frontend environment
-      working-directory: ./frontend
-      run: |
-        echo "VITE_API_URL=http://localhost:5001/api" > .env
-
-    - name: Setup database
-      working-directory: ./backend
-      run: |
-        npx prisma generate
-        npx prisma db push
-
-    - name: Start backend
-      working-directory: ./backend
-      run: |
-        npm start &
-        sleep 10
-
-    - name: Build frontend
-      working-directory: ./frontend
-      run: npm run build
-
-    - name: Test API endpoints
-      run: |
-        curl -f http://localhost:5001/api/health || echo "Backend health check failed"
-        curl -f http://localhost:5001/api/restaurants || echo "Restaurants endpoint failed"
-
-    - name: Cleanup
-      run: pkill -f "node" || true
