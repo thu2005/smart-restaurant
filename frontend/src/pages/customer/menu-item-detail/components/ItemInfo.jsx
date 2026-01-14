@@ -40,22 +40,21 @@ const ItemInfo = ({ item }) => {
               <Icon
                 name="Star"
                 size={16}
-                color="var(--color-warning)"
-                className="fill-current"
+                className="text-[var(--color-warning)] fill-current"
               />
               <span className="text-sm md:text-base font-medium text-foreground data-text">
-                {item?.rating}
+                {item?.rating || '0.0'}
               </span>
               <span className="text-sm md:text-base text-muted-foreground">
-                ({item?.reviewCount} reviews)
+                ({item?.reviewCount || 0} reviews)
               </span>
             </div>
             <span
               className={`px-2 py-1 rounded-md text-xs md:text-sm font-medium ${getAvailabilityColor(
-                item?.availability
+                item?.availability || item?.status
               )}`}
             >
-              {getAvailabilityText(item?.availability)}
+              {getAvailabilityText(item?.availability || item?.status)}
             </span>
           </div>
         </div>
@@ -69,21 +68,27 @@ const ItemInfo = ({ item }) => {
         {item?.description}
       </p>
       <div className="flex items-center gap-4 md:gap-6 flex-wrap">
-        <div className="flex items-center gap-2">
-          <Icon name="Clock" size={18} color="var(--color-muted-foreground)" />
-          <span className="text-sm md:text-base text-muted-foreground">
-            {item?.prepTime} mins
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Icon name="Flame" size={18} color="var(--color-muted-foreground)" />
-          <span className="text-sm md:text-base text-muted-foreground">
-            {item?.calories} cal
-          </span>
-        </div>
+        {item?.prep_time_minutes > 0 || item?.prepTime > 0 ? (
+          <div className="flex items-center gap-2">
+            <Icon name="Clock" size={18} className="text-[var(--color-muted-foreground)]" />
+            <span className="text-sm md:text-base text-muted-foreground">
+              {item?.prep_time_minutes || item?.prepTime} mins
+            </span>
+          </div>
+        ) : null}
+        
+        {item?.calories > 0 && (
+          <div className="flex items-center gap-2">
+            <Icon name="Flame" size={18} className="text-[var(--color-muted-foreground)]" />
+            <span className="text-sm md:text-base text-muted-foreground">
+              {item?.calories} cal
+            </span>
+          </div>
+        )}
+        
         {item?.isSpicy && (
           <div className="flex items-center gap-2">
-            <Icon name="Flame" size={18} color="var(--color-error)" />
+            <Icon name="Flame" size={18} className="text-error" />
             <span className="text-sm md:text-base text-error font-medium">
               Spicy
             </span>
