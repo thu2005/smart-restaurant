@@ -12,19 +12,19 @@ const OrderTabs = ({ activeTab, onTabChange, counts = {} }) => {
             id: "accepted",
             label: "Accepted",
             count: counts.accepted || 0,
-            showBadge: false,
+            showBadge: true,
         },
         {
             id: "ready",
             label: "Ready to Serve",
             count: counts.ready || 0,
-            showBadge: false,
+            showBadge: true,
         },
         {
             id: "tables",
             label: "My Tables",
             count: counts.tables || 0,
-            showBadge: false,
+            showBadge: true,
         },
     ];
 

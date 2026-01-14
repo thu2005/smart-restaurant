@@ -67,7 +67,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
 
     return (
         <div
-            className={`bg-card rounded-lg border border-border shadow-warm overflow-hidden mb-4 ${getBorderClass()}`}
+            className={`bg-card rounded-lg border border-border shadow-warm overflow-hidden ${getBorderClass()}`}
         >
             {/* Header */}
             <div className="p-4 flex items-center justify-between border-b border-border">

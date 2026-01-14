@@ -268,7 +268,7 @@ const WaiterDashboard = () => {
                 counts={counts}
             />
 
-            <div className="max-w-2xl mx-auto px-4 py-6">
+            <div className="max-w-7xl mx-auto px-4 py-6">
                 {loading && (
                     <div className="text-center py-12">
                         <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -289,15 +289,17 @@ const WaiterDashboard = () => {
                                 <p className="text-muted-foreground">No orders found</p>
                             </div>
                         ) : (
-                            orders.map((order) => (
-                                <OrderCard
-                                    key={order.id}
-                                    order={order}
-                                    onAccept={handleAcceptOrder}
-                                    onReject={handleRejectOrder}
-                                    onServe={handleServeOrder}
-                                />
-                            ))
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+                                {orders.map((order) => (
+                                    <OrderCard
+                                        key={order.id}
+                                        order={order}
+                                        onAccept={handleAcceptOrder}
+                                        onReject={handleRejectOrder}
+                                        onServe={handleServeOrder}
+                                    />
+                                ))}
+                            </div>
                         )}
                     </>
                 )}
@@ -309,7 +311,7 @@ const WaiterDashboard = () => {
                                 <p className="text-muted-foreground">No assigned tables</p>
                             </div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
                                 {tables.map((tableData) => (
                                     <div
                                         key={tableData.table.id}
