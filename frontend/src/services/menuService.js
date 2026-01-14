@@ -625,10 +625,23 @@ const menuService = {
   },
 
   // --- Reviews ---
+  // --- Reviews ---
   getReviews: async (menuItemId) => {
     try {
       const response = await publicApi.get(`/reviews/${menuItemId}`);
-      return response.data.data || [];
+      const rawReviews = response.data.reviews || response.data.data || [];
+      
+      // Transform backend data to frontend format
+      return rawReviews.map(review => ({
+        id: review.id,
+        userName: review.user?.fullName || "Anonymous",
+        userAvatar: `https://api.dicebear.com/7.x/initials/svg?seed=${review.user?.fullName || "User"}`, // Generating avatar based on name
+        userAvatarAlt: "User Avatar",
+        rating: review.rating,
+        date: new Date(review.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }),
+        comment: review.comment || ""
+      }));
+
     } catch (error) {
       console.error("Error getting reviews:", error);
       throw error;
