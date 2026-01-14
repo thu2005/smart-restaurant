@@ -141,66 +141,65 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
           {order?.items?.map((item, index) => (
             <div
               key={index}
-              className="border border-border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-muted/10 hover:shadow-sm transition-smooth"
+              className="relative border border-border rounded-xl p-6 bg-gradient-to-br from-muted/30 to-muted/10 hover:shadow-sm transition-smooth"
             >
-              <div className="flex items-start gap-3">
-                {/* Quantity Badge */}
-                <div className="flex-shrink-0 w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-sm">
-                  <span className="text-base font-bold text-primary-foreground">
-                    {item?.quantity}×
-                  </span>
-                </div>
+              {/* Quantity Badge - Absolute Corner */}
+              <div className="absolute top-0 left-0 bg-primary text-primary-foreground px-4 py-2 rounded-tl-xl rounded-br-xl shadow-sm z-10">
+                <span className="text-lg font-bold">
+                  {item?.quantity}×
+                </span>
+              </div>
 
-                <div className="flex-1 min-w-0">
-                  {/* Item Name */}
-                  <h4 className="text-base md:text-lg font-semibold text-foreground mb-2 leading-tight">
-                    {item?.name}
-                  </h4>
+              {/* Content - Centered */}
+              <div className="flex flex-col items-center text-center pt-2 w-full">
+                {/* Item Name */}
+                <h4 className="text-lg md:text-xl font-heading font-bold text-foreground mb-3 leading-tight">
+                  {item?.name}
+                </h4>
 
-                  {/* Modifiers */}
-                  {item?.modifiers && item?.modifiers?.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {item?.modifiers?.map((mod, modIndex) => (
-                        <span
-                          key={modIndex}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-background border border-border rounded-md text-xs font-medium text-foreground"
-                        >
-                          <Icon name="Plus" size={10} />
-                          {mod}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Special Instructions */}
-                  {item?.specialInstructions && (
-                    <div className="flex items-start gap-2 mt-2 p-3 bg-warning/10 border border-warning/30 rounded-lg">
-                      <Icon
-                        name="MessageSquare"
-                        size={16}
-                        color="var(--color-warning)"
-                        className="flex-shrink-0 mt-0.5"
-                      />
-                      <p className="text-sm text-foreground font-semibold leading-relaxed">
-                        {item?.specialInstructions}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Allergens */}
-                  {item?.allergens && item?.allergens?.length > 0 && (
-                    <div className="flex items-center gap-2 mt-3 p-2 bg-error/5 border border-error/20 rounded-md">
-                      <Icon
-                        name="AlertTriangle"
-                        size={16}
-                        color="var(--color-error)"
-                      />
-                      <span className="text-xs text-error font-bold uppercase tracking-wide">
-                        Allergens: {item?.allergens?.join(", ")}
+                {/* Modifiers */}
+                {item?.modifiers && item?.modifiers?.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 mb-4">
+                    {item?.modifiers?.map((mod, modIndex) => (
+                      <span
+                        key={modIndex}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-border rounded-full text-sm font-medium text-foreground shadow-sm"
+                      >
+                        <Icon name="Plus" size={12} className="text-primary/70" />
+                        {mod}
                       </span>
-                    </div>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Special Instructions */}
+                {item?.specialInstructions && (
+                  <div className="w-full max-w-lg mx-auto flex items-center justify-center gap-3 p-3 bg-warning/10 border border-warning/30 rounded-lg mb-4">
+                    <Icon
+                      name="MessageSquare"
+                      size={18}
+                      color="var(--color-warning)"
+                      className="flex-shrink-0"
+                    />
+                    <p className="text-sm text-foreground font-semibold leading-relaxed">
+                      {item?.specialInstructions}
+                    </p>
+                  </div>
+                )}
+
+                {/* Allergens */}
+                {item?.allergens && item?.allergens?.length > 0 && (
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-error/10 border border-error/20 rounded-full">
+                    <Icon
+                      name="AlertTriangle"
+                      size={16}
+                      color="var(--color-error)"
+                    />
+                    <span className="text-xs text-error font-bold uppercase tracking-wider">
+                      Allergens: {item?.allergens?.join(", ")}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -242,7 +241,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
           )}
           {order?.status === "preparing" && (
             <Button
-              variant="success"
+              variant="warning"
               fullWidth
               iconName="CheckCircle"
               iconPosition="left"
@@ -254,7 +253,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
           )}
           {order?.status === "ready" && (
             <Button
-              variant="outline"
+              variant="success"
               fullWidth
               iconName="Check"
               iconPosition="left"

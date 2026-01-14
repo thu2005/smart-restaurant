@@ -6,7 +6,7 @@ class KitchenService {
      */
     async getKitchenOrders(restaurantId, filters = {}) {
         const { status } = filters;
-        
+
         const where = {
             restaurantId,
             // Kitchen sees orders that are accepted by waiter and beyond
@@ -47,8 +47,8 @@ class KitchenService {
      * Update order status (Kitchen staff marking as PREPARING or READY)
      */
     async updateOrderStatus(orderId, status) {
-        const validStatuses = ['PREPARING', 'READY'];
-        
+        const validStatuses = ['PREPARING', 'READY', 'COMPLETED', 'SERVED'];
+
         if (!validStatuses.includes(status)) {
             throw new Error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
         }

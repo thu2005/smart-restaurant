@@ -45,14 +45,14 @@ const KitchenDisplaySystem = () => {
     newSocket.on("new_order", (order) => {
       console.log("New order received in kitchen:", order);
       if (order.status === "RECEIVED") {
-        fetchOrders();
+        fetchOrders(false);
         setNotificationTrigger((prev) => prev + 1);
       }
     });
 
     newSocket.on("order_status_update", ({ orderId, status }) => {
       console.log("Order status updated:", orderId, status);
-      fetchOrders();
+      fetchOrders(false);
     });
 
     setSocket(newSocket);
@@ -70,10 +70,10 @@ const KitchenDisplaySystem = () => {
     }
   }, [restaurantId, statusFilter]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (isLoading = true) => {
     if (!restaurantId) return;
 
-    setLoading(true);
+    if (isLoading) setLoading(true);
     setError(null);
 
     try {
@@ -87,9 +87,9 @@ const KitchenDisplaySystem = () => {
       setOrders(transformedOrders);
     } catch (err) {
       console.error("Error fetching kitchen orders:", err);
-      setError("Failed to load orders. Please try again.");
+      if (isLoading) setError("Failed to load orders. Please try again.");
     } finally {
-      setLoading(false);
+      if (isLoading) setLoading(false);
     }
   };
 
@@ -355,7 +355,7 @@ const KitchenDisplaySystem = () => {
       });
 
       // Refresh orders and stats from server
-      fetchOrders();
+      fetchOrders(false);
       fetchStats();
       setNotificationTrigger((prev) => prev + 1);
     } catch (err) {
@@ -366,8 +366,8 @@ const KitchenDisplaySystem = () => {
 
   const handleCompleteOrder = async (orderId) => {
     try {
-      // Mark as ready when completing
-      await kitchenService.updateOrderStatus(orderId, 'READY');
+      // Mark as COMPLETED when completing
+      await kitchenService.updateOrderStatus(orderId, 'COMPLETED');
 
       // Remove from display
       setOrders((prevOrders) => {

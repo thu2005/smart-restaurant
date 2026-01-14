@@ -789,10 +789,10 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(), // Now
-            acceptedAt: new Date(),
-            preparingAt: new Date(),
-            readyAt: new Date(),
+            submittedAt: new Date(Date.now() - 10 * 60000), // 10 min ago
+            acceptedAt: new Date(Date.now() - 9 * 60000),
+            preparingAt: new Date(Date.now() - 8 * 60000),
+            readyAt: new Date(), // Now
             orderItems: {
                 create: [
                     {
@@ -855,10 +855,10 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(), // Now
-            acceptedAt: new Date(),
-            preparingAt: new Date(),
-            readyAt: new Date(),
+            submittedAt: new Date(Date.now() - 12 * 60000), // 12 min ago
+            acceptedAt: new Date(Date.now() - 11 * 60000),
+            preparingAt: new Date(Date.now() - 10 * 60000),
+            readyAt: new Date(Date.now() - 2 * 60000), // 2 min ago
             orderItems: {
                 create: [
                     {
