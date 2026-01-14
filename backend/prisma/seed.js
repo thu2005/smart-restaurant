@@ -689,10 +689,10 @@ async function main() {
     });
 
     // 9. Create Sample Order
-    console.log('📦 Creating Sample Order...');
-    
-    await prisma.order.create({
-        data: {
+    console.log('📦 Creating Sample Orders...');
+    // Create all sample orders in a single function for clarity
+    const sampleOrders = [
+        {
             orderNumber: 'ORD-001',
             status: 'SUBMITTED',
             tableId: tables[0].id,
@@ -718,8 +718,85 @@ async function main() {
                     }
                 ]
             }
+        },
+        {
+            orderNumber: 'ORD-002',
+            status: 'SUBMITTED',
+            tableId: tables[1].id,
+            restaurantId: restaurant.id,
+            customerId: customer2.id,
+            customerName: customer2.fullName,
+            customerPhone: customer2.phone,
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: grilledSalmon.id,
+                        quantity: 2,
+                        unitPrice: 320000,
+                        modifiers: ['Mild'],
+                        specialInstructions: 'No lemon'
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-003',
+            status: 'SUBMITTED',
+            tableId: tables[2].id,
+            restaurantId: restaurant.id,
+            customerId: customer1.id,
+            customerName: customer1.fullName,
+            customerPhone: customer1.phone,
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: tiramisu.id,
+                        quantity: 1,
+                        unitPrice: 65000,
+                        modifiers: [],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: vietnameseCoffee.id,
+                        quantity: 1,
+                        unitPrice: 45000,
+                        modifiers: ['Small'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-004',
+            status: 'SUBMITTED',
+            tableId: tables[3].id,
+            restaurantId: restaurant.id,
+            customerId: customer2.id,
+            customerName: customer2.fullName,
+            customerPhone: customer2.phone,
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: beefSteak.id,
+                        quantity: 1,
+                        unitPrice: 450000,
+                        modifiers: ['Hot'],
+                        specialInstructions: 'Well done'
+                    },
+                    {
+                        menuItemId: grilledSalmon.id,
+                        quantity: 1,
+                        unitPrice: 320000,
+                        modifiers: ['Medium'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
         }
-    });
+    ];
+    for (const order of sampleOrders) {
+        await prisma.order.create({ data: order });
+    }
 
 
     // --- Create Bulk Reviews ---
