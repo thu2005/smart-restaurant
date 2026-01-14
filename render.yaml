@@ -5,6 +5,7 @@ services:
     env: node
     region: singapore
     plan: free
+    rootDir: backend  # Specify backend as root directory
     buildCommand: npm install && npx prisma generate
     startCommand: npm start
     envVars:
