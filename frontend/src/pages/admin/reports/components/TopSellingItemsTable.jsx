@@ -83,13 +83,27 @@ const TopSellingItemsTable = ({ items, onViewAll }) => {
                                     </td>
                                     <td className="py-4 px-2">
                                         <div className="flex items-center gap-3">
-                                            {item.image && (
+                                            {item.image ? (
                                                 <img
                                                     src={item.image}
                                                     alt={item.name}
                                                     className="w-10 h-10 rounded-lg object-cover"
+                                                    onError={(e) => {
+                                                        // Fallback to placeholder if image fails to load
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextSibling.style.display = 'flex';
+                                                    }}
                                                 />
-                                            )}
+                                            ) : null}
+                                            {/* Fallback placeholder */}
+                                            <div
+                                                className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center"
+                                                style={{ display: item.image ? 'none' : 'flex' }}
+                                            >
+                                                <span className="text-lg font-bold text-primary">
+                                                    {item.name?.charAt(0) || '?'}
+                                                </span>
+                                            </div>
                                             <span className="font-medium text-foreground">{item.name}</span>
                                         </div>
                                     </td>

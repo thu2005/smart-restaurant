@@ -25,13 +25,18 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
         if (isNaN(date.getTime())) return value;
 
         if (period === 'daily') {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            // Show day of week for daily view
+            const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
+            const dayNum = date.getDate();
+            return `${dayOfWeek} ${dayNum}`;
         }
         if (period === 'weekly') {
-            return `Week ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+            // Show week start date
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
         if (period === 'monthly') {
-            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            // Show month name
+            return date.toLocaleDateString('en-US', { month: 'short' });
         }
         return value;
     };
@@ -55,7 +60,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#e74c3c' }} />
                             <span className="text-xs text-muted-foreground">Revenue:</span>
                             <span className="text-sm font-semibold text-foreground data-text">
-                                ${((payload[0]?.value || 0) / 100).toFixed(2)}
+                                ${(payload[0]?.value || 0).toFixed(2)}
                             </span>
                         </div>
                         {payload[1] && (
@@ -97,8 +102,8 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                             key={option.value}
                             onClick={() => onPeriodChange(option.value)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${period === option.value
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'bg-muted text-muted-foreground hover:bg-muted/80'
                                 }`}
                         >
                             {option.label}

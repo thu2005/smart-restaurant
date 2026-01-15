@@ -3,6 +3,7 @@ import OverviewMetrics from './components/OverviewMetrics';
 import RevenueOverTimeChart from './components/RevenueOverTimeChart';
 import PeakHoursChart from './components/PeakHoursChart';
 import TopSellingItemsTable from './components/TopSellingItemsTable';
+import TopItemsModal from './components/TopItemsModal';
 import DateRangeSelector from './components/DateRangeSelector';
 import ExportButtons from './components/ExportButtons';
 import reportApi from '../../../services/reportApi';
@@ -18,6 +19,8 @@ const Reports = () => {
     const [revenueChartData, setRevenueChartData] = useState([]);
     const [peakHoursData, setPeakHoursData] = useState([]);
     const [topItems, setTopItems] = useState([]);
+    const [allTopItems, setAllTopItems] = useState([]);
+    const [showAllItemsModal, setShowAllItemsModal] = useState(false);
 
     // Get restaurantId from localStorage
     const getRestaurantId = () => {
@@ -191,6 +194,21 @@ const Reports = () => {
         reportApi.exportToCSV(exportData, `report-${dateRange}-${new Date().toISOString().split('T')[0]}.csv`);
     };
 
+    // Handle View All Items
+    const handleViewAllItems = async () => {
+        try {
+            const restaurantId = getRestaurantId();
+            const { startDate, endDate } = getDateRangeFromSelection(dateRange);
+
+            // Fetch all top items (limit 50)
+            const allItems = await reportApi.getTopItems(restaurantId, 50, startDate, endDate);
+            setAllTopItems(allItems);
+            setShowAllItemsModal(true);
+        } catch (error) {
+            console.error('Error fetching all items:', error);
+        }
+    };
+
     // Loading state
     if (loading && metrics.length === 0) {
         return (
@@ -271,8 +289,19 @@ const Reports = () => {
 
             {/* Top Selling Items Table */}
             <div>
-                <TopSellingItemsTable items={topItems} />
+                <TopSellingItemsTable
+                    items={topItems}
+                    onViewAll={handleViewAllItems}
+                />
             </div>
+
+            {/* View All Items Modal */}
+            {showAllItemsModal && (
+                <TopItemsModal
+                    items={allTopItems}
+                    onClose={() => setShowAllItemsModal(false)}
+                />
+            )}
         </div>
     );
 };
