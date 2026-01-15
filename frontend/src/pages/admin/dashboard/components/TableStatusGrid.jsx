@@ -6,34 +6,22 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
     const normalizedStatus = status?.toLowerCase() || "available";
     const configs = {
       available: {
-        color: "success",
-        bgColor: "bg-success/10 hover:bg-success/20",
-        borderColor: "border-success",
-        textColor: "text-success",
+        legendColor: "bg-emerald-600",
         icon: "CheckCircle",
         label: "Available",
       },
       occupied: {
-        color: "accent",
-        bgColor: "bg-accent/10 hover:bg-accent/20",
-        borderColor: "border-accent",
-        textColor: "text-accent",
+        legendColor: "bg-blue-600",
         icon: "Users",
         label: "Occupied",
       },
       reserved: {
-        color: "warning",
-        bgColor: "bg-warning/10 hover:bg-warning/20",
-        borderColor: "border-warning",
-        textColor: "text-warning",
+        legendColor: "bg-orange-600",
         icon: "Clock",
         label: "Reserved",
       },
       cleaning: {
-        color: "muted-foreground",
-        bgColor: "bg-secondary/20 hover:bg-secondary/30",
-        borderColor: "border-secondary",
-        textColor: "text-muted-foreground",
+        legendColor: "bg-gray-600",
         icon: "Sparkles",
         label: "Cleaning",
       },
@@ -64,55 +52,53 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
           const activeOrders = table._count?.orders || 0;
 
           return (
-              <button
-                key={table.id}
-                onClick={() => onTableClick && onTableClick(table)}
-                className={`
+            <button
+              key={table.id}
+              onClick={() => onTableClick && onTableClick(table)}
+              className={`
                   relative flex flex-col items-center justify-center shadow-md
-                  h-40 w-40 p-4 rounded-md border-[1.2px] transition-all duration-300
-                  hover:shadow-lg hover:-translate-y-0.5 outline-none
+                  h-40 w-40 p-4 rounded-xl border transition-all duration-300
+                  hover:shadow-lg hover:-translate-y-1 outline-none
+                  text-white overflow-hidden group
                   bg-gradient-to-br
                   ${table.status?.toLowerCase() === 'occupied'
-                    ? 'from-blue-50 to-blue-200'
-                    : table.status?.toLowerCase() === 'reserved'
-                      ? 'from-orange-50 to-orange-200'
-                      : table.status?.toLowerCase() === 'cleaning'
-                        ? 'from-gray-50 to-gray-200'
-                        : 'from-green-50 to-green-200'}
-                  ${config.borderColor}
+                  ? 'from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 border-blue-500/50'
+                  : table.status?.toLowerCase() === 'reserved'
+                    ? 'from-orange-700 to-orange-600 hover:from-orange-800 hover:to-orange-700 border-orange-500/50'
+                    : table.status?.toLowerCase() === 'cleaning'
+                      ? 'from-gray-700 to-gray-600 hover:from-gray-800 hover:to-gray-700 border-gray-500/50'
+                      : 'from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 border-emerald-500/50'}
                 `}
-              >
+            >
               {/* Active Orders Badge - Top Right */}
               {activeOrders > 0 && (
-                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-green-700 text-white text-xs font-bold flex items-center justify-center shadow-lg border-2 border-white z-10">
+                <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shadow-lg border-2 border-white z-50">
                   {activeOrders}
                 </div>
               )}
 
-              {/* Center Icon */}
-              <div className={`mb-2 ${config.textColor}`}>
-                <Icon name={config.icon} size={24} />
+              {/* Decorative Background Icon */}
+              <div className="absolute -bottom-8 -right-8 opacity-10 transform rotate-12 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
+                <Icon name={config.icon} size={100} color="white" />
               </div>
 
-              <div className="text-center w-full">
-                <h4 className={`font-bold text-base mb-1 ${config.textColor}`}>
+              {/* Center Icon */}
+              <div className="mb-3 relative z-10 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-inner-sm">
+                <Icon name={config.icon} size={24} color="white" />
+              </div>
+
+              <div className="text-center w-full relative z-10">
+                <h4 className="font-bold text-lg mb-2">
                   Table {table.tableNumber}
                 </h4>
-                <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${table.status?.toLowerCase() === 'occupied'
-                    ? 'bg-blue-100 text-blue-700'
-                    : table.status?.toLowerCase() === 'reserved'
-                      ? 'bg-orange-100 text-orange-700'
-                      : table.status?.toLowerCase() === 'cleaning'
-                        ? 'bg-gray-100 text-gray-700'
-                        : 'bg-green-100 text-green-700'
-                  }`}>
+                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/10 shadow-sm">
                   {config.label}
                 </span>
 
                 {table.capacity && (
-                  <div className="flex items-center justify-center gap-1.5 text-gray-600 mt-2">
+                  <div className="flex items-center justify-center gap-1.5 text-white/80 mt-3 font-medium">
                     <Icon name="Users" size={14} />
-                    <span className="text-xs font-semibold">{table.capacity} Seats</span>
+                    <span className="text-xs">{table.capacity} Seats</span>
                   </div>
                 )}
               </div>
@@ -134,7 +120,7 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
           const conf = getStatusConfig(status);
           return (
             <div key={status} className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${conf.textColor.replace('text-', 'bg-')}`} />
+              <div className={`w-3 h-3 rounded-full ${conf.legendColor}`} />
               <span className="text-sm font-medium text-muted-foreground capitalize">{status}</span>
             </div>
           )
