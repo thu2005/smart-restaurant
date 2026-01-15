@@ -63,26 +63,42 @@ const ShoppingCart = () => {
       return;
     }
 
+    // Validate Context (Table/Restaurant)
+    const restaurantId = localStorage.getItem("restaurantId");
+    const tableId = localStorage.getItem("tableId");
+
+    if (!restaurantId || !tableId) {
+       alert("Missing table information. Please scan the QR code again.");
+       return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // Use smart placeOrder method that handles create/add logic
-      const result = await orderService.placeOrder(cartItems, {
+      const orderData = {
+        restaurantId,
+        tableId,
         customerName: user?.fullName || localStorage.getItem("customerName") || "Guest",
         customerPhone: user?.phone || localStorage.getItem("customerPhone") || "",
         specialInstructions: specialInstructions,
-      });
+      };
+
+      // Use smart placeOrder method that handles create/add logic
+      const result = await orderService.placeOrder(cartItems, orderData);
 
       if (result.success) {
         // Clear cart after successful order
         clearCart();
         
-        alert(`Order placed successfully! Order #${result.data?.orderNumber || result.data?.id}`);
+        // Optional: Show toast or modal
+        // alert(`Order placed successfully! Order #${result.data?.orderNumber}`);
         navigate("/customer/order-status-tracking");
+      } else {
+         throw new Error(result.message || "Failed to place order");
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      alert(error.response?.data?.message || "Failed to place order. Please try again.");
+      alert(error.response?.data?.message || error.message || "Failed to place order. Please try again.");
     } finally {
       setIsProcessing(false);
     }
