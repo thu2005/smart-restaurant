@@ -39,6 +39,17 @@ const orderService = {
         items: orderData.items.map((item) => ({
           menuItemId: item.menuItemId || item.id,
           quantity: item.quantity,
+          modifiers: Array.isArray(item.modifiers)
+            ? item.modifiers.map((m) => {
+                if (typeof m === 'object') {
+                  return {
+                    id: m.id,
+                    quantity: m.quantity || 1
+                  };
+                }
+                return { id: m, quantity: 1 };
+              })
+            : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
         customerName: orderData.customerName || "",
@@ -164,6 +175,94 @@ const orderService = {
       return response.data;
     } catch (error) {
       console.error("Error getting waiter orders:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get active order for a table (not completed/cancelled)
+   * Used to check if table has ongoing order before creating new one
+   */
+  getActiveOrderByTable: async (tableId, restaurantId) => {
+    try {
+      const params = {
+        tableId: tableId || getTableId(),
+        restaurantId: restaurantId || getRestaurantId(),
+      };
+
+      const response = await api.get("/orders/active", { params });
+      return response.data; // { success: true, data: order | null }
+    } catch (error) {
+      console.error("Error getting active order:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Add items to existing order (for "add more items" flow)
+   * Maintains single order per table session
+   */
+  addItemsToOrder: async (orderId, items) => {
+    try {
+      const payload = {
+        items: items.map((item) => ({
+          menuItemId: item.menuItemId || item.id,
+          quantity: item.quantity,
+          modifiers: Array.isArray(item.modifiers)
+            ? item.modifiers.map((m) => {
+                if (typeof m === 'object') {
+                  return {
+                    id: m.id,
+                    quantity: m.quantity || 1
+                  };
+                }
+                return { id: m, quantity: 1 };
+              })
+            : [],
+          specialInstructions: item.specialInstructions || item.notes || "",
+        })),
+      };
+
+      const response = await api.post(`/orders/${orderId}/items`, payload);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding items to order:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Smart order placement - checks for active order and either creates new or adds to existing
+   * This is the main method to use from Cart
+   */
+  placeOrder: async (cartItems, orderData = {}) => {
+    try {
+      const tableId = orderData.tableId || getTableId();
+      const restaurantId = orderData.restaurantId || getRestaurantId();
+
+      // Check if table has active order
+      const activeOrderResponse = await orderService.getActiveOrderByTable(
+        tableId,
+        restaurantId
+      );
+      const activeOrder = activeOrderResponse?.data;
+
+      if (activeOrder) {
+        // Add to existing order
+        console.log("Adding items to existing order:", activeOrder.id);
+        return await orderService.addItemsToOrder(activeOrder.id, cartItems);
+      } else {
+        // Create new order
+        console.log("Creating new order");
+        return await orderService.createOrder({
+          ...orderData,
+          items: cartItems,
+          restaurantId,
+          tableId,
+        });
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
       throw error;
     }
   },

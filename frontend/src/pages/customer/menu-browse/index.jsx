@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import menuService from "services/menuService";
+import menuService, { getRestaurantId } from "services/menuService";
+import { useCart } from "../../../contexts/CartContext";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import FilterPanel from "./components/FilterPanel";
@@ -14,11 +15,11 @@ const BASE_URL =
   import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const MenuBrowse = () => {
-  const { restaurantId, tableNumber } = useParams();
+  const { restaurantId: paramRestaurantId, tableNumber } = useParams();
+  const { addToCart, getCartSummary } = useCart();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
   const [filters, setFilters] = useState({
     sortBy: "createdAt",
     isChefRecommended: false,
@@ -39,10 +40,25 @@ const MenuBrowse = () => {
       try {
         setLoading(true);
 
-        // Get restaurantId from localStorage or use default
-        const restaurantId =
-          localStorage.getItem("restaurantId") || "default-restaurant-id";
+        // Get restaurantId from URL params, localStorage, or user data
+        let restaurantId = paramRestaurantId || localStorage.getItem("restaurantId");
+        
+        // If still no restaurantId, try to get from logged-in user
+        if (!restaurantId) {
+          try {
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+            restaurantId = userData.restaurantId;
+          } catch (e) {
+            console.error("Error parsing user data:", e);
+          }
+        }
 
+        // Last resort - use getRestaurantId helper which has fallback logic
+        if (!restaurantId) {
+          restaurantId = getRestaurantId();
+        }
+
+        console.log("Using restaurantId:", restaurantId);
         console.log("Fetching with filters:", filters);
 
         const [catsResponse, itemsResponse] = await Promise.all([
@@ -245,20 +261,20 @@ const MenuBrowse = () => {
   });
 
   const handleQuickAdd = (item) => {
-    const existingItem = cartItems?.find(
-      (cartItem) => cartItem?.id === item?.id
-    );
-    if (existingItem) {
-      setCartItems(
-        cartItems?.map((cartItem) =>
-          cartItem?.id === item?.id
-            ? { ...cartItem, quantity: cartItem?.quantity + 1 }
-            : cartItem
-        )
-      );
-    } else {
-      setCartItems([...cartItems, { ...item, quantity: 1 }]);
-    }
+    // Add item to cart with quantity 1 (no modifiers for quick add)
+    addToCart({
+      menuItemId: item.id,
+      name: item.name,
+      image: item.image,
+      price: item.price,
+      quantity: 1,
+      modifiers: [], // Quick add = no modifiers
+      specialInstructions: "",
+      prepTime: item.prepTime || 15,
+    });
+    
+    // Optional: Show toast notification
+    console.log(`Added ${item.name} to cart`);
   };
 
   const handleFilterChange = (key, value) => {
@@ -353,15 +369,7 @@ const MenuBrowse = () => {
     return tags;
   };
 
-  const cartItemCount = cartItems?.reduce(
-    (sum, item) => sum + item?.quantity,
-    0
-  );
-
-  const cartTotal = cartItems?.reduce(
-    (sum, item) => sum + item?.price * item?.quantity,
-    0
-  );
+  const { itemCount, subtotal } = getCartSummary();
 
   const activeFiltersCount =
     (filters?.sortBy !== "createdAt" ? 1 : 0) +
@@ -499,7 +507,7 @@ const MenuBrowse = () => {
         onResetFilters={handleResetFilters}
       />
 
-      <FloatingCartButton itemCount={cartItemCount} totalAmount={cartTotal} />
+      <FloatingCartButton itemCount={itemCount} totalAmount={subtotal} />
     </div>
   );
 };

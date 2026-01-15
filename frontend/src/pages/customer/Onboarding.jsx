@@ -1,26 +1,36 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/AppIcon";
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check for query params immediately on mount
+  React.useEffect(() => {
+    const rId = searchParams.get("restaurantId");
+    const tId = searchParams.get("tableId");
+    const tNum = searchParams.get("tableNumber");
+
+    if (rId) localStorage.setItem("restaurantId", rId);
+    if (tId) localStorage.setItem("tableId", tId);
+    if (tNum) localStorage.setItem("tableNumber", tNum);
+  }, [searchParams]);
 
   const handleDineNow = () => {
-    // Check if we have a table ID from the URL entry
-    const tableId = sessionStorage.getItem('tableId');
-    
-    if (!tableId) {
-      // For development/testing without scanning, we can prompt or set a default
-      // In production, this might show an error or ask to scan again
-      const manualTable = prompt("No table detected. Enter Table ID to test (e.g., 1):", "1");
-      if (manualTable) {
-        sessionStorage.setItem('tableId', manualTable);
-        navigate("/customer/menu-browse");
-      }
-    } else {
-      navigate("/customer/menu-browse");
+    // Check if we have restaurantId and tableId from QR scan
+    const restaurantId = localStorage.getItem("restaurantId");
+    const tableId = localStorage.getItem("tableId");
+
+    if (!restaurantId || !tableId) {
+      // No QR scan detected - ask user to scan QR code
+      alert("Please scan the QR code at your table to start ordering.");
+      return;
     }
+
+    // Guest mode - proceed to menu with stored restaurantId and tableId
+    navigate(`/customer/menu-browse/${restaurantId}/${tableId}`);
   };
 
   const handleLogin = () => {

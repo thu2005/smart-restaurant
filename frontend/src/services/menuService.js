@@ -27,9 +27,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Helper function to get restaurantId (assuming stored in localStorage)
+// Helper function to get restaurantId (from localStorage, user data, or fallback)
 const getRestaurantId = () => {
-  return localStorage.getItem("restaurantId") || "default-restaurant-id";
+  // First try to get from QR scan or direct storage
+  let restaurantId = localStorage.getItem("restaurantId");
+  
+  // If not found, try to get from logged-in user
+  if (!restaurantId) {
+    try {
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      restaurantId = userData.restaurantId;
+    } catch (e) {
+      console.error("Error getting restaurantId from user data:", e);
+    }
+  }
+  
+  // Fallback to environment variable or default
+  return restaurantId || import.meta.env.VITE_DEFAULT_RESTAURANT_ID || null;
 };
 
 // Helper functions to transform data between camelCase (backend) and snake_case (frontend)
@@ -269,6 +283,8 @@ const menuService = {
           id: group.id,
           name: group.name,
           description: group.description,
+          selectionType: group.selectionType || 'single',
+          modifierType: group.modifierType || 'choice', // 'choice' or 'addon'
           isRequired: group.isRequired,
           maxSelections: group.maxSelections,
           minSelections: group.minSelections,
@@ -276,7 +292,7 @@ const menuService = {
             id: option.id,
             name: option.name,
             description: option.description,
-            price: parseFloat(option.price || 0),
+            priceAdjustment: parseFloat(option.priceAdjustment || 0),
             isAvailable: option.isAvailable !== false,
           })),
         })),
@@ -611,10 +627,23 @@ const menuService = {
   },
 
   // --- Reviews ---
+  // --- Reviews ---
   getReviews: async (menuItemId) => {
     try {
       const response = await publicApi.get(`/reviews/${menuItemId}`);
-      return response.data.data || [];
+      const rawReviews = response.data.reviews || response.data.data || [];
+      
+      // Transform backend data to frontend format
+      return rawReviews.map(review => ({
+        id: review.id,
+        userName: review.user?.fullName || "Anonymous",
+        userAvatar: `https://api.dicebear.com/7.x/initials/svg?seed=${review.user?.fullName || "User"}`, // Generating avatar based on name
+        userAvatarAlt: "User Avatar",
+        rating: review.rating,
+        date: new Date(review.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }),
+        comment: review.comment || ""
+      }));
+
     } catch (error) {
       console.error("Error getting reviews:", error);
       throw error;
@@ -633,3 +662,4 @@ const menuService = {
 };
 
 export default menuService;
+export { getRestaurantId };

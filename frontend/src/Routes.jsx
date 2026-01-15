@@ -21,6 +21,7 @@ import ShoppingCart from "./pages/customer/shopping-cart";
 import MenuBrowse from "./pages/customer/menu-browse";
 import MenuItemDetail from "./pages/customer/menu-item-detail";
 import OrderStatusTracking from "./pages/customer/order-status-tracking";
+import Profile from "./pages/customer/profile";
 
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
@@ -28,6 +29,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Onboarding from "./pages/customer/Onboarding";
 import TableEntry from "./pages/customer/TableEntry";
+import QREntry from "./pages/customer/QREntry";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 
 // Admin Menu Management Pages
@@ -37,13 +39,19 @@ import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
 
+// Waiter Pages
+import WaiterDashboard from "./pages/waiter";
+
 const Routes = () => {
   return (
     <BrowserRouter>
       <ErrorBoundary>
         <ScrollToTop />
         <RouterRoutes>
-          {/* Table Entry Route - Captures table ID from QR code */}
+          {/* QR Entry Route - New format with restaurantId and tableId */}
+          <Route path="/qr/:restaurantId/:tableId" element={<QREntry />} />
+          
+          {/* Table Entry Route - Legacy format (kept for backward compatibility) */}
           <Route path="/table/:tableId" element={<TableEntry />} />
 
           {/* Root redirect */}
@@ -62,6 +70,9 @@ const Routes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          
+          {/* Dedicated Customer Onboarding Route - for QR scans */}
+          <Route path="/customer-onboarding" element={<Onboarding />} />
 
           {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>
@@ -83,6 +94,7 @@ const Routes = () => {
               path="order-status-tracking"
               element={<OrderStatusTracking />}
             />
+            <Route path="profile" element={<Profile />} />
           </Route>
 
           {/* Admin Routes - Protected */}
@@ -128,6 +140,16 @@ const Routes = () => {
           <Route
             path="/kitchen-display-system"
             element={<Navigate to="/kitchen/dashboard" replace />}
+          />
+
+          {/* Waiter Routes - Protected */}
+          <Route
+            path="/waiter"
+            element={
+              <ProtectedRoute roles={['WAITER']}>
+                <WaiterDashboard />
+              </ProtectedRoute>
+            }
           />
 
           <Route path="*" element={<NotFound />} />

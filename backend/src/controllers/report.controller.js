@@ -9,17 +9,17 @@ exports.getRevenueReport = async (req, res, next) => {
 
         // Validate restaurantId
         if (!restaurantId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'restaurantId is required' 
+            return res.status(400).json({
+                success: false,
+                message: 'restaurantId is required'
             });
         }
 
         // Check if user has access to this restaurant
         if (req.user.role !== 'SUPER_ADMIN' && req.user.restaurantId !== restaurantId) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Access denied to this restaurant' 
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied to this restaurant'
             });
         }
 
@@ -43,22 +43,22 @@ exports.getTopRevenueByMenuItem = async (req, res, next) => {
 
         // Validate restaurantId
         if (!restaurantId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'restaurantId is required' 
+            return res.status(400).json({
+                success: false,
+                message: 'restaurantId is required'
             });
         }
 
         // Check if user has access to this restaurant
         if (req.user.role !== 'SUPER_ADMIN' && req.user.restaurantId !== restaurantId) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Access denied to this restaurant' 
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied to this restaurant'
             });
         }
 
         const topItems = await reportService.getTopRevenueByMenuItem(
-            restaurantId, 
+            restaurantId,
             limit ? parseInt(limit) : 10,
             startDate,
             endDate
@@ -82,26 +82,26 @@ exports.getRevenueChartData = async (req, res, next) => {
 
         // Validate restaurantId
         if (!restaurantId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'restaurantId is required' 
+            return res.status(400).json({
+                success: false,
+                message: 'restaurantId is required'
             });
         }
 
         // Check if user has access to this restaurant
         if (req.user.role !== 'SUPER_ADMIN' && req.user.restaurantId !== restaurantId) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Access denied to this restaurant' 
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied to this restaurant'
             });
         }
 
         // Validate period
-        const validPeriods = ['daily', 'weekly', 'monthly'];
+        const validPeriods = ['hourly', 'daily', 'weekly', 'monthly'];
         if (period && !validPeriods.includes(period)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Invalid period. Must be daily, weekly, or monthly' 
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid period. Must be daily, weekly, or monthly'
             });
         }
 
@@ -130,17 +130,17 @@ exports.getOrderStatistics = async (req, res, next) => {
 
         // Validate restaurantId
         if (!restaurantId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'restaurantId is required' 
+            return res.status(400).json({
+                success: false,
+                message: 'restaurantId is required'
             });
         }
 
         // Check if user has access to this restaurant
         if (req.user.role !== 'SUPER_ADMIN' && req.user.restaurantId !== restaurantId) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Access denied to this restaurant' 
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied to this restaurant'
             });
         }
 

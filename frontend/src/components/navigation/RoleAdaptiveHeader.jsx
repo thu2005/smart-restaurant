@@ -4,27 +4,40 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
 import authService from "../../services/authService";
+import { useCart } from "../../contexts/CartContext";
 
-const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
+const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(authService.getCurrentUser());
-  const [tableId, setTableId] = useState(sessionStorage.getItem("tableId"));
+  const [tableNumber, setTableNumber] = useState(
+    localStorage.getItem("tableNumber")
+  );
+  const { getCartSummary } = useCart();
+  const { itemCount: cartItemCount } = getCartSummary();
 
   useEffect(() => {
     // Refresh user and table info on mount
     setUser(authService.getCurrentUser());
-    setTableId(sessionStorage.getItem("tableId"));
+    const storedTableNumber = localStorage.getItem("tableNumber");
+    setTableNumber(storedTableNumber);
   }, []);
 
   const handleLogout = () => {
+    const isCustomer = !user?.role || user.role === 'CUSTOMER';
     authService.logout();
     setUser(null);
-    navigate("/login");
+    
+    if (isCustomer) {
+      navigate("/customer-onboarding");
+    } else {
+      navigate("/login");
+    }
   };
 
-  const customerNavItems = [
+  /* Nav Items Configuration */
+  const baseCustomerNavItems = [
     { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
     {
       path: "/customer/shopping-cart",
@@ -38,6 +51,11 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
       icon: "ClipboardList",
     },
   ];
+
+  // Add Profile for logged-in users
+  const customerNavItems = user 
+    ? [...baseCustomerNavItems, { path: "/customer/profile", label: "Profile", icon: "User" }]
+    : baseCustomerNavItems;
 
   const adminNavItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
@@ -56,8 +74,124 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
     setMobileMenuOpen(false);
   };
 
-  const isActivePath = (path) => {
-    return location?.pathname === path;
+  const isActivePath = (targetPath) => {
+    if (!location?.pathname) return false;
+    
+    // Fix: Keep Menu active when viewing item detail
+    if (targetPath === "/customer/menu-browse" && location.pathname.includes("/customer/menu-item-detail")) {
+      return true;
+    }
+
+    // Exact match
+    if (location.pathname === targetPath) return true;
+
+    // Prefix match for nested routes (e.g., /customer/menu-browse/123/456 matches /customer/menu-browse)
+    if (targetPath !== "/" && location.pathname.startsWith(targetPath)) {
+      const charAfterPrefix = location.pathname[targetPath.length];
+      return !charAfterPrefix || charAfterPrefix === "/";
+    }
+
+    return false;
+  };
+
+  // Mobile Menu Component using Portal
+  const MobileMenuPortal = () => {
+    if (!mobileMenuOpen) return null;
+
+    return createPortal(
+      <div className="fixed inset-0 z-[200] md:hidden">
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+
+        {/* Drawer content */}
+        <div className="fixed inset-y-0 right-0 w-[280px] bg-background shadow-2xl flex flex-col p-6 animate-in slide-in-from-right duration-300">
+          <div className="flex items-center justify-between mb-8 border-b pb-4">
+            <span className="font-heading font-bold text-xl text-primary">
+              Menu
+            </span>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 text-foreground/60 hover:text-destructive transition-colors"
+            >
+              <Icon name="X" size={24} />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-2 flex-1">
+            {navItems.map((item) => {
+              const active = isActivePath(item.path);
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavigation(item.path)}
+                  className={`
+                    flex items-center justify-between p-4 rounded-xl text-base font-medium transition-smooth
+                    ${
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground/70 hover:bg-muted"
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon
+                      name={item.icon}
+                      size={22}
+                      className={active ? "stroke-[2.5px]" : "stroke-2"}
+                    />
+                    {item.label}
+                  </div>
+                  {item.badge > 0 && (
+                    <span className="min-w-[20px] h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1.5">
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="mt-auto pt-6 border-t border-border flex flex-col gap-3">
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 p-2 mb-2">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                    {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="font-semibold text-foreground truncate">
+                      {(user.fullName || user.name || "Customer").split(" ").pop()}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Member
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full justify-start text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200"
+                >
+                  <Icon name="LogOut" className="mr-3" size={18} /> Logout
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => handleNavigation("/login")}
+                className="w-full"
+                variant="primary"
+              >
+                Login / Register
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
   };
 
   return (
@@ -66,7 +200,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
         <div className="relative flex items-center justify-between h-14 px-4 md:h-16 md:px-6">
           {/* Left: Logo */}
           <div
-            className="flex items-center gap-2 md:gap-3 cursor-pointer"
+            className="flex items-center gap-2 md:gap-3 cursor-pointer min-w-0"
             onClick={() =>
               handleNavigation(
                 userRole === "admin"
@@ -75,14 +209,14 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
               )
             }
           >
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden">
               <img
                 src="https://ik.imagekit.io/thu2005/Gemini_Generated_Image_cl11tdcl11tdcl11-removebg-preview.png"
                 alt="Logo"
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="text-lg md:text-xl font-heading font-semibold text-foreground truncate max-w-[150px] md:max-w-none">
+            <span className="text-base md:text-xl font-heading font-semibold text-foreground truncate max-w-[150px] md:max-w-none">
               Smart Restaurant
             </span>
           </div>
@@ -117,10 +251,10 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
           {/* Right: Actions */}
           <div className="flex items-center gap-2 md:gap-4">
             {/* Table Info */}
-            {tableId && (
-              <div className="flex items-center px-3 py-1.5 border border-1 border-primary rounded-full shadow-sm">
-                <span className="text-xs md:text-sm font-bold text-green-800 whitespace-nowrap">
-                  Table {tableId}
+            {tableNumber && (
+              <div className="flex items-center px-3 py-1.5 border border-primary/20 rounded-full bg-primary/5">
+                <span className="text-xs md:text-sm font-bold text-primary whitespace-nowrap">
+                  Table {tableNumber}
                 </span>
               </div>
             )}
@@ -130,14 +264,14 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
               <div className="flex items-center gap-2">
                 <div className="hidden md:flex flex-col items-end mr-2">
                   <span className="text-sm font-medium text-gray-700 leading-none">
-                    {user.name || "Customer"}
+                    {(user.fullName || user.name || "Customer").split(" ").pop()}
                   </span>
                   <span className="text-xs text-gray-500 leading-none mt-1">
                     Member
                   </span>
                 </div>
                 <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-primary-200">
-                  {(user.name || "C").charAt(0).toUpperCase()}
+                  {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
                 </div>
                 <button
                   onClick={handleLogout}
@@ -148,36 +282,23 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate("/login")}
-                  className="hidden md:flex"
-                >
-                  Login
-                </Button>
+              <div className="flex items-center">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigate("/login")}
-                  className="md:hidden text-xs px-2 h-8"
+                  className="text-xs h-8 px-3"
                 >
                   Login
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => navigate("/register")}
-                  className="text-xs md:text-sm px-3 md:px-4 h-8 md:h-9"
-                >
-                  Register
                 </Button>
               </div>
             )}
           </div>
         </div>
       </header>
+
+      {/* Render Mobile Menu Portal */}
+      <MobileMenuPortal />
 
       {/* Bottom Navigation Bar for Mobile */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-gray-200 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">

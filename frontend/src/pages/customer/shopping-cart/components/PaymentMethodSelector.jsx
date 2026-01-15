@@ -14,6 +14,11 @@ const PaymentMethodSelector = ({ onPaymentMethodChange }) => {
     cvv: "",
   });
 
+  // Notify parent of default selection on mount
+  React.useEffect(() => {
+      onPaymentMethodChange(selectedMethod);
+  }, []);
+
   const savedCards = [
     {
       id: "card_1",

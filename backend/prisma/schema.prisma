@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") 
 }
 
 // ============================================
@@ -263,6 +264,7 @@ model ModifierGroup {
   id            String  @id @default(uuid())
   name          String
   selectionType String // "single", "multiple"
+  modifierType  String  @default("choice") // "choice" (no quantity) or "addon" (with quantity)
   isRequired    Boolean @default(false)
   minSelections Int     @default(0)
   maxSelections Int     @default(1)
@@ -391,8 +393,9 @@ model OrderItem {
   quantity  Int     @default(1)
   unitPrice Decimal @db.Decimal(10, 2) // Price at order time
 
-  // Modifiers (stored as JSON array: ["Extra Cheese", "Thin Crust", "No Onions"])
-  modifiers String[]
+  // Modifiers stored as JSON array of objects
+  // Format: [{"id": "mod-uuid", "name": "Extra Cheese", "quantity": 2, "priceAdjustment": 10000}]
+  modifiers Json @default("[]")
 
   // Special instructions for this specific item
   specialInstructions String?

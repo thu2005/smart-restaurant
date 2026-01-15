@@ -1,7 +1,7 @@
 import React from "react";
 import Icon from "../../../../components/AppIcon";
 
-const OrderSummary = ({ subtotal, tax, total, itemCount }) => {
+const OrderSummary = ({ subtotal, tax, total, itemCount, estimatedTime }) => {
   const taxRate = 0.08;
   const calculatedTax = subtotal * taxRate;
   const calculatedTotal = subtotal + calculatedTax;
@@ -17,7 +17,7 @@ const OrderSummary = ({ subtotal, tax, total, itemCount }) => {
             Items ({itemCount})
           </span>
           <span className="text-sm md:text-base font-medium text-foreground data-text">
-            ${subtotal?.toFixed(2)}
+            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}
           </span>
         </div>
 
@@ -26,7 +26,7 @@ const OrderSummary = ({ subtotal, tax, total, itemCount }) => {
             Tax (8%)
           </span>
           <span className="text-sm md:text-base font-medium text-foreground data-text">
-            ${calculatedTax?.toFixed(2)}
+            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculatedTax)}
           </span>
         </div>
 
@@ -36,7 +36,7 @@ const OrderSummary = ({ subtotal, tax, total, itemCount }) => {
               Total
             </span>
             <span className="text-xl md:text-2xl lg:text-3xl font-bold text-primary data-text">
-              ${calculatedTotal?.toFixed(2)}
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculatedTotal)}
             </span>
           </div>
         </div>
@@ -52,12 +52,13 @@ const OrderSummary = ({ subtotal, tax, total, itemCount }) => {
             Estimated Prep Time
           </p>
           <p className="text-xs md:text-sm text-foreground">
-            Your order will be ready in approximately 20-25 minutes
+            Your order will be ready in approximately {estimatedTime?.min}-{estimatedTime?.max} minutes
           </p>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default OrderSummary;

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import menuService from "../../../services/menuService";
-import orderService from "../../../services/orderService";
+import { useCart } from "../../../contexts/CartContext";
 import ImageGallery from "./components/ImageGallery";
 import ItemInfo from "./components/ItemInfo";
 import CustomizationPanel from "./components/CustomizationPanel";
@@ -92,8 +93,10 @@ const MenuItemDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { itemId } = useParams();
+  const { addToCart, updateItem, getCartSummary } = useCart();
+  
+  const editingItem = location.state?.editingItem;
 
-  const [cartItemCount, setCartItemCount] = useState(3);
   const [menuItem, setMenuItem] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -117,23 +120,52 @@ const MenuItemDetail = () => {
         const item = await menuService.getItemById(itemId);
         setMenuItem(item);
 
-        // Init default modifiers
-        if (item?.modifier_groups) {
-          const initialModifiers = {};
-          item.modifier_groups.forEach((group) => {
-            if (
-              group.selectionType === "single" &&
-              group.isRequired &&
-              group.options?.length > 0
-            ) {
-              // Auto-select first option if required single
-              initialModifiers[group.id] = group.options[0].id;
-            } else if (group.selectionType === "multiple") {
-              initialModifiers[group.id] = [];
-            }
-          });
-          setSelectedModifiers(initialModifiers);
+        // Init modifiers
+        let initialModifiers = {};
+
+        if (editingItem && editingItem.menuItemId === itemId) {
+          // EDIT MODE: Populate from existing cart item
+          setQuantity(editingItem.quantity);
+          setSpecialInstructions(editingItem.specialInstructions || "");
+          
+          if (item?.modifier_groups) {
+             item.modifier_groups.forEach(group => {
+                const groupModifiers = editingItem.modifiers?.filter(m => m.groupName === group.name) || [];
+                
+                if (groupModifiers.length > 0) {
+                   if (group.selectionType === 'single') {
+                      initialModifiers[group.id] = groupModifiers[0].id;
+                   } else {
+                      // Multiple or Addon
+                      initialModifiers[group.id] = groupModifiers.map(m => ({
+                         id: m.id,
+                         quantity: m.quantity || 1
+                      }));
+                   }
+                } else if (group.selectionType === 'multiple') {
+                   initialModifiers[group.id] = [];
+                }
+             });
+          }
+        } else {
+          // NEW ITEM MODE: Default init
+          if (item?.modifier_groups) {
+            item.modifier_groups.forEach((group) => {
+              if (
+                group.selectionType === "single" &&
+                group.isRequired &&
+                group.options?.length > 0
+              ) {
+                initialModifiers[group.id] = group.options[0].id;
+              } else if (group.selectionType === "multiple") {
+                initialModifiers[group.id] = [];
+              }
+            });
+          }
         }
+        
+        setSelectedModifiers(initialModifiers);
+
       } catch (err) {
         console.error("Failed to fetch menu item:", err);
         setError("Failed to load menu item details");
@@ -186,13 +218,16 @@ const MenuItemDetail = () => {
         if (!group) return;
 
         if (Array.isArray(selection)) {
-          // Multiple
-          selection.forEach((optId) => {
+          // Multiple selection or Addons
+          selection.forEach((item) => {
+            const optId = typeof item === 'object' ? item.id : item;
+            const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
+            
             const opt = group.options?.find((o) => o.id === optId);
-            if (opt) total += opt.priceAdjustment || 0;
+            if (opt) total += (opt.priceAdjustment || 0) * qty;
           });
         } else {
-          // Single
+          // Single selection (always just ID)
           const opt = group.options?.find((o) => o.id === selection);
           if (opt) total += opt.priceAdjustment || 0;
         }
@@ -202,7 +237,7 @@ const MenuItemDetail = () => {
     return total * quantity;
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     try {
       // Validate required modifiers
       if (menuItem?.modifier_groups) {
@@ -218,34 +253,78 @@ const MenuItemDetail = () => {
         }
       }
 
-      const orderItem = {
-        menuItemId: menuItem.id,
-        quantity,
-        specialInstructions,
-        modifiers: selectedModifiers,
-      };
+      // Calculate base price with modifiers
+      let itemPrice = menuItem?.price || 0;
+      const modifiersList = [];
 
-      const orderData = {
-        items: [orderItem],
-        customerName: localStorage.getItem("customerName") || "Guest",
-        customerPhone: localStorage.getItem("customerPhone") || "",
-        specialInstructions: `Added ${menuItem.name} (${JSON.stringify(
-          selectedModifiers
-        )}) ${specialInstructions ? ": " + specialInstructions : ""}`,
-      };
+      if (menuItem?.modifier_groups) {
+        Object.entries(selectedModifiers).forEach(([groupId, selection]) => {
+          const group = menuItem.modifier_groups.find((g) => g.id === groupId);
+          if (!group) return;
 
-      const result = await orderService.createOrder(orderData);
-      console.log("Order created:", result);
+          if (Array.isArray(selection)) {
+            // Multiple selection or Addons
+            selection.forEach((item) => {
+              const optId = typeof item === 'object' ? item.id : item;
+              const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
+              
+              const opt = group.options?.find((o) => o.id === optId);
+              if (opt) {
+                itemPrice += (opt.priceAdjustment || 0) * qty;
+                modifiersList.push({
+                  id: opt.id,
+                  name: opt.name,
+                  groupName: group.name,
+                  quantity: qty,
+                  priceAdjustment: opt.priceAdjustment || 0,
+                });
+              }
+            });
+          } else {
+            // Single selection
+            const opt = group.options?.find((o) => o.id === selection);
+            if (opt) {
+              itemPrice += opt.priceAdjustment || 0;
+              modifiersList.push({
+                id: opt.id,
+                name: opt.name,
+                groupName: group.name,
+                quantity: 1, // Default quantity
+                priceAdjustment: opt.priceAdjustment || 0,
+              });
+            }
+          }
+        });
+      }
 
-      navigate("/customer/menu", {
-        state: {
-          message: `Order placed successfully! Order ID: ${result.data?.id}`,
-          orderData: result.data,
-        },
-      });
+      // Add to cart
+      // Add to cart or Update cart
+      if (editingItem) {
+         updateItem(editingItem.cartId, {
+            price: itemPrice,
+            quantity: quantity,
+            modifiers: modifiersList,
+            specialInstructions: specialInstructions,
+            prepTime: menuItem.prepTime || 15,
+         });
+      } else {
+         addToCart({
+           menuItemId: menuItem.id,
+           name: menuItem.name,
+           image: menuItem.photos?.[0]?.url || menuItem.image,
+           price: itemPrice,
+           quantity: quantity,
+           modifiers: modifiersList,
+           specialInstructions: specialInstructions,
+           prepTime: menuItem.prepTime || 15,
+         });
+      }
+
+      // Navigate to cart
+      navigate("/customer/shopping-cart");
     } catch (error) {
-      console.error("Failed to create order:", error);
-      alert("Failed to place order. Please try again.");
+      console.error("Failed to add/update cart:", error);
+      alert("Failed to process request. Please try again.");
     }
   };
 
@@ -348,13 +427,15 @@ const MenuItemDetail = () => {
                   <Button
                     variant="default"
                     size="lg"
-                    iconName="ShoppingCart"
+                    iconName={editingItem ? "Check" : "ShoppingCart"}
                     iconPosition="left"
                     onClick={handleAddToCart}
                     disabled={!isAvailable}
                     fullWidth
                   >
-                    {isAvailable ? "Add to Cart" : "Currently Unavailable"}
+                    {isAvailable 
+                      ? (editingItem ? "Update Cart" : "Add to Cart") 
+                      : "Currently Unavailable"}
                   </Button>
                 </div>
               </div>
@@ -362,19 +443,28 @@ const MenuItemDetail = () => {
           </div>
 
           <div className="space-y-8 md:space-y-12">
-            <NutritionalInfo
-              nutritionalData={mockNutritionalData}
-              ingredients={mockIngredients}
-            />
+            {/* Nutritional Info */}
+            <section>
+              <NutritionalInfo data={mockNutritionalData} />
+            </section>
 
-            <ReviewSection
-              reviews={reviews}
-              overallRating={menuItem?.rating}
-              ratingDistribution={mockRatingDistribution}
-              loading={reviewsLoading}
-            />
+            {/* Review Section */}
+            <section id="reviews">
+              <ReviewSection
+                reviews={reviews}
+                avgRating={menuItem.averageRating}
+                totalReviews={menuItem.totalReviews}
+                loading={reviewsLoading}
+              />
+            </section>
 
-            <RelatedItems items={mockRelatedItems} />
+            {/* Related Items */}
+            <section>
+              <RelatedItems
+                categoryId={menuItem.categoryId}
+                currentId={menuItem.id}
+              />
+            </section>
           </div>
         </div>
       </main>
@@ -383,6 +473,7 @@ const MenuItemDetail = () => {
         quantity={quantity}
         onAddToCart={handleAddToCart}
         isAvailable={isAvailable}
+        buttonText={editingItem ? "Update Cart" : "Add to Cart"}
       />
     </div>
   );
