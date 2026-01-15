@@ -125,7 +125,7 @@ const KitchenDisplaySystem = () => {
         quantity: item.quantity,
         modifiers: item.modifiers || [],
         specialInstructions: item.specialInstructions || "",
-        allergens: item.menuItem?.dietary || []
+        allergens: [] // TODO: Add allergens field to MenuItem schema (different from dietary)
       })) || [],
       orderNotes: order.specialInstructions || ""
     };
