@@ -214,7 +214,7 @@ const AdminDashboard = () => {
   const handleQuickAction = (actionId) => {
     const routes = {
       menu: "/menu-browse",
-      kitchen: "/kitchen/dashboard",
+      kitchen: "/admin/kitchen/dashboard",
       tables: "/admin/dashboard",
       reports: "/admin/dashboard",
     };

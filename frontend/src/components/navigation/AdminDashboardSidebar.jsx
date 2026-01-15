@@ -30,7 +30,7 @@ const AdminDashboardSidebar = ({
           icon: "LayoutDashboard",
         },
         {
-          path: "/kitchen/dashboard",
+          path: "/admin/kitchen/dashboard",
           label: "Kitchen Display",
           icon: "ChefHat",
         },

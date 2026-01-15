@@ -109,6 +109,9 @@ const Routes = () => {
               element={<Navigate to="/admin/menu/items" replace />}
             />
             <Route path="dashboard" element={<AdminDashboard />} />
+            
+            {/* Kitchen Display for Admin - with sidebar */}
+            <Route path="kitchen/dashboard" element={<KitchenDashboard />} />
 
             {/* Menu Management Routes */}
             <Route path="menu/categories" element={<CategoryList />} />
