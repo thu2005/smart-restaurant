@@ -54,7 +54,7 @@ async function main() {
         data: {
             email: 'superadmin@system.com',
             password: hashedPassword,
-            fullName: 'System Administrator',
+            fullName: 'Karasuma Renya',
             role: 'SUPER_ADMIN',
             isActive: true,
             emailVerified: true
@@ -66,7 +66,7 @@ async function main() {
         data: {
             email: 'admin@cafepoirot.com',
             password: hashedPassword,
-            fullName: 'Nguyen Van Admin',
+            fullName: 'Juzo Megure',
             role: 'ADMIN',
             restaurantId: restaurant.id,
             isActive: true,
@@ -80,7 +80,7 @@ async function main() {
         data: {
             email: 'waiter@cafepoirot.com',
             password: hashedPassword,
-            fullName: 'Tran Thi Waiter',
+            fullName: 'Amuro Tooru',
             role: 'WAITER',
             restaurantId: restaurant.id,
             isActive: true,
@@ -94,7 +94,7 @@ async function main() {
         data: {
             email: 'chef@cafepoirot.com',
             password: hashedPassword,
-            fullName: 'Le Van Chef',
+            fullName: 'Yusaku Kudo',
             role: 'KITCHEN',
             restaurantId: restaurant.id,
             isActive: true,
@@ -108,7 +108,7 @@ async function main() {
         data: {
             email: 'customer1@gmail.com',
             password: hashedPassword,
-            fullName: 'Pham Minh Khach',
+            fullName: 'Hattori Heij',
             role: 'CUSTOMER',
             isActive: true,
             emailVerified: true,
@@ -120,7 +120,7 @@ async function main() {
         data: {
             email: 'customer2@gmail.com',
             password: hashedPassword,
-            fullName: 'Hoang Thi Customer',
+            fullName: 'Kazuha Toyama',
             role: 'CUSTOMER',
             isActive: true,
             emailVerified: true,
