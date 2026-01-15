@@ -23,44 +23,35 @@ const MetricCard = ({
   };
 
   return (
-    <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm hover:shadow-warm-md transition-smooth">
-      <div className="flex items-start justify-between mb-3 md:mb-4">
+    <div className="rounded-lg border border-green-700/50 p-4 md:p-6 shadow-warm hover:shadow-warm-md transition-all duration-300 relative overflow-hidden bg-gradient-to-br from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white group transform hover:scale-105">
+      <div className="flex items-start justify-between mb-3 md:mb-4 relative z-10">
         <div className="flex-1">
-          <p className="text-sm md:text-base text-muted-foreground font-medium mb-1">
+          <p className="text-sm md:text-base text-white/80 font-medium mb-1">
             {title}
           </p>
-          <p className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground data-text">
+          <p className="text-xl md:text-2xl lg:text-3xl font-heading font-bold">
             {value}
           </p>
         </div>
         <div
-          className={`w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center`}
-          style={{ backgroundColor: `${iconColor}15` }}
+          className="w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center bg-white/20 backdrop-blur-sm shadow-inner-sm"
         >
-          <Icon name={icon} size={24} color={iconColor} />
+          <Icon name={icon} size={24} color="white" />
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <div className={`flex items-center gap-1 ${getChangeColor()}`}>
-          <Icon name={getChangeIcon()} size={16} />
-          <span className="text-sm font-medium data-text">{change}</span>
+      <div className="flex items-center gap-2 mt-4 relative z-10">
+        <div className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-white">
+          <Icon name={getChangeIcon()} size={14} className="stroke-2" />
+          <span className="text-xs font-bold">{change}</span>
         </div>
-        <span className="text-sm text-muted-foreground">vs last period</span>
+        <span className="text-sm text-white/70 font-medium">vs last period</span>
       </div>
-      {trend && (
-        <div className="mt-3 md:mt-4 h-12 md:h-16">
-          <div className="flex items-end justify-between h-full gap-1">
-            {trend?.map((value, index) => (
-              <div
-                key={index}
-                className="flex-1 bg-primary/20 rounded-t transition-smooth hover:bg-primary/30"
-                style={{ height: `${value}%` }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+
+      {/* Decorative background accent */}
+      <div className="absolute -bottom-6 -right-6 opacity-10 pointer-events-none transform rotate-12 z-0">
+        <Icon name={icon} size={120} color="white" />
+      </div>
+    </div >
   );
 };
 

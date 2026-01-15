@@ -4,8 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
 import authService from "../../services/authService";
+import { useCart } from "../../contexts/CartContext";
 
-const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
+const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,6 +14,8 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
   const [tableNumber, setTableNumber] = useState(
     localStorage.getItem("tableNumber")
   );
+  const { getCartSummary } = useCart();
+  const { itemCount: cartItemCount } = getCartSummary();
 
   useEffect(() => {
     // Refresh user and table info on mount
@@ -22,12 +25,19 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
   }, []);
 
   const handleLogout = () => {
+    const isCustomer = !user?.role || user.role === 'CUSTOMER';
     authService.logout();
     setUser(null);
-    navigate("/login");
+    
+    if (isCustomer) {
+      navigate("/customer-onboarding");
+    } else {
+      navigate("/login");
+    }
   };
 
-  const customerNavItems = [
+  /* Nav Items Configuration */
+  const baseCustomerNavItems = [
     { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
     {
       path: "/customer/shopping-cart",
@@ -41,6 +51,11 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
       icon: "ClipboardList",
     },
   ];
+
+  // Add Profile for logged-in users
+  const customerNavItems = user 
+    ? [...baseCustomerNavItems, { path: "/customer/profile", label: "Profile", icon: "User" }]
+    : baseCustomerNavItems;
 
   const adminNavItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
@@ -61,6 +76,12 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
 
   const isActivePath = (targetPath) => {
     if (!location?.pathname) return false;
+    
+    // Fix: Keep Menu active when viewing item detail
+    if (targetPath === "/customer/menu-browse" && location.pathname.includes("/customer/menu-item-detail")) {
+      return true;
+    }
+
     // Exact match
     if (location.pathname === targetPath) return true;
 
@@ -138,11 +159,11 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
               <>
                 <div className="flex items-center gap-3 p-2 mb-2">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {(user.name || "C").charAt(0).toUpperCase()}
+                    {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
                   </div>
                   <div className="flex flex-col overflow-hidden">
                     <span className="font-semibold text-foreground truncate">
-                      {user.name || "Customer"}
+                      {(user.fullName || user.name || "Customer").split(" ").pop()}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       Member
@@ -243,14 +264,14 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
               <div className="flex items-center gap-2">
                 <div className="hidden md:flex flex-col items-end mr-2">
                   <span className="text-sm font-medium text-gray-700 leading-none">
-                    {user.name || "Customer"}
+                    {(user.fullName || user.name || "Customer").split(" ").pop()}
                   </span>
                   <span className="text-xs text-gray-500 leading-none mt-1">
                     Member
                   </span>
                 </div>
                 <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-primary-200">
-                  {(user.name || "C").charAt(0).toUpperCase()}
+                  {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
                 </div>
                 <button
                   onClick={handleLogout}

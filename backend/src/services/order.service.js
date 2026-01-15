@@ -25,15 +25,39 @@ class OrderService {
             let modifierDetails = [];
 
             if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
-                // Assume item.modifiers are IDs of ModifierOption
+                // item.modifiers can be:
+                // 1. Array of IDs: ["mod-id-1", "mod-id-2"]
+                // 2. Array of objects: [{id: "mod-id-1", quantity: 2}, ...]
+                
+                const modifierIds = item.modifiers.map(m => 
+                    typeof m === 'object' ? m.id : m
+                );
+
                 const options = await prisma.modifierOption.findMany({
                     where: {
-                        id: { in: item.modifiers }
+                        id: { in: modifierIds }
                     }
                 });
 
-                modifiersPrice = options.reduce((sum, opt) => sum + Number(opt.priceAdjustment), 0);
-                modifierDetails = options.map(opt => `${opt.name} (+${Number(opt.priceAdjustment)})`);
+                // Build modifier details with quantity
+                modifierDetails = item.modifiers.map(modifier => {
+                    const modId = typeof modifier === 'object' ? modifier.id : modifier;
+                    const quantity = typeof modifier === 'object' ? (modifier.quantity || 1) : 1;
+                    const option = options.find(opt => opt.id === modId);
+                    
+                    if (!option) return null;
+                    
+                    const priceAdjustment = Number(option.priceAdjustment) * quantity;
+                    modifiersPrice += priceAdjustment;
+                    
+                    return {
+                        id: option.id,
+                        name: option.name,
+                        quantity: quantity,
+                        priceAdjustment: Number(option.priceAdjustment),
+                        totalPrice: priceAdjustment
+                    };
+                }).filter(Boolean);
             }
 
             const unitPrice = Number(menuItem.price) + modifiersPrice;
@@ -89,11 +113,169 @@ class OrderService {
         return order;
     }
 
+    /**
+     * Get active order for a table (not completed/cancelled)
+     * Used to check if table has ongoing order before creating new one
+     */
+    async getActiveOrderByTable(tableId, restaurantId) {
+        const order = await prisma.order.findFirst({
+            where: {
+                tableId,
+                restaurantId,
+                status: {
+                    notIn: ['COMPLETED', 'CANCELLED', 'REJECTED']
+                }
+            },
+            include: {
+                orderItems: {
+                    include: { menuItem: true }
+                },
+                table: true,
+                customer: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return order;
+    }
+
+    /**
+     * Add new items to existing order (for "add more items" flow)
+     * This maintains single order per table session
+     */
+    async addItemsToOrder(orderId, newItems) {
+        // 1. Verify order exists and can accept new items
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { orderItems: true }
+        });
+
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        if (['COMPLETED', 'CANCELLED', 'REJECTED'].includes(order.status)) {
+            throw new Error('Cannot add items to completed/cancelled order');
+        }
+
+        // 2. Prepare new order items (same logic as createOrder)
+        const orderItemsData = [];
+
+        for (const item of newItems) {
+            const menuItem = await prisma.menuItem.findUnique({
+                where: { id: item.menuItemId },
+            });
+
+            if (!menuItem) throw new Error(`Menu item ${item.menuItemId} not found`);
+
+            let modifiersPrice = 0;
+            let modifierDetails = [];
+
+            if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
+                const modifierIds = item.modifiers.map(m => 
+                    typeof m === 'object' ? m.id : m
+                );
+
+                const options = await prisma.modifierOption.findMany({
+                    where: {
+                        id: { in: modifierIds }
+                    }
+                });
+
+                modifierDetails = item.modifiers.map(modifier => {
+                    const modId = typeof modifier === 'object' ? modifier.id : modifier;
+                    const quantity = typeof modifier === 'object' ? (modifier.quantity || 1) : 1;
+                    const option = options.find(opt => opt.id === modId);
+                    
+                    if (!option) return null;
+                    
+                    const priceAdjustment = Number(option.priceAdjustment) * quantity;
+                    modifiersPrice += priceAdjustment;
+                    
+                    return {
+                        id: option.id,
+                        name: option.name,
+                        quantity: quantity,
+                        priceAdjustment: Number(option.priceAdjustment),
+                        totalPrice: priceAdjustment
+                    };
+                }).filter(Boolean);
+            }
+
+            const unitPrice = Number(menuItem.price) + modifiersPrice;
+
+            orderItemsData.push({
+                orderId: orderId,
+                menuItemId: item.menuItemId,
+                quantity: item.quantity,
+                unitPrice: unitPrice,
+                modifiers: modifierDetails,
+                specialInstructions: item.specialInstructions,
+            });
+        }
+
+        // 3. Add new items to order
+        await prisma.orderItem.createMany({
+            data: orderItemsData
+        });
+
+        // 4. Update order timestamp and reset to SUBMITTED if it was already accepted
+        // (waiter needs to review new items)
+        const updateData = {
+            updatedAt: new Date()
+        };
+
+        // If order was already in progress, keep status but notify waiter
+        // If you don't want waiter to re-accept new items, comment below:
+        if (order.status !== 'SUBMITTED') {
+            updateData.status = 'SUBMITTED';
+        }
+
+        await prisma.order.update({
+            where: { id: orderId },
+            data: updateData
+        });
+
+        // 5. Increment orderCount for popularity tracking
+        for (const item of newItems) {
+            await prisma.menuItem.update({
+                where: { id: item.menuItemId },
+                data: {
+                    orderCount: {
+                        increment: item.quantity
+                    }
+                }
+            });
+        }
+
+        // 6. Return updated order
+        const updatedOrder = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                orderItems: {
+                    include: { menuItem: true }
+                },
+                table: true,
+                customer: true
+            }
+        });
+
+        return updatedOrder;
+    }
+
     async getOrders(restaurantId, filters = {}) {
         const { status, tableId } = filters;
         const where = { restaurantId };
 
-        if (status) where.status = status;
+        // Handle multiple statuses (comma-separated string)
+        if (status) {
+            if (status.includes(',')) {
+                // Split comma-separated statuses into array
+                where.status = { in: status.split(',').map(s => s.trim()) };
+            } else {
+                where.status = status;
+            }
+        }
         if (tableId) where.tableId = tableId;
 
         return await prisma.order.findMany({
@@ -109,7 +291,7 @@ class OrderService {
         });
     }
 
-    async updateStatus(orderId, status, userId) {
+    async updateStatus(orderId, status, userId, rejectionReason = null) {
         const order = await prisma.order.findUnique({ where: { id: orderId } });
         if (!order) throw new Error('Order not found');
 
@@ -119,6 +301,8 @@ class OrderService {
         if (status === 'RECEIVED') {
             updateData.acceptedAt = now;
             updateData.acceptedById = userId; // Waiter
+        } else if (status === 'REJECTED') {
+            updateData.rejectionReason = rejectionReason;
         } else if (status === 'PREPARING') {
             updateData.preparingAt = now;
         } else if (status === 'READY') {
@@ -239,15 +423,50 @@ class OrderService {
     }
 
     async applyDiscount(orderId, amount) {
-        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { bill: true }
+        });
         if (!order) throw new Error('Order not found');
 
-        // Validate that discount doesn't exceed order total? 
-        // Logic can be added here.
-
-        return await prisma.order.update({
+        // Update order discount
+        await prisma.order.update({
             where: { id: orderId },
             data: { discount: Number(amount) }
+        });
+
+        // If bill exists, update bill as well
+        if (order.bill) {
+            // Recalculate bill totals
+            const orderWithItems = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: { orderItems: true }
+            });
+
+            let subtotal = 0;
+            for (const item of orderWithItems.orderItems) {
+                subtotal += (Number(item.unitPrice) * item.quantity);
+            }
+
+            const discount = Number(amount);
+            const taxRate = 0.1;
+            const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+            const tax = subtotalAfterDiscount * taxRate;
+            const total = subtotalAfterDiscount + tax;
+
+            await prisma.bill.update({
+                where: { id: order.bill.id },
+                data: {
+                    discount,
+                    tax,
+                    total
+                }
+            });
+        }
+
+        return await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { bill: true, orderItems: { include: { menuItem: true } } }
         });
     }
 
@@ -344,8 +563,8 @@ class OrderService {
             const y = doc.y;
             doc.text(item.name, 50, y, { width: 190 });
             doc.text(item.quantity.toString(), 250, y);
-            doc.text(item.unitPrice.toLocaleString('vi-VN') + ' đ', 350, y);
-            doc.text(item.total.toLocaleString('vi-VN') + ' đ', 450, y);
+            doc.text('$' + item.unitPrice.toFixed(2), 350, y);
+            doc.text('$' + item.total.toFixed(2), 450, y);
 
             if (item.modifiers && item.modifiers.length > 0) {
                 doc.fontSize(10).fillColor('grey').text(`  ${item.modifiers.join(', ')}`, 50, doc.y + 10);
@@ -361,18 +580,18 @@ class OrderService {
         // Totals
         const rightColX = 350;
         doc.text('Subtotal:', rightColX);
-        doc.text(billData.bill.subtotal.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        doc.text('$' + billData.bill.subtotal.toFixed(2), 450, doc.y - doc.currentLineHeight());
 
         if (billData.bill.discount > 0) {
             doc.text('Discount:', rightColX);
-            doc.text('-' + billData.bill.discount.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+            doc.text('-$' + billData.bill.discount.toFixed(2), 450, doc.y - doc.currentLineHeight());
         }
 
         doc.text('Tax (10%):', rightColX);
-        doc.text(billData.bill.tax.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        doc.text('$' + billData.bill.tax.toFixed(2), 450, doc.y - doc.currentLineHeight());
 
         doc.font('Helvetica-Bold').text('TOTAL:', rightColX, doc.y + 10);
-        doc.text(billData.bill.total.toLocaleString('vi-VN') + ' đ', 450, doc.y - doc.currentLineHeight());
+        doc.text('$' + billData.bill.total.toFixed(2), 450, doc.y - doc.currentLineHeight());
 
         // Footer
         doc.moveDown(2);

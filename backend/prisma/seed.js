@@ -129,24 +129,21 @@ async function main() {
     },
   });
 
-  // 4. Create Tables
-  console.log("🪑 Creating Tables...");
-  const tables = [];
-  for (let i = 1; i <= 15; i++) {
-    tables.push(
-      await prisma.table.create({
-        data: {
-          tableNumber: `T${String(i).padStart(2, "0")}`,
-          capacity: i % 3 === 0 ? 6 : i % 2 === 0 ? 4 : 2,
-          location:
-            i <= 5 ? "Ground Floor" : i <= 10 ? "First Floor" : "Terrace",
-          restaurantId: restaurant.id,
-          qrCode: `QR_TABLE_${i}_${Date.now()}`,
-          status: i === 1 ? "OCCUPIED" : i === 2 ? "RESERVED" : "AVAILABLE",
-        },
-      })
-    );
-  }
+    // 4. Create Tables
+    console.log('🪑 Creating Tables...');
+    const tables = [];
+    for (let i = 1; i <= 15; i++) {
+        tables.push(await prisma.table.create({
+            data: {
+                tableNumber: `T${String(i).padStart(2, '0')}`,
+                capacity: i % 3 === 0 ? 6 : i % 2 === 0 ? 4 : 2,
+                location: i <= 5 ? 'Ground Floor' : i <= 10 ? 'First Floor' : 'Terrace',
+                restaurantId: restaurant.id,
+                qrCode: `QR_TABLE_${i}_${Date.now()}`,
+                status: i === 1 || i === 8 || i === 12 || i === 14 ? 'OCCUPIED' : i === 2 || i === 11 ? 'RESERVED' : i === 15 ? 'CLEANING' : 'AVAILABLE'
+            }
+        }));
+    }
 
   // 5. Create Categories
   console.log("📂 Creating Categories...");
@@ -212,6 +209,7 @@ async function main() {
     data: {
       name: "Spiciness Level",
       selectionType: "single",
+      modifierType: "choice", // CHOICE type
       isRequired: true,
       restaurantId: restaurant.id,
       options: {
@@ -229,6 +227,7 @@ async function main() {
     data: {
       name: "Add Sides",
       selectionType: "multiple",
+      modifierType: "addon", // ADDON type
       isRequired: false,
       maxSelections: 3,
       restaurantId: restaurant.id,
@@ -247,6 +246,7 @@ async function main() {
     data: {
       name: "Size",
       selectionType: "single",
+      modifierType: "choice", // CHOICE type
       isRequired: true,
       restaurantId: restaurant.id,
       options: {
@@ -889,38 +889,236 @@ async function main() {
     },
   });
 
-  // 9. Create Sample Order
-  console.log("📦 Creating Sample Order...");
+    // 9. Create Sample Orders
+    console.log('📦 Creating Sample Orders...');
+    // Create diverse orders matching kitchen dashboard requirements
+    const sampleOrders = [
+        {
+            orderNumber: 'ORD-001',
+            status: 'SUBMITTED',
+            tableId: tables[4].id, // Table 5
+            restaurantId: restaurant.id,
+            customerId: customer1.id,
+            customerName: customer1.fullName,
+            customerPhone: customer1.phone,
+            specialInstructions: 'Customer celebrating anniversary - please ensure presentation is excellent',
+            submittedAt: new Date(), // Now
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: grilledSalmon.id,
+                        quantity: 2,
+                        unitPrice: 245000,
+                        modifiers: ['Extra Lemon', 'No Butter'],
+                        specialInstructions: 'Well done, customer has fish allergy concerns'
+                    },
+                    {
+                        menuItemId: caesarSalad.id,
+                        quantity: 1,
+                        unitPrice: 70000,
+                        modifiers: ['No Croutons', 'Dressing on Side'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-002',
+            status: 'PREPARING',
+            tableId: tables[11].id, // Table 12
+            restaurantId: restaurant.id,
+            customerId: customer2.id,
+            customerName: customer2.fullName,
+            customerPhone: customer2.phone,
+            submittedAt: new Date(), // Now
+            acceptedAt: new Date(),
+            preparingAt: new Date(),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: springRolls.id,
+                        quantity: 1,
+                        unitPrice: 65000,
+                        modifiers: ['Extra Cheese', 'Thin Crust'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: friedCalamari.id,
+                        quantity: 3,
+                        unitPrice: 85000,
+                        modifiers: ['Spicy', 'Ranch Dressing'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-003',
+            status: 'PREPARING',
+            tableId: tables[7].id, // Table 8
+            restaurantId: restaurant.id,
+            customerId: customer1.id,
+            customerName: customer1.fullName,
+            customerPhone: customer1.phone,
+            submittedAt: new Date(), // Now
+            acceptedAt: new Date(),
+            preparingAt: new Date(),
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: beefSteak.id,
+                        quantity: 2,
+                        unitPrice: 450000,
+                        modifiers: ['Medium Rare', 'Extra Pickles', 'No Onions'],
+                        specialInstructions: 'One burger without cheese for dietary restrictions'
+                    },
+                    {
+                        menuItemId: mangoSmoothie.id,
+                        quantity: 2,
+                        unitPrice: 55000,
+                        modifiers: ['Large Size'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-004',
+            status: 'READY',
+            tableId: tables[2].id, // Table 3
+            restaurantId: restaurant.id,
+            customerId: customer2.id,
+            customerName: customer2.fullName,
+            customerPhone: customer2.phone,
+            submittedAt: new Date(Date.now() - 10 * 60000), // 10 min ago
+            acceptedAt: new Date(Date.now() - 9 * 60000),
+            preparingAt: new Date(Date.now() - 8 * 60000),
+            readyAt: new Date(), // Now
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: chickenCurry.id,
+                        quantity: 1,
+                        unitPrice: 125000,
+                        modifiers: ['Extra Spicy', 'Brown Rice'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: springRolls.id,
+                        quantity: 4,
+                        unitPrice: 65000,
+                        modifiers: ['Vegetarian'],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-005',
+            status: 'SUBMITTED',
+            tableId: tables[14].id, // Table 15
+            restaurantId: restaurant.id,
+            customerId: customer1.id,
+            customerName: customer1.fullName,
+            customerPhone: customer1.phone,
+            submittedAt: new Date(), // Now
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: beefSteak.id,
+                        quantity: 1,
+                        unitPrice: 450000,
+                        modifiers: ['Medium', 'Garlic Butter'],
+                        specialInstructions: 'Customer prefers thicker cut'
+                    },
+                    {
+                        menuItemId: veganBowl.id,
+                        quantity: 1,
+                        unitPrice: 95000,
+                        modifiers: ['Extra Gravy'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: garlicShrimp.id,
+                        quantity: 1,
+                        unitPrice: 185000,
+                        modifiers: [],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        },
+        {
+            orderNumber: 'ORD-006',
+            status: 'READY',
+            tableId: tables[6].id, // Table 7
+            restaurantId: restaurant.id,
+            customerId: customer2.id,
+            customerName: customer2.fullName,
+            customerPhone: customer2.phone,
+            submittedAt: new Date(Date.now() - 12 * 60000), // 12 min ago
+            acceptedAt: new Date(Date.now() - 11 * 60000),
+            preparingAt: new Date(Date.now() - 10 * 60000),
+            readyAt: new Date(Date.now() - 2 * 60000), // 2 min ago
+            orderItems: {
+                create: [
+                    {
+                        menuItemId: phoBeef.id,
+                        quantity: 2,
+                        unitPrice: 75000,
+                        modifiers: ['Extra Croutons'],
+                        specialInstructions: ''
+                    },
+                    {
+                        menuItemId: friedCalamari.id,
+                        quantity: 1,
+                        unitPrice: 85000,
+                        modifiers: [],
+                        specialInstructions: ''
+                    }
+                ]
+            }
+        }
+    ];
+    const createdOrders = [];
+    for (const order of sampleOrders) {
+        const createdOrder = await prisma.order.create({
+            data: order,
+            include: {
+                orderItems: true
+            }
+        });
+        createdOrders.push(createdOrder);
+    }
 
-  await prisma.order.create({
-    data: {
-      orderNumber: "ORD-001",
-      status: "SUBMITTED",
-      tableId: tables[0].id,
-      restaurantId: restaurant.id,
-      customerId: customer1.id,
-      customerName: customer1.fullName,
-      customerPhone: customer1.phone,
-      orderItems: {
-        create: [
-          {
-            menuItemId: beefSteak.id,
-            quantity: 1,
-            unitPrice: 450000,
-            modifiers: ["French Fries", "Garden Salad"],
-            specialInstructions: "Medium rare please",
-          },
-          {
-            menuItemId: vietnameseCoffee.id,
-            quantity: 2,
-            unitPrice: 45000,
-            modifiers: ["Medium"],
-            specialInstructions: "",
-          },
-        ],
-      },
-    },
-  });
+    // Create Bills for completed orders to enable analytics
+    console.log('💵 Creating Bills for orders...');
+    for (const order of createdOrders) {
+        // Calculate bill details
+        let subtotal = 0;
+        for (const item of order.orderItems) {
+            subtotal += Number(item.unitPrice) * item.quantity;
+        }
+        const discount = Number(order.discount) || 0;
+        const taxRate = 0.1;
+        const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+        const tax = subtotalAfterDiscount * taxRate;
+        const total = subtotalAfterDiscount + tax;
+
+        await prisma.bill.create({
+            data: {
+                orderId: order.id,
+                restaurantId: order.restaurantId,
+                billNumber: order.orderNumber.replace('ORD', 'BILL'),
+                subtotal,
+                discount,
+                tax,
+                total,
+                createdBy: waiter.id,
+                createdAt: order.submittedAt || new Date()
+            }
+        });
+    }
 
   // --- Create Bulk Reviews ---
   console.log("Seeding reviews...");

@@ -43,24 +43,31 @@ const QuickActionPanel = ({ onAction }) => {
           <button
             key={action?.id}
             onClick={() => onAction(action?.id)}
-            className="flex flex-col items-center gap-3 p-4 md:p-6 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-smooth touch-target group"
+            className="flex flex-col items-center justify-center gap-4 p-6 rounded-xl border border-border/60 bg-gradient-to-br from-card to-muted/40 shadow-sm hover:shadow-warm-md hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
           >
-            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 group-hover:bg-primary/20 flex items-center justify-center transition-smooth">
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-inner-sm ${action.variant === 'default' ? 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/30' :
+                action.variant === 'secondary' ? 'bg-secondary/10 text-secondary-foreground/80 group-hover:bg-secondary group-hover:text-secondary-foreground' :
+                  'bg-muted text-muted-foreground/80 group-hover:bg-foreground group-hover:text-background'
+              }`}>
               <Button
                 variant="ghost"
                 size="icon"
                 iconName={action?.icon}
-                className="pointer-events-none"
+                className="pointer-events-none w-7 h-7"
               />
             </div>
-            <div className="text-center">
-              <p className="text-sm md:text-base font-heading font-semibold text-foreground mb-1">
+
+            <div className="text-center relative z-10">
+              <p className="text-base font-heading font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
                 {action?.label}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground group-hover:text-muted-foreground/80">
                 {action?.description}
               </p>
             </div>
+
+            {/* Hover Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </button>
         ))}
       </div>
