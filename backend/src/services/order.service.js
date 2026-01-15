@@ -25,15 +25,39 @@ class OrderService {
             let modifierDetails = [];
 
             if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
-                // Assume item.modifiers are IDs of ModifierOption
+                // item.modifiers can be:
+                // 1. Array of IDs: ["mod-id-1", "mod-id-2"]
+                // 2. Array of objects: [{id: "mod-id-1", quantity: 2}, ...]
+                
+                const modifierIds = item.modifiers.map(m => 
+                    typeof m === 'object' ? m.id : m
+                );
+
                 const options = await prisma.modifierOption.findMany({
                     where: {
-                        id: { in: item.modifiers }
+                        id: { in: modifierIds }
                     }
                 });
 
-                modifiersPrice = options.reduce((sum, opt) => sum + Number(opt.priceAdjustment), 0);
-                modifierDetails = options.map(opt => `${opt.name} (+${Number(opt.priceAdjustment)})`);
+                // Build modifier details with quantity
+                modifierDetails = item.modifiers.map(modifier => {
+                    const modId = typeof modifier === 'object' ? modifier.id : modifier;
+                    const quantity = typeof modifier === 'object' ? (modifier.quantity || 1) : 1;
+                    const option = options.find(opt => opt.id === modId);
+                    
+                    if (!option) return null;
+                    
+                    const priceAdjustment = Number(option.priceAdjustment) * quantity;
+                    modifiersPrice += priceAdjustment;
+                    
+                    return {
+                        id: option.id,
+                        name: option.name,
+                        quantity: quantity,
+                        priceAdjustment: Number(option.priceAdjustment),
+                        totalPrice: priceAdjustment
+                    };
+                }).filter(Boolean);
             }
 
             const unitPrice = Number(menuItem.price) + modifiersPrice;
@@ -148,14 +172,34 @@ class OrderService {
             let modifierDetails = [];
 
             if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
+                const modifierIds = item.modifiers.map(m => 
+                    typeof m === 'object' ? m.id : m
+                );
+
                 const options = await prisma.modifierOption.findMany({
                     where: {
-                        id: { in: item.modifiers }
+                        id: { in: modifierIds }
                     }
                 });
 
-                modifiersPrice = options.reduce((sum, opt) => sum + Number(opt.priceAdjustment), 0);
-                modifierDetails = options.map(opt => `${opt.name} (+${Number(opt.priceAdjustment)})`);
+                modifierDetails = item.modifiers.map(modifier => {
+                    const modId = typeof modifier === 'object' ? modifier.id : modifier;
+                    const quantity = typeof modifier === 'object' ? (modifier.quantity || 1) : 1;
+                    const option = options.find(opt => opt.id === modId);
+                    
+                    if (!option) return null;
+                    
+                    const priceAdjustment = Number(option.priceAdjustment) * quantity;
+                    modifiersPrice += priceAdjustment;
+                    
+                    return {
+                        id: option.id,
+                        name: option.name,
+                        quantity: quantity,
+                        priceAdjustment: Number(option.priceAdjustment),
+                        totalPrice: priceAdjustment
+                    };
+                }).filter(Boolean);
             }
 
             const unitPrice = Number(menuItem.price) + modifiersPrice;

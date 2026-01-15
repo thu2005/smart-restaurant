@@ -39,6 +39,9 @@ const orderService = {
         items: orderData.items.map((item) => ({
           menuItemId: item.menuItemId || item.id,
           quantity: item.quantity,
+          modifiers: Array.isArray(item.modifiers)
+            ? item.modifiers.map((m) => (typeof m === 'object' ? m.id : m))
+            : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
         customerName: orderData.customerName || "",
@@ -197,7 +200,9 @@ const orderService = {
         items: items.map((item) => ({
           menuItemId: item.menuItemId || item.id,
           quantity: item.quantity,
-          modifiers: item.modifiers || [],
+          modifiers: Array.isArray(item.modifiers)
+            ? item.modifiers.map((m) => (typeof m === 'object' ? m.id : m))
+            : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
       };

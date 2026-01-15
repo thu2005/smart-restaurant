@@ -233,7 +233,12 @@ const MenuItemDetail = () => {
               const opt = group.options?.find((o) => o.id === optId);
               if (opt) {
                 itemPrice += opt.priceAdjustment || 0;
-                modifiersList.push(opt.id);
+                modifiersList.push({
+                  id: opt.id,
+                  name: opt.name,
+                  groupName: group.name,
+                  priceAdjustment: opt.priceAdjustment || 0,
+                });
               }
             });
           } else {
@@ -241,7 +246,12 @@ const MenuItemDetail = () => {
             const opt = group.options?.find((o) => o.id === selection);
             if (opt) {
               itemPrice += opt.priceAdjustment || 0;
-              modifiersList.push(opt.id);
+              modifiersList.push({
+                id: opt.id,
+                name: opt.name,
+                groupName: group.name,
+                priceAdjustment: opt.priceAdjustment || 0,
+              });
             }
           }
         });

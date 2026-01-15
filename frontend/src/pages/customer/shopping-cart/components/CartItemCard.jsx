@@ -42,10 +42,13 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
                   key={index}
                   className="text-xs md:text-sm text-muted-foreground"
                 >
-                  {modifier?.name}:{" "}
-                  <span className="font-medium text-foreground">
-                    {modifier?.value}
-                  </span>
+                  <span className="font-medium">{modifier?.groupName}:</span>{" "}
+                  {modifier?.name}
+                  {modifier?.priceAdjustment > 0 && (
+                    <span className="text-primary ml-1">
+                      (+{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(modifier.priceAdjustment)})
+                    </span>
+                  )}
                 </p>
               ))}
             </div>
