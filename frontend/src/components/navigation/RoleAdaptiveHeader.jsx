@@ -4,8 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
 import authService from "../../services/authService";
+import { useCart } from "../../contexts/CartContext";
 
-const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
+const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,6 +14,8 @@ const RoleAdaptiveHeader = ({ userRole = "customer", cartItemCount = 0 }) => {
   const [tableNumber, setTableNumber] = useState(
     localStorage.getItem("tableNumber")
   );
+  const { getCartSummary } = useCart();
+  const { itemCount: cartItemCount } = getCartSummary();
 
   useEffect(() => {
     // Refresh user and table info on mount

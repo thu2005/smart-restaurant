@@ -6,7 +6,7 @@ import Button from "../../../../components/ui/Button";
 const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity < 1) return;
-    onUpdateQuantity(item?.id, newQuantity);
+    onUpdateQuantity(item?.cartId, newQuantity);
   };
 
   return (
@@ -15,7 +15,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
         <div className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 flex-shrink-0 rounded-md overflow-hidden">
           <Image
             src={item?.image}
-            alt={item?.imageAlt}
+            alt={item?.name}
             className="w-full h-full object-cover"
           />
         </div>
@@ -29,7 +29,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
               variant="ghost"
               size="icon"
               iconName="Trash2"
-              onClick={() => onRemove(item?.id)}
+              onClick={() => onRemove(item?.cartId)}
               className="flex-shrink-0 text-error hover:bg-error/10"
               aria-label={`Remove ${item?.name}`}
             />
@@ -86,10 +86,10 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
 
             <div className="text-right">
               <p className="text-lg md:text-xl lg:text-2xl font-bold text-primary data-text">
-                ${(item?.price * item?.quantity)?.toFixed(2)}
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price * item?.quantity)}
               </p>
               <p className="text-xs md:text-sm text-muted-foreground data-text">
-                ${item?.price?.toFixed(2)} each
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price)} each
               </p>
             </div>
           </div>

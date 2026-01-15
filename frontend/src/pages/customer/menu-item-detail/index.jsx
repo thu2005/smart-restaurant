@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import menuService from "../../../services/menuService";
-import orderService from "../../../services/orderService";
+import { useCart } from "../../../contexts/CartContext";
 import ImageGallery from "./components/ImageGallery";
 import ItemInfo from "./components/ItemInfo";
 import CustomizationPanel from "./components/CustomizationPanel";
@@ -90,10 +91,9 @@ const mockRelatedItems = [
 
 const MenuItemDetail = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { itemId } = useParams();
+  const { addToCart, getCartSummary } = useCart();
 
-  const [cartItemCount, setCartItemCount] = useState(3);
   const [menuItem, setMenuItem] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -202,7 +202,7 @@ const MenuItemDetail = () => {
     return total * quantity;
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     try {
       // Validate required modifiers
       if (menuItem?.modifier_groups) {
@@ -218,34 +218,52 @@ const MenuItemDetail = () => {
         }
       }
 
-      const orderItem = {
+      // Calculate base price with modifiers
+      let itemPrice = menuItem?.price || 0;
+      const modifiersList = [];
+
+      if (menuItem?.modifier_groups) {
+        Object.entries(selectedModifiers).forEach(([groupId, selection]) => {
+          const group = menuItem.modifier_groups.find((g) => g.id === groupId);
+          if (!group) return;
+
+          if (Array.isArray(selection)) {
+            // Multiple selection
+            selection.forEach((optId) => {
+              const opt = group.options?.find((o) => o.id === optId);
+              if (opt) {
+                itemPrice += opt.priceAdjustment || 0;
+                modifiersList.push(opt.id);
+              }
+            });
+          } else {
+            // Single selection
+            const opt = group.options?.find((o) => o.id === selection);
+            if (opt) {
+              itemPrice += opt.priceAdjustment || 0;
+              modifiersList.push(opt.id);
+            }
+          }
+        });
+      }
+
+      // Add to cart
+      addToCart({
         menuItemId: menuItem.id,
-        quantity,
-        specialInstructions,
-        modifiers: selectedModifiers,
-      };
-
-      const orderData = {
-        items: [orderItem],
-        customerName: localStorage.getItem("customerName") || "Guest",
-        customerPhone: localStorage.getItem("customerPhone") || "",
-        specialInstructions: `Added ${menuItem.name} (${JSON.stringify(
-          selectedModifiers
-        )}) ${specialInstructions ? ": " + specialInstructions : ""}`,
-      };
-
-      const result = await orderService.createOrder(orderData);
-      console.log("Order created:", result);
-
-      navigate("/customer/menu", {
-        state: {
-          message: `Order placed successfully! Order ID: ${result.data?.id}`,
-          orderData: result.data,
-        },
+        name: menuItem.name,
+        image: menuItem.photos?.[0]?.url || menuItem.image,
+        price: itemPrice,
+        quantity: quantity,
+        modifiers: modifiersList,
+        specialInstructions: specialInstructions,
       });
+
+      // Show success message and navigate to cart
+      alert(`Added ${quantity} x ${menuItem.name} to cart!`);
+      navigate("/customer/shopping-cart");
     } catch (error) {
-      console.error("Failed to create order:", error);
-      alert("Failed to place order. Please try again.");
+      console.error("Failed to add to cart:", error);
+      alert("Failed to add to cart. Please try again.");
     }
   };
 
