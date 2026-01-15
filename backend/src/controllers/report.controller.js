@@ -154,3 +154,44 @@ exports.getOrderStatistics = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Export report as PDF
+// @route   GET /api/reports/export-pdf
+// @access  Private (Admin/Staff)
+exports.exportReportPDF = async (req, res, next) => {
+    try {
+        const { restaurantId, startDate, endDate } = req.query;
+
+        // Validate restaurantId
+        if (!restaurantId) {
+            return res.status(400).json({
+                success: false,
+                message: 'restaurantId is required'
+            });
+        }
+
+        // Check if user has access to this restaurant
+        if (req.user.role !== 'SUPER_ADMIN' && req.user.restaurantId !== restaurantId) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied to this restaurant'
+            });
+        }
+
+        // Set response headers for PDF download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="report-${restaurantId}-${new Date().toISOString().split('T')[0]}.pdf"`);
+
+        // Generate and stream PDF
+        await reportService.generateReportPDF(restaurantId, startDate, endDate, res);
+
+    } catch (error) {
+        console.error('Error generating PDF report:', error);
+        if (!res.headersSent) {
+            res.status(500).json({
+                success: false,
+                message: 'Error generating PDF report'
+            });
+        }
+    }
+};
