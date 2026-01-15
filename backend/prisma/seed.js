@@ -167,7 +167,7 @@ async function main() {
 
     // 6. Create Modifier Groups
     console.log('🔧 Creating Modifiers...');
-    
+
     const modSpicy = await prisma.modifierGroup.create({
         data: {
             name: 'Spiciness Level',
@@ -478,10 +478,10 @@ async function main() {
 
     const lobsterThermidor = await prisma.menuItem.create({
         data: {
-            name: 'Lobster Thermidor',
-            description: 'Whole lobster in creamy brandy sauce with mushrooms and cheese, gratinated to perfection.',
+            name: 'Thai Beef Salad',
+            description: 'Grilled beef slices with fresh greens, onions, herbs, and a spicy tangy dressing, garnished with chili and nuts.',
             price: 650000,
-            image: 'https://images.unsplash.com/photo-1559737558-2f5a35f4523f',
+            image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
             categoryId: catSeafood.id,
             restaurantId: restaurant.id,
             prepTime: 30,
@@ -642,7 +642,7 @@ async function main() {
 
     // 8. Create Reviews
     console.log('⭐ Creating Reviews...');
-    
+
     await prisma.review.create({
         data: {
             rating: 5,
@@ -896,7 +896,7 @@ async function main() {
     ];
     const createdOrders = [];
     for (const order of sampleOrders) {
-        const createdOrder = await prisma.order.create({ 
+        const createdOrder = await prisma.order.create({
             data: order,
             include: {
                 orderItems: true
@@ -938,7 +938,7 @@ async function main() {
     console.log('Seeding reviews...');
     const allMenuItems = await prisma.menuItem.findMany();
     const allUsers = await prisma.user.findMany();
-    
+
     const reviewComments = [
         { rating: 5, comment: "Absolutely delicious! The flavors were perfectly balanced." },
         { rating: 4, comment: "Great taste, but the portion was a bit small for the price." },
@@ -960,7 +960,7 @@ async function main() {
             for (let i = 0; i < numberOfReviews; i++) {
                 const randomReview = reviewComments[Math.floor(Math.random() * reviewComments.length)];
                 const randomUser = allUsers[Math.floor(Math.random() * allUsers.length)];
-                
+
                 // Random date within last 30 days
                 const randomDate = new Date();
                 randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
@@ -979,6 +979,91 @@ async function main() {
         }
         console.log('Reviews seeded successfully.');
     }
+
+    // 10. Create lightweight historical data (10 orders) for charts
+    console.log('📈 Creating 10 Historical Orders for Visualization...');
+    const histCustomers = [customer1, customer2];
+
+    async function createLightweightOrder(date, hour) {
+        const orderDate = new Date(date);
+        orderDate.setHours(hour, Math.floor(Math.random() * 60));
+
+        const randomCustomer = histCustomers[Math.floor(Math.random() * histCustomers.length)];
+        const randomTable = tables[Math.floor(Math.random() * tables.length)];
+        const randomItem = allMenuItems[Math.floor(Math.random() * allMenuItems.length)];
+
+        const quantity = Math.floor(Math.random() * 2) + 1;
+        const subtotal = Number(randomItem.price) * quantity;
+        const tax = subtotal * 0.1;
+        const total = subtotal + tax;
+
+        const order = await prisma.order.create({
+            data: {
+                orderNumber: `ORD-HIST-${Math.floor(Math.random() * 10000)}`,
+                status: 'COMPLETED',
+                tableId: randomTable.id,
+                restaurantId: restaurant.id,
+                customerId: randomCustomer.id,
+                customerName: randomCustomer.fullName,
+                submittedAt: orderDate,
+                acceptedAt: new Date(orderDate.getTime() + 60000),
+                preparingAt: new Date(orderDate.getTime() + 120000),
+                readyAt: new Date(orderDate.getTime() + 600000),
+                completedAt: new Date(orderDate.getTime() + 1800000),
+                orderItems: {
+                    create: [{
+                        menuItemId: randomItem.id,
+                        quantity: quantity,
+                        unitPrice: randomItem.price,
+                        modifiers: []
+                    }]
+                }
+            }
+        });
+
+        // Bill
+        await prisma.bill.create({
+            data: {
+                orderId: order.id,
+                restaurantId: restaurant.id,
+                billNumber: `BILL-${order.orderNumber}`,
+                subtotal, discount: 0, tax, total,
+                createdBy: waiter.id,
+                createdAt: order.completedAt
+            }
+        });
+
+        // Payment
+        await prisma.payment.create({
+            data: {
+                orderId: order.id,
+                amount: subtotal,
+                tax, total,
+                method: Math.random() > 0.5 ? 'CASH' : 'CARD_AT_COUNTER',
+                status: 'COMPLETED',
+                restaurantId: restaurant.id,
+                paidAt: order.completedAt,
+                createdAt: order.completedAt
+            }
+        });
+    }
+
+    // 5 Orders for Today (various times)
+    const todayDate = new Date();
+    await createLightweightOrder(todayDate, 10); // 10 AM
+    await createLightweightOrder(todayDate, 12); // 12 PM
+    await createLightweightOrder(todayDate, 13); // 1 PM
+    await createLightweightOrder(todayDate, 18); // 6 PM
+    await createLightweightOrder(todayDate, 20); // 8 PM
+
+    // 5 Orders for Yesterday
+    const yesterdayDate = new Date(todayDate);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    await createLightweightOrder(yesterdayDate, 11);
+    await createLightweightOrder(yesterdayDate, 12);
+    await createLightweightOrder(yesterdayDate, 14);
+    await createLightweightOrder(yesterdayDate, 19);
+    await createLightweightOrder(yesterdayDate, 21);
 
     console.log('✅ Seed completed successfully!');
     console.log('');
