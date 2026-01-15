@@ -29,7 +29,7 @@ const OrderTabs = ({ activeTab, onTabChange, counts = {} }) => {
     ];
 
     return (
-        <div className="bg-card border-b border-border flex overflow-x-auto">
+        <div className="sticky top-14 md:top-16 z-[90] bg-card border-b border-border flex overflow-x-auto shadow-sm">
             {tabs.map((tab) => (
                 <button
                     key={tab.id}

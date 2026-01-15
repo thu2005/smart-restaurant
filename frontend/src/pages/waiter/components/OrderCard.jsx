@@ -113,7 +113,17 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                 </p>
                                 {item.modifiers && item.modifiers.length > 0 && (
                                     <p className="text-xs text-muted-foreground mt-1">
-                                        {item.modifiers.join(", ")}
+                                        {Array.isArray(item.modifiers) 
+                                            ? item.modifiers.map(mod => {
+                                                // Handle both string format and object format
+                                                if (typeof mod === 'string') return mod;
+                                                if (typeof mod === 'object' && mod.name) {
+                                                    return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+                                                }
+                                                return '';
+                                            }).filter(Boolean).join(", ")
+                                            : ''
+                                        }
                                     </p>
                                 )}
                                 {item.specialInstructions && (
