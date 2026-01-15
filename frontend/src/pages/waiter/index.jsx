@@ -35,6 +35,15 @@ const WaiterDashboard = () => {
     const user = authService.getCurrentUser();
     const restaurantId = user?.restaurantId;
 
+
+
+    // Fetch orders and tables on initial mount to show badge counts after reload
+    useEffect(() => {
+        if (!restaurantId) return;
+        fetchOrders();
+        fetchTables();
+    }, [restaurantId]);
+
     // Initialize WebSocket connection
     useEffect(() => {
         if (!restaurantId) return;
@@ -51,12 +60,14 @@ const WaiterDashboard = () => {
             console.log("New order received:", order);
             if (order.status === "SUBMITTED") {
                 fetchOrders();
+                fetchTables(); // Also refresh tables count
             }
         });
 
         newSocket.on("order_status_update", ({ orderId, status }) => {
             console.log("Order status updated:", orderId, status);
             fetchOrders();
+            fetchTables(); // Also refresh tables count
         });
 
         setSocket(newSocket);
@@ -74,6 +85,28 @@ const WaiterDashboard = () => {
             fetchTables();
         }
     }, [activeTab]);
+
+    // Update all badge counts
+    const updateCounts = async () => {
+        try {
+            const [pendingRes, receivedCount, preparingCount, readyRes, tablesRes] = await Promise.all([
+                waiterService.getPendingOrders(restaurantId),
+                waiterService.getWaiterOrders("RECEIVED"),
+                waiterService.getWaiterOrders("PREPARING"),
+                waiterService.getWaiterOrders("READY"),
+                waiterService.getWaiterTables()
+            ]);
+
+            setCounts({
+                pending: pendingRes.data?.length || 0,
+                accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
+                ready: readyRes.data?.length || 0,
+                tables: tablesRes.data?.length || 0,
+            });
+        } catch (err) {
+            console.error("Error updating counts:", err);
+        }
+    };
 
     const fetchOrders = async () => {
         if (!restaurantId) return;
@@ -104,19 +137,9 @@ const WaiterDashboard = () => {
             }
 
             setOrders(response.data || []);
-
-            // Update counts
-            const pendingRes = await waiterService.getPendingOrders(restaurantId);
-            const receivedCount = await waiterService.getWaiterOrders("RECEIVED");
-            const preparingCount = await waiterService.getWaiterOrders("PREPARING");
-            const readyRes = await waiterService.getWaiterOrders("READY");
-
-            setCounts({
-                pending: pendingRes.data?.length || 0,
-                accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
-                ready: readyRes.data?.length || 0,
-                tables: tables.length,
-            });
+            
+            // Update all counts
+            await updateCounts();
         } catch (err) {
             console.error("Error fetching orders:", err);
             setError("Failed to load orders. Please try again.");
@@ -132,7 +155,9 @@ const WaiterDashboard = () => {
         try {
             const response = await waiterService.getWaiterTables();
             setTables(response.data || []);
-            setCounts((prev) => ({ ...prev, tables: response.data?.length || 0 }));
+            
+            // Update all counts
+            await updateCounts();
         } catch (err) {
             console.error("Error fetching tables:", err);
             setError("Failed to load tables. Please try again.");
