@@ -6,6 +6,7 @@ const StickyAddToCart = ({
   quantity,
   onAddToCart,
   isAvailable,
+  buttonText = "Add to Cart"
 }) => {
   return (
     <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-[100] bg-card border-t border-border shadow-warm-lg lg:hidden">
@@ -27,7 +28,7 @@ const StickyAddToCart = ({
           disabled={!isAvailable}
           className="flex-shrink-0"
         >
-          Add to Cart
+          {isAvailable ? buttonText : "Unavailable"}
         </Button>
       </div>
     </div>

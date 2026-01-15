@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import menuService from "../../../services/menuService";
 import { useCart } from "../../../contexts/CartContext";
@@ -91,8 +91,11 @@ const mockRelatedItems = [
 
 const MenuItemDetail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { itemId } = useParams();
-  const { addToCart, getCartSummary } = useCart();
+  const { addToCart, updateItem, getCartSummary } = useCart();
+  
+  const editingItem = location.state?.editingItem;
 
   const [menuItem, setMenuItem] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -117,23 +120,52 @@ const MenuItemDetail = () => {
         const item = await menuService.getItemById(itemId);
         setMenuItem(item);
 
-        // Init default modifiers
-        if (item?.modifier_groups) {
-          const initialModifiers = {};
-          item.modifier_groups.forEach((group) => {
-            if (
-              group.selectionType === "single" &&
-              group.isRequired &&
-              group.options?.length > 0
-            ) {
-              // Auto-select first option if required single
-              initialModifiers[group.id] = group.options[0].id;
-            } else if (group.selectionType === "multiple") {
-              initialModifiers[group.id] = [];
-            }
-          });
-          setSelectedModifiers(initialModifiers);
+        // Init modifiers
+        let initialModifiers = {};
+
+        if (editingItem && editingItem.menuItemId === itemId) {
+          // EDIT MODE: Populate from existing cart item
+          setQuantity(editingItem.quantity);
+          setSpecialInstructions(editingItem.specialInstructions || "");
+          
+          if (item?.modifier_groups) {
+             item.modifier_groups.forEach(group => {
+                const groupModifiers = editingItem.modifiers?.filter(m => m.groupName === group.name) || [];
+                
+                if (groupModifiers.length > 0) {
+                   if (group.selectionType === 'single') {
+                      initialModifiers[group.id] = groupModifiers[0].id;
+                   } else {
+                      // Multiple or Addon
+                      initialModifiers[group.id] = groupModifiers.map(m => ({
+                         id: m.id,
+                         quantity: m.quantity || 1
+                      }));
+                   }
+                } else if (group.selectionType === 'multiple') {
+                   initialModifiers[group.id] = [];
+                }
+             });
+          }
+        } else {
+          // NEW ITEM MODE: Default init
+          if (item?.modifier_groups) {
+            item.modifier_groups.forEach((group) => {
+              if (
+                group.selectionType === "single" &&
+                group.isRequired &&
+                group.options?.length > 0
+              ) {
+                initialModifiers[group.id] = group.options[0].id;
+              } else if (group.selectionType === "multiple") {
+                initialModifiers[group.id] = [];
+              }
+            });
+          }
         }
+        
+        setSelectedModifiers(initialModifiers);
+
       } catch (err) {
         console.error("Failed to fetch menu item:", err);
         setError("Failed to load menu item details");
@@ -266,22 +298,33 @@ const MenuItemDetail = () => {
       }
 
       // Add to cart
-      addToCart({
-        menuItemId: menuItem.id,
-        name: menuItem.name,
-        image: menuItem.photos?.[0]?.url || menuItem.image,
-        price: itemPrice,
-        quantity: quantity,
-        modifiers: modifiersList,
-        specialInstructions: specialInstructions,
-      });
+      // Add to cart or Update cart
+      if (editingItem) {
+         updateItem(editingItem.cartId, {
+            price: itemPrice,
+            quantity: quantity,
+            modifiers: modifiersList,
+            specialInstructions: specialInstructions,
+         });
+         //alert(`Updated ${menuItem.name} in cart!`);
+      } else {
+         addToCart({
+           menuItemId: menuItem.id,
+           name: menuItem.name,
+           image: menuItem.photos?.[0]?.url || menuItem.image,
+           price: itemPrice,
+           quantity: quantity,
+           modifiers: modifiersList,
+           specialInstructions: specialInstructions,
+         });
+         //alert(`Added ${quantity} x ${menuItem.name} to cart!`);
+      }
 
-      // Show success message and navigate to cart
-      alert(`Added ${quantity} x ${menuItem.name} to cart!`);
+      // Navigate to cart
       navigate("/customer/shopping-cart");
     } catch (error) {
-      console.error("Failed to add to cart:", error);
-      alert("Failed to add to cart. Please try again.");
+      console.error("Failed to add/update cart:", error);
+      alert("Failed to process request. Please try again.");
     }
   };
 
@@ -384,13 +427,15 @@ const MenuItemDetail = () => {
                   <Button
                     variant="default"
                     size="lg"
-                    iconName="ShoppingCart"
+                    iconName={editingItem ? "Check" : "ShoppingCart"}
                     iconPosition="left"
                     onClick={handleAddToCart}
                     disabled={!isAvailable}
                     fullWidth
                   >
-                    {isAvailable ? "Add to Cart" : "Currently Unavailable"}
+                    {isAvailable 
+                      ? (editingItem ? "Update Cart" : "Add to Cart") 
+                      : "Currently Unavailable"}
                   </Button>
                 </div>
               </div>
@@ -398,19 +443,28 @@ const MenuItemDetail = () => {
           </div>
 
           <div className="space-y-8 md:space-y-12">
-            <NutritionalInfo
-              nutritionalData={mockNutritionalData}
-              ingredients={mockIngredients}
-            />
+            {/* Nutritional Info */}
+            <section>
+              <NutritionalInfo data={mockNutritionalData} />
+            </section>
 
-            <ReviewSection
-              reviews={reviews}
-              overallRating={menuItem?.rating}
-              ratingDistribution={mockRatingDistribution}
-              loading={reviewsLoading}
-            />
+            {/* Review Section */}
+            <section id="reviews">
+              <ReviewSection
+                reviews={reviews}
+                avgRating={menuItem.averageRating}
+                totalReviews={menuItem.totalReviews}
+                loading={reviewsLoading}
+              />
+            </section>
 
-            <RelatedItems items={mockRelatedItems} />
+            {/* Related Items */}
+            <section>
+              <RelatedItems
+                categoryId={menuItem.categoryId}
+                currentId={menuItem.id}
+              />
+            </section>
           </div>
         </div>
       </main>
@@ -419,6 +473,7 @@ const MenuItemDetail = () => {
         quantity={quantity}
         onAddToCart={handleAddToCart}
         isAvailable={isAvailable}
+        buttonText={editingItem ? "Update Cart" : "Add to Cart"}
       />
     </div>
   );
