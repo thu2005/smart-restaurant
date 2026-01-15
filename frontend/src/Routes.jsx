@@ -39,6 +39,9 @@ import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
 
+// Waiter Pages
+import WaiterDashboard from "./pages/waiter";
+
 const Routes = () => {
   return (
     <BrowserRouter>
@@ -137,6 +140,16 @@ const Routes = () => {
           <Route
             path="/kitchen-display-system"
             element={<Navigate to="/kitchen/dashboard" replace />}
+          />
+
+          {/* Waiter Routes - Protected */}
+          <Route
+            path="/waiter"
+            element={
+              <ProtectedRoute roles={['WAITER']}>
+                <WaiterDashboard />
+              </ProtectedRoute>
+            }
           />
 
           <Route path="*" element={<NotFound />} />

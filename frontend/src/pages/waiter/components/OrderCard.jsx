@@ -1,0 +1,184 @@
+import React from "react";
+
+const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) => {
+    // Calculate time elapsed
+    const calculateTimeElapsed = (timestamp) => {
+        if (!timestamp) return "";
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diffMs = now - time;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return "Just now";
+        if (diffMins < 60) return `${diffMins} min ago`;
+        const diffHours = Math.floor(diffMins / 60);
+        return `${diffHours}h ${diffMins % 60}m ago`;
+    };
+
+    // Calculate total price
+    const calculateTotal = () => {
+        if (!order.orderItems) return 0;
+        return order.orderItems.reduce((sum, item) => {
+            return sum + parseFloat(item.unitPrice) * item.quantity;
+        }, 0);
+    };
+
+    // Determine if order is new (less than 2 minutes)
+    const isNew = () => {
+        if (!order.submittedAt) return false;
+        const diffMs = new Date() - new Date(order.submittedAt);
+        return diffMs < 120000; // 2 minutes
+    };
+
+    // Get status badge styling
+    const getStatusBadge = () => {
+        const statusConfig = {
+            SUBMITTED: { label: "Pending", className: "bg-warning/20 text-warning" },
+            RECEIVED: { label: "Accepted", className: "bg-success/20 text-success" },
+            PREPARING: { label: "In Kitchen", className: "bg-accent/20 text-accent" },
+            READY: { label: "Ready", className: "bg-success/30 text-success" },
+            SERVED: { label: "Served", className: "bg-muted text-muted-foreground" },
+        };
+
+        const config = statusConfig[order.status] || {
+            label: order.status,
+            className: "bg-muted text-muted-foreground",
+        };
+
+        return (
+            <span
+                className={`px-2 md:px-3 py-1 rounded-full text-xs font-semibold ${config.className}`}
+            >
+                {config.label}
+            </span>
+        );
+    };
+
+    // Get border color based on status
+    const getBorderClass = () => {
+        if (isNew() && order.status === "SUBMITTED") {
+            return "border-l-4 border-l-error animate-pulse";
+        }
+        if (order.status === "READY") {
+            return "border-l-4 border-l-success";
+        }
+        return "";
+    };
+
+    return (
+        <div
+            className={`bg-card rounded-lg border border-border shadow-warm overflow-hidden ${getBorderClass()}`}
+        >
+            {/* Header */}
+            <div className="p-4 flex items-center justify-between border-b border-border">
+                <div className="flex items-center gap-3">
+                    {/* Table Number Badge */}
+                    <div className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-bold text-sm md:text-base">
+                        T{order.table?.tableNumber || "?"}
+                    </div>
+                    <div>
+                        <p className="font-semibold text-sm md:text-base text-foreground">
+                            {order.orderNumber}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            {order.orderItems?.length || 0} items
+                        </p>
+                    </div>
+                </div>
+                <div className="text-right">
+                    {getStatusBadge()}
+                    <p
+                        className={`text-xs mt-1 ${isNew() ? "text-error font-semibold" : "text-muted-foreground"
+                            }`}
+                    >
+                        {calculateTimeElapsed(order.submittedAt || order.createdAt)}
+                    </p>
+                </div>
+            </div>
+
+            {/* Order Items */}
+            <div className="p-4 space-y-3">
+                {order.orderItems?.map((item, index) => (
+                    <div
+                        key={index}
+                        className="flex items-start justify-between pb-3 border-b border-dashed border-border last:border-0 last:pb-0"
+                    >
+                        <div className="flex items-start gap-2 flex-1">
+                            <span className="bg-muted px-2 py-1 rounded text-xs font-bold min-w-[40px] text-center">
+                                {item.quantity}x
+                            </span>
+                            <div className="flex-1">
+                                <p className="font-medium text-sm text-foreground">
+                                    {item.menuItem?.name || "Unknown Item"}
+                                </p>
+                                {item.modifiers && item.modifiers.length > 0 && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        {item.modifiers.join(", ")}
+                                    </p>
+                                )}
+                                {item.specialInstructions && (
+                                    <p className="text-xs text-warning italic mt-1">
+                                        Note: {item.specialInstructions}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        <span className="text-sm font-semibold text-foreground data-text ml-2">
+                            ${parseFloat(item.unitPrice * item.quantity).toFixed(2)}
+                        </span>
+                    </div>
+                ))}
+
+                {/* Total */}
+                <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <span className="font-semibold text-sm md:text-base text-foreground">
+                        Total
+                    </span>
+                    <span className="font-bold text-base md:text-lg text-foreground data-text">
+                        ${calculateTotal().toFixed(2)}
+                    </span>
+                </div>
+            </div>
+
+            {/* Actions */}
+            {showActions && (
+                <div className="p-4 bg-muted/30 flex gap-2 md:gap-3">
+                    {order.status === "SUBMITTED" && (
+                        <>
+                            <button
+                                onClick={() => onReject(order)}
+                                className="flex-1 px-3 md:px-4 py-2.5 md:py-3 border-2 border-error text-error bg-card hover:bg-error hover:text-error-foreground rounded-lg font-semibold text-sm transition-smooth touch-target"
+                            >
+                                Reject
+                            </button>
+                            <button
+                                onClick={() => onAccept(order)}
+                                className="flex-[2] px-3 md:px-4 py-2.5 md:py-3 bg-success text-success-foreground hover:bg-success/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
+                            >
+                                Accept & Send to Kitchen
+                            </button>
+                        </>
+                    )}
+                    {order.status === "READY" && (
+                        <button
+                            onClick={() => onServe(order)}
+                            className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-success text-success-foreground hover:bg-success/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
+                        >
+                            Mark as Served
+                        </button>
+                    )}
+                    {(order.status === "RECEIVED" || order.status === "PREPARING") && (
+                        <button
+                            className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
+                            onClick={() => window.open("/kitchen/dashboard", "_blank")}
+                        >
+                            View in Kitchen
+                        </button>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default OrderCard;
