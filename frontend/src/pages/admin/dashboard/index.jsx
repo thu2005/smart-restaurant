@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       const newMetrics = [
         {
           title: "Today's Revenue",
-          value: `$${((data.revenue.totalRevenue || 0) / 100).toFixed(2)}`,
+          value: `$${((data.revenue.totalRevenue || 0) / 100)}`,
           change: "+12.5%", // TODO: Calculate from yesterday's data
           changeType: "positive",
           icon: "DollarSign",
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
           trend: [45, 52, 48, 65, 58, 72, 68, 75, 82, 78, 85, 92],
         },
         {
-          title: "Active Orders",
+          title: "Current Orders",
           value: data.activeOrders?.length?.toString() || "0",
           change: `+${data.activeOrders?.length || 0}`,
           changeType: "positive",
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
         },
         {
           title: "Avg Order Value",
-          value: `$${((data.revenue.averageOrderValue || 0) / 100).toFixed(2)}`,
+          value: `$${((data.revenue.averageOrderValue || 0) / 100)}`,
           change: "+5.2%", // TODO: Calculate from historical data
           changeType: "positive",
           icon: "TrendingUp",

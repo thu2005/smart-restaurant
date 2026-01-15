@@ -130,7 +130,7 @@ const RecentActivityFeed = ({ activities }) => {
                     {activity.amount && (
                       <div className="mt-2.5 flex items-center">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold border ${styles.badge}`}>
-                          {activity.type === 'payment_received' ? '+' : ''}${parseFloat(activity.amount).toFixed(2)}
+                          {activity.type === 'payment_received' ? '+' : ''}${Math.round(parseFloat(activity.amount))}
                         </span>
                       </div>
                     )}

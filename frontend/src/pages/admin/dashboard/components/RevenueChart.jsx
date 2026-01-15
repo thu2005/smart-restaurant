@@ -313,7 +313,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
             Total Revenue
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            ${((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100).toFixed(2)}
+            ${Math.round((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100)}
           </p>
         </div>
         <div className="text-center">
@@ -329,11 +329,12 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
             Avg Order Value
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            $
-            {(
-              ((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100) /
-              (data?.reduce((sum, item) => sum + item?.orders, 0) || 1)
-            ).toFixed(2)}
+            ${
+              Math.round(
+                ((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100) /
+                (data?.reduce((sum, item) => sum + item?.orders, 0) || 1)
+              )
+            }
           </p>
         </div>
         <div className="text-center">
