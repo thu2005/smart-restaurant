@@ -119,6 +119,46 @@ export const CartProvider = ({ children }) => {
     };
   };
 
+  /**
+   * Calculate Estimated Wait Time
+   * Logic: Parallel processing with capacity constraints
+   */
+  const getEstimatedWaitTime = () => {
+    if (cartItems.length === 0) return { min: 0, max: 0 };
+
+    const KITCHEN_CAPACITY = 4; // Max concurrent items
+    const SERVING_BUFFER = 5; // Minutes for plating/serving
+
+    // 1. Flatten items based on quantity
+    let allTasks = [];
+    cartItems.forEach(item => {
+      const time = item.prepTime || 15; // Default 15 mins if missing
+      for (let i = 0; i < item.quantity; i++) {
+        allTasks.push(time);
+      }
+    });
+
+    // 2. Sort descending (longest tasks first)
+    allTasks.sort((a, b) => b - a);
+
+    // 3. Process in batches (Kitchen Capacity)
+    let totalPrepTime = 0;
+    
+    // Chunk array
+    for (let i = 0; i < allTasks.length; i += KITCHEN_CAPACITY) {
+      const batch = allTasks.slice(i, i + KITCHEN_CAPACITY);
+      // The batch takes as long as the longest item in it
+      const batchTime = Math.max(...batch);
+      totalPrepTime += batchTime;
+    }
+
+    // 4. Returns range
+    const estimatedMin = totalPrepTime + SERVING_BUFFER;
+    const estimatedMax = estimatedMin + 5; // 5 min uncertainty window
+
+    return { min: estimatedMin, max: estimatedMax };
+  };
+
   const value = {
     cartItems,
     isLoading,
@@ -128,6 +168,7 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     clearCart,
     getCartSummary,
+    getEstimatedWaitTime,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

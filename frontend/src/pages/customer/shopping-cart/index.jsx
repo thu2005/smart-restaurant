@@ -16,7 +16,7 @@ import Icon from "../../../components/AppIcon";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
-  const { cartItems, updateQuantity, removeFromCart, clearCart, getCartSummary } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, clearCart, getCartSummary, getEstimatedWaitTime } = useCart();
   const user = authService.getCurrentUser();
 
   const [specialInstructions, setSpecialInstructions] = useState("");
@@ -168,6 +168,7 @@ const ShoppingCart = () => {
                   tax={tax}
                   total={total}
                   itemCount={itemCount}
+                  estimatedTime={getEstimatedWaitTime()}
                 />
 
                 <Button

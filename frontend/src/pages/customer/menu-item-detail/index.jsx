@@ -305,8 +305,8 @@ const MenuItemDetail = () => {
             quantity: quantity,
             modifiers: modifiersList,
             specialInstructions: specialInstructions,
+            prepTime: menuItem.prepTime || 15,
          });
-         //alert(`Updated ${menuItem.name} in cart!`);
       } else {
          addToCart({
            menuItemId: menuItem.id,
@@ -316,8 +316,8 @@ const MenuItemDetail = () => {
            quantity: quantity,
            modifiers: modifiersList,
            specialInstructions: specialInstructions,
+           prepTime: menuItem.prepTime || 15,
          });
-         //alert(`Added ${quantity} x ${menuItem.name} to cart!`);
       }
 
       // Navigate to cart

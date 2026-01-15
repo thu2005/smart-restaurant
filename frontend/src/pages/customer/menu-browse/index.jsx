@@ -270,6 +270,7 @@ const MenuBrowse = () => {
       quantity: 1,
       modifiers: [], // Quick add = no modifiers
       specialInstructions: "",
+      prepTime: item.prepTime || 15,
     });
     
     // Optional: Show toast notification
