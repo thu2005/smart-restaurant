@@ -139,7 +139,7 @@ async function main() {
                 location: i <= 5 ? 'Ground Floor' : i <= 10 ? 'First Floor' : 'Terrace',
                 restaurantId: restaurant.id,
                 qrCode: `QR_TABLE_${i}_${Date.now()}`,
-                status: i === 1 ? 'OCCUPIED' : i === 2 ? 'RESERVED' : 'AVAILABLE'
+                status: i === 1 || i === 8 || i === 12 || i === 14 ? 'OCCUPIED' : i === 2 || i === 11 ? 'RESERVED' : i === 15 ? 'CLEANING' : 'AVAILABLE'
             }
         }));
     }
