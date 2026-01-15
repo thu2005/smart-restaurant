@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useCart } from "../../../contexts/CartContext";
 import orderService from "../../../services/orderService";
 import authService from "../../../services/authService";
-import CustomerOrderProgress from "../../../components/navigation/CustomerOrderProgress";
+import { tableAPI } from "../../../services/tableService";
 import CartItemCard from "./components/CartItemCard";
 import OrderSummary from "./components/OrderSummary";
 import SpecialInstructionsSection from "./components/SpecialInstructionsSection";
@@ -22,7 +22,23 @@ const ShoppingCart = () => {
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [tableNumber] = useState(localStorage.getItem("tableNumber") || "N/A");
+  const [tableDetails, setTableDetails] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    const fetchTableInfo = async () => {
+      const tableId = localStorage.getItem("tableId");
+      if (tableId) {
+        try {
+          const data = await tableAPI.getTableById(tableId);
+          setTableDetails(data);
+        } catch (error) {
+          console.error("Failed to fetch table details:", error);
+        }
+      }
+    };
+    fetchTableInfo();
+  }, []);
 
   const handleUpdateQuantity = (cartId, newQuantity) => {
     updateQuantity(cartId, newQuantity);
@@ -34,10 +50,6 @@ const ShoppingCart = () => {
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-  };
-
-  const handleTableEdit = () => {
-    navigate("/customer/menu-browse");
   };
 
   const handleCheckout = async () => {
@@ -89,7 +101,6 @@ const ShoppingCart = () => {
           />
         </Helmet>
         <div className="min-h-screen bg-background">
-          <CustomerOrderProgress />
           <EmptyCartState />
         </div>
       </>
@@ -99,19 +110,18 @@ const ShoppingCart = () => {
   return (
     <>
       <Helmet>
-        <title>{`Shopping Cart (${itemCount}) - Smart Restaurant`}</title>
+        <title>{`My Order (${itemCount}) - Smart Restaurant`}</title>
         <meta
           name="description"
           content="Review your order and proceed to checkout"
         />
       </Helmet>
       <div className="min-h-screen bg-background">
-        <CustomerOrderProgress />
 
         <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-              Shopping Cart
+              My Order
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
               Review your order and proceed to checkout
@@ -122,7 +132,7 @@ const ShoppingCart = () => {
             <div className="lg:col-span-2 space-y-4 md:space-y-6">
               <TableVerification
                 tableNumber={tableNumber}
-                onEdit={handleTableEdit}
+                tableDetails={tableDetails}
               />
 
               <div className="space-y-3 md:space-y-4">
