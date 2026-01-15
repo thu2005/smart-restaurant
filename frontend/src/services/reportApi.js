@@ -1,4 +1,23 @@
-import apiClient from './apiClient';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+// Create axios instance with default config
+const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Add interceptor for auth token
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 /**
  * Report API Service
@@ -15,8 +34,8 @@ export const getRevenueReport = async (restaurantId, startDate, endDate) => {
         ...(endDate && { endDate: endDate.toISOString() }),
     });
 
-    const response = await apiClient.get(`/reports/revenue?${params}`);
-    return response.data;
+    const response = await api.get(`/reports/revenue?${params}`);
+    return response.data.data || response.data;
 };
 
 /**
@@ -30,8 +49,8 @@ export const getTopItems = async (restaurantId, limit = 10, startDate, endDate) 
         ...(endDate && { endDate: endDate.toISOString() }),
     });
 
-    const response = await apiClient.get(`/reports/top-items?${params}`);
-    return response.data;
+    const response = await api.get(`/reports/top-items?${params}`);
+    return response.data.data || response.data;
 };
 
 /**
@@ -45,8 +64,8 @@ export const getRevenueChartData = async (restaurantId, period = 'daily', startD
         ...(endDate && { endDate: endDate.toISOString() }),
     });
 
-    const response = await apiClient.get(`/reports/chart?${params}`);
-    return response.data;
+    const response = await api.get(`/reports/chart?${params}`);
+    return response.data.data || response.data;
 };
 
 /**
@@ -59,8 +78,8 @@ export const getOrders = async (restaurantId, startDate, endDate) => {
         ...(endDate && { endDate: endDate.toISOString() }),
     });
 
-    const response = await apiClient.get(`/orders?${params}`);
-    return response.data;
+    const response = await api.get(`/orders?${params}`);
+    return response.data.data || response.data;
 };
 
 /**
@@ -215,7 +234,7 @@ export const exportToPDF = async (data, filename = 'report.pdf') => {
             ...(data.endDate && { endDate: data.endDate }),
         });
 
-        const response = await apiClient.get(`/reports/export-pdf?${params}`, {
+        const response = await api.get(`/reports/export-pdf?${params}`, {
             responseType: 'blob'
         });
 
