@@ -42,13 +42,33 @@ const AdminDashboard = () => {
       const restaurantId = getRestaurantId();
       const data = await dashboardApi.getDashboardData(restaurantId);
 
+      // Helper for percentage change
+      const calculatePercentageChange = (current, previous) => {
+        if (!previous || previous === 0) return current > 0 ? 100 : 0;
+        return ((current - previous) / previous) * 100;
+      };
+
+      // Calculate Revenue Change
+      const todayRev = data.revenue.totalRevenue || 0;
+      const yesterRev = data.yesterdayRevenue?.totalRevenue || 0;
+      const revChangeVal = calculatePercentageChange(todayRev, yesterRev);
+      const revChange = `${revChangeVal > 0 ? '+' : ''}${revChangeVal.toFixed(1)}%`;
+      const revChangeType = revChangeVal >= 0 ? "positive" : "negative";
+
+      // Calculate AOV Change
+      const todayAOV = data.revenue.averageOrderValue || 0;
+      const yesterAOV = data.yesterdayRevenue?.averageOrderValue || 0;
+      const aovChangeVal = calculatePercentageChange(todayAOV, yesterAOV);
+      const aovChange = `${aovChangeVal > 0 ? '+' : ''}${aovChangeVal.toFixed(1)}%`;
+      const aovChangeType = aovChangeVal >= 0 ? "positive" : "negative";
+
       // Update metrics
       const newMetrics = [
         {
           title: "Today's Revenue",
           value: `$${((data.revenue.totalRevenue || 0) / 100)}`,
-          change: "+12.5%", // TODO: Calculate from yesterday's data
-          changeType: "positive",
+          change: revChange,
+          changeType: revChangeType,
           icon: "DollarSign",
           iconColor: "var(--color-success)",
           trend: [45, 52, 48, 65, 58, 72, 68, 75, 82, 78, 85, 92],
@@ -74,8 +94,8 @@ const AdminDashboard = () => {
         {
           title: "Avg Order Value",
           value: `$${((data.revenue.averageOrderValue || 0) / 100)}`,
-          change: "+5.2%", // TODO: Calculate from historical data
-          changeType: "positive",
+          change: aovChange,
+          changeType: aovChangeType,
           icon: "TrendingUp",
           iconColor: "var(--color-warning)",
           trend: [40, 42, 45, 43, 48, 50, 52, 55, 58, 60, 62, 65],

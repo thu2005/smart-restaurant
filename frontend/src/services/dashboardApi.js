@@ -22,6 +22,21 @@ api.interceptors.request.use((config) => {
 
 const dashboardApi = {
     /**
+     * Get revenue statistics for a specific period
+     */
+    getRevenueStats: async (restaurantId, startDate, endDate) => {
+        try {
+            const response = await api.get("/reports/revenue", {
+                params: { restaurantId, startDate, endDate },
+            });
+            return response.data.data || response.data;
+        } catch (error) {
+            console.error("Failed to fetch revenue stats:", error);
+            throw error;
+        }
+    },
+
+    /**
      * Get today's revenue statistics
      * Uses existing /api/reports/revenue endpoint
      */
@@ -31,11 +46,7 @@ const dashboardApi = {
             const startDate = new Date(today.setHours(0, 0, 0, 0)).toISOString();
             const endDate = new Date(today.setHours(23, 59, 59, 999)).toISOString();
 
-            const response = await api.get("/reports/revenue", {
-                params: { restaurantId, startDate, endDate },
-            });
-
-            return response.data.data || response.data;
+            return await dashboardApi.getRevenueStats(restaurantId, startDate, endDate);
         } catch (error) {
             console.error("Failed to fetch today's revenue:", error);
             throw error;
@@ -340,8 +351,19 @@ const dashboardApi = {
      */
     getDashboardData: async (restaurantId) => {
         try {
+            // Calculate ranges for yesterday
+            const today = new Date();
+            const yesterdayStart = new Date(today);
+            yesterdayStart.setDate(today.getDate() - 1);
+            yesterdayStart.setHours(0, 0, 0, 0);
+
+            const yesterdayEnd = new Date(today);
+            yesterdayEnd.setDate(today.getDate() - 1);
+            yesterdayEnd.setHours(23, 59, 59, 999);
+
             const [
                 revenue,
+                yesterdayRevenue,
                 activeOrders,
                 tableOccupancy,
                 avgPrepTime,
@@ -352,6 +374,7 @@ const dashboardApi = {
                 overdueOrders,
             ] = await Promise.all([
                 dashboardApi.getTodayRevenue(restaurantId),
+                dashboardApi.getRevenueStats(restaurantId, yesterdayStart.toISOString(), yesterdayEnd.toISOString()),
                 dashboardApi.getActiveOrders(restaurantId),
                 dashboardApi.getTableOccupancy(restaurantId),
                 dashboardApi.getAveragePrepTime(restaurantId),
@@ -364,6 +387,7 @@ const dashboardApi = {
 
             return {
                 revenue,
+                yesterdayRevenue,
                 activeOrders,
                 tableOccupancy,
                 avgPrepTime,
