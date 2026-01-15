@@ -212,6 +212,7 @@ async function main() {
     data: {
       name: "Spiciness Level",
       selectionType: "single",
+      modifierType: "choice", // CHOICE type
       isRequired: true,
       restaurantId: restaurant.id,
       options: {
@@ -229,6 +230,7 @@ async function main() {
     data: {
       name: "Add Sides",
       selectionType: "multiple",
+      modifierType: "addon", // ADDON type
       isRequired: false,
       maxSelections: 3,
       restaurantId: restaurant.id,
@@ -247,6 +249,7 @@ async function main() {
     data: {
       name: "Size",
       selectionType: "single",
+      modifierType: "choice", // CHOICE type
       isRequired: true,
       restaurantId: restaurant.id,
       options: {

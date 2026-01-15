@@ -186,13 +186,16 @@ const MenuItemDetail = () => {
         if (!group) return;
 
         if (Array.isArray(selection)) {
-          // Multiple
-          selection.forEach((optId) => {
+          // Multiple selection or Addons
+          selection.forEach((item) => {
+            const optId = typeof item === 'object' ? item.id : item;
+            const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
+            
             const opt = group.options?.find((o) => o.id === optId);
-            if (opt) total += opt.priceAdjustment || 0;
+            if (opt) total += (opt.priceAdjustment || 0) * qty;
           });
         } else {
-          // Single
+          // Single selection (always just ID)
           const opt = group.options?.find((o) => o.id === selection);
           if (opt) total += opt.priceAdjustment || 0;
         }
@@ -228,16 +231,19 @@ const MenuItemDetail = () => {
           if (!group) return;
 
           if (Array.isArray(selection)) {
-            // Multiple selection
-            selection.forEach((optId) => {
+            // Multiple selection or Addons
+            selection.forEach((item) => {
+              const optId = typeof item === 'object' ? item.id : item;
+              const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
+              
               const opt = group.options?.find((o) => o.id === optId);
               if (opt) {
-                itemPrice += opt.priceAdjustment || 0;
+                itemPrice += (opt.priceAdjustment || 0) * qty;
                 modifiersList.push({
                   id: opt.id,
                   name: opt.name,
                   groupName: group.name,
-                  quantity: 1, // Default quantity
+                  quantity: qty,
                   priceAdjustment: opt.priceAdjustment || 0,
                 });
               }

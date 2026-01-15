@@ -284,6 +284,7 @@ const menuService = {
           name: group.name,
           description: group.description,
           selectionType: group.selectionType || 'single',
+          modifierType: group.modifierType || 'choice', // 'choice' or 'addon'
           isRequired: group.isRequired,
           maxSelections: group.maxSelections,
           minSelections: group.minSelections,
