@@ -236,33 +236,81 @@ const dashboardApi = {
                 params: { restaurantId },
             });
 
-            const orders = (response.data.data || response.data).slice(0, limit);
+            const orders = (response.data.data || response.data);
 
-            // Transform orders to activity feed format
-            return orders.map((order) => {
+            // Transform orders to activity feed format with all status changes
+            const activities = [];
+
+            orders.forEach((order) => {
+                // Use the most recent relevant timestamp for ordering
+                let latestTimestamp = new Date(order.createdAt);
                 let type = "order_created";
                 let title = `Order #${order.orderNumber} Created`;
                 let description = `Table ${order.table?.tableNumber || "N/A"}`;
+                let amount = null;
 
-                if (order.status === "COMPLETED") {
+                // Determine the latest activity based on order status
+                if (order.status === "COMPLETED" && order.completedAt) {
                     type = "order_completed";
                     title = `Order #${order.orderNumber} Completed`;
                     description = `Table ${order.table?.tableNumber || "N/A"} - ${order.orderItems?.length || 0} items delivered`;
-                } else if (order.status === "PAYMENT_PENDING" || order.payment) {
-                    type = "payment_received";
-                    title = "Payment Received";
-                    description = `Table ${order.table?.tableNumber || "N/A"} - ${order.payment?.method || "Payment"} processed`;
+                    latestTimestamp = new Date(order.completedAt);
+                } else if (order.status === "SERVED" && order.servedAt) {
+                    type = "order_served";
+                    title = `Order #${order.orderNumber} Served`;
+                    description = `Table ${order.table?.tableNumber || "N/A"} - ${order.orderItems?.length || 0} items served`;
+                    latestTimestamp = new Date(order.servedAt);
+                } else if (order.status === "READY" && order.readyAt) {
+                    type = "order_ready";
+                    title = `Order #${order.orderNumber} Ready`;
+                    description = `Table ${order.table?.tableNumber || "N/A"} - Ready to serve`;
+                    latestTimestamp = new Date(order.readyAt);
+                } else if (order.status === "PREPARING" && order.preparingAt) {
+                    type = "order_preparing";
+                    title = `Order #${order.orderNumber} Preparing`;
+                    description = `Table ${order.table?.tableNumber || "N/A"} - In kitchen`;
+                    latestTimestamp = new Date(order.preparingAt);
+                } else if ((order.status === "RECEIVED" || order.status === "ACCEPTED") && order.acceptedAt) {
+                    type = "order_accepted";
+                    title = `Order #${order.orderNumber} Accepted`;
+                    description = `Table ${order.table?.tableNumber || "N/A"} - Accepted by waiter`;
+                    latestTimestamp = new Date(order.acceptedAt);
+                } else if (order.status === "SUBMITTED" && order.submittedAt) {
+                    type = "order_submitted";
+                    title = `Order #${order.orderNumber} Submitted`;
+                    description = `Table ${order.table?.tableNumber || "N/A"} - Waiting for acceptance`;
+                    latestTimestamp = new Date(order.submittedAt);
                 }
 
-                return {
-                    id: order.id,
+                // Add payment activity if payment exists
+                if (order.payment) {
+                    amount = order.payment.total;
+                    // If payment is more recent, show payment activity instead
+                    const paymentDate = new Date(order.payment.createdAt || order.payment.paidAt);
+                    if (paymentDate > latestTimestamp) {
+                        type = "payment_received";
+                        title = "Payment Received";
+                        description = `Table ${order.table?.tableNumber || "N/A"} - ${order.payment.method || "Payment"} processed`;
+                        latestTimestamp = paymentDate;
+                        amount = order.payment.total;
+                    }
+                }
+
+                activities.push({
+                    id: `${order.id}-${type}`,
+                    orderId: order.id,
                     type,
                     title,
                     description,
-                    timestamp: new Date(order.createdAt),
-                    amount: order.payment?.total || null,
-                };
+                    timestamp: latestTimestamp,
+                    amount,
+                });
             });
+
+            // Sort by timestamp (most recent first) and limit
+            return activities
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .slice(0, limit);
         } catch (error) {
             console.error("Failed to fetch recent activity:", error);
             throw error;
