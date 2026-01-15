@@ -311,11 +311,27 @@ class OrderService {
     }
 
     async getWaiterTables(waiterId) {
-        // Get all tables with active orders accepted by this waiter
+        // Get waiter's restaurant ID
+        const waiter = await prisma.user.findUnique({
+            where: { id: waiterId },
+            select: { restaurantId: true }
+        });
+
+        if (!waiter || !waiter.restaurantId) {
+            return [];
+        }
+
+        // Get all tables with active orders in the restaurant
+        // This includes orders accepted by this waiter OR orders that are READY/SERVED 
+        // (so waiters can serve any ready order, even if another waiter/kitchen created it)
         const orders = await prisma.order.findMany({
             where: {
-                acceptedById: waiterId,
-                status: { notIn: ['COMPLETED', 'CANCELLED'] }
+                restaurantId: waiter.restaurantId,
+                status: { notIn: ['COMPLETED', 'CANCELLED'] },
+                OR: [
+                    { acceptedById: waiterId },  
+                    { status: { in: ['READY', 'SERVED'] } }  
+                ]
             },
             include: {
                 table: true,
@@ -340,11 +356,26 @@ class OrderService {
     }
 
     async getWaiterOrders(waiterId, status) {
-        const where = {
-            acceptedById: waiterId
-        };
-
-        if (status) where.status = status;
+        // For READY orders, show all ready orders for the restaurant (not just waiter's own)
+        // so waiters can serve any ready order from kitchen
+        const where = {};
+        
+        if (status === 'READY') {
+            // Get waiter's restaurant ID
+            const waiter = await prisma.user.findUnique({
+                where: { id: waiterId },
+                select: { restaurantId: true }
+            });
+            
+            if (waiter && waiter.restaurantId) {
+                where.restaurantId = waiter.restaurantId;
+                where.status = 'READY';
+            }
+        } else {
+            // For other statuses, only show orders accepted by this waiter
+            where.acceptedById = waiterId;
+            if (status) where.status = status;
+        }
 
         return await prisma.order.findMany({
             where,
