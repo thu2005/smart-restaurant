@@ -37,20 +37,26 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
 
           {item?.modifiers && item?.modifiers?.length > 0 && (
             <div className="mb-3">
-              {item?.modifiers?.map((modifier, index) => (
-                <p
-                  key={index}
-                  className="text-xs md:text-sm text-muted-foreground"
-                >
-                  <span className="font-medium">{modifier?.groupName}:</span>{" "}
-                  {modifier?.name}
-                  {modifier?.priceAdjustment > 0 && (
-                    <span className="text-primary ml-1">
-                      (+{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(modifier.priceAdjustment)})
-                    </span>
-                  )}
-                </p>
-              ))}
+              {item?.modifiers?.map((modifier, index) => {
+                const quantity = modifier?.quantity || 1;
+                const totalPrice = (modifier?.priceAdjustment || 0) * quantity;
+                
+                return (
+                  <p
+                    key={index}
+                    className="text-xs md:text-sm text-muted-foreground"
+                  >
+                    <span className="font-medium">{modifier?.groupName}:</span>{" "}
+                    {quantity > 1 && <span className="text-foreground font-semibold">x{quantity} </span>}
+                    {modifier?.name}
+                    {totalPrice > 0 && (
+                      <span className="text-primary ml-1">
+                        (+{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)})
+                      </span>
+                    )}
+                  </p>
+                );
+              })}
             </div>
           )}
 

@@ -237,6 +237,7 @@ const MenuItemDetail = () => {
                   id: opt.id,
                   name: opt.name,
                   groupName: group.name,
+                  quantity: 1, // Default quantity
                   priceAdjustment: opt.priceAdjustment || 0,
                 });
               }
@@ -250,6 +251,7 @@ const MenuItemDetail = () => {
                 id: opt.id,
                 name: opt.name,
                 groupName: group.name,
+                quantity: 1, // Default quantity
                 priceAdjustment: opt.priceAdjustment || 0,
               });
             }

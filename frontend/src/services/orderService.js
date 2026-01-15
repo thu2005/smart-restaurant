@@ -40,7 +40,15 @@ const orderService = {
           menuItemId: item.menuItemId || item.id,
           quantity: item.quantity,
           modifiers: Array.isArray(item.modifiers)
-            ? item.modifiers.map((m) => (typeof m === 'object' ? m.id : m))
+            ? item.modifiers.map((m) => {
+                if (typeof m === 'object') {
+                  return {
+                    id: m.id,
+                    quantity: m.quantity || 1
+                  };
+                }
+                return { id: m, quantity: 1 };
+              })
             : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
@@ -201,7 +209,15 @@ const orderService = {
           menuItemId: item.menuItemId || item.id,
           quantity: item.quantity,
           modifiers: Array.isArray(item.modifiers)
-            ? item.modifiers.map((m) => (typeof m === 'object' ? m.id : m))
+            ? item.modifiers.map((m) => {
+                if (typeof m === 'object') {
+                  return {
+                    id: m.id,
+                    quantity: m.quantity || 1
+                  };
+                }
+                return { id: m, quantity: 1 };
+              })
             : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
