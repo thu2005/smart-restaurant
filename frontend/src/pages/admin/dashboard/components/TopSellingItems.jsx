@@ -34,12 +34,12 @@ const TopSellingItems = ({ items }) => {
         </div>
         <div className="space-y-4 flex-1 overflow-y-auto w-full custom-scrollbar p-1">
           {items?.map((item, index) => (
-            <div
-              key={item?.id || index}
-              className="flex items-center gap-4 p-3 rounded-xl hover:bg-card hover:shadow-md hover:scale-[1.02] hover:ring-1 hover:ring-primary/20 transition-all duration-200 group border border-transparent cursor-pointer relative"
-              onMouseEnter={(e) => handleMouseEnter(e, item)}
-              onMouseLeave={handleMouseLeave}
-            >
+            <React.Fragment key={item?.id || index}>
+              <div
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-card hover:shadow-md hover:scale-[1.02] hover:ring-1 hover:ring-primary/20 transition-all duration-200 group border border-transparent cursor-pointer relative"
+                onMouseEnter={(e) => handleMouseEnter(e, item)}
+                onMouseLeave={handleMouseLeave}
+              >
               {/* Rank */}
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success text-white font-heading font-bold text-sm flex-shrink-0 transition-colors">
                 {index + 1}
@@ -96,7 +96,11 @@ const TopSellingItems = ({ items }) => {
                   </div>
                 )}
               </div>
-            </div>
+              </div>
+              {index !== items.length - 1 && (
+                <div style={{height: '1px', background: '#e5e7eb', margin: '0 8px 8px 8px'}}></div>
+              )}
+            </React.Fragment>
           ))}
 
           {(!items || items.length === 0) && (
