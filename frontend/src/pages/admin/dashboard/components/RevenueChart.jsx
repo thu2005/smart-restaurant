@@ -20,19 +20,49 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
     { value: "year", label: "This Year" },
   ];
 
-  const CustomTooltip = ({ active, payload }) => {
+  const formatXAxis = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return value;
+
+    if (dateRange === "today") {
+      return date.toLocaleTimeString([], { hour: "numeric", hour12: true });
+    }
+    if (dateRange === "week") {
+      return date.toLocaleDateString([], { weekday: "short" });
+    }
+    if (dateRange === "month") {
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
+    }
+    if (dateRange === "year") {
+      return date.toLocaleDateString([], { month: "short", year: "2-digit" });
+    }
+    return value;
+  };
+
+  // Transform data to convert revenue from cents to dollars
+  const chartData = data?.map(item => ({
+    ...item,
+    revenueDisplay: (item.revenue || 0) / 100
+  })) || [];
+
+  // Debug logging
+  console.log("RevenueChart - Raw data:", data);
+  console.log("RevenueChart - Transformed chartData:", chartData);
+
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload?.length) {
       return (
         <div className="bg-card border border-border rounded-lg p-3 shadow-warm-lg">
           <p className="text-sm font-medium text-foreground mb-2">
-            {payload?.[0]?.payload?.name}
+            {formatXAxis(label)}
           </p>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-primary" />
               <span className="text-xs text-muted-foreground">Revenue:</span>
               <span className="text-sm font-semibold text-foreground data-text">
-                ${payload?.[0]?.value}
+                ${(payload?.[0]?.value || 0).toFixed(2)}
               </span>
             </div>
             {payload?.[1] && (
@@ -52,7 +82,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
   };
 
   return (
-    <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
+    <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm max-h-[600px] flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4 mb-4 md:mb-6">
         <div>
           <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-1">
@@ -70,40 +100,66 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
         />
       </div>
       <div
-        className="w-full h-64 md:h-80 lg:h-96"
+        className="w-full h-[320px] flex items-center justify-center bg-muted/20 rounded-md border border-dashed border-border/50"
         aria-label="Revenue Analytics Bar Chart"
       >
-        <ResponsiveContainer width="100%" height="100%">
+        {(!chartData || chartData.length === 0) ? (
+          <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+            No data available for the selected period
+          </div>
+        ) : (
           <BarChart
-            data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            width={800}
+            height={300}
+            data={chartData}
+            margin={{ top: 10, right: 30, left: 20, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
             <XAxis
               dataKey="name"
-              stroke="var(--color-muted-foreground)"
-              style={{ fontSize: "12px" }}
+              stroke="#6b7280"
+              fontSize={12}
+              tickLine={{stroke: '#1F2937', strokeWidth: 1}}
+              axisLine={{stroke: '#1F2937', strokeWidth: 1}}
+              tickFormatter={formatXAxis}
+              padding={{ left: 30, right: 30 }}
             />
             <YAxis
-              stroke="var(--color-muted-foreground)"
-              style={{ fontSize: "12px" }}
+              yAxisId="left"
+              stroke="#6b7280"
+              fontSize={12}
+              tickLine={{stroke: '#1F2937', strokeWidth: 1}}
+              axisLine={{stroke: '#1F2937', strokeWidth: 1}}
+              tickFormatter={(value) => `$${value}`}
             />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ fontSize: "14px" }} iconType="circle" />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              stroke="#1E40AF"
+              fontSize={12}
+              tickLine={{stroke: '#1F2937', strokeWidth: 1}}
+              axisLine={{stroke: '#1F2937', strokeWidth: 1}}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+             <Legend wrapperStyle={{ width: '100%', maxWidth: '100%', textAlign: 'center', margin: '0 auto', display: 'flex', justifyContent: 'center', fontSize: '14px' }} iconType="circle" />
             <Bar
-              dataKey="revenue"
-              fill="var(--color-primary)"
-              radius={[8, 8, 0, 0]}
+              yAxisId="left"
+              dataKey="revenueDisplay"
+              fill="#2D5A27"
+              radius={[4, 4, 0, 0]}
               name="Revenue ($)"
+              barSize={40}
             />
             <Bar
+              yAxisId="right"
               dataKey="orders"
-              fill="var(--color-accent)"
-              radius={[8, 8, 0, 0]}
+              fill="#1E40AF"
+              radius={[4, 4, 0, 0]}
               name="Orders"
+              barSize={40}
             />
           </BarChart>
-        </ResponsiveContainer>
+        )}
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-4 md:mt-6 pt-4 border-t border-border">
         <div className="text-center">
@@ -111,7 +167,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
             Total Revenue
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            ${data?.reduce((sum, item) => sum + item?.revenue, 0)?.toFixed(2)}
+            ${((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100).toFixed(2)}
           </p>
         </div>
         <div className="text-center">
@@ -129,9 +185,9 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
             $
             {(
-              data?.reduce((sum, item) => sum + item?.revenue, 0) /
-              data?.reduce((sum, item) => sum + item?.orders, 0)
-            )?.toFixed(2)}
+              ((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100) /
+              (data?.reduce((sum, item) => sum + item?.orders, 0) || 1)
+            ).toFixed(2)}
           </p>
         </div>
         <div className="text-center">
@@ -139,12 +195,12 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
             Peak Hour
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground">
-            {
+            {formatXAxis(
               data?.reduce(
                 (max, item) => (item?.revenue > max?.revenue ? item : max),
-                data?.[0]
+                data?.[0] || { name: "" }
               )?.name
-            }
+            )}
           </p>
         </div>
       </div>

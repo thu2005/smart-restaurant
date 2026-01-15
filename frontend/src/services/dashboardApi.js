@@ -164,14 +164,48 @@ const dashboardApi = {
      * Get revenue chart data
      * Uses existing /api/reports/chart endpoint
      */
-    getRevenueChartData: async (restaurantId, period = "daily") => {
+    getRevenueChartData: async (restaurantId, period = "today") => {
         try {
             const today = new Date();
-            const startDate = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-            const endDate = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+            let startDate = new Date();
+            let endDate = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+            let backendPeriod = "daily";
+
+            switch (period) {
+                case "today":
+                    startDate = new Date(new Date().setHours(0, 0, 0, 0));
+                    backendPeriod = "hourly";
+                    break;
+                case "week":
+                    startDate = new Date();
+                    startDate.setDate(startDate.getDate() - 7);
+                    startDate.setHours(0, 0, 0, 0);
+                    backendPeriod = "daily";
+                    break;
+                case "month":
+                    startDate = new Date();
+                    startDate.setDate(startDate.getDate() - 30);
+                    startDate.setHours(0, 0, 0, 0);
+                    backendPeriod = "daily";
+                    break;
+                case "year":
+                    startDate = new Date();
+                    startDate.setFullYear(startDate.getFullYear() - 1);
+                    startDate.setHours(0, 0, 0, 0);
+                    backendPeriod = "monthly";
+                    break;
+                default:
+                    startDate = new Date(new Date().setHours(0, 0, 0, 0));
+                    backendPeriod = "daily";
+            }
 
             const response = await api.get("/reports/chart", {
-                params: { restaurantId, period, startDate, endDate },
+                params: {
+                    restaurantId,
+                    period: backendPeriod,
+                    startDate: startDate.toISOString(),
+                    endDate
+                },
             });
 
             return response.data.data || response.data;

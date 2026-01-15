@@ -5,13 +5,16 @@ import Button from "../ui/Button";
 
 const AdminDashboardSidebar = ({
   isCollapsed = false,
+  onCollapseToggle,
   isMobileOpen = false,
   onMobileToggle,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(isCollapsed);
+  const [localCollapsed, setLocalCollapsed] = useState(isCollapsed);
   const [mobileOpen, setMobileOpen] = useState(isMobileOpen);
+
+  const collapsed = onCollapseToggle ? isCollapsed : localCollapsed;
 
   useEffect(() => {
     setMobileOpen(isMobileOpen);
@@ -91,7 +94,11 @@ const AdminDashboardSidebar = ({
   };
 
   const toggleCollapse = () => {
-    setCollapsed(!collapsed);
+    if (onCollapseToggle) {
+      onCollapseToggle(!collapsed);
+    } else {
+      setLocalCollapsed(!collapsed);
+    }
   };
 
   return (
@@ -114,19 +121,16 @@ const AdminDashboardSidebar = ({
       `}
       >
         <div
-          className={`admin-sidebar-header transition-all duration-300 ${
-            collapsed ? "px-2 justify-center" : "px-4 justify-between"
-          }`}
+          className={`admin-sidebar-header transition-all duration-300 ${collapsed ? "px-2 justify-center" : "px-4 justify-between"
+            }`}
         >
           <div
-            className={`flex items-center ${
-              collapsed ? "justify-center" : "flex-1"
-            }`}
+            className={`flex items-center ${collapsed ? "justify-center" : "flex-1"
+              }`}
           >
             <div
-              className={`${
-                collapsed ? "w-10 h-10" : "w-12 h-12"
-              } bg-primary/5 rounded-lg flex items-center justify-center transition-all duration-300 overflow-hidden flex-shrink-0`}
+              className={`${collapsed ? "w-10 h-10" : "w-12 h-12"
+                } bg-primary/5 rounded-lg flex items-center justify-center transition-all duration-300 overflow-hidden flex-shrink-0`}
             >
               <img
                 src="https://ik.imagekit.io/thu2005/Gemini_Generated_Image_cl11tdcl11tdcl11-removebg-preview.png"
@@ -145,11 +149,10 @@ const AdminDashboardSidebar = ({
             size="icon"
             iconName={collapsed ? "ChevronRight" : "ChevronLeft"}
             onClick={toggleCollapse}
-            className={`hidden lg:flex transition-all duration-300 ${
-              collapsed
-                ? "absolute -right-3 top-1/2 -translate-y-1/2 bg-white border shadow-sm rounded-full z-50"
-                : ""
-            }`}
+            className={`hidden lg:flex transition-all duration-300 ${collapsed
+              ? "absolute -right-3 top-1/2 -translate-y-1/2 bg-white border shadow-sm rounded-full z-50"
+              : ""
+              }`}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           />
         </div>

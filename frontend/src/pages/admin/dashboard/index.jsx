@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       const newMetrics = [
         {
           title: "Today's Revenue",
-          value: `$${data.revenue.totalRevenue?.toFixed(2) || "0.00"}`,
+          value: `$${((data.revenue.totalRevenue || 0) / 100).toFixed(2)}`,
           change: "+12.5%", // TODO: Calculate from yesterday's data
           changeType: "positive",
           icon: "DollarSign",
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
         },
         {
           title: "Avg Order Value",
-          value: `$${data.revenue.averageOrderValue?.toFixed(2) || "0.00"}`,
+          value: `$${((data.revenue.averageOrderValue || 0) / 100).toFixed(2)}`,
           change: "+5.2%", // TODO: Calculate from historical data
           changeType: "positive",
           icon: "TrendingUp",
@@ -88,6 +88,9 @@ const AdminDashboard = () => {
       setRecentActivities(data.recentActivity || []);
       setTopSellingItems(data.topItems || []);
       setAlerts(data.alerts || []);
+
+      // Debug log for active orders
+      console.log("Active Orders Data:", data.activeOrders);
 
       // Transform revenue chart data
       if (data.revenueChart?.chartData) {
@@ -111,6 +114,31 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  // Fetch chart data when dateRange changes
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const restaurantId = getRestaurantId();
+        const data = await dashboardApi.getRevenueChartData(restaurantId, dateRange);
+
+        if (data.chartData) {
+          const transformedData = data.chartData.map((item) => ({
+            name: item.period || item.date,
+            revenue: parseFloat(item.revenue) || 0,
+            orders: item.orderCount || 0,
+          }));
+          setRevenueData(transformedData);
+        }
+      } catch (err) {
+        console.error("Error fetching chart data:", err);
+      }
+    };
+
+    if (getRestaurantId()) {
+      fetchChartData();
+    }
+  }, [dateRange]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {

@@ -117,15 +117,19 @@ class ReportService {
                     menuItemId,
                     name: item.menuItem.name,
                     category: item.menuItem.category?.name || 'Uncategorized',
-                    image: item.menuItem.imageUrl,
+                    image: item.menuItem.image,
                     totalRevenue: 0,
                     totalQuantity: 0,
-                    unitPrice: parseFloat(item.menuItem.price)
+                    unitPrice: parseFloat(item.menuItem.price),
+                    orderCount: 0,
+                    revenue: 0
                 };
             }
 
             itemRevenue[menuItemId].totalRevenue += revenue;
             itemRevenue[menuItemId].totalQuantity += quantity;
+            itemRevenue[menuItemId].orderCount = itemRevenue[menuItemId].totalQuantity;
+            itemRevenue[menuItemId].revenue = itemRevenue[menuItemId].totalRevenue;
         });
 
         // Convert to array and sort by revenue
@@ -173,6 +177,11 @@ class ReportService {
             const date = bill.createdAt;
 
             switch (period) {
+                case 'hourly':
+                    const h = new Date(date);
+                    h.setMinutes(0, 0, 0);
+                    key = h.toISOString();
+                    break;
                 case 'daily':
                     key = date.toISOString().split('T')[0];
                     break;

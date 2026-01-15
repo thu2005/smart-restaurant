@@ -23,7 +23,7 @@ const MetricCard = ({
   };
 
   return (
-    <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm hover:shadow-warm-md transition-smooth">
+    <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm hover:shadow-warm-md transition-smooth relative overflow-hidden">
       <div className="flex items-start justify-between mb-3 md:mb-4">
         <div className="flex-1">
           <p className="text-sm md:text-base text-muted-foreground font-medium mb-1">
@@ -40,27 +40,19 @@ const MetricCard = ({
           <Icon name={icon} size={24} color={iconColor} />
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <div className={`flex items-center gap-1 ${getChangeColor()}`}>
-          <Icon name={getChangeIcon()} size={16} />
-          <span className="text-sm font-medium data-text">{change}</span>
+      <div className="flex items-center gap-2 mt-4 relative z-10">
+        <div className={`flex items-center gap-1 ${getChangeColor()} bg-current/10 px-2 py-0.5 rounded-full`}>
+          <Icon name={getChangeIcon()} size={14} className="stroke-2" />
+          <span className="text-xs font-bold data-text">{change}</span>
         </div>
-        <span className="text-sm text-muted-foreground">vs last period</span>
+        <span className="text-sm text-muted-foreground font-medium">vs last period</span>
       </div>
-      {trend && (
-        <div className="mt-3 md:mt-4 h-12 md:h-16">
-          <div className="flex items-end justify-between h-full gap-1">
-            {trend?.map((value, index) => (
-              <div
-                key={index}
-                className="flex-1 bg-primary/20 rounded-t transition-smooth hover:bg-primary/30"
-                style={{ height: `${value}%` }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+
+      {/* Decorative background accent */}
+      <div className="absolute -bottom-6 -right-6 opacity-[0.03] pointer-events-none transform rotate-12 z-0">
+        <Icon name={icon} size={120} color="currentColor" />
+      </div>
+    </div >
   );
 };
 
