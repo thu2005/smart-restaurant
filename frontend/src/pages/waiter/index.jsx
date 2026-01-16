@@ -144,8 +144,12 @@ const WaiterDashboard = () => {
     const handleAcceptOrder = async (order) => {
         try {
             await waiterService.acceptOrder(order.id);
-            // Automatically send to kitchen after accepting
-            await waiterService.sendToKitchen(order.id);
+            // DO NOT automatically send to kitchen immediately if the requirement is to stay as RECEIVED first.
+            // If the flow is "Accept" -> Order moves to Accepted tab -> Waiter reviews -> Waiter sends to kitchen manually.
+            // OR if "Accept" implies "Send to Kitchen" but status should show "RECEIVED" until Kitchen starts "PREPARING".
+            // However, the issue described is "Status is Received. Currently it becomes Preparing".
+            // This suggests `sendToKitchen` is updating status to PREPARING.
+            // For now, removing auto-send allows the order to sit in 'Accepted' state as 'RECEIVED'.
             fetchOrders();
         } catch (err) {
             console.error("Error accepting order:", err);

@@ -72,6 +72,8 @@ const OrderStatusTracking = () => {
 
     const mapItemStatus = (status) => {
       const s = status?.toLowerCase();
+      if (s === 'served') return 'served';
+      if (s === 'completed') return 'completed';
       if (s === 'ready') return 'ready';
       if (s === 'cooking') return 'cooking';
       return 'queued';

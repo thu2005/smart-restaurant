@@ -18,6 +18,12 @@ const OrderHeader = ({
 
   const getStatusConfig = () => {
     switch (status) {
+      case "submitted":
+        return {
+          label: "Order Submitted",
+          color: "bg-muted text-muted-foreground",
+          icon: "Send",
+        };
       case "received":
         return {
           label: "Order Received",
@@ -36,9 +42,27 @@ const OrderHeader = ({
           color: "bg-success text-success-foreground",
           icon: "CheckCircle",
         };
+      case "served":
+        return {
+          label: "Served",
+          color: "bg-primary text-primary-foreground shadow-sm",
+          icon: "Utensils",
+        };
+      case "payment_pending":
+        return {
+          label: "Processing Bill",
+          color: "bg-indigo-600 text-white",
+          icon: "Receipt",
+        };
+      case "completed":
+        return {
+          label: "Paid & Completed",
+          color: "bg-success text-success-foreground",
+          icon: "Award",
+        };
       default:
         return {
-          label: "Unknown",
+          label: "Status Pending",
           color: "bg-muted text-muted-foreground",
           icon: "HelpCircle",
         };

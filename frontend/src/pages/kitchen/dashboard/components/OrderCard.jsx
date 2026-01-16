@@ -163,109 +163,149 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
 
         {/* Order Items */}
         <div className="space-y-2 mb-3">
-          {order?.items?.map((item, index) => {
-            const itemStatus = item.itemStatus || 'queued';
-            const isItemLoading = loadingItems[item.id];
-            
-            // Adjust styling based on item status
-            let statusClasses = "";
-            if (itemStatus === 'cooking') statusClasses = "border-warning bg-warning/5";
-            if (itemStatus === 'ready') statusClasses = "border-success bg-success/5 opacity-80";
+          {/* Active items filter */}
+          {(() => {
+              const activeItems = order?.items?.filter(item => !['served', 'rejected', 'completed'].includes(item.itemStatus || 'queued')) || [];
+              if (activeItems.length === 0) {
+                 return <p className="text-sm text-muted-foreground text-center italic py-2">No pending items to prepare.</p>;
+              }
+              
+              return activeItems.map((item, index) => {
+                const itemStatus = item.itemStatus || 'queued';
+                const isItemLoading = loadingItems[item.id];
+                
+                // Adjust styling based on item status
+                let statusClasses = "";
+                if (itemStatus === 'cooking') statusClasses = "border-warning bg-warning/5";
+                if (itemStatus === 'ready') statusClasses = "border-success bg-success/5 opacity-80";
 
-            return (
-            <div
-              key={index}
-              className={`relative border border-border rounded-lg p-2 bg-gradient-to-br from-muted/30 to-muted/10 hover:shadow-sm transition-smooth ${statusClasses}`}
-            >
-              {/* Quantity Badge - Absolute Corner */}
-              <div className={`absolute top-0 left-0 px-2 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm z-10 
-                  ${
-                    itemStatus === 'cooking' ? 'bg-warning text-warning-foreground' :
-                    itemStatus === 'ready' ? 'bg-success text-success-foreground' :
-                    'bg-blue-600 text-white'
-                  }`}>
-                <span className="text-xs font-bold leading-none">
-                  {item?.quantity}×
-                </span>
-              </div>
-
-              {/* Content - Centered */}
-              <div className="flex flex-col items-center text-center pt-1 w-full">
-                {/* Item Name */}
-                <h4 className={`text-sm md:text-base font-bold text-foreground mb-1 leading-tight px-4 mt-2 ${itemStatus === 'ready' ? 'line-through decoration-success' : ''}`}>
-                  {item?.name}
-                </h4>
-
-                {/* Modifiers */}
-                {item?.modifiers && item?.modifiers?.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-1.5 mb-2">
-                    {item?.modifiers?.map((mod, modIndex) => {
-                      // Handle both string format and object format
-                      let modText = '';
-                      if (typeof mod === 'string') modText = mod;
-                      else if (typeof mod === 'object' && mod.name) {
-                        modText = mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
-                      }
-                      if (!modText) return null;
-                      
-                      return (
-                        <span key={modIndex} className="inline-flex items-center gap-1 px-2 py-0.5 bg-background border border-border rounded-full text-[10px] font-medium text-foreground shadow-sm">
-                          <Icon name="Plus" size={10} className="text-primary/70" />
-                          {modText}
-                        </span>
-                      );
-                    })}
+                return (
+                <div
+                  key={index}
+                  className={`relative border border-border rounded-lg p-2 bg-gradient-to-br from-muted/30 to-muted/10 hover:shadow-sm transition-smooth ${statusClasses}`}
+                >
+                  {/* Quantity Badge - Absolute Corner */}
+                  <div className={`absolute top-0 left-0 px-2 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm z-10 
+                      ${
+                        itemStatus === 'cooking' ? 'bg-warning text-warning-foreground' :
+                        itemStatus === 'ready' ? 'bg-success text-success-foreground' :
+                        'bg-blue-600 text-white'
+                      }`}>
+                    <span className="text-xs font-bold leading-none">
+                      {item?.quantity}×
+                    </span>
                   </div>
-                )}
 
-                {/* Special Instructions */}
-                {item?.specialInstructions && (
-                  <div className="w-full max-w-sm mx-auto flex items-center justify-center gap-2 p-1.5 bg-warning/10 border border-warning/30 rounded mb-2">
-                    <Icon name="MessageSquare" size={12} color="var(--color-warning)" className="flex-shrink-0" />
-                    <p className="text-xs text-foreground font-semibold leading-tight">
-                      {item?.specialInstructions}
-                    </p>
+                  {/* Content - Centered */}
+                  <div className="flex flex-col items-center text-center pt-1 w-full">
+                    {/* Item Name */}
+                    <h4 className={`text-sm md:text-base font-bold text-foreground mb-1 leading-tight px-4 mt-2 ${itemStatus === 'ready' ? 'line-through decoration-success' : ''}`}>
+                      {item?.name}
+                    </h4>
+
+                    {/* Modifiers */}
+                    {item?.modifiers && item?.modifiers?.length > 0 && (
+                      <div className="flex flex-wrap justify-center gap-1.5 mb-2">
+                        {item?.modifiers?.map((mod, modIndex) => {
+                          // Handle both string format and object format
+                          let modText = '';
+                          if (typeof mod === 'string') modText = mod;
+                          else if (typeof mod === 'object' && mod.name) {
+                            modText = mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+                          }
+                          if (!modText) return null;
+                          
+                          return (
+                            <span key={modIndex} className="inline-flex items-center gap-1 px-2 py-0.5 bg-background border border-border rounded-full text-[10px] font-medium text-foreground shadow-sm">
+                              <Icon name="Plus" size={10} className="text-primary/70" />
+                              {modText}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Special Instructions */}
+                    {item?.specialInstructions && (
+                      <div className="w-full max-w-sm mx-auto flex items-center justify-center gap-2 p-1.5 bg-warning/10 border border-warning/30 rounded mb-2">
+                        <Icon name="MessageSquare" size={12} color="var(--color-warning)" className="flex-shrink-0" />
+                        <p className="text-xs text-foreground font-semibold leading-tight">
+                          {item?.specialInstructions}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* ITEM ACTIONS - Compact */}
+                    {order.status !== 'ready' && (
+                        <div className="flex justify-center gap-2 mt-1">
+                            {/* Start Cooking Button */}
+                            {itemStatus === 'queued' && (
+                                <button 
+                                    onClick={() => handleItemAction(item.id, 'start')}
+                                    disabled={isItemLoading}
+                                    className="flex items-center gap-1 px-2 py-0.5 bg-warning/20 hover:bg-warning/30 text-warning text-[10px] font-bold uppercase rounded-full border border-warning/50 transition-colors disabled:opacity-50"
+                                >
+                                    <Icon name="Flame" size={12} className="text-warning" />
+                                    {isItemLoading ? '...' : 'Cook'}
+                                </button>
+                            )}
+                            
+                            {/* Done Button */}
+                            {(itemStatus === 'queued' || itemStatus === 'cooking') && (
+                                <button 
+                                    onClick={() => handleItemAction(item.id, 'done')}
+                                    disabled={isItemLoading}
+                                    className="flex items-center gap-1 px-2 py-0.5 bg-success/20 hover:bg-success/30 text-success text-[10px] font-bold uppercase rounded-full border border-success/50 transition-colors disabled:opacity-50"
+                                >
+                                    <Icon name="Check" size={12} className="text-success" />
+                                    {isItemLoading ? '...' : 'Done'}
+                                </button>
+                            )}
+                            
+                             {/* Done Badge */}
+                            {itemStatus === 'ready' && (
+                                 <span className="flex items-center gap-1 px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold uppercase rounded-full border border-success/20">
+                                    <Icon name="CheckCircle" size={12} /> Ready
+                                 </span>
+                            )}
+                        </div>
+                    )}
                   </div>
-                )}
+                </div>
+              );
+            });
+          })()}
 
-                {/* ITEM ACTIONS - Compact */}
-                {order.status !== 'ready' && (
-                    <div className="flex justify-center gap-2 mt-1">
-                        {/* Start Cooking Button */}
-                        {itemStatus === 'queued' && (
-                            <button 
-                                onClick={() => handleItemAction(item.id, 'start')}
-                                disabled={isItemLoading}
-                                className="flex items-center gap-1 px-2 py-0.5 bg-warning/20 hover:bg-warning/30 text-warning text-[10px] font-bold uppercase rounded-full border border-warning/50 transition-colors disabled:opacity-50"
-                            >
-                                <Icon name="Flame" size={12} className="text-warning" />
-                                {isItemLoading ? '...' : 'Cook'}
-                            </button>
-                        )}
-                        
-                        {/* Done Button */}
-                        {(itemStatus === 'queued' || itemStatus === 'cooking') && (
-                            <button 
-                                onClick={() => handleItemAction(item.id, 'done')}
-                                disabled={isItemLoading}
-                                className="flex items-center gap-1 px-2 py-0.5 bg-success/20 hover:bg-success/30 text-success text-[10px] font-bold uppercase rounded-full border border-success/50 transition-colors disabled:opacity-50"
-                            >
-                                <Icon name="Check" size={12} className="text-success" />
-                                {isItemLoading ? '...' : 'Done'}
-                            </button>
-                        )}
-                        
-                         {/* Done Badge */}
-                        {itemStatus === 'ready' && (
-                             <span className="flex items-center gap-1 px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold uppercase rounded-full border border-success/20">
-                                <Icon name="CheckCircle" size={12} /> Ready
-                             </span>
-                        )}
+          {/* Collapsible History Section */}
+          {(() => {
+              const historyItems = order?.items?.filter(item => ['served', 'rejected', 'completed'].includes(item.itemStatus)) || [];
+              if (historyItems.length > 0) {
+                  return (
+                    <div className="mt-4 pt-2 border-t border-border/50">
+                        <button 
+                            onClick={(e) => {
+                                const el = e.currentTarget.nextElementSibling;
+                                el.classList.toggle('hidden');
+                                e.currentTarget.textContent = el.classList.contains('hidden') ? `Show Completed Items (${historyItems.length})` : 'Hide Completed Items';
+                            }}
+                            className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors w-full text-center flex items-center justify-center gap-1 uppercase tracking-wide"
+                        >
+                           Show Completed Items ({historyItems.length})
+                        </button>
+                        <div className="hidden space-y-2 mt-2">
+                             {historyItems.map((item, idx) => (
+                                 <div key={`hist-k-${idx}`} className="flex items-center justify-between text-xs opacity-60 px-2">
+                                     <span className="font-bold">{item.quantity}x</span>
+                                     <span className="truncate flex-1 mx-2">{item.name}</span>
+                                     <span className="text-[9px] uppercase font-bold bg-muted px-1 rounded">{item.itemStatus}</span>
+                                 </div>
+                             ))}
+                        </div>
                     </div>
-                )}
-              </div>
-            </div>
-          )})}
+                  );
+              }
+              return null;
+          })()}
         </div>
 
         {/* Order Notes */}
@@ -318,7 +358,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                  iconPosition="left"
                  size="sm"
                  onClick={() => {
-                     const unready = order.items.filter(i => (i.itemStatus || 'queued') !== 'ready');
+                     const unready = order.items.filter(i => !['ready', 'served', 'completed', 'rejected'].includes(i.itemStatus || 'queued'));
                      if (unready.length > 0) {
                          setPendingUnreadyItems(unready);
                          setShowConfirmModal(true);
@@ -339,7 +379,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                iconPosition="left"
                size="sm"
                onClick={() => {
-                   const unready = order.items.filter(i => (i.itemStatus || 'queued') !== 'ready');
+                   const unready = order.items.filter(i => !['ready', 'served', 'completed', 'rejected'].includes(i.itemStatus || 'queued'));
                    if (unready.length > 0) {
                        setPendingUnreadyItems(unready);
                        setShowConfirmModal(true);

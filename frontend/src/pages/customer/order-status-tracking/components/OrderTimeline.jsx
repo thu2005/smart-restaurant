@@ -9,6 +9,7 @@ const OrderTimeline = ({
   currentTime,
 }) => {
   const getTimeRemaining = () => {
+    if (['served', 'payment_pending', 'completed'].includes(orderStatus)) return "Enjoy your meal!";
     const remaining = Math.floor((estimatedReadyTime - currentTime) / 1000);
     if (remaining <= 0) return "Ready now";
     const mins = Math.floor(remaining / 60);

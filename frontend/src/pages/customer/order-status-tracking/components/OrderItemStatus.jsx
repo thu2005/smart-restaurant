@@ -33,8 +33,9 @@ const OrderItemStatus = ({ item, currentTime }) => {
           progress: 100,
         };
       case "served":
+      case "completed":
         return {
-          label: "Served",
+          label: item?.status === "completed" ? "Completed" : "Served",
           color: "bg-muted",
           textColor: "text-muted-foreground",
           bgColor: "bg-muted/10",
