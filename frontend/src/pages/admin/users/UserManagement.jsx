@@ -138,16 +138,16 @@ const UserManagement = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-lg shadow mb-6">
+            <div className="bg-card p-4 rounded-lg shadow mb-6">
                 <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[200px]">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Filter by Role
                         </label>
                         <select
                             value={filterRole}
                             onChange={(e) => setFilterRole(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="">All Roles</option>
                             {isSuperAdmin ? (
@@ -162,13 +162,13 @@ const UserManagement = () => {
                         </select>
                     </div>
                     <div className="flex-1 min-w-[200px]">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Filter by Status
                         </label>
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="">All Status</option>
                             <option value="active">Active</option>
@@ -186,34 +186,34 @@ const UserManagement = () => {
             )}
 
             {/* Users Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-card rounded-lg shadow overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                        <thead className="border-b border-border">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     User
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     Role
                                 </th>
                                 {!isSuperAdmin && (
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                         Restaurant
                                     </th>
                                 )}
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     Status
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     Created
                                 </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     Actions
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="divide-y divide-border/50">
                             {users.length === 0 ? (
                                 <tr>
                                     <td colSpan={isSuperAdmin ? "5" : "6"} className="px-6 py-12 text-center text-gray-500">
@@ -223,7 +223,7 @@ const UserManagement = () => {
                                 </tr>
                             ) : (
                                 users.map((user) => (
-                                    <tr key={user.id} className="hover:bg-gray-50">
+                                    <tr key={user.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
@@ -240,10 +240,10 @@ const UserManagement = () => {
                                                     )}
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-sm font-medium text-foreground">
                                                         {user.fullName}
                                                     </div>
-                                                    <div className="text-sm text-gray-500">{user.email}</div>
+                                                    <div className="text-sm text-muted-foreground">{user.email}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -257,17 +257,16 @@ const UserManagement = () => {
                                             </span>
                                         </td>
                                         {!isSuperAdmin && (
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                                                 {user.restaurant?.name || "N/A"}
                                             </td>
                                         )}
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
-                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                    user.isActive
-                                                        ? "bg-green-100 text-green-800"
-                                                        : "bg-red-100 text-red-800"
-                                                }`}
+                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isActive
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-red-100 text-red-800"
+                                                    }`}
                                             >
                                                 {user.isActive ? "Active" : "Inactive"}
                                             </span>
@@ -286,11 +285,10 @@ const UserManagement = () => {
                                                 </Link>
                                                 <button
                                                     onClick={() => handleToggleStatus(user.id, user.isActive, user.fullName)}
-                                                    className={`${
-                                                        user.isActive
-                                                            ? "text-orange-600 hover:text-orange-900"
-                                                            : "text-green-600 hover:text-green-900"
-                                                    }`}
+                                                    className={`${user.isActive
+                                                        ? "text-orange-600 hover:text-orange-900"
+                                                        : "text-green-600 hover:text-green-900"
+                                                        }`}
                                                     title={user.isActive ? "Deactivate" : "Activate"}
                                                 >
                                                     <Icon

@@ -145,7 +145,7 @@ const MenuItemList = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg border shadow-sm flex flex-col md:flex-row gap-4">
+      <div className="bg-card p-4 rounded-lg border shadow-sm flex flex-col md:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <Input
             placeholder="Search items..."
@@ -197,35 +197,35 @@ const MenuItemList = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+            <thead className="border-b border-border">
               <tr>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                   Name
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                   Category
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                   Price
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap hidden xl:table-cell">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap hidden xl:table-cell">
                   Created Date
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                   Status
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap hidden lg:table-cell">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap hidden lg:table-cell">
                   Tags
                 </th>
-                <th className="px-4 py-3 font-medium text-right whitespace-nowrap">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right whitespace-nowrap">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-border/50">
               {loading ? (
                 <tr>
                   <td
@@ -262,35 +262,34 @@ const MenuItemList = () => {
                 </tr>
               ) : (
                 items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr key={item.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                     <td
-                      className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
+                      className="px-4 py-4 font-medium text-foreground whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
                       title={item.name}
                     >
                       {item.name}
                     </td>
-                    <td className="px-4 py-4 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">
                       {item.category_name || "-"}
                     </td>
-                    <td className="px-4 py-4 font-medium whitespace-nowrap">
+                    <td className="px-4 py-4 font-semibold text-foreground whitespace-nowrap">
                       ${Number(item.price).toFixed(2)}
                     </td>
-                    <td className="px-4 py-4 text-gray-500 whitespace-nowrap hidden xl:table-cell">
+                    <td className="px-4 py-4 text-muted-foreground whitespace-nowrap hidden xl:table-cell">
                       {item.created_at
                         ? new Date(item.created_at).toLocaleDateString()
                         : "-"}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          item.status === "available"
-                            ? "bg-green-100 text-green-800"
-                            : item.status === "low_stock"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.status === "available"
+                          ? "bg-green-100 text-green-800"
+                          : item.status === "low_stock"
                             ? "bg-yellow-100 text-yellow-800"
                             : item.status === "sold_out"
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
+                              ? "bg-orange-100 text-orange-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
                       >
                         {item.status.replace("_", " ")}
                       </span>
@@ -360,7 +359,8 @@ const MenuItemList = () => {
       />
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm &&
+      {
+        deleteConfirm &&
         createPortal(
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
@@ -380,8 +380,9 @@ const MenuItemList = () => {
             </div>
           </div>,
           document.body
-        )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

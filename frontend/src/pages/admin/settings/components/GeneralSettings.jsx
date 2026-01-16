@@ -25,23 +25,21 @@ const GeneralSettings = () => {
                     </p>
                     <div className="flex gap-3">
                         <button
-                            onClick={() => !isDark && toggleTheme()}
+                            onClick={() => isDark && toggleTheme()}
                             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${!isDark
-                                    ? 'border-primary bg-primary/10 text-primary'
-                                    : 'border-border bg-background text-foreground hover:border-primary/50'
+                                ? 'border-primary bg-primary/10 text-primary'
+                                : 'border-border bg-background text-foreground hover:border-primary/50'
                                 }`}
                         >
-                            <span className="text-2xl">☀️</span>
                             <span className="font-medium">{t('settings.general.theme.light')}</span>
                         </button>
                         <button
-                            onClick={() => isDark && toggleTheme()}
+                            onClick={() => !isDark && toggleTheme()}
                             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${isDark
-                                    ? 'border-primary bg-primary/10 text-primary'
-                                    : 'border-border bg-background text-foreground hover:border-primary/50'
+                                ? 'border-primary bg-primary/10 text-primary'
+                                : 'border-border bg-background text-foreground hover:border-primary/50'
                                 }`}
                         >
-                            <span className="text-2xl">🌙</span>
                             <span className="font-medium">{t('settings.general.theme.dark')}</span>
                         </button>
                     </div>
@@ -59,8 +57,8 @@ const GeneralSettings = () => {
                         <button
                             onClick={() => changeLanguage('en')}
                             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${language === 'en'
-                                    ? 'border-primary bg-primary/10 text-primary'
-                                    : 'border-border bg-background text-foreground hover:border-primary/50'
+                                ? 'border-primary bg-primary/10 text-primary'
+                                : 'border-border bg-background text-foreground hover:border-primary/50'
                                 }`}
                         >
                             <span className="text-2xl">🇬🇧</span>
@@ -69,8 +67,8 @@ const GeneralSettings = () => {
                         <button
                             onClick={() => changeLanguage('vi')}
                             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${language === 'vi'
-                                    ? 'border-primary bg-primary/10 text-primary'
-                                    : 'border-border bg-background text-foreground hover:border-primary/50'
+                                ? 'border-primary bg-primary/10 text-primary'
+                                : 'border-border bg-background text-foreground hover:border-primary/50'
                                 }`}
                         >
                             <span className="text-2xl">🇻🇳</span>

@@ -126,25 +126,25 @@ const CategoryList = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border shadow-sm">
+      <div className="bg-card rounded-lg border shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+            <thead className="border-b border-border">
               <tr>
-                <th className="px-4 py-3 font-medium">Order</th>
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium hidden lg:table-cell">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Order</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">
                   Description
                 </th>
-                <th className="px-4 py-3 font-medium hidden xl:table-cell">
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden xl:table-cell">
                   Created Date
                 </th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Items</th>
-                <th className="px-4 py-3 font-medium text-right">Actions</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Items</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-border/50">
               {loading ? (
                 <tr>
                   <td
@@ -165,17 +165,17 @@ const CategoryList = () => {
                 </tr>
               ) : (
                 categories.map((category) => (
-                  <tr key={category.id} className="hover:bg-gray-50">
+                  <tr key={category.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-4 font-medium">
                       {category.display_order}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-900">
+                    <td className="px-4 py-4 font-medium text-foreground">
                       {category.name}
                     </td>
-                    <td className="px-4 py-4 text-gray-500 truncate max-w-xs hidden lg:table-cell">
+                    <td className="px-4 py-4 text-muted-foreground truncate max-w-xs hidden lg:table-cell">
                       {category.description || "-"}
                     </td>
-                    <td className="px-4 py-4 text-gray-500 hidden xl:table-cell">
+                    <td className="px-4 py-4 text-muted-foreground hidden xl:table-cell">
                       {category.created_at
                         ? new Date(category.created_at).toLocaleDateString()
                         : "-"}
@@ -183,14 +183,14 @@ const CategoryList = () => {
                     <td className="px-4 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${category.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
                           }`}
                       >
                         {category.status}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-gray-500">
+                    <td className="px-4 py-4 text-muted-foreground">
                       {category.items_count || 0}
                     </td>
                     <td className="px-4 py-4 text-right space-x-2">

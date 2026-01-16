@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 // Create axios instance with default config
 const api = axios.create({
@@ -41,14 +41,14 @@ const orderService = {
           quantity: item.quantity,
           modifiers: Array.isArray(item.modifiers)
             ? item.modifiers.map((m) => {
-                if (typeof m === 'object') {
-                  return {
-                    id: m.id,
-                    quantity: m.quantity || 1
-                  };
-                }
-                return { id: m, quantity: 1 };
-              })
+              if (typeof m === 'object') {
+                return {
+                  id: m.id,
+                  quantity: m.quantity || 1
+                };
+              }
+              return { id: m, quantity: 1 };
+            })
             : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
@@ -210,14 +210,14 @@ const orderService = {
           quantity: item.quantity,
           modifiers: Array.isArray(item.modifiers)
             ? item.modifiers.map((m) => {
-                if (typeof m === 'object') {
-                  return {
-                    id: m.id,
-                    quantity: m.quantity || 1
-                  };
-                }
-                return { id: m, quantity: 1 };
-              })
+              if (typeof m === 'object') {
+                return {
+                  id: m.id,
+                  quantity: m.quantity || 1
+                };
+              }
+              return { id: m, quantity: 1 };
+            })
             : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),

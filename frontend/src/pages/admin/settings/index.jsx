@@ -66,13 +66,13 @@ const Settings = () => {
     }
 
     const sections = [
-        { id: 'general', label: t('settings.general.title'), icon: '⚙️' },
-        { id: 'account', label: t('settings.account.title'), icon: '👤' },
+        { id: 'general', label: t('settings.general.title') },
+        { id: 'account', label: t('settings.account.title') },
         ...(currentUser?.role === 'ADMIN' ? [
-            { id: 'restaurant', label: t('settings.restaurant.title'), icon: '🏪' }
+            { id: 'restaurant', label: t('settings.restaurant.title') }
         ] : []),
-        { id: 'notifications', label: t('settings.notifications.title'), icon: '🔔' },
-        { id: 'advanced', label: t('settings.advanced.title'), icon: '🔧' },
+        { id: 'notifications', label: t('settings.notifications.title') },
+        { id: 'advanced', label: t('settings.advanced.title') },
     ];
 
     return (
@@ -97,8 +97,8 @@ const Settings = () => {
                                     key={section.id}
                                     onClick={() => setActiveSection(section.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-left transition-all ${activeSection === section.id
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'text-foreground hover:bg-muted'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'text-foreground hover:bg-muted'
                                         }`}
                                 >
                                     <span className="text-xl">{section.icon}</span>

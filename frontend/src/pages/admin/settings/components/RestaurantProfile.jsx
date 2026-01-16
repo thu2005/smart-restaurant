@@ -107,8 +107,8 @@ const RestaurantProfile = ({ restaurant, onUpdate }) => {
             {message && (
                 <div
                     className={`mb-4 p-4 rounded-lg ${message.type === 'success'
-                            ? 'bg-success/10 text-success border border-success/20'
-                            : 'bg-error/10 text-error border border-error/20'
+                        ? 'bg-success/10 text-success border border-success/20'
+                        : 'bg-error/10 text-error border border-error/20'
                         }`}
                 >
                     {message.text}
