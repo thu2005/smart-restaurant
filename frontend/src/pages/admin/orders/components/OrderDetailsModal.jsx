@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
 const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
+    const { t } = useTranslation();
     const [isUpdating, setIsUpdating] = useState(false);
 
     const getStatusColor = (status) => {
@@ -86,7 +88,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                 <div className="sticky top-0 bg-card border-b border-border p-6 flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-foreground">
-                            Order Details
+                            {t('admin.orders.details.title')}
                         </h2>
                         <p className="text-sm text-muted-foreground mt-1">
                             Order #{order.id?.slice(-8) || "N/A"}
@@ -107,7 +109,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                         <div className="space-y-3">
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">
-                                    Status
+                                    {t('admin.orders.details.status')}
                                 </label>
                                 <div className="mt-1">
                                     <span
@@ -116,13 +118,13 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                                         )}`}
                                     >
                                         <Icon name={getStatusIcon(order.status)} size={16} />
-                                        {order.status}
+                                        {t(`admin.orders.status.${order.status.toLowerCase()}`)}
                                     </span>
                                 </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">
-                                    Table Number
+                                    {t('admin.orders.details.tableNumber')}
                                 </label>
                                 <p className="text-foreground font-medium mt-1">
                                     {order.table?.tableNumber || "N/A"}
@@ -130,7 +132,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">
-                                    Order Date
+                                    {t('admin.orders.details.orderDate')}
                                 </label>
                                 <p className="text-foreground mt-1">
                                     {formatDate(order.createdAt)}
@@ -142,7 +144,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                             {order.customerName && (
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">
-                                        Customer Name
+                                        {t('admin.orders.details.customerName')}
                                     </label>
                                     <p className="text-foreground mt-1">
                                         {order.customerName}
@@ -152,7 +154,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                             {order.customerPhone && (
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">
-                                        Customer Phone
+                                        {t('admin.orders.details.customerPhone')}
                                     </label>
                                     <p className="text-foreground mt-1">
                                         {order.customerPhone}
@@ -162,7 +164,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                             {order.specialInstructions && (
                                 <div>
                                     <label className="text-sm font-medium text-muted-foreground">
-                                        Special Instructions
+                                        {t('admin.orders.details.specialInstructions')}
                                     </label>
                                     <p className="text-foreground mt-1 text-sm">
                                         {order.specialInstructions}
@@ -175,7 +177,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                     {/* Order Items Section */}
                     <div className="border-t border-border pt-6">
                         <h3 className="text-lg font-semibold text-foreground mb-4">
-                            Order Items
+                            {t('admin.orders.details.orderItems')}
                         </h3>
                         <div className="space-y-3">
                             {order.orderItems?.map((item, index) => (
@@ -212,7 +214,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                                         {item.modifiers && item.modifiers.length > 0 && (
                                             <div className="mt-2 space-y-1">
                                                 <p className="text-xs font-medium text-muted-foreground">
-                                                    Modifiers:
+                                                    {t('admin.orders.details.modifiers')}
                                                 </p>
                                                 <div className="flex flex-wrap gap-1">
                                                     {item.modifiers.map((mod, idx) => (
@@ -245,23 +247,23 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                     <div className="border-t border-border pt-6">
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-muted-foreground">
-                                <span>Subtotal</span>
+                                <span>{t('admin.orders.details.subtotal')}</span>
                                 <span>{formatCurrency(order.subtotal || order.total)}</span>
                             </div>
                             {order.tax > 0 && (
                                 <div className="flex items-center justify-between text-muted-foreground">
-                                    <span>Tax</span>
+                                    <span>{t('admin.orders.details.tax')}</span>
                                     <span>{formatCurrency(order.tax)}</span>
                                 </div>
                             )}
                             {order.discount > 0 && (
                                 <div className="flex items-center justify-between text-success">
-                                    <span>Discount</span>
+                                    <span>{t('admin.orders.details.discount')}</span>
                                     <span>-{formatCurrency(order.discount)}</span>
                                 </div>
                             )}
                             <div className="flex items-center justify-between text-xl font-bold text-foreground pt-2 border-t border-border">
-                                <span>Total</span>
+                                <span>{t('admin.orders.details.total')}</span>
                                 <span>{formatCurrency(order.total)}</span>
                             </div>
                         </div>
@@ -271,7 +273,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                     {nextStatusOptions.length > 0 && (
                         <div className="border-t border-border pt-6">
                             <h3 className="text-lg font-semibold text-foreground mb-3">
-                                Update Status
+                                {t('admin.orders.details.updateStatus')}
                             </h3>
                             <div className="flex flex-wrap gap-2">
                                 {nextStatusOptions.map((status) => (
@@ -294,8 +296,8 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                                         }
                                     >
                                         {status === "CANCELLED"
-                                            ? "Cancel Order"
-                                            : `Mark as ${status}`}
+                                            ? t('admin.orders.actions.cancelOrder')
+                                            : t('admin.orders.actions.markAs', { status: status.charAt(0).toUpperCase() + status.slice(1).toLowerCase() })}
                                     </Button>
                                 ))}
                             </div>
@@ -306,7 +308,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                 {/* Footer */}
                 <div className="sticky bottom-0 bg-card border-t border-border p-6 flex justify-end gap-3">
                     <Button variant="outline" onClick={onClose} disabled={isUpdating}>
-                        Close
+                        {t('admin.orders.details.close')}
                     </Button>
                 </div>
             </div>

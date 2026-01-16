@@ -298,6 +298,181 @@
                 "empty": "Không tìm thấy danh mục nào."
             }
         },
+        "orders": {
+            "title": "Đơn Hàng",
+            "subtitle": "Quản lý và theo dõi đơn hàng nhà hàng",
+            "refresh": "Làm Mới",
+            "filters": {
+                "allStatuses": "Tất Cả Trạng Thái"
+            },
+            "status": {
+                "pending": "Chờ Xử Lý",
+                "received": "Đã Nhận",
+                "preparing": "Đang Chuẩn Bị",
+                "ready": "Sẵn Sàng",
+                "served": "Đã Phục Vụ",
+                "completed": "Hoàn Thành",
+                "cancelled": "Đã Hủy"
+            },
+            "empty": "Không có đơn hàng nào",
+            "emptyFilter": "Không có đơn hàng với trạng thái: {{status}}",
+            "emptyDesc": "Đơn hàng sẽ xuất hiện ở đây khi khách hàng đặt món",
+            "card": {
+                "orderId": "Đơn #{{id}}",
+                "table": "Bàn: {{number}}",
+                "items": "Món",
+                "more": "+{{count}} thêm"
+            },
+            "actions": {
+                "view": "Xem",
+                "markReceived": "Đã Nhận Đơn",
+                "startPreparing": "Bắt Đầu Nấu",
+                "markReady": "Báo Sẵn Sàng",
+                "markServed": "Đã Phục Vụ",
+                "completeOrder": "Hoàn Thành Đơn",
+                "cancelOrder": "Hủy Đơn",
+                "markAs": "Đánh dấu là {{status}}"
+            },
+            "details": {
+                "title": "Chi Tiết Đơn Hàng",
+                "subtitle": "Đơn #{{id}}",
+                "status": "Trạng Thái",
+                "tableNumber": "Số Bàn",
+                "orderDate": "Ngày Đặt",
+                "customerName": "Tên Khách Hàng",
+                "customerPhone": "SĐT Khách Hàng",
+                "specialInstructions": "Ghi Chú Đặc Biệt",
+                "orderItems": "Món Đã Đặt",
+                "modifiers": "Tùy chọn:",
+                "subtotal": "Tạm Tính",
+                "tax": "Thuế",
+                "discount": "Giảm Giá",
+                "total": "Tổng Cộng",
+                "updateStatus": "Cập Nhật Trạng Thái",
+                "close": "Đóng"
+            },
+            "messages": {
+                "statusUpdated": "Cập nhật trạng thái đơn hàng thành công",
+                "updateError": "Không thể cập nhật trạng thái đơn hàng",
+                "loadError": "Không thể tải danh sách đơn hàng",
+                "noRestaurant": "Không tìm thấy ID nhà hàng. Vui lòng đăng nhập."
+            }
+        },
+        "tables": {
+            "title": "Quản Lý Bàn",
+            "actions": {
+                "regenAll": "Tạo Lại Tất Cả",
+                "zip": "ZIP",
+                "pdf": "PDF",
+                "printPreview": "In / Xem Trước",
+                "addTable": "Thêm Bàn",
+                "refresh": "Làm Mới",
+                "downloadPNG": "Tải PNG",
+                "downloadPDF": "Tải PDF",
+                "generateQR": "Tạo QR",
+                "viewQR": "Xem QR",
+                "print": "In",
+                "edit": "Sửa",
+                "activate": "Kích Hoạt",
+                "deactivate": "Vô Hiệu Hóa",
+                "confirmRegen": "Xác Nhận Tạo Lại",
+                "cancel": "Hủy"
+            },
+            "filters": {
+                "allStatus": "Tất Cả Trạng Thái",
+                "sortByTableNumber": "Sắp xếp theo Số Bàn",
+                "sortByCapacity": "Sắp xếp theo Sức Chứa",
+                "sortByCreated": "Sắp xếp theo Ngày Tạo"
+            },
+            "empty": {
+                "title": "Không Tìm Thấy Bàn",
+                "descFilter": "Hãy thử điều chỉnh bộ lọc hoặc tạo bàn mới.",
+                "descEmpty": "Bắt đầu bằng cách tạo bàn đầu tiên của bạn.",
+                "createFirst": "Tạo Bàn Đầu Tiên",
+                "summary": "Hiển thị {{count}} bàn",
+                "summaryPlural": "Hiển thị {{count}} bàn"
+            },
+            "card": {
+                "qrReady": "Đã Có QR",
+                "capacityLabel": "Sức chứa",
+                "capacityUnit": "người",
+                "created": "Đã tạo: {{date}}"
+            },
+            "form": {
+                "titleNew": "Tạo Bàn Mới",
+                "titleEdit": "Sửa Bàn",
+                "labels": {
+                    "tableNumber": "Số Bàn",
+                    "capacity": "Sức Chứa (1-20)",
+                    "location": "Vị Trí/Khu Vực",
+                    "status": "Trạng Thái",
+                    "customLocation": "Khác (Tùy Chỉnh)"
+                },
+                "placeholders": {
+                    "tableNumber": "Ví dụ: A1, T-01, Bàn 1",
+                    "capacity": "Số lượng người",
+                    "customLocation": "Nhập vị trí tùy chỉnh",
+                    "selectLocation": "Chọn vị trí"
+                },
+                "validation": {
+                    "tableNumberRequired": "Số bàn là bắt buộc",
+                    "capacityRequired": "Sức chứa là bắt buộc",
+                    "capacityRange": "Sức chứa phải từ 1 đến 20",
+                    "locationRequired": "Vị trí là bắt buộc"
+                },
+                "submit": {
+                    "create": "Tạo Bàn",
+                    "update": "Cập Nhật Bàn",
+                    "saving": "Đang Lưu..."
+                }
+            },
+            "qr": {
+                "noQRTitle": "Chưa Có Mã QR",
+                "noQRDesc": "Tạo mã QR duy nhất cho Bàn {{number}}",
+                "generateBtn": "Tạo Mã QR",
+                "previewTitle": "Xem Trước Mã QR - Bàn {{number}}",
+                "infoTitle": "Thông Tin Bàn",
+                "tableName": "Tên Bàn:",
+                "capacity": "Sức Chứa:",
+                "seats": "{{count}} ghế",
+                "location": "Vị Trí:",
+                "qrCreated": "QR Được Tạo:",
+                "regenerate": "Tạo Lại"
+            },
+            "warning": {
+                "title": "Cảnh Báo Quan Trọng",
+                "message": "Bạn có chắc chắn muốn tạo lại mã QR cho TẤT CẢ các bàn không?",
+                "list": {
+                    "stopWorking": "Tất cả các mã QR hiện có sẽ ngừng hoạt động ngay lập tức.",
+                    "noOrders": "Khách hàng sử dụng mã QR cũ sẽ không thể đặt món được nữa.",
+                    "reprint": "Bạn sẽ cần in lại và thay thế tất cả các mã QR mới."
+                }
+            },
+            "locations": {
+                "Ground Floor": "Tầng Trệt",
+                "Main Hall": "Sảnh Chính",
+                "VIP Section": "Khu VIP",
+                "Outdoor Terrace": "Sân Thượng Ngoài Trời",
+                "Bar Area": "Khu Quầy Bar",
+                "Private Room": "Phòng Riêng",
+                "Garden": "Sân Vườn"
+            },
+            "status": {
+                "AVAILABLE": "Trống",
+                "OCCUPIED": "Đang Có Khách",
+                "RESERVED": "Đã Đặt",
+                "MAINTENANCE": "Bảo Trì"
+            },
+            "errors": {
+                "customerAccess": "Khách hàng không có quyền truy cập vào bàn nhà hàng.",
+                "fetchFailed": "Không thể tải danh sách bàn",
+                "toggleFailed": "Không thể thay đổi trạng thái bàn",
+                "generateFailed": "Không thể tạo mã QR",
+                "regenerateFailed": "Không thể tạo lại mã QR",
+                "downloadFailed": "Tải xuống thất bại. Vui lòng thử lại.",
+                "saveFailed": "Không thể lưu bàn"
+            }
+        },
         "users": {
             "title": "Quản Lý Nhân Viên",
             "titleAdmin": "Quản Lý Admin",
@@ -309,18 +484,7 @@
             "filters": {
                 "filterByRole": "Lọc theo Vai Trò",
                 "filterByStatus": "Lọc theo Trạng Thái",
-                "allRoles": "Tất Cả Vai Trò",
-                "allStatus": "Tất Cả Trạng Thái",
-                "active": "Đang Hoạt Động",
-                "inactive": "Ngừng Hoạt Động"
-            },
-            "table": {
-                "user": "Người Dùng",
-                "role": "Vai Trò",
-                "restaurant": "Nhà Hàng",
-                "status": "Trạng Thái",
-                "created": "Ngày Tạo",
-                "actions": "Thao Tác"
+                "allRoles": "Tất Cả Vai Trò"
             },
             "roles": {
                 "super_admin": "Quản Trị Viên Cấp Cao",

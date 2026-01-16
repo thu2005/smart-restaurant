@@ -1,4 +1,5 @@
 export const LOCATIONS = [
+    'Ground Floor',
     'Main Hall',
     'VIP Section',
     'Outdoor Terrace',

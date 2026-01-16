@@ -298,6 +298,181 @@
                 "empty": "No categories found."
             }
         },
+        "orders": {
+            "title": "Orders",
+            "subtitle": "Manage and track restaurant orders",
+            "refresh": "Refresh",
+            "filters": {
+                "allStatuses": "All Statuses"
+            },
+            "status": {
+                "pending": "Pending",
+                "received": "Received",
+                "preparing": "Preparing",
+                "ready": "Ready",
+                "served": "Served",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "empty": "No orders found",
+            "emptyFilter": "No orders with status: {{status}}",
+            "emptyDesc": "Orders will appear here once customers place them",
+            "card": {
+                "orderId": "Order #{{id}}",
+                "table": "Table: {{number}}",
+                "items": "Items",
+                "more": "+{{count}} more"
+            },
+            "actions": {
+                "view": "View",
+                "markReceived": "Mark Received",
+                "startPreparing": "Start Preparing",
+                "markReady": "Mark Ready",
+                "markServed": "Mark Served",
+                "completeOrder": "Complete Order",
+                "cancelOrder": "Cancel Order",
+                "markAs": "Mark as {{status}}"
+            },
+            "details": {
+                "title": "Order Details",
+                "subtitle": "Order #{{id}}",
+                "status": "Status",
+                "tableNumber": "Table Number",
+                "orderDate": "Order Date",
+                "customerName": "Customer Name",
+                "customerPhone": "Customer Phone",
+                "specialInstructions": "Special Instructions",
+                "orderItems": "Order Items",
+                "modifiers": "Modifiers:",
+                "subtotal": "Subtotal",
+                "tax": "Tax",
+                "discount": "Discount",
+                "total": "Total",
+                "updateStatus": "Update Status",
+                "close": "Close"
+            },
+            "messages": {
+                "statusUpdated": "Order status updated",
+                "updateError": "Failed to update order status",
+                "loadError": "Failed to load orders",
+                "noRestaurant": "Restaurant ID not found. Please log in."
+            }
+        },
+        "tables": {
+            "title": "Table Management",
+            "actions": {
+                "regenAll": "Regen All",
+                "zip": "ZIP",
+                "pdf": "PDF",
+                "printPreview": "Print / Preview",
+                "addTable": "Add Table",
+                "refresh": "Refresh",
+                "downloadPNG": "Download PNG",
+                "downloadPDF": "Download PDF",
+                "generateQR": "Generate QR",
+                "viewQR": "View QR",
+                "print": "Print",
+                "edit": "Edit",
+                "activate": "Activate",
+                "deactivate": "Deactivate",
+                "confirmRegen": "Confirm Regeneration",
+                "cancel": "Cancel"
+            },
+            "filters": {
+                "allStatus": "All Status",
+                "sortByTableNumber": "Sort by Table Number",
+                "sortByCapacity": "Sort by Capacity",
+                "sortByCreated": "Sort by Created"
+            },
+            "empty": {
+                "title": "No Tables Found",
+                "descFilter": "Try adjusting your filters or create a new table.",
+                "descEmpty": "Get started by creating your first table.",
+                "createFirst": "Create First Table",
+                "summary": "Showing {{count}} table",
+                "summaryPlural": "Showing {{count}} tables"
+            },
+            "card": {
+                "qrReady": "QR Ready",
+                "capacityLabel": "Capacity",
+                "capacityUnit": "persons",
+                "created": "Created: {{date}}"
+            },
+            "form": {
+                "titleNew": "Create New Table",
+                "titleEdit": "Edit Table",
+                "labels": {
+                    "tableNumber": "Table Number",
+                    "capacity": "Capacity (1-20)",
+                    "location": "Location/Zone",
+                    "status": "Status",
+                    "customLocation": "Other (Custom)"
+                },
+                "placeholders": {
+                    "tableNumber": "e.g., A1, T-01, Table 1",
+                    "capacity": "Number of persons",
+                    "customLocation": "Enter custom location",
+                    "selectLocation": "Select a location"
+                },
+                "validation": {
+                    "tableNumberRequired": "Table number is required",
+                    "capacityRequired": "Capacity is required",
+                    "capacityRange": "Capacity must be between 1 and 20",
+                    "locationRequired": "Location is required"
+                },
+                "submit": {
+                    "create": "Create Table",
+                    "update": "Update Table",
+                    "saving": "Saving..."
+                }
+            },
+            "qr": {
+                "noQRTitle": "No QR Code Generated Yet",
+                "noQRDesc": "Generate a unique QR code for Table {{number}}",
+                "generateBtn": "Generate QR Code",
+                "previewTitle": "QR Code Preview - Table {{number}}",
+                "infoTitle": "Table Information",
+                "tableName": "Table Name:",
+                "capacity": "Capacity:",
+                "seats": "{{count}} seats",
+                "location": "Location:",
+                "qrCreated": "QR Created:",
+                "regenerate": "Regenerate"
+            },
+            "warning": {
+                "title": "Important Warning",
+                "message": "Are you sure you want to regenerate QR codes for ALL tables?",
+                "list": {
+                    "stopWorking": "All existing QR codes will stop working immediately.",
+                    "noOrders": "Customers using old QR codes will no longer be able to place orders.",
+                    "reprint": "You will need to reprint and replace all new QR codes."
+                }
+            },
+            "locations": {
+                "Ground Floor": "Ground Floor",
+                "Main Hall": "Main Hall",
+                "VIP Section": "VIP Section",
+                "Outdoor Terrace": "Outdoor Terrace",
+                "Bar Area": "Bar Area",
+                "Private Room": "Private Room",
+                "Garden": "Garden"
+            },
+            "status": {
+                "AVAILABLE": "Available",
+                "OCCUPIED": "Occupied",
+                "RESERVED": "Reserved",
+                "MAINTENANCE": "Maintenance"
+            },
+            "errors": {
+                "customerAccess": "Customers do not have access to restaurant tables.",
+                "fetchFailed": "Failed to fetch tables",
+                "toggleFailed": "Failed to toggle table status",
+                "generateFailed": "Failed to generate QR code",
+                "regenerateFailed": "Failed to regenerate QR code",
+                "downloadFailed": "Download failed. Please try again.",
+                "saveFailed": "Failed to save table"
+            }
+        },
         "users": {
             "title": "Staff Management",
             "titleAdmin": "Admin Management",
@@ -309,18 +484,7 @@
             "filters": {
                 "filterByRole": "Filter by Role",
                 "filterByStatus": "Filter by Status",
-                "allRoles": "All Roles",
-                "allStatus": "All Status",
-                "active": "Active",
-                "inactive": "Inactive"
-            },
-            "table": {
-                "user": "User",
-                "role": "Role",
-                "restaurant": "Restaurant",
-                "status": "Status",
-                "created": "Created",
-                "actions": "Actions"
+                "allRoles": "All Roles"
             },
             "roles": {
                 "super_admin": "Super Admin",
