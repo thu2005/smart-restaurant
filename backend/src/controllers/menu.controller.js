@@ -308,3 +308,68 @@ exports.attachModifierGroupToItem = async (req, res, next) => {
     next(error);
   }
 };
+
+// --- Nutritional Information ---
+exports.getNutritionalInfo = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await menuService.getNutritionalInfo(id);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateNutritionalInfo = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await menuService.updateNutritionalInfo(id, req.body);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --- Related Items ---
+exports.getRelatedItems = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { limit } = req.query;
+    const items = await menuService.getRelatedItems(id, limit ? parseInt(limit) : 6);
+    res.status(200).json({ success: true, data: items });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --- Popular Items ---
+exports.getPopularItems = async (req, res, next) => {
+  try {
+    const { restaurantId } = req.params;
+    const { limit } = req.query;
+    const items = await menuService.getPopularItems(restaurantId, limit ? parseInt(limit) : 10);
+    res.status(200).json({ success: true, data: items });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --- Items by Category ---
+exports.getItemsByCategory = async (req, res, next) => {
+  try {
+    const { restaurantId, categoryId } = req.params;
+    const { page, limit, sortBy } = req.query;
+    const result = await menuService.getItemsByCategory(
+      restaurantId,
+      categoryId,
+      {
+        page: page ? parseInt(page) : 1,
+        limit: limit ? parseInt(limit) : 20,
+        sortBy,
+      }
+    );
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
