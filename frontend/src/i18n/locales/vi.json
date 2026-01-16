@@ -1,5 +1,7 @@
 {
     "common": {
+        "loading": "Đang tải...",
+        "error": "Đã xảy ra lỗi",
         "actions": {
             "save": "Lưu",
             "cancel": "Hủy",
@@ -29,7 +31,9 @@
             "dismiss": "Bỏ Qua",
             "showLess": "Thu Gọn",
             "processing": "Đang Xử Lý...",
-            "deleting": "Đang Xóa..."
+            "deleting": "Đang Xóa...",
+            "activate": "Kích hoạt",
+            "deactivate": "Vô hiệu hóa"
         },
         "status": {
             "active": "Hoạt Động",
@@ -48,6 +52,7 @@
             "error": "Đã xảy ra lỗi",
             "success": "Thành công",
             "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+            "deleteConfirm": "Bạn có chắc chắn muốn xóa {{item}}?",
             "cannotUndo": "Hành động này không thể hoàn tác",
             "deleteSuccess": "Xóa thành công",
             "deleteError": "Không thể xóa",
@@ -56,10 +61,12 @@
             "createSuccess": "Tạo thành công",
             "createError": "Không thể tạo",
             "saveSuccess": "Lưu thành công",
-            "saveError": "Không thể lưu"
+            "saveError": "Không thể lưu",
+            "requiredFields": "Vui lòng điền vào tất cả các trường bắt buộc"
         },
         "pagination": {
             "showingPage": "Đang hiển thị trang",
+            "showing": "Hiển thị {{count}} trong {{total}} mục",
             "previous": "Trước",
             "next": "Tiếp"
         },
@@ -68,6 +75,120 @@
         }
     },
     "admin": {
+        "management": {
+            "title": "Quản Lý Nhân Viên",
+            "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+            "adminTitle": "Quản Lý Quản Trị Viên",
+            "adminSubtitle": "Quản lý tài khoản Quản trị viên",
+            "addStaff": "Thêm Nhân Viên",
+            "addAdmin": "Thêm Quản Trị Viên",
+            "filters": {
+                "role": "Lọc theo Vai Trò",
+                "status": "Lọc theo Trạng Thái",
+                "allRoles": "Tất Cả Vai Trò",
+                "allStatus": "Tất Cả Trạng Thái"
+            },
+            "table": {
+                "user": "Người Dùng",
+                "role": "Vai Trò",
+                "restaurant": "Nhà Hàng",
+                "status": "Trạng Thái",
+                "created": "Ngày Tạo",
+                "actions": "Thao Tác",
+                "noUsers": "Không tìm thấy người dùng"
+            },
+            "create": {
+                "title": "Thêm Nhân Viên Mới",
+                "subtitle": "Tạo tài khoản nhân viên mới",
+                "adminTitle": "Thêm Quản Trị Viên Mới",
+                "adminSubtitle": "Tạo tài khoản quản trị viên mới",
+                "form": {
+                    "fullName": "Họ và Tên",
+                    "fullNamePlaceholder": "Nhập họ và tên",
+                    "email": "Địa Chỉ Email",
+                    "emailPlaceholder": "Nhập địa chỉ email",
+                    "password": "Mật Khẩu",
+                    "passwordPlaceholder": "Nhập mật khẩu",
+                    "phone": "Số Điện Thoại",
+                    "phonePlaceholder": "Nhập số điện thoại (tùy chọn)",
+                    "role": "Vai Trò",
+                    "rolePlaceholder": "Chọn vai trò",
+                    "restaurant": "Nhà Hàng",
+                    "restaurantPlaceholder": "Chọn nhà hàng",
+                    "restaurantId": "Nhà Hàng",
+                    "restaurantIdHelp": "Chọn nhà hàng cho người dùng này",
+                    "submit": "Tạo Tài Khoản",
+                    "cancel": "Hủy"
+                },
+                "validation": {
+                    "nameRequired": "Họ và tên là bắt buộc (tối thiểu 2 ký tự)",
+                    "emailRequired": "Email là bắt buộc",
+                    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+                    "passwordRequired": "Mật khẩu là bắt buộc (tối thiểu 8 ký tự)",
+                    "roleRequired": "Vui lòng chọn vai trò",
+                    "restaurantRequired": "Vui lòng chọn nhà hàng"
+                },
+                "buttons": {
+                    "submit": "Tạo Tài Khoản",
+                    "cancel": "Hủy",
+                    "creating": "Đang tạo..."
+                }
+            },
+            "edit": {
+                "title": "Sửa Thông Tin Nhân Viên",
+                "subtitle": "Cập nhật thông tin tài khoản nhân viên",
+                "adminTitle": "Sửa Quản Trị Viên",
+                "adminSubtitle": "Cập nhật thông tin tài khoản quản trị viên",
+                "form": {
+                    "fullName": "Họ và Tên",
+                    "fullNamePlaceholder": "Nhập họ và tên",
+                    "email": "Địa Chỉ Email",
+                    "emailPlaceholder": "Nhập địa chỉ email",
+                    "phone": "Số Điện Thoại",
+                    "phonePlaceholder": "Nhập số điện thoại (tùy chọn)",
+                    "password": "Mật Khẩu",
+                    "passwordPlaceholder": "Để trống để giữ mật khẩu hiện tại",
+                    "passwordHelp": "Để trống để giữ mật khẩu hiện tại",
+                    "role": "Vai Trò",
+                    "rolePlaceholder": "Chọn vai trò",
+                    "roleHelp": "Vai trò người dùng không thể thay đổi sau khi tạo",
+                    "restaurant": "Nhà Hàng",
+                    "restaurantPlaceholder": "Chọn nhà hàng",
+                    "status": "Trạng Thái Tài Khoản",
+                    "submit": "Cập Nhật Người Dùng",
+                    "submitting": "Đang cập nhật..."
+                },
+                "validation": {
+                    "nameRequired": "Họ và tên là bắt buộc (tối thiểu 2 ký tự)",
+                    "emailRequired": "Email là bắt buộc",
+                    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+                    "roleRequired": "Vui lòng chọn vai trò",
+                    "restaurantRequired": "Vui lòng chọn nhà hàng"
+                },
+                "buttons": {
+                    "submit": "Cập Nhật Tài Khoản",
+                    "cancel": "Hủy",
+                    "updating": "Đang cập nhật..."
+                },
+                "notFound": "Không tìm thấy người dùng"
+            }
+        },
+        "roles": {
+            "admin": "Quản Trị Viên",
+            "super_admin": "Quản Trị Viên Cấp Cao",
+            "waiter": "Phục Vụ",
+            "kitchen": "Bếp",
+            "manager": "Quản Lý"
+        },
+        "toast": {
+            "userCreated": "Tạo người dùng thành công",
+            "userUpdated": "Cập nhật người dùng thành công",
+            "userDeleted": "Xóa người dùng thành công",
+            "statusUpdated": "Cập nhật trạng thái thành công",
+            "updateStatusError": "Không thể cập nhật trạng thái",
+            "deleteError": "Không thể xóa người dùng",
+            "error": "Đã xảy ra lỗi. Vui lòng thử lại."
+        },
         "menu": {
             "items": {
                 "title": "Món Ăn",
@@ -478,13 +599,78 @@
             "titleAdmin": "Quản Lý Admin",
             "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
             "subtitleAdmin": "Quản lý tài khoản Admin",
-            "addStaff": "Thêm Nhân Viên",
-            "addAdmin": "Thêm Admin",
-            "editStaff": "Sửa Nhân Viên",
-            "filters": {
-                "filterByRole": "Lọc theo Vai Trò",
-                "filterByStatus": "Lọc theo Trạng Thái",
-                "allRoles": "Tất Cả Vai Trò"
+            "management": {
+                "title": "Quản Lý Nhân Viên",
+                "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+                "adminTitle": "Quản Lý Quản Trị Viên",
+                "adminSubtitle": "Quản lý tài khoản Quản trị viên",
+                "addStaff": "Thêm Nhân Viên",
+                "addAdmin": "Thêm Quản Trị Viên",
+                "filters": {
+                    "role": "Lọc theo Vai Trò",
+                    "status": "Lọc theo Trạng Thái",
+                    "allRoles": "Tất Cả Vai Trò",
+                    "allStatus": "Tất Cả Trạng Thái"
+                },
+                "table": {
+                    "user": "Người Dùng",
+                    "role": "Vai Trò",
+                    "restaurant": "Nhà Hàng",
+                    "status": "Trạng Thái",
+                    "created": "Ngày Tạo",
+                    "actions": "Thao Tác",
+                    "noUsers": "Không tìm thấy người dùng nào"
+                },
+                "create": {
+                    "title": "Thêm Nhân Viên",
+                    "adminTitle": "Thêm Quản Trị Viên",
+                    "subtitle": "Tạo tài khoản Bồi bàn hoặc Đầu bếp mới",
+                    "adminSubtitle": "Tạo tài khoản Quản trị viên mới",
+                    "success": "Tạo người dùng thành công",
+                    "form": {
+                        "fullName": "Họ và Tên",
+                        "fullNamePlaceholder": "Nguyễn Văn A",
+                        "email": "Email",
+                        "emailPlaceholder": "nguyenvana@example.com",
+                        "password": "Mật Khẩu",
+                        "passwordPlaceholder": "Tối thiểu 6 ký tự",
+                        "phone": "Số Điện Thoại",
+                        "phonePlaceholder": "0912 345 678",
+                        "role": "Vai Trò",
+                        "restaurantId": "Mã Nhà Hàng",
+                        "restaurantIdHelp": "Tự động thiết lập cho nhà hàng của bạn",
+                        "adminRoleHelp": "Siêu Quản Trị chỉ có thể tạo tài khoản Quản trị viên",
+                        "submit": "Tạo Nhân Viên",
+                        "adminSubmit": "Tạo Quản Trị Viên",
+                        "submitting": "Đang tạo...",
+                        "cancel": "Hủy"
+                    }
+                },
+                "edit": {
+                    "title": "Sửa Nhân Viên",
+                    "adminTitle": "Sửa Quản Trị Viên",
+                    "subtitle": "Cập nhật thông tin nhân viên",
+                    "adminSubtitle": "Cập nhật thông tin quản trị viên",
+                    "success": "Cập nhật người dùng thành công",
+                    "notFound": "Không tìm thấy người dùng",
+                    "form": {
+                        "fullName": "Họ và Tên",
+                        "email": "Email",
+                        "phone": "Số Điện Thoại",
+                        "password": "Mật Khẩu Mới",
+                        "passwordPlaceholder": "Để trống nếu không muốn thay đổi",
+                        "passwordHelp": "Chỉ điền nếu muốn đổi mật khẩu",
+                        "role": "Vai Trò",
+                        "roleHelp": "Không thể thay đổi vai trò",
+                        "submit": "Lưu Thay Đổi",
+                        "submitting": "Đang lưu...",
+                        "cancel": "Hủy"
+                    }
+                }
+            },
+            "toast": {
+                "updateStatusSuccess": "Cập nhật trạng thái người dùng thành công",
+                "deleteSuccess": "Xóa người dùng thành công"
             },
             "roles": {
                 "super_admin": "Quản Trị Viên Cấp Cao",
@@ -704,5 +890,72 @@
         "mismatch": "Mật khẩu không khớp",
         "success": "Đổi mật khẩu thành công",
         "error": "Không thể đổi mật khẩu"
+    },
+    "kitchen": {
+        "dashboard": {
+            "title": "Hệ Thống Màn Hình Bếp",
+            "subtitle": "Quản lý đơn hàng và theo dõi chế biến theo thời gian thực",
+            "liveUpdates": "Cập Nhật Trực Tiếp"
+        },
+        "stats": {
+            "new": "Đơn Mới",
+            "preparing": "Đang Chế Biến",
+            "ready": "Sẵn Sàng",
+            "avgTime": "Thời Gian TB"
+        },
+        "filters": {
+            "labels": {
+                "status": "Trạng Thái",
+                "priority": "Mức Độ Ưu Tiên",
+                "sort": "Sắp Xếp"
+            },
+            "status": {
+                "all": "Tất Cả Đơn",
+                "new": "Đơn Mới",
+                "preparing": "Đang Chế Biến",
+                "ready": "Sẵn Sàng Phục Vụ"
+            },
+            "priority": {
+                "all": "Tất Cả Mức Độ",
+                "rush": "Đơn Khẩn Cấp",
+                "normal": "Đơn Thường"
+            },
+            "sort": {
+                "oldest": "Cũ Nhất Trước",
+                "newest": "Mới Nhất Trước",
+                "table": "Số Bàn (Thấp đến Cao)",
+                "priority": "Ưu Tiên Trước"
+            },
+            "actions": {
+                "refresh": "Làm Mới"
+            }
+        },
+        "orders": {
+            "status": {
+                "new": "Đơn Mới",
+                "preparing": "Đang Chế Biến",
+                "ready": "Sẵn Sàng Phục Vụ",
+                "unknown": "Không Xác Định"
+            },
+            "card": {
+                "table": "BÀN",
+                "est": "Dự kiến: {{time}} phút",
+                "elapsed": "Đã qua",
+                "overdue": "QUÁ GIỜ",
+                "rush": "Đơn Khẩn - Ưu Tiên Phục Vụ",
+                "allergens": "Dị ứng:",
+                "notes": "Ghi chú đơn hàng"
+            },
+            "actions": {
+                "start": "Bắt Đầu Nấu",
+                "ready": "Báo Sẵn Sàng",
+                "complete": "Hoàn Thành"
+            }
+        },
+        "empty": {
+            "title": "Không Có Đơn Hàng",
+            "description": "Tất cả đơn hàng đã hoàn thành. Bếp đã sẵn sàng cho đơn hàng mới.",
+            "action": "Làm Mới Danh Sách"
+        }
     }
 }

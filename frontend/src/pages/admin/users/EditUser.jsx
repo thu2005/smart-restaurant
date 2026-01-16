@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import userService from "../../../services/userService";
 import Icon from "../../../components/AppIcon";
 
 const EditUser = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
-    
+
     const currentUser = JSON.parse(localStorage.getItem("user"));
     const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
     const usersBasePath = isSuperAdmin ? "/superadmin/users" : "/admin/users";
@@ -40,9 +42,10 @@ const EditUser = () => {
                 password: "",
             });
             setError(null);
+            setError(null);
         } catch (err) {
             console.error("Error fetching user:", err);
-            setError(err.response?.data?.message || "Failed to fetch user");
+            setError(err.response?.data?.message || t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -59,12 +62,12 @@ const EditUser = () => {
 
         // Validation
         if (!formData.fullName) {
-            setError("Full name is required");
+            setError(t('common.error.requiredFields'));
             return;
         }
 
         if (formData.password && formData.password.length < 6) {
-            setError("Password must be at least 6 characters");
+            setError(t('admin.password.requirements'));
             return;
         }
 
@@ -89,7 +92,7 @@ const EditUser = () => {
             navigate(usersBasePath);
         } catch (err) {
             console.error("Error updating user:", err);
-            setError(err.response?.data?.message || "Failed to update user");
+            setError(err.response?.data?.message || t('common.error'));
         } finally {
             setSaving(false);
         }
@@ -101,7 +104,7 @@ const EditUser = () => {
                 <div className="bg-white rounded-lg shadow-2xl p-8">
                     <div className="text-center">
                         <Icon name="Loader2" className="animate-spin h-8 w-8 mx-auto mb-2" />
-                        <p>Loading user...</p>
+                        <p>{t('common.loading')}</p>
                     </div>
                 </div>
             </div>
@@ -113,7 +116,7 @@ const EditUser = () => {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                 <div className="bg-white rounded-lg shadow-2xl p-6">
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                        User not found
+                        {t('admin.management.edit.notFound')}
                     </div>
                 </div>
             </div>
@@ -122,20 +125,20 @@ const EditUser = () => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+            <div className="bg-card rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                <div className="sticky top-0 bg-card border-b px-6 py-4 flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            {isSuperAdmin ? "Edit Admin" : "Edit Staff"}
+                        <h2 className="text-2xl font-bold text-foreground">
+                            {isSuperAdmin ? t('admin.management.edit.adminTitle') : t('admin.management.edit.title')}
                         </h2>
-                        <p className="text-sm text-gray-600 mt-1">
-                            {isSuperAdmin ? "Update admin information" : "Update staff information"}
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {isSuperAdmin ? t('admin.management.edit.adminSubtitle') : t('admin.management.edit.subtitle')}
                         </p>
                     </div>
                     <button
                         onClick={() => navigate(usersBasePath)}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition"
+                        className="p-2 hover:bg-muted rounded-lg transition"
                     >
                         <Icon name="X" size={20} />
                     </button>
@@ -144,7 +147,7 @@ const EditUser = () => {
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Staff Info Banner */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="bg-muted border border-border rounded-lg p-4">
                         <div className="flex items-center gap-3">
                             {user.avatar ? (
                                 <img
@@ -153,14 +156,14 @@ const EditUser = () => {
                                     className="h-12 w-12 rounded-full object-cover"
                                 />
                             ) : (
-                                <div className="h-12 w-12 rounded-full bg-blue-200 flex items-center justify-center">
-                                    <Icon name="User" size={24} className="text-blue-600" />
+                                <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                                    <Icon name="User" size={24} className="text-primary" />
                                 </div>
                             )}
                             <div>
                                 <div className="font-semibold">{user.fullName}</div>
-                                <div className="text-sm text-gray-600">
-                                    {user.role.replace("_", " ")} • {user.isActive ? "Active" : "Inactive"}
+                                <div className="text-sm text-muted-foreground">
+                                    {t(`admin.roles.${user.role.toLowerCase()}`)} • {user.isActive ? t('common.status.active') : t('common.status.inactive')}
                                 </div>
                             </div>
                         </div>
@@ -173,117 +176,117 @@ const EditUser = () => {
                             <span>{error}</span>
                         </div>
                     )}
-                {/* Full Name */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="fullName"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="John Doe"
-                        required
-                    />
-                </div>
+                    {/* Full Name */}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('admin.management.edit.form.fullName')} <span className="text-error">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="fullName"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
 
-                {/* Email */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="john@example.com"
-                        required
-                    />
-                </div>
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('admin.management.edit.form.email')} <span className="text-error">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
+                            placeholder="john@example.com"
+                            required
+                        />
+                    </div>
 
-                {/* Phone */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number
-                    </label>
-                    <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="+84 123 456 789"
-                    />
-                </div>
+                    {/* Phone */}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('admin.management.edit.form.phone')}
+                        </label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
+                            placeholder="+84 123 456 789"
+                        />
+                    </div>
 
-                {/* Password */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        New Password
-                    </label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Leave blank to keep current password"
-                        minLength={6}
-                    />
-                    <p className="text-sm text-gray-500 mt-1">
-                        Only fill this if you want to change the password
-                    </p>
-                </div>
+                    {/* Password */}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('admin.management.edit.form.password')}
+                        </label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
+                            placeholder={t('admin.management.edit.form.passwordPlaceholder')}
+                            minLength={6}
+                        />
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('admin.management.edit.form.passwordHelp')}
+                        </p>
+                    </div>
 
-                {/* Role (Read-only) */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Role
-                    </label>
-                    <input
-                        type="text"
-                        value={user.role.replace("_", " ")}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50"
-                        readOnly
-                    />
-                    <p className="text-sm text-gray-500 mt-1">
-                        Role cannot be changed
-                    </p>
-                </div>
+                    {/* Role (Read-only) */}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('admin.management.edit.form.role')}
+                        </label>
+                        <input
+                            type="text"
+                            value={t(`admin.roles.${user.role.toLowerCase()}`)}
+                            className="w-full border border-border rounded-lg px-3 py-2 bg-muted"
+                            readOnly
+                        />
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('admin.management.edit.form.roleHelp')}
+                        </p>
+                    </div>
 
-                {/* Actions */}
-                <div className="flex gap-3 pt-4">
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="flex-1 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        {saving ? (
-                            <>
-                                <Icon name="Loader2" size={20} className="animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            <>
-                                <Icon name="Save" size={20} />
-                                Save Changes
-                            </>
-                        )}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => navigate(usersBasePath)}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-4">
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="flex-1 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {saving ? (
+                                <>
+                                    <Icon name="Loader2" size={20} className="animate-spin" />
+                                    {t('admin.management.edit.form.submitting')}
+                                </>
+                            ) : (
+                                <>
+                                    <Icon name="Save" size={20} />
+                                    {t('admin.management.edit.form.submit')}
+                                </>
+                            )}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => navigate(usersBasePath)}
+                            className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-muted transition"
+                        >
+                            {t('admin.management.edit.form.cancel')}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

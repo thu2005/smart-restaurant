@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
 const OrderCard = ({ order, onStatusChange, onComplete }) => {
+  const { t } = useTranslation();
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isOverdue, setIsOverdue] = useState(false);
 
@@ -43,13 +45,13 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
   const getStatusLabel = () => {
     switch (order?.status) {
       case "new":
-        return "New Order";
+        return t('kitchen.orders.status.new');
       case "preparing":
-        return "Preparing";
+        return t('kitchen.orders.status.preparing');
       case "ready":
-        return "Ready to Serve";
+        return t('kitchen.orders.status.ready');
       default:
-        return "Unknown";
+        return t('kitchen.orders.status.unknown');
     }
   };
 
@@ -85,7 +87,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
           </span>
         </div>
         <span className="text-xs font-medium opacity-90">
-          Est: {order?.estimatedPrepTime} min
+          {t('kitchen.orders.card.est', { time: order?.estimatedPrepTime })}
         </span>
       </div>
 
@@ -104,7 +106,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
                   color="var(--color-muted-foreground)"
                 />
                 <span className="text-md font-semibold text-foreground">
-                  TABLE {order?.tableNumber}
+                  {t('kitchen.orders.card.table')} {order?.tableNumber}
                 </span>
               </div>
             </div>
@@ -121,7 +123,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
               {formatTime(elapsedTime)}
             </div>
             <div className="text-xs text-muted-foreground mt-1 font-medium">
-              {isOverdue ? "OVERDUE" : "Elapsed"}
+              {isOverdue ? t('kitchen.orders.card.overdue') : t('kitchen.orders.card.elapsed')}
             </div>
           </div>
         </div>
@@ -131,7 +133,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
           <div className="flex items-center gap-2 px-4 py-3 bg-error/10 border-l-4 border-error rounded-lg mb-5">
             <Icon name="AlertCircle" size={20} color="var(--color-error)" />
             <span className="text-sm font-bold text-error uppercase tracking-wide">
-              Rush Order - Priority Service
+              {t('kitchen.orders.card.rush')}
             </span>
           </div>
         )}
@@ -168,9 +170,9 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
                       } else if (typeof mod === 'object' && mod.name) {
                         modText = mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
                       }
-                      
+
                       if (!modText) return null;
-                      
+
                       return (
                         <span
                           key={modIndex}
@@ -208,7 +210,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
                       color="var(--color-error)"
                     />
                     <span className="text-xs text-error font-bold uppercase tracking-wider">
-                      Allergens: {item?.allergens?.join(", ")}
+                      {t('kitchen.orders.card.allergens')} {item?.allergens?.join(", ")}
                     </span>
                   </div>
                 )}
@@ -229,7 +231,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
               />
               <div className="flex-1">
                 <p className="text-xs font-bold text-accent uppercase tracking-wide mb-1">
-                  Order Notes
+                  {t('kitchen.orders.card.notes')}
                 </p>
                 <p className="text-sm text-foreground leading-relaxed">{order?.orderNotes}</p>
               </div>
@@ -248,7 +250,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
               onClick={() => onStatusChange(order?.id, "preparing")}
               className="text-base font-semibold py-3"
             >
-              Start Preparing
+              {t('kitchen.orders.actions.start')}
             </Button>
           )}
           {order?.status === "preparing" && (
@@ -260,7 +262,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
               onClick={() => onStatusChange(order?.id, "ready")}
               className="text-base font-semibold py-3"
             >
-              Mark as Ready
+              {t('kitchen.orders.actions.ready')}
             </Button>
           )}
           {order?.status === "ready" && (
@@ -272,7 +274,7 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
               onClick={() => onComplete(order?.id)}
               className="text-base font-semibold py-3"
             >
-              Complete Order
+              {t('kitchen.orders.actions.complete')}
             </Button>
           )}
         </div>

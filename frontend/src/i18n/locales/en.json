@@ -1,5 +1,7 @@
 {
     "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
         "actions": {
             "save": "Save",
             "cancel": "Cancel",
@@ -29,7 +31,9 @@
             "dismiss": "Dismiss",
             "showLess": "Show Less",
             "processing": "Processing...",
-            "deleting": "Deleting..."
+            "deleting": "Deleting...",
+            "activate": "Activate",
+            "deactivate": "Deactivate"
         },
         "status": {
             "active": "Active",
@@ -48,6 +52,7 @@
             "error": "An error occurred",
             "success": "Success",
             "confirmDelete": "Are you sure you want to delete this?",
+            "deleteConfirm": "Are you sure you want to delete {{item}}?",
             "cannotUndo": "This action cannot be undone",
             "deleteSuccess": "Deleted successfully",
             "deleteError": "Failed to delete",
@@ -56,10 +61,12 @@
             "createSuccess": "Created successfully",
             "createError": "Failed to create",
             "saveSuccess": "Saved successfully",
-            "saveError": "Failed to save"
+            "saveError": "Failed to save",
+            "requiredFields": "Please fill in all required fields"
         },
         "pagination": {
             "showingPage": "Showing page",
+            "showing": "Showing {{count}} of {{total}} items",
             "previous": "Previous",
             "next": "Next"
         },
@@ -68,6 +75,121 @@
         }
     },
     "admin": {
+        "management": {
+            "title": "Staff Management",
+            "subtitle": "Manage restaurant staff accounts",
+            "adminTitle": "Admin Management",
+            "adminSubtitle": "Manage Admin accounts",
+            "addStaff": "Add Staff",
+            "addAdmin": "Add Admin",
+            "filters": {
+                "role": "Filter by Role",
+                "status": "Filter by Status",
+                "allRoles": "All Roles",
+                "allStatus": "All Status"
+            },
+            "table": {
+                "user": "User",
+                "role": "Role",
+                "restaurant": "Restaurant",
+                "status": "Status",
+                "created": "Created",
+                "actions": "Actions",
+                "noUsers": "No users found"
+            },
+            "create": {
+                "title": "Add New Staff",
+                "subtitle": "Create a new staff account",
+                "adminTitle": "Add New Admin",
+                "adminSubtitle": "Create a new admin account",
+                "form": {
+                    "fullName": "Full Name",
+                    "fullNamePlaceholder": "Enter full name",
+                    "email": "Email Address",
+                    "emailPlaceholder": "Enter email address",
+                    "password": "Password",
+                    "passwordPlaceholder": "Enter password",
+                    "phone": "Phone Number",
+                    "phonePlaceholder": "Enter phone number (optional)",
+                    "role": "Role",
+                    "rolePlaceholder": "Select role",
+                    "restaurant": "Restaurant",
+                    "restaurantPlaceholder": "Select restaurant",
+                    "restaurantId": "Restaurant",
+                    "restaurantIdHelp": "Select the restaurant for this user",
+                    "submit": "Create Account",
+                    "cancel": "Cancel"
+                },
+                "validation": {
+                    "nameRequired": "Full name is required (minimum 2 characters)",
+                    "emailRequired": "Email is required",
+                    "emailInvalid": "Please enter a valid email address",
+                    "passwordRequired": "Password is required (minimum 8 characters)",
+                    "roleRequired": "Please select a role",
+                    "restaurantRequired": "Please select a restaurant"
+                },
+                "buttons": {
+                    "submit": "Create Account",
+                    "cancel": "Cancel",
+                    "creating": "Creating..."
+                }
+            },
+            "edit": {
+                "title": "Edit Staff Member",
+                "subtitle": "Update staff account information",
+                "adminTitle": "Edit Admin",
+                "adminSubtitle": "Update admin account information",
+                "form": {
+                    "fullName": "Full Name",
+                    "fullNamePlaceholder": "Enter full name",
+                    "email": "Email Address",
+                    "emailPlaceholder": "Enter email address",
+                    "phone": "Phone Number",
+                    "phonePlaceholder": "Enter phone number (optional)",
+                    "password": "Password",
+                    "passwordPlaceholder": "Leave blank to keep current password",
+                    "passwordHelp": "Leave blank to keep the current password",
+                    "role": "Role",
+                    "rolePlaceholder": "Select role",
+                    "roleHelp": "User role cannot be changed after creation",
+                    "restaurant": "Restaurant",
+                    "restaurantPlaceholder": "Select restaurant",
+                    "status": "Account Status",
+                    "submit": "Update User",
+                    "submitting": "Updating...",
+                    "cancel": "Cancel"
+                },
+                "validation": {
+                    "nameRequired": "Full name is required (minimum 2 characters)",
+                    "emailRequired": "Email is required",
+                    "emailInvalid": "Please enter a valid email address",
+                    "roleRequired": "Please select a role",
+                    "restaurantRequired": "Please select a restaurant"
+                },
+                "buttons": {
+                    "submit": "Update Account",
+                    "cancel": "Cancel",
+                    "updating": "Updating..."
+                },
+                "notFound": "User not found"
+            }
+        },
+        "roles": {
+            "admin": "Admin",
+            "super_admin": "Super Admin",
+            "waiter": "Waiter",
+            "kitchen": "Kitchen",
+            "manager": "Manager"
+        },
+        "toast": {
+            "userCreated": "User created successfully",
+            "userUpdated": "User updated successfully",
+            "userDeleted": "User deleted successfully",
+            "statusUpdated": "Status updated successfully",
+            "updateStatusError": "Failed to update status",
+            "deleteError": "Failed to delete user",
+            "error": "An error occurred. Please try again."
+        },
         "menu": {
             "items": {
                 "title": "Menu Items",
@@ -704,5 +826,72 @@
         "mismatch": "Passwords do not match",
         "success": "Password changed successfully",
         "error": "Failed to change password"
+    },
+    "kitchen": {
+        "dashboard": {
+            "title": "Kitchen Display System",
+            "subtitle": "Real-time order management and preparation tracking",
+            "liveUpdates": "Live Updates"
+        },
+        "stats": {
+            "new": "New Orders",
+            "preparing": "Preparing",
+            "ready": "Ready",
+            "avgTime": "Avg Prep Time"
+        },
+        "filters": {
+            "labels": {
+                "status": "Status",
+                "priority": "Priority",
+                "sort": "Sort By"
+            },
+            "status": {
+                "all": "All Orders",
+                "new": "New Orders",
+                "preparing": "Preparing",
+                "ready": "Ready to Serve"
+            },
+            "priority": {
+                "all": "All Priorities",
+                "rush": "Rush Orders",
+                "normal": "Normal Orders"
+            },
+            "sort": {
+                "oldest": "Oldest First",
+                "newest": "Newest First",
+                "table": "Table Number (Low to High)",
+                "priority": "Priority First"
+            },
+            "actions": {
+                "refresh": "Refresh"
+            }
+        },
+        "orders": {
+            "status": {
+                "new": "New Order",
+                "preparing": "Preparing",
+                "ready": "Ready to Serve",
+                "unknown": "Unknown"
+            },
+            "card": {
+                "table": "TABLE",
+                "est": "Est: {{time}} min",
+                "elapsed": "Elapsed",
+                "overdue": "OVERDUE",
+                "rush": "Rush Order - Priority Service",
+                "allergens": "Allergens:",
+                "notes": "Order Notes"
+            },
+            "actions": {
+                "start": "Start Preparing",
+                "ready": "Mark as Ready",
+                "complete": "Complete Order"
+            }
+        },
+        "empty": {
+            "title": "No Active Orders",
+            "description": "All orders have been completed. The kitchen is ready for new orders.",
+            "action": "Refresh Orders"
+        }
     }
 }

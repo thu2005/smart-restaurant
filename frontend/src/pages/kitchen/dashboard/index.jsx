@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
+import { useTranslation } from "react-i18next";
 import KitchenDisplayNav from "../../../components/navigation/KitchenDisplayNav";
 import OrderCard from "./components/OrderCard";
 import OrderFilters from "./components/OrderFilters";
@@ -12,6 +13,7 @@ import kitchenService from "../../../services/kitchenService";
 import authService from "../../../services/authService";
 
 const KitchenDisplaySystem = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -20,7 +22,7 @@ const KitchenDisplaySystem = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [notificationTrigger, setNotificationTrigger] = useState(0);
   const [loading, setLoading] = useState(false);
-  
+
   // Check if we're in admin layout (don't show kitchen header)
   const isAdminView = location.pathname.startsWith('/admin/kitchen');
   const [error, setError] = useState(null);
@@ -92,7 +94,7 @@ const KitchenDisplaySystem = () => {
       setOrders(transformedOrders);
     } catch (err) {
       console.error("Error fetching kitchen orders:", err);
-      if (isLoading) setError("Failed to load orders. Please try again.");
+      if (isLoading) setError(t('common.error'));
     } finally {
       if (isLoading) setLoading(false);
     }
@@ -215,7 +217,7 @@ const KitchenDisplaySystem = () => {
       setNotificationTrigger((prev) => prev + 1);
     } catch (err) {
       console.error("Error updating order status:", err);
-      alert("Failed to update order status. Please try again.");
+      // alert("Failed to update order status. Please try again.");
     }
   };
 
@@ -235,7 +237,7 @@ const KitchenDisplaySystem = () => {
       fetchStats();
     } catch (err) {
       console.error("Error completing order:", err);
-      alert("Failed to complete order. Please try again.");
+      // alert("Failed to complete order. Please try again.");
     }
   };
 
@@ -289,10 +291,10 @@ const KitchenDisplaySystem = () => {
   return (
     <>
       <Helmet>
-        <title>Kitchen Display System - Smart Restaurant</title>
+        <title>{t('kitchen.dashboard.title')} - Smart Restaurant</title>
         <meta
           name="description"
-          content="Real-time kitchen order management and preparation tracking system for restaurant staff"
+          content={t('kitchen.dashboard.subtitle')}
         />
       </Helmet>
       <SoundNotification enabled={soundEnabled} trigger={notificationTrigger} />
@@ -305,16 +307,16 @@ const KitchenDisplaySystem = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-                  Kitchen Display System
+                  {t('kitchen.dashboard.title')}
                 </h1>
                 <p className="text-sm md:text-base text-muted-foreground">
-                  Real-time order management and preparation tracking
+                  {t('kitchen.dashboard.subtitle')}
                 </p>
               </div>
               <div className="flex items-center gap-2 px-3 py-2 bg-success/10 rounded-md">
                 <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
                 <span className="text-sm font-medium text-success">
-                  Live Updates
+                  {t('kitchen.dashboard.liveUpdates')}
                 </span>
               </div>
             </div>
@@ -334,7 +336,7 @@ const KitchenDisplaySystem = () => {
             {loading && (
               <div className="text-center py-12">
                 <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                <p className="text-muted-foreground mt-4">Loading orders...</p>
+                <p className="text-muted-foreground mt-4">{t('common.loading')}</p>
               </div>
             )}
 

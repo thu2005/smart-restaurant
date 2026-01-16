@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import userService from "../../../services/userService";
 import Icon from "../../../components/AppIcon";
 import DeleteConfirmationModal from "../../../components/DeleteConfirmationModal";
 import StatusToggleModal from "../../../components/StatusToggleModal";
 
 const UserManagement = () => {
+    const { t } = useTranslation();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -36,7 +38,7 @@ const UserManagement = () => {
             setError(null);
         } catch (err) {
             console.error("Error fetching users:", err);
-            setError(err.response?.data?.message || "Failed to fetch users");
+            setError(err.response?.data?.message || t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -54,7 +56,7 @@ const UserManagement = () => {
             fetchUsers();
         } catch (err) {
             console.error("Error toggling user status:", err);
-            setError(err.response?.data?.message || "Failed to update user status");
+            setError(err.response?.data?.message || t('admin.toast.updateStatusError'));
         } finally {
             setToggling(false);
         }
@@ -78,7 +80,7 @@ const UserManagement = () => {
             fetchUsers();
         } catch (err) {
             console.error("Error deleting user:", err);
-            setError(err.response?.data?.message || "Failed to delete user");
+            setError(err.response?.data?.message || t('admin.toast.deleteError'));
         } finally {
             setDeleting(false);
         }
@@ -110,7 +112,7 @@ const UserManagement = () => {
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
                     <Icon name="Loader2" className="animate-spin h-8 w-8 mx-auto mb-2" />
-                    <p>Loading users...</p>
+                    <p>{t('common.loading')}</p>
                 </div>
             </div>
         );
@@ -122,10 +124,10 @@ const UserManagement = () => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-3xl font-bold">
-                        {isSuperAdmin ? "Admin Management" : "Staff Management"}
+                        {isSuperAdmin ? t('admin.management.adminTitle') : t('admin.management.title')}
                     </h1>
                     <p className="text-gray-600 mt-1">
-                        {isSuperAdmin ? "Manage Admin accounts" : "Manage restaurant staff accounts"}
+                        {isSuperAdmin ? t('admin.management.adminSubtitle') : t('admin.management.subtitle')}
                     </p>
                 </div>
                 <Link
@@ -133,7 +135,7 @@ const UserManagement = () => {
                     className="flex items-center gap-2 bg-primary text-sm text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition"
                 >
                     <Icon name="Plus" size={20} />
-                    {isSuperAdmin ? "Add Admin" : "Add Staff"}
+                    {isSuperAdmin ? t('admin.management.addAdmin') : t('admin.management.addStaff')}
                 </Link>
             </div>
 
@@ -142,37 +144,37 @@ const UserManagement = () => {
                 <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[200px]">
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Filter by Role
+                            {t('admin.management.filters.role')}
                         </label>
                         <select
                             value={filterRole}
                             onChange={(e) => setFilterRole(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="">All Roles</option>
+                            <option value="">{t('admin.management.filters.allRoles')}</option>
                             {isSuperAdmin ? (
-                                <option value="ADMIN">Admin</option>
+                                <option value="ADMIN">{t('admin.roles.admin')}</option>
                             ) : (
                                 <>
-                                    <option value="ADMIN">Admin</option>
-                                    <option value="WAITER">Waiter</option>
-                                    <option value="KITCHEN">Kitchen Staff</option>
+                                    <option value="ADMIN">{t('admin.roles.admin')}</option>
+                                    <option value="WAITER">{t('admin.roles.waiter')}</option>
+                                    <option value="KITCHEN">{t('admin.roles.kitchen')}</option>
                                 </>
                             )}
                         </select>
                     </div>
                     <div className="flex-1 min-w-[200px]">
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Filter by Status
+                            {t('admin.management.filters.status')}
                         </label>
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="">{t('admin.management.filters.allStatus')}</option>
+                            <option value="active">{t('common.status.active')}</option>
+                            <option value="inactive">{t('common.status.inactive')}</option>
                         </select>
                     </div>
                 </div>
@@ -192,24 +194,24 @@ const UserManagement = () => {
                         <thead className="border-b border-border">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    User
+                                    {t('admin.management.table.user')}
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Role
+                                    {t('admin.management.table.role')}
                                 </th>
                                 {!isSuperAdmin && (
                                     <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                        Restaurant
+                                        {t('admin.management.table.restaurant')}
                                     </th>
                                 )}
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Status
+                                    {t('admin.management.table.status')}
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Created
+                                    {t('admin.management.table.created')}
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Actions
+                                    {t('admin.management.table.actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -218,7 +220,7 @@ const UserManagement = () => {
                                 <tr>
                                     <td colSpan={isSuperAdmin ? "5" : "6"} className="px-6 py-12 text-center text-gray-500">
                                         <Icon name="Users" className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                                        <p>No users found</p>
+                                        <p>{t('admin.management.table.noUsers')}</p>
                                     </td>
                                 </tr>
                             ) : (
@@ -253,7 +255,7 @@ const UserManagement = () => {
                                                     user.role
                                                 )}`}
                                             >
-                                                {user.role.replace("_", " ")}
+                                                {t(`admin.roles.${user.role.toLowerCase()}`)}
                                             </span>
                                         </td>
                                         {!isSuperAdmin && (
@@ -268,7 +270,7 @@ const UserManagement = () => {
                                                     : "bg-red-100 text-red-800"
                                                     }`}
                                             >
-                                                {user.isActive ? "Active" : "Inactive"}
+                                                {user.isActive ? t('common.status.active') : t('common.status.inactive')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -279,7 +281,7 @@ const UserManagement = () => {
                                                 <Link
                                                     to={`${usersBasePath}/${user.id}/edit`}
                                                     className="text-blue-600 hover:text-blue-900"
-                                                    title="Edit"
+                                                    title={t('common.actions.edit')}
                                                 >
                                                     <Icon name="Edit" size={18} />
                                                 </Link>
@@ -289,7 +291,7 @@ const UserManagement = () => {
                                                         ? "text-orange-600 hover:text-orange-900"
                                                         : "text-green-600 hover:text-green-900"
                                                         }`}
-                                                    title={user.isActive ? "Deactivate" : "Activate"}
+                                                    title={user.isActive ? t('common.actions.deactivate') : t('common.actions.activate')}
                                                 >
                                                     <Icon
                                                         name={user.isActive ? "UserX" : "UserCheck"}
@@ -299,7 +301,7 @@ const UserManagement = () => {
                                                 <button
                                                     onClick={() => handleDeleteUser(user.id, user.email)}
                                                     className="text-red-600 hover:text-red-900"
-                                                    title="Delete"
+                                                    title={t('common.actions.delete')}
                                                 >
                                                     <Icon name="Trash2" size={18} />
                                                 </button>
@@ -316,7 +318,7 @@ const UserManagement = () => {
             {/* Summary */}
             {users.length > 0 && (
                 <div className="mt-4 text-sm text-gray-600">
-                    Showing {users.length} user{users.length !== 1 ? "s" : ""}
+                    {t('common.pagination.showing', { count: users.length, total: users.length })}
                 </div>
             )}
 
@@ -325,8 +327,8 @@ const UserManagement = () => {
                 isOpen={deleteModal.isOpen}
                 onClose={closeDeleteModal}
                 onConfirm={confirmDelete}
-                title="Delete User"
-                message={`Are you sure you want to permanently delete ${deleteModal.userEmail}? This action cannot be undone.`}
+                title={t('common.actions.delete')}
+                message={t('common.messages.deleteConfirm', { item: deleteModal.userEmail })}
                 loading={deleting}
             />
 
