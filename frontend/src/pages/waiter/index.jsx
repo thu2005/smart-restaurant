@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { io } from "socket.io-client";
 import WaiterHeader from "./components/WaiterHeader";
 import OrderTabs from "./components/OrderTabs";
@@ -45,20 +45,31 @@ const WaiterDashboard = () => {
         const newSocket = io(socketUrl);
 
         newSocket.on("connect", () => {
-            console.log("WebSocket connected");
+            console.log("Waiter WebSocket connected");
             newSocket.emit("join_restaurant", restaurantId);
         });
 
         newSocket.on("new_order", (order) => {
-            console.log("New order received:", order);
-            if (order.status === "SUBMITTED") {
-                fetchOrders();
+            console.log("🔔 New order received:", order);
+            // Use ref to get latest fetchOrders without causing reconnection
+            if (fetchOrdersRef.current) {
+                fetchOrdersRef.current();
             }
         });
 
         newSocket.on("order_status_update", ({ orderId, status }) => {
-            console.log("Order status updated:", orderId, status);
-            fetchOrders();
+            console.log("🔔 Order status updated:", orderId, status);
+            if (fetchOrdersRef.current) {
+                fetchOrdersRef.current();
+            }
+        });
+
+        newSocket.on("order_items_added", ({ orderId, orderNumber, newItemsCount }) => {
+            console.log("🔔 Items added to order:", orderNumber, `(+${newItemsCount} items)`);
+            // Refresh to show the updated order with new items
+            if (fetchOrdersRef.current) {
+                fetchOrdersRef.current();
+            }
         });
 
         setSocket(newSocket);
@@ -66,7 +77,7 @@ const WaiterDashboard = () => {
         return () => {
             newSocket.disconnect();
         };
-    }, [restaurantId]);
+    }, [restaurantId]); // Only reconnect when restaurantId changes
 
     // Fetch orders based on active tab
     useEffect(() => {
@@ -127,6 +138,12 @@ const WaiterDashboard = () => {
             setLoading(false);
         }
     };
+
+    // Use ref to store latest fetchOrders to avoid socket reconnections
+    const fetchOrdersRef = useRef(fetchOrders);
+    useEffect(() => {
+        fetchOrdersRef.current = fetchOrders;
+    }, [fetchOrders]);
 
     const fetchTables = async () => {
         setLoading(true);
