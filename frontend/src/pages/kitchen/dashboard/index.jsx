@@ -34,7 +34,9 @@ const KitchenDisplaySystem = () => {
   useEffect(() => {
     if (!restaurantId) return;
 
-    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    // Socket.IO connects to base server URL (not /api)
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5002/api";
+    const socketUrl = apiUrl.replace('/api', ''); // Remove /api suffix for socket connection
     const newSocket = io(socketUrl);
 
     newSocket.on("connect", () => {

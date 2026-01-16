@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { io } from "socket.io-client";
 import OrderHeader from "./components/OrderHeader";
 import OrderTimeline from "./components/OrderTimeline";
 import OrderItemStatus from "./components/OrderItemStatus";
@@ -16,6 +17,7 @@ const OrderStatusTracking = () => {
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   // Update current time every second
   useEffect(() => {
@@ -45,11 +47,38 @@ const OrderStatusTracking = () => {
     }
   }, []);
 
+  // Initialize Socket.IO connection for real-time updates
+  useEffect(() => {
+    const restaurantId = localStorage.getItem('restaurantId');
+    
+    if (!restaurantId) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const newSocket = io(socketUrl.replace('/api', ''));
+
+    newSocket.on("connect", () => {
+      newSocket.emit("join_restaurant", restaurantId);
+    });
+
+    newSocket.on("order_status_update", ({ orderId, status }) => {
+      fetchOrder();
+    });
+
+    newSocket.on("disconnect", () => {});
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []); // Empty deps - socket setup once, fetchOrder is stable
+
+  // Initial fetch + Fallback polling
   useEffect(() => {
     fetchOrder();
-
-    // Poll for updates every 10 seconds
-    const pollInterval = setInterval(fetchOrder, 10000);
+    
+    // Fallback polling every 30 seconds (in case socket doesn't work)
+    const pollInterval = setInterval(fetchOrder, 30000);
     return () => clearInterval(pollInterval);
   }, [fetchOrder]);
 
