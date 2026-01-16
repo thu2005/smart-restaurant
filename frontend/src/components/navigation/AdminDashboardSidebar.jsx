@@ -61,8 +61,7 @@ const AdminDashboardSidebar = ({
     {
       section: "Reports",
       items: [
-        { path: "/analytics", label: "Analytics", icon: "BarChart3" },
-        { path: "/reports", label: "Reports", icon: "FileText" },
+        { path: "/admin/reports", label: "Reports & Analytics", icon: "BarChart3" },
       ],
     },
     {

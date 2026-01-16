@@ -37,6 +37,7 @@ import MenuItemList from "./pages/admin/menu/items/MenuItemList";
 import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
+import Reports from "./pages/admin/reports";
 
 // Waiter Pages
 import WaiterDashboard from "./pages/waiter";
@@ -49,7 +50,7 @@ const Routes = () => {
         <RouterRoutes>
           {/* QR Entry Route - New format with restaurantId and tableId */}
           <Route path="/qr/:restaurantId/:tableId" element={<QREntry />} />
-          
+
           {/* Table Entry Route - Legacy format (kept for backward compatibility) */}
           <Route path="/table/:tableId" element={<TableEntry />} />
 
@@ -69,7 +70,7 @@ const Routes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          
+
           {/* Dedicated Customer Onboarding Route - for QR scans */}
           <Route path="/customer-onboarding" element={<Onboarding />} />
 
@@ -119,6 +120,7 @@ const Routes = () => {
             <Route path="menu/modifiers" element={<ModifierList />} />
             <Route path="tables" element={<TableManagement />} />
             <Route path="orders" element={<OrderList />} />
+            <Route path="reports" element={<Reports />} />
           </Route>
           {/* Legacy redirect */}
           <Route

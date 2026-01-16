@@ -282,4 +282,48 @@ router.get('/chart', protect, reportController.getRevenueChartData);
  */
 router.get('/order-stats', protect, reportController.getOrderStatistics);
 
+/**
+ * @swagger
+ * /api/reports/export-pdf:
+ *   get:
+ *     summary: Export report as PDF
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: restaurantId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The restaurant ID
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Start date for the report (ISO format)
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: End date for the report (ISO format)
+ *     responses:
+ *       200:
+ *         description: PDF file download
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Missing required parameters
+ *       403:
+ *         description: Access denied
+ *       500:
+ *         description: Server error
+ */
+router.get('/export-pdf', protect, reportController.exportReportPDF);
+
 module.exports = router;
