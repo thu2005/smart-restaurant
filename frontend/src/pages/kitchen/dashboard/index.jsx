@@ -121,23 +121,30 @@ const KitchenDisplaySystem = () => {
       status: mapOrderStatusToDisplay(order.status),
       priority: determinePriority(order),
       items: order.orderItems?.map(item => ({
+        id: item.id,
         name: item.menuItem?.name || "Unknown Item",
         quantity: item.quantity,
         modifiers: item.modifiers || [],
         specialInstructions: item.specialInstructions || "",
-        allergens: [] // TODO: Add allergens field to MenuItem schema (different from dietary)
+        allergens: [], // TODO: Add allergens field to MenuItem schema (different from dietary)
+        itemStatus: item.itemStatus || 'queued' // Add itemStatus
       })) || [],
       orderNotes: order.specialInstructions || ""
     };
   };
 
   const mapOrderStatusToDisplay = (status) => {
+    // Map backend status to 3 main columns
     const statusMap = {
-      'RECEIVED': 'new',
+      'SUBMITTED': 'received',
+      'PENDING': 'received',
+      'RECEIVED': 'received',
+      'ACCEPTED': 'received',
       'PREPARING': 'preparing',
+      'COOKING': 'preparing',
       'READY': 'ready'
     };
-    return statusMap[status] || status.toLowerCase();
+    return statusMap[status] || 'received';
   };
 
   const determinePriority = (order) => {
@@ -146,7 +153,6 @@ const KitchenDisplaySystem = () => {
     const isOld = orderAge > 15 * 60 * 1000; // 15 minutes
     const hasSpecialInstructions = order.specialInstructions ||
       order.orderItems?.some(item => item.specialInstructions);
-
     return (isOld || hasSpecialInstructions) ? "rush" : "normal";
   };
 
@@ -157,87 +163,39 @@ const KitchenDisplaySystem = () => {
   };
 
 
-  const calculateStats = (orderList) => {
-    // Stats are now fetched from API, but keep this for mock compatibility
-    const newCount = orderList?.filter((o) => o?.status === "new")?.length;
-    const preparingCount = orderList?.filter(
-      (o) => o?.status === "preparing"
-    )?.length;
-    const readyCount = orderList?.filter((o) => o?.status === "ready")?.length;
-
-    const totalPrepTime = orderList?.reduce((sum, order) => {
-      const elapsed = Math.floor(
-        (new Date() - new Date(order.timestamp)) / 60000
-      );
-      return sum + elapsed;
-    }, 0);
-    const avgTime =
-      orderList?.length > 0 ? Math.round(totalPrepTime / orderList?.length) : 0;
-
-    // Only update local stats if using mock data
-    if (!restaurantId) {
-      setStats({
-        newOrders: newCount,
-        preparing: preparingCount,
-        ready: readyCount,
-        avgPrepTime: avgTime,
-      });
-    }
-  };
 
   const handleStatusChange = async (orderId, newStatus) => {
+    // Legacy support for manual status change if needed, 
+    // but now mostly driven by item updates or "Mark All Ready"
     try {
-      // Map display status back to API status
-      const statusMap = {
-        'preparing': 'PREPARING',
-        'ready': 'READY'
-      };
+      const statusMap = { 'preparing': 'PREPARING', 'ready': 'READY' };
       const apiStatus = statusMap[newStatus] || newStatus;
-
       await kitchenService.updateOrderStatus(orderId, apiStatus);
-
-      // Optimistically update UI
-      setOrders((prevOrders) => {
-        const updatedOrders = prevOrders?.map((order) =>
-          order?.id === orderId ? { ...order, status: newStatus } : order
-        );
-        return updatedOrders;
-      });
-
-      // Refresh orders and stats from server
       fetchOrders(false);
       fetchStats();
-      setNotificationTrigger((prev) => prev + 1);
+      if(newStatus === 'preparing') setNotificationTrigger(prev => prev + 1);
     } catch (err) {
       console.error("Error updating order status:", err);
-      alert("Failed to update order status. Please try again.");
     }
   };
 
   const handleCompleteOrder = async (orderId) => {
+    // This function might be deprecated if Kitchen doesn't complete orders,
+    // but we keep it for now if the card calls it.
     try {
       // Mark as COMPLETED when completing
-      await kitchenService.updateOrderStatus(orderId, 'COMPLETED');
-
-      // Remove from display
-      setOrders((prevOrders) => {
-        const updatedOrders = prevOrders?.filter(
-          (order) => order?.id !== orderId
-        );
-        return updatedOrders;
-      });
-
-      fetchStats();
-    } catch (err) {
-      console.error("Error completing order:", err);
-      alert("Failed to complete order. Please try again.");
+        await kitchenService.updateOrderStatus(orderId, 'COMPLETED');
+        fetchStats();
+        fetchOrders(false);
+    } catch(err) {
+        console.error(err);
     }
   };
 
   const handleRefresh = () => {
     fetchOrders();
     fetchStats();
-    setNotificationTrigger((prev) => prev + 1);
+    setNotificationTrigger(prev => prev + 1);
   };
 
   const getFilteredOrders = () => {
@@ -269,7 +227,7 @@ const KitchenDisplaySystem = () => {
         filtered?.sort((a, b) => {
           if (a?.priority === "rush" && b?.priority !== "rush") return -1;
           if (a?.priority !== "rush" && b?.priority === "rush") return 1;
-          return new Date(a.timestamp) - new Date(b.timestamp);
+             return new Date(a.timestamp) - new Date(b.timestamp);
         });
         break;
       default:
@@ -279,38 +237,51 @@ const KitchenDisplaySystem = () => {
     return filtered;
   };
 
-  const filteredOrders = getFilteredOrders();
+  const getGroupedOrders = () => {
+      const filtered = getFilteredOrders();
+      const columns = { received: [], preparing: [], ready: [] };
+      filtered.forEach(order => {
+          const status = order.status === 'new' ? 'received' : order.status;
+          if (columns[status]) {
+              columns[status].push(order);
+          } else {
+              columns.received.push(order);
+          }
+      });
+      return columns;
+  };
+
+  const groupedOrders = getGroupedOrders();
 
   return (
     <>
       <Helmet>
         <title>Kitchen Display System - Smart Restaurant</title>
-        <meta
-          name="description"
-          content="Real-time kitchen order management and preparation tracking system for restaurant staff"
-        />
       </Helmet>
       <SoundNotification enabled={soundEnabled} trigger={notificationTrigger} />
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <KitchenDisplayNav />
 
-        <main className="pt-20 pb-8 px-4 md:px-6 lg:px-8">
-          <div className="max-w-[1920px] mx-auto space-y-6">
-            <div className="flex items-center justify-between">
+        <main className="flex-1 pt-20 pb-4 px-4 md:px-6 overflow-x-auto">
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-                  Kitchen Display System
+                <h1 className="text-2xl font-heading font-bold text-foreground">
+                  Kitchen Display
                 </h1>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  Real-time order management and preparation tracking
+                <p className="text-sm text-muted-foreground">
+                  Real-time Order Board
                 </p>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 bg-success/10 rounded-md">
-                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                <span className="text-sm font-medium text-success">
-                  Live Updates
-                </span>
-              </div>
+               <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-success/10 rounded-full border border-success/20">
+                      <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                      <span className="text-xs font-bold text-success uppercase">Live</span>
+                  </div>
+                  <button onClick={handleRefresh} className="p-2 hover:bg-muted rounded-full transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                  </button>
+               </div>
             </div>
 
             <OrderStats stats={stats} />
@@ -325,34 +296,93 @@ const KitchenDisplaySystem = () => {
               onRefresh={handleRefresh}
             />
 
-            {loading && (
-              <div className="text-center py-12">
-                <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                <p className="text-muted-foreground mt-4">Loading orders...</p>
-              </div>
-            )}
-
-            {error && (
-              <div className="bg-error/10 border border-error text-error px-4 py-3 rounded-lg mb-4">
-                {error}
-              </div>
-            )}
-
-            {!loading && !error && filteredOrders?.length === 0 ? (
-              <EmptyState onRefresh={handleRefresh} />
+            {loading && !orders.length ? (
+               <div className="flex-1 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+               </div>
             ) : (
-              !loading && !error && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-                  {filteredOrders?.map((order) => (
-                    <OrderCard
-                      key={order?.id}
-                      order={order}
-                      onStatusChange={handleStatusChange}
-                      onComplete={handleCompleteOrder}
-                    />
-                  ))}
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0 mt-6">
+                    {/* Received Column */}
+                    <div className="flex flex-col h-full bg-muted/30 rounded-xl border border-border/60 overflow-hidden">
+                        <div className="p-4 bg-muted/40 border-b border-border/60 flex items-center justify-between">
+                            <h2 className="font-bold text-lg flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-accent"></span>
+                                Received
+                                <span className="bg-background text-foreground text-xs px-2 py-0.5 rounded-full border border-border shadow-sm">
+                                    {groupedOrders.received.length}
+                                </span>
+                            </h2>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                           {groupedOrders.received.map(order => (
+                               <OrderCard 
+                                key={order.id} 
+                                order={order} 
+                                onStatusChange={handleStatusChange}
+                                onComplete={handleCompleteOrder} // Pass pass legacy handler
+                                onRefresh={handleRefresh} // Pass refresh so item updates trigger reload
+                               />
+                           ))}
+                           {groupedOrders.received.length === 0 && (
+                               <div className="text-center py-10 text-muted-foreground opacity-50 italic">No new orders</div>
+                           )}
+                        </div>
+                    </div>
+
+                    {/* Preparing Column */}
+                    <div className="flex flex-col h-full bg-muted/30 rounded-xl border border-border/60 overflow-hidden">
+                        <div className="p-4 bg-muted/40 border-b border-border/60 flex items-center justify-between">
+                            <h2 className="font-bold text-lg flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-warning animate-pulse"></span>
+                                Preparing
+                                <span className="bg-background text-foreground text-xs px-2 py-0.5 rounded-full border border-border shadow-sm">
+                                    {groupedOrders.preparing.length}
+                                </span>
+                            </h2>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                           {groupedOrders.preparing.map(order => (
+                               <OrderCard 
+                                key={order.id} 
+                                order={order} 
+                                onStatusChange={handleStatusChange}
+                                onComplete={handleCompleteOrder}
+                                onRefresh={handleRefresh}
+                               />
+                           ))}
+                           {groupedOrders.preparing.length === 0 && (
+                               <div className="text-center py-10 text-muted-foreground opacity-50 italic">Kitchen is clear</div>
+                           )}
+                        </div>
+                    </div>
+
+                    {/* Ready Column */}
+                    <div className="flex flex-col h-full bg-muted/30 rounded-xl border border-border/60 overflow-hidden">
+                        <div className="p-4 bg-muted/40 border-b border-border/60 flex items-center justify-between">
+                            <h2 className="font-bold text-lg flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-success"></span>
+                                Ready
+                                <span className="bg-background text-foreground text-xs px-2 py-0.5 rounded-full border border-border shadow-sm">
+                                    {groupedOrders.ready.length}
+                                </span>
+                            </h2>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                           {groupedOrders.ready.map(order => (
+                               <OrderCard 
+                                key={order.id} 
+                                order={order} 
+                                onStatusChange={handleStatusChange}
+                                onComplete={handleCompleteOrder}
+                                onRefresh={handleRefresh}
+                               />
+                           ))}
+                           {groupedOrders.ready.length === 0 && (
+                               <div className="text-center py-10 text-muted-foreground opacity-50 italic">No orders ready</div>
+                           )}
+                        </div>
+                    </div>
                 </div>
-              )
             )}
           </div>
         </main>

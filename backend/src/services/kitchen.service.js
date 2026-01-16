@@ -134,6 +134,76 @@ class KitchenService {
             avgPrepTime
         };
     }
+    /**
+     * Update individual item status and propagate to order status
+     */
+    async updateOrderItemStatus(orderId, itemId, itemStatus) {
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Update the item
+            await tx.orderItem.update({
+                where: { id: itemId },
+                data: { itemStatus }
+            });
+
+            // 2. Fetch order and all items to decide order status
+            const order = await tx.order.findUnique({
+                where: { id: orderId },
+                include: { orderItems: true }
+            });
+
+            if (!order) throw new Error('Order not found');
+
+            const items = order.orderItems;
+            
+            // Logic to determine new order status
+            let newOrderStatus = order.status;
+
+            // Count status
+            const totalItems = items.length;
+            const readyItems = items.filter(i => i.itemStatus === 'ready').length;
+            const cookingItems = items.filter(i => i.itemStatus === 'cooking').length;
+            const cancelledItems = items.filter(i => i.itemStatus === 'cancelled').length;
+
+            // Determine status
+            const activeItems = totalItems - cancelledItems;
+            
+            if (activeItems > 0 && readyItems === activeItems) {
+                // All non-cancelled items are ready -> Order is READY
+                newOrderStatus = 'READY';
+            } else if (cookingItems > 0 || readyItems > 0) {
+                // At least one item is cooking or ready -> Order is PREPARING
+                // (Only update if current status is RECEIVED or less "advanced")
+                if (['RECEIVED', 'SUBMITTED', 'PENDING'].includes(order.status)) {
+                    newOrderStatus = 'PREPARING';
+                }
+            }
+            
+            // Only update order if status has changed
+            if (newOrderStatus !== order.status) {
+                await tx.order.update({
+                    where: { id: orderId },
+                    data: { 
+                        status: newOrderStatus,
+                        // Set timestamps
+                        preparingAt: newOrderStatus === 'PREPARING' && !order.preparingAt ? new Date() : order.preparingAt,
+                        readyAt: newOrderStatus === 'READY' && !order.readyAt ? new Date() : order.readyAt
+                    }
+                });
+            }
+
+            // Return fully populated order
+            return await tx.order.findUnique({
+                where: { id: orderId },
+                include: {
+                    orderItems: { include: { menuItem: true } },
+                    table: true,
+                    customer: true
+                }
+            });
+        });
+
+        return result;
+    }
 }
 
 module.exports = new KitchenService();

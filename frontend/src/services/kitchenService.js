@@ -41,6 +41,13 @@ const kitchenService = {
     getKitchenStats: async (restaurantId) => {
         return api.get('/kitchen/stats', { params: { restaurantId } });
     },
+
+    /**
+     * Update individual item status
+     */
+     updateOrderItemStatus: async (orderId, itemId, itemStatus) => {
+        return api.put(`/kitchen/orders/${orderId}/items/${itemId}/status`, { itemStatus });
+    },
 };
 
 export default kitchenService;
