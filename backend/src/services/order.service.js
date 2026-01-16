@@ -360,16 +360,22 @@ class OrderService {
             updateData.readyAt = now;
         } else if (newStatus === 'SERVED') {
             updateData.servedAt = now;
-            // Update all items to 'served'
+            // Update all non-rejected items to 'served'
             await prisma.orderItem.updateMany({
-                where: { orderId: orderId },
+                where: { 
+                    orderId: orderId,
+                    itemStatus: { not: 'rejected' }
+                },
                 data: { itemStatus: 'served' }
             });
         } else if (newStatus === 'COMPLETED') {
             updateData.completedAt = now;
-             // Update all items to 'completed'
+             // Update all non-rejected items to 'completed'
              await prisma.orderItem.updateMany({
-                where: { orderId: orderId },
+                where: { 
+                    orderId: orderId,
+                    itemStatus: { not: 'rejected' }
+                },
                 data: { itemStatus: 'completed' }
             });
         }
