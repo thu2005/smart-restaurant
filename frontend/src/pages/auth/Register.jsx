@@ -61,8 +61,8 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-card p-8 rounded-lg shadow-md border border-border">
         <div className="text-center">
           <div className="mx-auto h-40 w-40 bg-primary-50 rounded-full flex items-center justify-center mb-4 shadow-inner">
             <img
@@ -71,10 +71,10 @@ const Register = () => {
               className="h-30 w-30 object-contain"
             />
           </div>
-          <h2 className="mt-[-20px] text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-[-20px] text-3xl font-extrabold text-foreground">
             Create an account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Join Smart Restaurant today
           </p>
         </div>
@@ -138,7 +138,7 @@ const Register = () => {
                 })}
               />
               {!errors.password && (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Must be 8+ characters with uppercase, lowercase, number, and special character
                 </p>
               )}
@@ -166,7 +166,7 @@ const Register = () => {
           </div>
 
           <div className="text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
+            <span className="text-muted-foreground">Already have an account? </span>
             <Link
               to="/login"
               className="font-medium text-primary hover:text-primary-600"
