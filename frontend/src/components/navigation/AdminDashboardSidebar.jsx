@@ -178,7 +178,7 @@ const AdminDashboardSidebar = ({
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
           {(isSuperAdmin ? superAdminNavigationItems : navigationItems)?.map((section) => (
             <div key={section?.section} className="mb-6">
               {!collapsed && (
