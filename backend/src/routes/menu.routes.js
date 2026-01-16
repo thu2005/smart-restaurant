@@ -221,6 +221,42 @@ router.get("/:restaurantId/categories", menuController.getCategories);
 
 /**
  * @swagger
+ * /api/menu/{restaurantId}/items/popular:
+ *   get:
+ *     summary: Get popular items based on order count
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: path
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The restaurant ID
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Maximum number of popular items to return
+ *     responses:
+ *       200:
+ *         description: Popular items retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MenuItem'
+ */
+router.get("/:restaurantId/items/popular", menuController.getPopularItems);
+
+/**
+ * @swagger
  * /api/menu/{restaurantId}/items:
  *   get:
  *     summary: Get all menu items for a restaurant (Public)
@@ -287,6 +323,177 @@ router.get("/:restaurantId/categories", menuController.getCategories);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:restaurantId/items", menuController.getMenuItems);
+
+/**
+ * @swagger
+ * /api/menu/{restaurantId}/categories/{categoryId}/items:
+ *   get:
+ *     summary: Get menu items by category
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: path
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The restaurant ID
+ *       - in: path
+ *         name: categoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The category ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Items per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [orderCount, price, price_desc, name]
+ *           default: orderCount
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: Items retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MenuItem'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       404:
+ *         description: Category not found
+ */
+router.get("/:restaurantId/categories/:categoryId/items", menuController.getItemsByCategory);
+
+/**
+ * @swagger
+ * /api/menu/{restaurantId}/items/{id}/nutrition:
+ *   get:
+ *     summary: Get nutritional information for a menu item
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: path
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The restaurant ID
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The menu item ID
+ *     responses:
+ *       200:
+ *         description: Nutritional information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     nutritionalInfo:
+ *                       type: object
+ *                       properties:
+ *                         calories:
+ *                           type: number
+ *                         protein:
+ *                           type: string
+ *                         carbs:
+ *                           type: string
+ *                         fat:
+ *                           type: string
+ *                         fiber:
+ *                           type: string
+ *                         sodium:
+ *                           type: string
+ *                         sugar:
+ *                           type: string
+ *                         cholesterol:
+ *                           type: string
+ *                     ingredients:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     allergens:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *       404:
+ *         description: Menu item not found
+ */
+router.get("/:restaurantId/items/:id/nutrition", menuController.getNutritionalInfo);
+
+/**
+ * @swagger
+ * /api/menu/{restaurantId}/items/{id}/related:
+ *   get:
+ *     summary: Get related menu items based on category
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: path
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The restaurant ID
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The menu item ID
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 6
+ *         description: Maximum number of related items to return
+ *     responses:
+ *       200:
+ *         description: Related items retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MenuItem'
+ *       404:
+ *         description: Menu item not found
+ */
+router.get("/:restaurantId/items/:id/related", menuController.getRelatedItems);
 
 /**
  * @swagger
@@ -1486,6 +1693,82 @@ router.post(
   protect,
   authorize("ADMIN", "SUPER_ADMIN"),
   menuController.attachModifierGroupToItem
+);
+
+/**
+ * @swagger
+ * /api/menu/items/{id}/nutrition:
+ *   put:
+ *     summary: Update nutritional information for a menu item (Admin only)
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The menu item ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nutritionalInfo:
+ *                 type: object
+ *                 properties:
+ *                   calories:
+ *                     type: number
+ *                     example: 450
+ *                   protein:
+ *                     type: string
+ *                     example: "42g"
+ *                   carbs:
+ *                     type: string
+ *                     example: "28g"
+ *                   fat:
+ *                     type: string
+ *                     example: "26g"
+ *                   fiber:
+ *                     type: string
+ *                     example: "4g"
+ *                   sodium:
+ *                     type: string
+ *                     example: "680mg"
+ *                   sugar:
+ *                     type: string
+ *                     example: "3g"
+ *                   cholesterol:
+ *                     type: string
+ *                     example: "95mg"
+ *               ingredients:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["Salmon", "Asparagus", "Lemon", "Butter"]
+ *               allergens:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["Fish", "Dairy"]
+ *     responses:
+ *       200:
+ *         description: Nutritional information updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Menu item not found
+ */
+router.put(
+  "/items/:id/nutrition",
+  protect,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  menuController.updateNutritionalInfo
 );
 
 module.exports = router;
