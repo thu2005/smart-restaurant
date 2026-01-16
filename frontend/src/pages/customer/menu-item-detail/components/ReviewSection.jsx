@@ -29,13 +29,10 @@ const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
                   key={star}
                   name="Star"
                   size={20}
-                  color={
-                    star <= Math.round(overallRating)
-                      ? "var(--color-warning)"
-                      : "var(--color-muted)"
-                  }
                   className={
-                    star <= Math.round(overallRating) ? "fill-current" : ""
+                    star <= Math.round(overallRating)
+                      ? "text-[var(--color-warning)] fill-current"
+                      : "text-[var(--color-muted)]"
                   }
                 />
               ))}
@@ -97,12 +94,11 @@ const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
                         key={star}
                         name="Star"
                         size={14}
-                        color={
+                        className={
                           star <= review?.rating
-                            ? "var(--color-warning)"
-                            : "var(--color-muted)"
+                            ? "text-[var(--color-warning)] fill-current"
+                            : "text-[var(--color-muted)]"
                         }
-                        className={star <= review?.rating ? "fill-current" : ""}
                       />
                     ))}
                   </div>

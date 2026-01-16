@@ -1,17 +1,21 @@
 import React, { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 
 const QREntry = () => {
   const { restaurantId, tableId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (restaurantId && tableId) {
-      // Store both restaurantId and tableId in localStorage
+      const tableNumber = searchParams.get("tableNumber");
+
+      // Store in localStorage
       localStorage.setItem("restaurantId", restaurantId);
       localStorage.setItem("tableId", tableId);
-
-      console.log("QR Scan detected:", { restaurantId, tableId });
+      if (tableNumber) {
+        localStorage.setItem("tableNumber", tableNumber);
+      }
 
       // Check if user is already authenticated
       const token = localStorage.getItem("token");
@@ -27,7 +31,10 @@ const QREntry = () => {
         navigate("/admin/menu/items", { replace: true });
       } else {
         // Not logged in - show onboarding (force showing it by redirecting to a dedicated route)
-        navigate(`/customer-onboarding?restaurantId=${restaurantId}&tableId=${tableId}`, { replace: true });
+        const onboardingUrl = tableNumber 
+          ? `/customer-onboarding?restaurantId=${restaurantId}&tableId=${tableId}&tableNumber=${tableNumber}`
+          : `/customer-onboarding?restaurantId=${restaurantId}&tableId=${tableId}`;
+        navigate(onboardingUrl, { replace: true });
       }
     } else {
       // If parameters are missing, go to root

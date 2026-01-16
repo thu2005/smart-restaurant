@@ -187,3 +187,71 @@ exports.getWaiterOrders = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Get active order for a table
+ * Used by frontend to check if table has ongoing order
+ */
+exports.getActiveOrderByTable = async (req, res, next) => {
+    try {
+        const { tableId, restaurantId } = req.query;
+        
+        if (!tableId || !restaurantId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'tableId and restaurantId are required' 
+            });
+        }
+
+        const order = await orderService.getActiveOrderByTable(tableId, restaurantId);
+        
+        res.status(200).json({ 
+            success: true, 
+            data: order // null if no active order
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Add items to existing order
+ * Maintains single order per table session
+ */
+exports.addItemsToOrder = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, errors: errors.array() });
+        }
+
+        const { orderId } = req.params;
+        const { items } = req.body; // Array of { menuItemId, quantity, modifiers, specialInstructions }
+
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'items array is required and must not be empty' 
+            });
+        }
+
+        const updatedOrder = await orderService.addItemsToOrder(orderId, items);
+
+        // Emit socket event for new items
+        const io = req.app.get('io');
+        if (io) {
+            io.to(updatedOrder.restaurantId).emit('order_items_added', {
+                orderId: updatedOrder.id,
+                orderNumber: updatedOrder.orderNumber,
+                newItemsCount: items.length
+            });
+        }
+
+        res.status(200).json({ success: true, data: updatedOrder });
+    } catch (error) {
+        if (error.message.includes('not found') || error.message.includes('Cannot add items')) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};

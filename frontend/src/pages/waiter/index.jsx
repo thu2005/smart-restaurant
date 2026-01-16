@@ -345,7 +345,7 @@ const WaiterDashboard = () => {
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-3">
                                                 <div className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-bold">
-                                                    T{tableData.table.tableNumber}
+                                                    {tableData.table.tableNumber}
                                                 </div>
                                                 <div>
                                                     <p className="font-semibold text-foreground">

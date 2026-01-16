@@ -35,8 +35,8 @@ const Login = () => {
       toast.success("Login successful!");
 
       // Check if user came from QR scan (has restaurantId and tableId)
-      const restaurantId = localStorage.getItem('restaurantId');
-      const tableId = localStorage.getItem('tableId');
+      const restaurantId = localStorage.getItem("restaurantId");
+      const tableId = localStorage.getItem("tableId");
 
       // Determine redirect path based on role if no specific return url
       let targetPath = from;
@@ -120,6 +120,19 @@ const Login = () => {
             <Button type="submit" className="w-full" isLoading={isLoading}>
               Sign in
             </Button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                Sign up here
+              </button>
+            </p>
           </div>
 
           <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-700">
