@@ -38,6 +38,7 @@ import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
 import Reports from "./pages/admin/reports";
+import Settings from "./pages/admin/settings";
 
 // Waiter Pages
 import WaiterDashboard from "./pages/waiter";
@@ -110,7 +111,7 @@ const Routes = () => {
               element={<Navigate to="/admin/menu/items" replace />}
             />
             <Route path="dashboard" element={<AdminDashboard />} />
-            
+
             {/* Kitchen Display for Admin - with sidebar */}
             <Route path="kitchen/dashboard" element={<KitchenDashboard />} />
 
@@ -121,6 +122,7 @@ const Routes = () => {
             <Route path="tables" element={<TableManagement />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           {/* Legacy redirect */}
           <Route

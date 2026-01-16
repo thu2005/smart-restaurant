@@ -1,0 +1,78 @@
+{
+    "settings": {
+        "title": "Cài Đặt",
+        "subtitle": "Quản lý tài khoản và tùy chọn nhà hàng",
+        "general": {
+            "title": "Chung",
+            "theme": {
+                "label": "Giao Diện",
+                "description": "Chọn giao diện ưa thích",
+                "light": "Sáng",
+                "dark": "Tối"
+            },
+            "language": {
+                "label": "Ngôn Ngữ",
+                "description": "Chọn ngôn ngữ ưa thích",
+                "english": "Tiếng Anh",
+                "vietnamese": "Tiếng Việt"
+            }
+        },
+        "account": {
+            "title": "Hồ Sơ Tài Khoản",
+            "fullName": "Họ và Tên",
+            "email": "Địa Chỉ Email",
+            "phone": "Số Điện Thoại",
+            "avatar": "Ảnh Đại Diện",
+            "changePassword": "Đổi Mật Khẩu",
+            "updateProfile": "Cập Nhật Hồ Sơ",
+            "uploadAvatar": "Tải Ảnh Lên",
+            "removeAvatar": "Xóa Ảnh"
+        },
+        "restaurant": {
+            "title": "Hồ Sơ Nhà Hàng",
+            "adminOnly": "Chỉ Quản Trị Viên",
+            "name": "Tên Nhà Hàng",
+            "description": "Mô Tả",
+            "logo": "Logo Nhà Hàng",
+            "phone": "Điện Thoại",
+            "email": "Email",
+            "address": "Địa Chỉ",
+            "timezone": "Múi Giờ",
+            "currency": "Tiền Tệ",
+            "businessHours": "Giờ Làm Việc",
+            "updateRestaurant": "Cập Nhật Nhà Hàng",
+            "uploadLogo": "Tải Logo Lên"
+        },
+        "notifications": {
+            "title": "Thông Báo",
+            "comingSoon": "Sắp Ra Mắt"
+        },
+        "advanced": {
+            "title": "Nâng Cao",
+            "comingSoon": "Sắp Ra Mắt"
+        },
+        "actions": {
+            "save": "Lưu Thay Đổi",
+            "cancel": "Hủy",
+            "update": "Cập Nhật",
+            "delete": "Xóa",
+            "upload": "Tải Lên"
+        },
+        "messages": {
+            "updateSuccess": "Cập nhật cài đặt thành công",
+            "updateError": "Không thể cập nhật cài đặt",
+            "uploadSuccess": "Tải tệp lên thành công",
+            "uploadError": "Không thể tải tệp lên"
+        }
+    },
+    "password": {
+        "change": "Đổi Mật Khẩu",
+        "current": "Mật Khẩu Hiện Tại",
+        "new": "Mật Khẩu Mới",
+        "confirm": "Xác Nhận Mật Khẩu Mới",
+        "requirements": "Mật khẩu phải có ít nhất 8 ký tự",
+        "mismatch": "Mật khẩu không khớp",
+        "success": "Đổi mật khẩu thành công",
+        "error": "Không thể đổi mật khẩu"
+    }
+}

@@ -1,0 +1,78 @@
+{
+    "settings": {
+        "title": "Settings",
+        "subtitle": "Manage your account and restaurant preferences",
+        "general": {
+            "title": "General",
+            "theme": {
+                "label": "Theme",
+                "description": "Choose your preferred theme",
+                "light": "Light",
+                "dark": "Dark"
+            },
+            "language": {
+                "label": "Language",
+                "description": "Select your preferred language",
+                "english": "English",
+                "vietnamese": "Vietnamese"
+            }
+        },
+        "account": {
+            "title": "Account Profile",
+            "fullName": "Full Name",
+            "email": "Email Address",
+            "phone": "Phone Number",
+            "avatar": "Profile Picture",
+            "changePassword": "Change Password",
+            "updateProfile": "Update Profile",
+            "uploadAvatar": "Upload Avatar",
+            "removeAvatar": "Remove Avatar"
+        },
+        "restaurant": {
+            "title": "Restaurant Profile",
+            "adminOnly": "Admin Only",
+            "name": "Restaurant Name",
+            "description": "Description",
+            "logo": "Restaurant Logo",
+            "phone": "Phone",
+            "email": "Email",
+            "address": "Address",
+            "timezone": "Timezone",
+            "currency": "Currency",
+            "businessHours": "Business Hours",
+            "updateRestaurant": "Update Restaurant",
+            "uploadLogo": "Upload Logo"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "comingSoon": "Coming Soon"
+        },
+        "advanced": {
+            "title": "Advanced",
+            "comingSoon": "Coming Soon"
+        },
+        "actions": {
+            "save": "Save Changes",
+            "cancel": "Cancel",
+            "update": "Update",
+            "delete": "Delete",
+            "upload": "Upload"
+        },
+        "messages": {
+            "updateSuccess": "Settings updated successfully",
+            "updateError": "Failed to update settings",
+            "uploadSuccess": "File uploaded successfully",
+            "uploadError": "Failed to upload file"
+        }
+    },
+    "password": {
+        "change": "Change Password",
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm New Password",
+        "requirements": "Password must be at least 8 characters",
+        "mismatch": "Passwords do not match",
+        "success": "Password changed successfully",
+        "error": "Failed to change password"
+    }
+}
