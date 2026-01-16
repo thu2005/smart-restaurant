@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import KitchenDisplayNav from "../../../components/navigation/KitchenDisplayNav";
 import OrderCard from "./components/OrderCard";
@@ -11,6 +12,7 @@ import kitchenService from "../../../services/kitchenService";
 import authService from "../../../services/authService";
 
 const KitchenDisplaySystem = () => {
+  const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -18,6 +20,9 @@ const KitchenDisplaySystem = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [notificationTrigger, setNotificationTrigger] = useState(0);
   const [loading, setLoading] = useState(false);
+  
+  // Check if we're in admin layout (don't show kitchen header)
+  const isAdminView = location.pathname.startsWith('/admin/kitchen');
   const [error, setError] = useState(null);
   const [socket, setSocket] = useState(null);
   const [stats, setStats] = useState({
@@ -262,9 +267,10 @@ const KitchenDisplaySystem = () => {
       </Helmet>
       <SoundNotification enabled={soundEnabled} trigger={notificationTrigger} />
       <div className="min-h-screen bg-background flex flex-col">
-        <KitchenDisplayNav />
+        {/* Only show KitchenDisplayNav when NOT in admin layout */}
+        {!isAdminView && <KitchenDisplayNav />}
 
-        <main className="flex-1 pt-20 pb-4 px-4 md:px-6 overflow-x-auto">
+        <main className={`flex-1 pb-4 px-4 md:px-6 overflow-x-auto ${!isAdminView ? 'pt-20' : 'pt-6'}`}>
           <div className="h-full flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <div>

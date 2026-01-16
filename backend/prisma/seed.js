@@ -50,84 +50,84 @@ async function main() {
   console.log("👥 Creating Users...");
   const hashedPassword = await bcrypt.hash("password123", 10); // Strong password
 
-  // Super Admin
-  await prisma.user.create({
-    data: {
-      email: "superadmin@system.com",
-      password: hashedPassword,
-      fullName: "System Administrator",
-      role: "SUPER_ADMIN",
-      isActive: true,
-      emailVerified: true,
-    },
-  });
+    // Super Admin
+    await prisma.user.create({
+        data: {
+            email: 'superadmin@system.com',
+            password: hashedPassword,
+            fullName: 'Karasuma Renya',
+            role: 'SUPER_ADMIN',
+            isActive: true,
+            emailVerified: true
+        }
+    });
 
-  // Restaurant Admin
-  const admin = await prisma.user.create({
-    data: {
-      email: "admin@cafepoirot.com",
-      password: hashedPassword,
-      fullName: "Nguyen Van Admin",
-      role: "ADMIN",
-      restaurantId: restaurant.id,
-      isActive: true,
-      emailVerified: true,
-      phone: "+84 90 123 4567",
-    },
-  });
+    // Restaurant Admin
+    const admin = await prisma.user.create({
+        data: {
+            email: 'admin@cafepoirot.com',
+            password: hashedPassword,
+            fullName: 'Juzo Megure',
+            role: 'ADMIN',
+            restaurantId: restaurant.id,
+            isActive: true,
+            emailVerified: true,
+            phone: '+84 90 123 4567'
+        }
+    });
 
-  // Waiter
-  const waiter = await prisma.user.create({
-    data: {
-      email: "waiter@cafepoirot.com",
-      password: hashedPassword,
-      fullName: "Tran Thi Waiter",
-      role: "WAITER",
-      restaurantId: restaurant.id,
-      isActive: true,
-      emailVerified: true,
-      phone: "+84 90 234 5678",
-    },
-  });
+    // Waiter
+    const waiter = await prisma.user.create({
+        data: {
+            email: 'waiter@cafepoirot.com',
+            password: hashedPassword,
+            fullName: 'Amuro Tooru',
+            role: 'WAITER',
+            restaurantId: restaurant.id,
+            isActive: true,
+            emailVerified: true,
+            phone: '+84 90 234 5678'
+        }
+    });
 
-  // Kitchen Staff
-  const kitchen = await prisma.user.create({
-    data: {
-      email: "chef@cafepoirot.com",
-      password: hashedPassword,
-      fullName: "Le Van Chef",
-      role: "KITCHEN",
-      restaurantId: restaurant.id,
-      isActive: true,
-      emailVerified: true,
-      phone: "+84 90 345 6789",
-    },
-  });
+    // Kitchen Staff
+    const kitchen = await prisma.user.create({
+        data: {
+            email: 'chef@cafepoirot.com',
+            password: hashedPassword,
+            fullName: 'Yusaku Kudo',
+            role: 'KITCHEN',
+            restaurantId: restaurant.id,
+            isActive: true,
+            emailVerified: true,
+            phone: '+84 90 345 6789'
+        }
+    });
 
-  // Customers
-  const customer1 = await prisma.user.create({
-    data: {
-      email: "customer1@gmail.com",
-      password: hashedPassword,
-      fullName: "Pham Minh Khach",
-      role: "CUSTOMER",
-      isActive: true,
-      emailVerified: true,
-      phone: "+84 90 456 7890",
-    },
-  });
+    // Customers
+    const customer1 = await prisma.user.create({
+        data: {
+            email: 'customer1@gmail.com',
+            password: hashedPassword,
+            fullName: 'Hattori Heij',
+            role: 'CUSTOMER',
+            isActive: true,
+            emailVerified: true,
+            phone: '+84 90 456 7890'
+        }
+    });
 
-  const customer2 = await prisma.user.create({
-    data: {
-      email: "customer2@gmail.com",
-      password: hashedPassword,
-      fullName: "Hoang Thi Customer",
-      role: "CUSTOMER",
-      isActive: true,
-      emailVerified: true,
-      phone: "+84 90 567 8901",
-    },
-  });
+    const customer2 = await prisma.user.create({
+        data: {
+            email: 'customer2@gmail.com',
+            password: hashedPassword,
+            fullName: 'Kazuha Toyama',
+            role: 'CUSTOMER',
+            isActive: true,
+            emailVerified: true,
+            phone: '+84 90 567 8901'
+        }
+    });
 
     // 4. Create Tables
     console.log('🪑 Creating Tables...');
@@ -276,6 +276,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: false,
       dietary: ["gluten-free"],
+      nutritionalInfo: {
+        calories: 180,
+        protein: "12g",
+        carbs: "22g",
+        fat: "4g",
+        fiber: "2g",
+        sodium: "420mg",
+        sugar: "3g",
+        cholesterol: "45mg"
+      },
+      ingredients: ["Rice Paper", "Shrimp", "Pork", "Lettuce", "Mint", "Vermicelli Noodles", "Peanuts", "Hoisin Sauce"],
+      allergens: ["Shellfish", "Peanuts", "Soy"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 145,
@@ -315,6 +327,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: true,
       dietary: [],
+      nutritionalInfo: {
+        calories: 320,
+        protein: "18g",
+        carbs: "28g",
+        fat: "15g",
+        fiber: "1g",
+        sodium: "580mg",
+        sugar: "2g",
+        cholesterol: "210mg"
+      },
+      ingredients: ["Squid", "Flour", "Eggs", "Breadcrumbs", "Garlic", "Mayonnaise", "Lemon", "Parsley"],
+      allergens: ["Seafood", "Gluten", "Eggs", "Dairy"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 98,
@@ -351,6 +375,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: true,
       dietary: ["dairy-free"],
+      nutritionalInfo: {
+        calories: 450,
+        protein: "28g",
+        carbs: "52g",
+        fat: "12g",
+        fiber: "3g",
+        sodium: "1850mg",
+        sugar: "5g",
+        cholesterol: "65mg"
+      },
+      ingredients: ["Beef Bones", "Rice Noodles", "Beef Sirloin", "Star Anise", "Cinnamon", "Ginger", "Onion", "Basil", "Lime", "Bean Sprouts"],
+      allergens: ["Gluten"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 234,
@@ -393,6 +429,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: false,
       dietary: ["vegetarian"],
+      nutritionalInfo: {
+        calories: 280,
+        protein: "8g",
+        carbs: "18g",
+        fat: "20g",
+        fiber: "3g",
+        sodium: "690mg",
+        sugar: "2g",
+        cholesterol: "35mg"
+      },
+      ingredients: ["Romaine Lettuce", "Parmesan Cheese", "Croutons", "Anchovy", "Garlic", "Egg Yolk", "Lemon Juice", "Olive Oil"],
+      allergens: ["Dairy", "Gluten", "Eggs", "Fish"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 67,
@@ -429,6 +477,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: true,
       dietary: ["gluten-free", "dairy-free"],
+      nutritionalInfo: {
+        calories: 520,
+        protein: "42g",
+        carbs: "28g",
+        fat: "26g",
+        fiber: "4g",
+        sodium: "680mg",
+        sugar: "3g",
+        cholesterol: "95mg"
+      },
+      ingredients: ["Norwegian Salmon", "Asparagus", "Potatoes", "Butter", "Lemon", "Garlic", "Olive Oil", "Thyme"],
+      allergens: ["Fish", "Dairy"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 189,
@@ -471,6 +531,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: true,
       dietary: ["gluten-free", "dairy-free"],
+      nutritionalInfo: {
+        calories: 680,
+        protein: "52g",
+        carbs: "8g",
+        fat: "48g",
+        fiber: "1g",
+        sodium: "920mg",
+        sugar: "2g",
+        cholesterol: "165mg"
+      },
+      ingredients: ["Wagyu Beef", "Black Pepper", "Butter", "Garlic", "Rosemary", "Red Wine", "Beef Stock"],
+      allergens: ["Dairy"],
       isAvailable: true,
       stockStatus: "low_stock",
       orderCount: 156,
@@ -513,6 +585,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: false,
       dietary: ["gluten-free", "dairy-free"],
+      nutritionalInfo: {
+        calories: 580,
+        protein: "35g",
+        carbs: "62g",
+        fat: "18g",
+        fiber: "5g",
+        sodium: "1240mg",
+        sugar: "8g",
+        cholesterol: "85mg"
+      },
+      ingredients: ["Chicken Breast", "Coconut Milk", "Green Curry Paste", "Bamboo Shoots", "Thai Basil", "Jasmine Rice", "Fish Sauce", "Palm Sugar"],
+      allergens: ["Fish"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 92,
@@ -551,6 +635,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: false,
       dietary: ["vegan", "vegetarian", "gluten-free", "dairy-free"],
+      nutritionalInfo: {
+        calories: 420,
+        protein: "16g",
+        carbs: "58g",
+        fat: "14g",
+        fiber: "12g",
+        sodium: "540mg",
+        sugar: "9g",
+        cholesterol: "0mg"
+      },
+      ingredients: ["Quinoa", "Chickpeas", "Zucchini", "Bell Peppers", "Eggplant", "Tahini", "Lemon", "Garlic", "Parsley"],
+      allergens: ["Sesame"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 54,
@@ -587,6 +683,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: false,
       dietary: ["gluten-free"],
+      nutritionalInfo: {
+        calories: 380,
+        protein: "32g",
+        carbs: "24g",
+        fat: "18g",
+        fiber: "2g",
+        sodium: "890mg",
+        sugar: "2g",
+        cholesterol: "285mg"
+      },
+      ingredients: ["Jumbo Shrimp", "Butter", "Garlic", "White Wine", "Parsley", "Lemon", "Crusty Bread"],
+      allergens: ["Shellfish", "Dairy", "Gluten"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 123,
@@ -626,6 +734,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: true,
       dietary: [],
+      nutritionalInfo: {
+        calories: 720,
+        protein: "48g",
+        carbs: "12g",
+        fat: "52g",
+        fiber: "1g",
+        sodium: "1580mg",
+        sugar: "3g",
+        cholesterol: "320mg"
+      },
+      ingredients: ["Whole Lobster", "Heavy Cream", "Brandy", "Mushrooms", "Gruyere Cheese", "Butter", "Shallots", "Mustard"],
+      allergens: ["Shellfish", "Dairy", "Alcohol"],
       isAvailable: false,
       stockStatus: "available",
       orderCount: 23,
@@ -662,6 +782,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: false,
       dietary: ["vegetarian", "gluten-free"],
+      nutritionalInfo: {
+        calories: 150,
+        protein: "3g",
+        carbs: "24g",
+        fat: "4g",
+        fiber: "0g",
+        sodium: "45mg",
+        sugar: "22g",
+        cholesterol: "15mg"
+      },
+      ingredients: ["Vietnamese Coffee", "Condensed Milk", "Ice"],
+      allergens: ["Dairy"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 312,
@@ -699,6 +831,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: false,
       dietary: ["vegetarian", "gluten-free"],
+      nutritionalInfo: {
+        calories: 220,
+        protein: "6g",
+        carbs: "48g",
+        fat: "2g",
+        fiber: "3g",
+        sodium: "75mg",
+        sugar: "42g",
+        cholesterol: "8mg"
+      },
+      ingredients: ["Fresh Mango", "Greek Yogurt", "Honey", "Ice", "Milk"],
+      allergens: ["Dairy"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 87,
@@ -738,6 +882,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: true,
       dietary: ["vegetarian"],
+      nutritionalInfo: {
+        calories: 380,
+        protein: "7g",
+        carbs: "42g",
+        fat: "20g",
+        fiber: "1g",
+        sodium: "180mg",
+        sugar: "28g",
+        cholesterol: "125mg"
+      },
+      ingredients: ["Ladyfingers", "Mascarpone Cheese", "Espresso", "Eggs", "Sugar", "Cocoa Powder", "Marsala Wine"],
+      allergens: ["Gluten", "Dairy", "Eggs", "Alcohol"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 167,
@@ -776,6 +932,18 @@ async function main() {
       isPopular: false,
       isChefRecommended: true,
       dietary: ["vegetarian", "gluten-free"],
+      nutritionalInfo: {
+        calories: 340,
+        protein: "5g",
+        carbs: "32g",
+        fat: "22g",
+        fiber: "0g",
+        sodium: "120mg",
+        sugar: "28g",
+        cholesterol: "280mg"
+      },
+      ingredients: ["Heavy Cream", "Egg Yolks", "Sugar", "Vanilla Bean", "Salt"],
+      allergens: ["Dairy", "Eggs"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 98,
@@ -811,6 +979,18 @@ async function main() {
       isPopular: true,
       isChefRecommended: false,
       dietary: ["vegetarian"],
+      nutritionalInfo: {
+        calories: 480,
+        protein: "8g",
+        carbs: "58g",
+        fat: "26g",
+        fiber: "3g",
+        sodium: "240mg",
+        sugar: "42g",
+        cholesterol: "165mg"
+      },
+      ingredients: ["Dark Chocolate", "Butter", "Eggs", "Sugar", "Flour", "Vanilla Ice Cream"],
+      allergens: ["Gluten", "Dairy", "Eggs"],
       isAvailable: true,
       stockStatus: "available",
       orderCount: 201,

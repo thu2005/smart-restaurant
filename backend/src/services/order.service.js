@@ -290,7 +290,7 @@ class OrderService {
         }
         if (tableId) where.tableId = tableId;
 
-        return await prisma.order.findMany({
+        const orders = await prisma.order.findMany({
             where,
             include: {
                 orderItems: {
@@ -302,8 +302,35 @@ class OrderService {
                 },
                 table: true,
                 customer: true,
+                bill: true,
             },
             orderBy: { createdAt: 'desc' },
+        });
+
+        // Calculate total for each order
+        return orders.map(order => {
+            let total = 0;
+            
+            if (order.bill) {
+                // If bill exists, use bill total
+                total = Number(order.bill.total);
+            } else {
+                // Calculate total from order items
+                let subtotal = 0;
+                for (const item of order.orderItems) {
+                    subtotal += (Number(item.unitPrice) * item.quantity);
+                }
+                const discount = Number(order.discount) || 0;
+                const taxRate = 0.1;
+                const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+                const tax = subtotalAfterDiscount * taxRate;
+                total = subtotalAfterDiscount + tax;
+            }
+
+            return {
+                ...order,
+                total: total
+            };
         });
     }
 
@@ -589,11 +616,27 @@ class OrderService {
     }
 
     async getWaiterTables(waiterId) {
-        // Get all tables with active orders accepted by this waiter
+        // Get waiter's restaurant ID
+        const waiter = await prisma.user.findUnique({
+            where: { id: waiterId },
+            select: { restaurantId: true }
+        });
+
+        if (!waiter || !waiter.restaurantId) {
+            return [];
+        }
+
+        // Get all tables with active orders in the restaurant
+        // This includes orders accepted by this waiter OR orders that are READY/SERVED 
+        // (so waiters can serve any ready order, even if another waiter/kitchen created it)
         const orders = await prisma.order.findMany({
             where: {
-                acceptedById: waiterId,
-                status: { notIn: ['COMPLETED', 'CANCELLED'] }
+                restaurantId: waiter.restaurantId,
+                status: { notIn: ['COMPLETED', 'CANCELLED'] },
+                OR: [
+                    { acceptedById: waiterId },  
+                    { status: { in: ['READY', 'SERVED'] } }  
+                ]
             },
             include: {
                 table: true,
@@ -618,11 +661,26 @@ class OrderService {
     }
 
     async getWaiterOrders(waiterId, status) {
-        const where = {
-            acceptedById: waiterId
-        };
-
-        if (status) where.status = status;
+        // For READY orders, show all ready orders for the restaurant (not just waiter's own)
+        // so waiters can serve any ready order from kitchen
+        const where = {};
+        
+        if (status === 'READY') {
+            // Get waiter's restaurant ID
+            const waiter = await prisma.user.findUnique({
+                where: { id: waiterId },
+                select: { restaurantId: true }
+            });
+            
+            if (waiter && waiter.restaurantId) {
+                where.restaurantId = waiter.restaurantId;
+                where.status = 'READY';
+            }
+        } else {
+            // For other statuses, only show orders accepted by this waiter
+            where.acceptedById = waiterId;
+            if (status) where.status = status;
+        }
 
         return await prisma.order.findMany({
             where,

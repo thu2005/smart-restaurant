@@ -100,6 +100,7 @@ app.use("/api/payments", require("./src/routes/payment.routes"));
 app.use("/api/reviews", require("./src/routes/review.routes"));
 app.use("/api/reports", require("./src/routes/report.routes"));
 app.use("/api/carts", require("./src/routes/cart.routes"));
+app.use("/api/users", require("./src/routes/user.routes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

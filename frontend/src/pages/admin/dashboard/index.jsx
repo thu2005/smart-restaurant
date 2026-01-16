@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import MetricCard from "./components/MetricCard";
 import ActiveOrderCard from "./components/ActiveOrderCard";
 import TableStatusGrid from "./components/TableStatusGrid";
@@ -14,6 +15,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState("today");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [socket, setSocket] = useState(null);
 
   // Data states
   const [metrics, setMetrics] = useState([]);
@@ -135,6 +137,45 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
+  // Initialize WebSocket connection for real-time updates
+  useEffect(() => {
+    const restaurantId = getRestaurantId();
+    if (!restaurantId) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const newSocket = io(socketUrl);
+
+    newSocket.on("connect", () => {
+      console.log("Admin Dashboard WebSocket connected");
+      newSocket.emit("join_restaurant", restaurantId);
+    });
+
+    // Listen for order status updates
+    newSocket.on("order_status_update", ({ orderId, status }) => {
+      console.log("Order status updated:", orderId, status);
+      // Refresh dashboard data to update recent activity and metrics
+      fetchDashboardData();
+    });
+
+    // Listen for new orders
+    newSocket.on("new_order", (order) => {
+      console.log("New order received:", order);
+      fetchDashboardData();
+    });
+
+    // Listen for payment events
+    newSocket.on("payment_processed", (payment) => {
+      console.log("Payment processed:", payment);
+      fetchDashboardData();
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
   // Fetch chart data when dateRange changes
   useEffect(() => {
     const fetchChartData = async () => {
@@ -172,9 +213,9 @@ const AdminDashboard = () => {
 
   const handleQuickAction = (actionId) => {
     const routes = {
-      menu: "/menu-browse",
-      kitchen: "/kitchen/dashboard",
-      tables: "/admin/dashboard",
+      menu: "/admin/menu/items",
+      kitchen: "/admin/kitchen/dashboard",
+      tables: "/admin/tables",
       reports: "/admin/dashboard",
     };
 

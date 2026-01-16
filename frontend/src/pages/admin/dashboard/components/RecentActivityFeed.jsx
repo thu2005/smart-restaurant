@@ -13,6 +13,46 @@ const RecentActivityFeed = ({ activities }) => {
           badge: "bg-success/10 text-success border-success/20",
           iconName: "CheckCircle2",
         };
+      case "order_served":
+        return {
+          bg: "bg-success/10",
+          border: "border-success/20",
+          icon: "text-success",
+          badge: "bg-success/10 text-success border-success/20",
+          iconName: "Check",
+        };
+      case "order_ready":
+        return {
+          bg: "bg-amber-500/10",
+          border: "border-amber-500/20",
+          icon: "text-amber-500",
+          badge: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+          iconName: "ChefHat",
+        };
+      case "order_preparing":
+        return {
+          bg: "bg-orange-500/10",
+          border: "border-orange-500/20",
+          icon: "text-orange-500",
+          badge: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+          iconName: "Flame",
+        };
+      case "order_accepted":
+        return {
+          bg: "bg-blue-500/10",
+          border: "border-blue-500/20",
+          icon: "text-blue-500",
+          badge: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+          iconName: "UserCheck",
+        };
+      case "order_submitted":
+        return {
+          bg: "bg-purple-500/10",
+          border: "border-purple-500/20",
+          icon: "text-purple-500",
+          badge: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+          iconName: "Send",
+        };
       case "payment_received":
         return {
           bg: "bg-primary/10",
