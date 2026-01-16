@@ -104,7 +104,7 @@ class OrderService {
         }
         if (tableId) where.tableId = tableId;
 
-        return await prisma.order.findMany({
+        const orders = await prisma.order.findMany({
             where,
             include: {
                 orderItems: {
@@ -112,8 +112,35 @@ class OrderService {
                 },
                 table: true,
                 customer: true,
+                bill: true,
             },
             orderBy: { createdAt: 'desc' },
+        });
+
+        // Calculate total for each order
+        return orders.map(order => {
+            let total = 0;
+            
+            if (order.bill) {
+                // If bill exists, use bill total
+                total = Number(order.bill.total);
+            } else {
+                // Calculate total from order items
+                let subtotal = 0;
+                for (const item of order.orderItems) {
+                    subtotal += (Number(item.unitPrice) * item.quantity);
+                }
+                const discount = Number(order.discount) || 0;
+                const taxRate = 0.1;
+                const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+                const tax = subtotalAfterDiscount * taxRate;
+                total = subtotalAfterDiscount + tax;
+            }
+
+            return {
+                ...order,
+                total: total
+            };
         });
     }
 
