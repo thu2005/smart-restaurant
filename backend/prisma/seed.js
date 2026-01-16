@@ -917,6 +917,7 @@ async function main() {
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
             submittedAt: new Date(Date.now() - 5 * 60000), // 5 min ago
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
@@ -949,6 +950,7 @@ async function main() {
             submittedAt: new Date(Date.now() - 15 * 60000),
             acceptedAt: new Date(Date.now() - 14 * 60000),
             preparingAt: new Date(Date.now() - 13 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
@@ -979,6 +981,7 @@ async function main() {
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
             submittedAt: new Date(Date.now() - 2 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
@@ -1012,6 +1015,7 @@ async function main() {
             acceptedAt: new Date(Date.now() - 24 * 60000),
             preparingAt: new Date(Date.now() - 20 * 60000),
             readyAt: new Date(Date.now() - 5 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
@@ -1067,6 +1071,7 @@ async function main() {
             acceptedAt: new Date(Date.now() - 11 * 60000),
             preparingAt: new Date(Date.now() - 10 * 60000),
             readyAt: new Date(Date.now() - 2 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {

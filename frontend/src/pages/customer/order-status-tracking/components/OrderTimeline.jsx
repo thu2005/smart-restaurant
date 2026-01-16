@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "../../../../components/AppIcon";
 
 const OrderTimeline = ({
+  orderStatus,
   items,
   overallProgress,
   estimatedReadyTime,
@@ -15,28 +16,38 @@ const OrderTimeline = ({
     return `${mins}:${secs?.toString()?.padStart(2, "0")}`;
   };
 
+  const getStep = (status) => {
+    const steps = ['submitted', 'received', 'preparing', 'ready', 'served', 'payment_pending', 'completed'];
+    return steps.indexOf(status);
+  };
+
+  const currentStep = getStep(orderStatus);
+
   const milestones = [
     {
-      label: "Order Received",
+      label: "Order Submitted",
+      icon: "Send",
+      completed: currentStep >= 0,
+    },
+    {
+      label: "Order Accepted",
       icon: "CheckCircle",
-      completed: true,
+      completed: currentStep >= 1,
     },
     {
-      label: "Preparation Started",
+      label: "Preparing",
       icon: "ChefHat",
-      completed: items?.some(
-        (item) => item?.status === "preparing" || item?.status === "ready"
-      ),
-    },
-    {
-      label: "Items Ready",
-      icon: "Package",
-      completed: items?.every((item) => item?.status === "ready"),
+      completed: currentStep >= 2,
     },
     {
       label: "Ready to Serve",
+      icon: "Bell",
+      completed: currentStep >= 3,
+    },
+    {
+      label: "Served",
       icon: "Utensils",
-      completed: false,
+      completed: currentStep >= 4,
     },
   ];
 

@@ -54,22 +54,27 @@ const OrderStatusTracking = () => {
   }, [fetchOrder]);
 
   const transformConstants = (apiOrder) => {
-    const mapStatus = (status) => {
-      // Normalize status to uppercase for comparison if needed, though backend usually sends consistent case
+    const mapOrderStatus = (status) => {
       const s = status?.toUpperCase();
       const statusMap = {
-        'SUBMITTED': 'received',
-        'PENDING': 'received',
-        'QUEUED': 'received',
-        'ACCEPTED': 'received',
-        'COOKING': 'preparing',
+        'SUBMITTED': 'submitted',
+        'RECEIVED': 'received',
         'PREPARING': 'preparing',
         'READY': 'ready',
         'SERVED': 'served',
-        'COMPLETED': 'served',
-        'CANCELLED': 'cancelled'
+        'PAYMENT_PENDING': 'payment_pending',
+        'COMPLETED': 'completed',
+        'CANCELLED': 'cancelled',
+        'REJECTED': 'rejected'
       };
-      return statusMap[s] || 'received';
+      return statusMap[s] || 'submitted';
+    };
+
+    const mapItemStatus = (status) => {
+      const s = status?.toLowerCase();
+      if (s === 'ready') return 'ready';
+      if (s === 'cooking') return 'cooking';
+      return 'queued';
     };
 
     const calculateEstimatedTime = (status, timestamp) => {
@@ -84,7 +89,7 @@ const OrderStatusTracking = () => {
       tableNumber: apiOrder.table?.tableNumber || "?",
       timestamp: new Date(apiOrder.createdAt || apiOrder.submittedAt),
       totalItems: apiOrder.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0,
-      status: mapStatus(apiOrder.status),
+      status: mapOrderStatus(apiOrder.status),
       estimatedReadyTime: calculateEstimatedTime(apiOrder.status, apiOrder.createdAt),
       items: apiOrder.orderItems?.map(item => {
         const menuItem = item.menuItem;
@@ -96,7 +101,7 @@ const OrderStatusTracking = () => {
           image: menuItem?.image || primaryPhoto?.url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
           imageAlt: menuItem?.description || menuItem?.name,
           quantity: item.quantity,
-          status: mapStatus(item.itemStatus || apiOrder.status),
+          status: mapItemStatus(item.itemStatus, apiOrder.status),
           estimatedTime: new Date(Date.now() + 15 * 60000),
           preparedBy: "Kitchen Staff",
           modifiers: parseModifiers(item.modifiers),
@@ -137,10 +142,15 @@ const OrderStatusTracking = () => {
   const getOverallProgress = () => {
     if (!orderData) return 0;
     const statusWeights = {
-      received: 20,
+      submitted: 10,
+      received: 25,
       preparing: 50,
       ready: 80,
-      served: 100,
+      served: 95,
+      payment_pending: 100,
+      completed: 100,
+      cancelled: 0,
+      rejected: 0
     };
     // If order has a global status, use that for simplicity, or average items
     return statusWeights[orderData.status] || 0;
@@ -214,6 +224,7 @@ const OrderStatusTracking = () => {
               />
 
               <OrderTimeline
+                orderStatus={orderData?.status}
                 items={orderData?.items}
                 overallProgress={overallProgress}
                 estimatedReadyTime={orderData?.estimatedReadyTime}
