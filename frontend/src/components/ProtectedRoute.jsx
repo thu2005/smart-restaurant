@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children, roles = null, redirectTo = '/login' }) => {
     if (!user || !roles.includes(user.role)) {
       // Redirect to appropriate dashboard based on user role
       const roleRedirects = {
+        SUPER_ADMIN: '/superadmin/users',
         ADMIN: '/admin/dashboard',
         WAITER: '/waiter',
         KITCHEN: '/kitchen/dashboard',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
+import authService from "../../services/authService";
 
 const AdminDashboardSidebar = ({
   isCollapsed = false,
@@ -15,11 +16,28 @@ const AdminDashboardSidebar = ({
   const [mobileOpen, setMobileOpen] = useState(isMobileOpen);
 
   const collapsed = onCollapseToggle ? isCollapsed : localCollapsed;
+  const currentUser = authService.getCurrentUser();
+  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
 
   useEffect(() => {
     setMobileOpen(isMobileOpen);
   }, [isMobileOpen]);
 
+  // Super Admin only sees user management
+  const superAdminNavigationItems = [
+    {
+      section: "User Management",
+      items: [
+        {
+          path: "/admin/users",
+          label: "Manage Admins",
+          icon: "Users",
+        },
+      ],
+    },
+  ];
+
+  // Regular admin sees all menu and operations
   const navigationItems = [
     {
       section: "Main",
@@ -65,10 +83,9 @@ const AdminDashboardSidebar = ({
       ],
     },
     {
-      section: "Settings",
+      section: "Account",
       items: [
-        { path: "/settings", label: "Settings", icon: "Settings" },
-        { path: "/help", label: "Help", icon: "HelpCircle" },
+        { path: "/admin/users", label: "User Management", icon: "Users" },
       ],
     },
   ];
@@ -123,6 +140,11 @@ const AdminDashboardSidebar = ({
           className={`admin-sidebar-header transition-all duration-300 ${collapsed ? "px-2 justify-center" : "px-4 justify-between"
             }`}
         >
+          {isSuperAdmin && !collapsed && (
+            <div className="mb-4 px-2 py-2 bg-purple-50 border border-purple-200 rounded-lg">
+              <p className="text-xs font-semibold text-purple-800">Super Admin</p>
+            </div>
+          )}
           <div
             className={`flex items-center ${collapsed ? "justify-center" : "flex-1"
               }`}
@@ -157,7 +179,7 @@ const AdminDashboardSidebar = ({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {navigationItems?.map((section) => (
+          {(isSuperAdmin ? superAdminNavigationItems : navigationItems)?.map((section) => (
             <div key={section?.section} className="mb-6">
               {!collapsed && (
                 <div className="px-6 py-2">
