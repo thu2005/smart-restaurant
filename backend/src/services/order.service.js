@@ -92,7 +92,11 @@ class OrderService {
             },
             include: {
                 orderItems: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true
             },
@@ -128,7 +132,11 @@ class OrderService {
             },
             include: {
                 orderItems: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true,
                 customer: true
@@ -225,7 +233,7 @@ class OrderService {
             updatedAt: new Date()
         };
 
-        // If order was already in progress, keep status but notify waiter
+        // If order was already in progress or SERVED, keep status but notify waiter
         // If you don't want waiter to re-accept new items, comment below:
         if (order.status !== 'SUBMITTED') {
             updateData.status = 'SUBMITTED';
@@ -253,7 +261,11 @@ class OrderService {
             where: { id: orderId },
             include: {
                 orderItems: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true,
                 customer: true
@@ -284,14 +296,9 @@ class OrderService {
                 orderItems: {
                     include: { 
                         menuItem: {
-                            include: {
-                                photos: {
-                                    where: { isPrimary: true },
-                                    take: 1
-                                }
-                            }
+                            include: { photos: true }
                         }
-                    },
+                    }
                 },
                 table: true,
                 customer: true,
@@ -328,25 +335,76 @@ class OrderService {
     }
 
     async updateStatus(orderId, status, userId, rejectionReason = null) {
-        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        const order = await prisma.order.findUnique({ 
+            where: { id: orderId },
+            include: { orderItems: true }
+        });
         if (!order) throw new Error('Order not found');
 
-        const updateData = { status };
+        let newStatus = status;
         const now = new Date();
+        const updateData = {};
 
-        if (status === 'RECEIVED') {
+        // Special handling for Multi-batch Rejection
+        // If waiter rejects a new batch but the order already has SERVED items,
+        // we should NOT set the whole order to REJECTED (which implies the whole meal is cancelled).
+        // Instead, we should set it back to SERVED (meaning "Previous state was good, new request denied").
+        if (status === 'REJECTED') {
+             const hasServedItems = order.orderItems.some(item => item.itemStatus === 'served');
+             if (hasServedItems) {
+                 // Revert to SERVED instead of REJECTED
+                 newStatus = 'SERVED';
+                 
+                 // Mark all non-served items as rejected to prevent them from affecting future batches
+                 await prisma.orderItem.updateMany({
+                     where: { 
+                         orderId: orderId,
+                         itemStatus: { notIn: ['served', 'completed', 'rejected'] }
+                     },
+                     data: { itemStatus: 'rejected' }
+                 });
+             } else {
+                 // No served items yet, mark all items as rejected
+                 await prisma.orderItem.updateMany({
+                     where: { orderId: orderId },
+                     data: { itemStatus: 'rejected' }
+                 });
+             }
+        }
+
+        updateData.status = newStatus;
+
+        if (newStatus === 'RECEIVED') {
             updateData.acceptedAt = now;
             updateData.acceptedById = userId; // Waiter
-        } else if (status === 'REJECTED') {
-            updateData.rejectionReason = rejectionReason;
-        } else if (status === 'PREPARING') {
+        } else if (status === 'REJECTED') { 
+            if (newStatus === 'REJECTED') {
+                updateData.rejectionReason = rejectionReason;
+            }
+        } else if (newStatus === 'PREPARING') {
             updateData.preparingAt = now;
-        } else if (status === 'READY') {
+        } else if (newStatus === 'READY') {
             updateData.readyAt = now;
-        } else if (status === 'SERVED') {
+        } else if (newStatus === 'SERVED') {
             updateData.servedAt = now;
-        } else if (status === 'COMPLETED') {
+            // Update all non-rejected items to 'served'
+            await prisma.orderItem.updateMany({
+                where: { 
+                    orderId: orderId,
+                    itemStatus: { not: 'rejected' }
+                },
+                data: { itemStatus: 'served' }
+            });
+        } else if (newStatus === 'COMPLETED') {
             updateData.completedAt = now;
+             // Update all non-rejected items to 'completed'
+             await prisma.orderItem.updateMany({
+                where: { 
+                    orderId: orderId,
+                    itemStatus: { not: 'rejected' }
+                },
+                data: { itemStatus: 'completed' }
+            });
         }
 
         return await prisma.order.update({
@@ -408,7 +466,13 @@ class OrderService {
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: {
-                orderItems: { include: { menuItem: true } },
+                orderItems: { 
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    } 
+                },
                 bill: true,
                 payment: true,
                 table: true
@@ -502,22 +566,53 @@ class OrderService {
 
         return await prisma.order.findUnique({
             where: { id: orderId },
-            include: { bill: true, orderItems: { include: { menuItem: true } } }
+            include: { bill: true, orderItems: { include: { menuItem: { include: { photos: true } } } } }
         });
     }
 
     async updateOrderItemStatus(orderId, itemId, itemStatus) {
-        const order = await prisma.order.findUnique({ where: { id: orderId } });
+        const order = await prisma.order.findUnique({ 
+            where: { id: orderId },
+            include: { orderItems: true }
+        });
         if (!order) throw new Error('Order not found');
 
         const orderItem = await prisma.orderItem.findUnique({ where: { id: itemId } });
         if (!orderItem || orderItem.orderId !== orderId) throw new Error('Order item not found');
 
-        return await prisma.orderItem.update({
+        // Update the item status
+        const updatedItem = await prisma.orderItem.update({
             where: { id: itemId },
             data: { itemStatus },
             include: { menuItem: true }
         });
+
+        // After updating an item to 'ready', check if all items are now ready
+        if (itemStatus === 'ready') {
+            // Re-fetch all order items to get latest state
+            const allItems = await prisma.orderItem.findMany({
+                where: { orderId: orderId }
+            });
+
+            // Check if there are any items that are NOT ready and still need prep
+            // We ignore items that are already 'served', 'completed', or 'rejected'
+            const pendingItems = allItems.filter(item => 
+                !['ready', 'served', 'completed', 'rejected'].includes(item.itemStatus)
+            );
+
+            if (pendingItems.length === 0) {
+                // All items that needed prep are now done!
+                await prisma.order.update({
+                    where: { id: orderId },
+                    data: { 
+                        status: 'READY',
+                        readyAt: new Date()
+                    }
+                });
+            }
+        }
+
+        return updatedItem;
     }
 
     async getWaiterTables(waiterId) {
@@ -590,7 +685,13 @@ class OrderService {
         return await prisma.order.findMany({
             where,
             include: {
-                orderItems: { include: { menuItem: true } },
+                orderItems: { 
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    } 
+                },
                 table: true,
                 customer: true
             },

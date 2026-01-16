@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { io } from "socket.io-client";
 import WaiterHeader from "./components/WaiterHeader";
 import OrderTabs from "./components/OrderTabs";
@@ -48,26 +48,37 @@ const WaiterDashboard = () => {
     useEffect(() => {
         if (!restaurantId) return;
 
-        const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+        // Socket.IO connects to base server URL (not /api)
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5002/api";
+        const socketUrl = apiUrl.replace('/api', ''); // Remove /api suffix for socket connection
         const newSocket = io(socketUrl);
 
         newSocket.on("connect", () => {
-            console.log("WebSocket connected");
+            console.log("Waiter WebSocket connected");
             newSocket.emit("join_restaurant", restaurantId);
         });
 
         newSocket.on("new_order", (order) => {
-            console.log("New order received:", order);
-            if (order.status === "SUBMITTED") {
-                fetchOrders();
-                fetchTables(); // Also refresh tables count
+            console.log("🔔 New order received:", order);
+            // Use ref to get latest fetchOrders without causing reconnection
+            if (fetchOrdersRef.current) {
+                fetchOrdersRef.current();
             }
         });
 
         newSocket.on("order_status_update", ({ orderId, status }) => {
-            console.log("Order status updated:", orderId, status);
-            fetchOrders();
-            fetchTables(); // Also refresh tables count
+            console.log("🔔 Order status updated:", orderId, status);
+            if (fetchOrdersRef.current) {
+                fetchOrdersRef.current();
+            }
+        });
+
+        newSocket.on("order_items_added", ({ orderId, orderNumber, newItemsCount }) => {
+            console.log("🔔 Items added to order:", orderNumber, `(+${newItemsCount} items)`);
+            // Refresh to show the updated order with new items
+            if (fetchOrdersRef.current) {
+                fetchOrdersRef.current();
+            }
         });
 
         setSocket(newSocket);
@@ -75,7 +86,7 @@ const WaiterDashboard = () => {
         return () => {
             newSocket.disconnect();
         };
-    }, [restaurantId]);
+    }, [restaurantId]); // Only reconnect when restaurantId changes
 
     // Fetch orders based on active tab
     useEffect(() => {
@@ -115,31 +126,42 @@ const WaiterDashboard = () => {
         setError(null);
 
         try {
-            let response;
+            // Fetch all data in parallel for better performance
+            const [currentTabData, pendingRes, receivedCount, preparingCount, readyRes] = await Promise.all([
+                // Current tab data
+                (async () => {
+                    switch (activeTab) {
+                        case "pending":
+                            return await waiterService.getPendingOrders(restaurantId);
+                        case "accepted":
+                            const [receivedRes, preparingRes] = await Promise.all([
+                                waiterService.getWaiterOrders("RECEIVED"),
+                                waiterService.getWaiterOrders("PREPARING")
+                            ]);
+                            return {
+                                data: [...(receivedRes.data || []), ...(preparingRes.data || [])]
+                            };
+                        case "ready":
+                            return await waiterService.getWaiterOrders("READY");
+                        default:
+                            return { data: [] };
+                    }
+                })(),
+                // Counts for all tabs
+                waiterService.getPendingOrders(restaurantId),
+                waiterService.getWaiterOrders("RECEIVED"),
+                waiterService.getWaiterOrders("PREPARING"),
+                waiterService.getWaiterOrders("READY")
+            ]);
 
-            switch (activeTab) {
-                case "pending":
-                    response = await waiterService.getPendingOrders(restaurantId);
-                    break;
-                case "accepted":
-                    // Show both RECEIVED and PREPARING (in-kitchen) orders
-                    const receivedRes = await waiterService.getWaiterOrders("RECEIVED");
-                    const preparingRes = await waiterService.getWaiterOrders("PREPARING");
-                    response = {
-                        data: [...(receivedRes.data || []), ...(preparingRes.data || [])]
-                    };
-                    break;
-                case "ready":
-                    response = await waiterService.getWaiterOrders("READY");
-                    break;
-                default:
-                    response = { data: [] };
-            }
+            setOrders(currentTabData.data || []);
 
-            setOrders(response.data || []);
-            
-            // Update all counts
-            await updateCounts();
+            setCounts({
+                pending: pendingRes.data?.length || 0,
+                accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
+                ready: readyRes.data?.length || 0,
+                tables: tables.length,
+            });
         } catch (err) {
             console.error("Error fetching orders:", err);
             setError("Failed to load orders. Please try again.");
@@ -147,6 +169,12 @@ const WaiterDashboard = () => {
             setLoading(false);
         }
     };
+
+    // Use ref to store latest fetchOrders to avoid socket reconnections
+    const fetchOrdersRef = useRef(fetchOrders);
+    useEffect(() => {
+        fetchOrdersRef.current = fetchOrders;
+    }, [fetchOrders]);
 
     const fetchTables = async () => {
         setLoading(true);
@@ -169,8 +197,12 @@ const WaiterDashboard = () => {
     const handleAcceptOrder = async (order) => {
         try {
             await waiterService.acceptOrder(order.id);
-            // Automatically send to kitchen after accepting
-            await waiterService.sendToKitchen(order.id);
+            // DO NOT automatically send to kitchen immediately if the requirement is to stay as RECEIVED first.
+            // If the flow is "Accept" -> Order moves to Accepted tab -> Waiter reviews -> Waiter sends to kitchen manually.
+            // OR if "Accept" implies "Send to Kitchen" but status should show "RECEIVED" until Kitchen starts "PREPARING".
+            // However, the issue described is "Status is Received. Currently it becomes Preparing".
+            // This suggests `sendToKitchen` is updating status to PREPARING.
+            // For now, removing auto-send allows the order to sit in 'Accepted' state as 'RECEIVED'.
             fetchOrders();
         } catch (err) {
             console.error("Error accepting order:", err);

@@ -184,7 +184,7 @@ const MenuBrowse = () => {
                 item.photos.length > 0
               ) {
                 const primaryPhoto =
-                  item.photos.find((p) => p.is_primary) || item.photos[0];
+                  item.photos.find((p) => p.isPrimary) || item.photos?.[0];
                 if (primaryPhoto && primaryPhoto.url) {
                   imageUrl = primaryPhoto.url.startsWith("http")
                     ? primaryPhoto.url

@@ -24,6 +24,25 @@ const ShoppingCart = () => {
   const [tableNumber] = useState(localStorage.getItem("tableNumber") || "N/A");
   const [tableDetails, setTableDetails] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: 'success', // success, error, confirm
+    title: '',
+    message: '',
+    onConfirm: null
+  });
+
+  const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false }));
+  
+  const showModal = (type, title, message, onConfirm = null) => {
+    setModalState({
+        isOpen: true,
+        type,
+        title,
+        message,
+        onConfirm
+    });
+  };
 
   useEffect(() => {
     const fetchTableInfo = async () => {
@@ -52,14 +71,47 @@ const ShoppingCart = () => {
     setPaymentMethod(method);
   };
 
+  const confirmPlaceOrder = async (extraOrderData = {}) => {
+      try {
+        const orderData = {
+            restaurantId: localStorage.getItem("restaurantId"),
+            tableId: localStorage.getItem("tableId"),
+            customerName: user?.fullName || localStorage.getItem("customerName") || "Guest",
+            customerPhone: user?.phone || localStorage.getItem("customerPhone") || "",
+            specialInstructions: specialInstructions,
+            ...extraOrderData
+        };
+
+        // Use smart placeOrder method that handles create/add logic
+        const result = await orderService.placeOrder(cartItems, orderData);
+
+        if (result.success) {
+            // Clear cart after successful order
+            clearCart();
+            
+            showModal('success', 'Order Placed!', `Your order #${result.data?.orderNumber} has been placed successfully.`, () => {
+                navigate("/customer/order-status-tracking");
+            });
+
+        } else {
+            throw new Error(result.message || "Failed to place order");
+        }
+    } catch (error) {
+        console.error("Checkout error:", error);
+        showModal('error', 'Order Failed', error.response?.data?.message || error.message || "Failed to place order. Please try again.");
+    } finally {
+        setIsProcessing(false);
+    }
+  };
+
   const handleCheckout = async () => {
     if (!paymentMethod) {
-      alert("Please select a payment method");
+      showModal('error', 'Payment Required', 'Please select a payment method before proceeding.');
       return;
     }
 
     if (cartItems.length === 0) {
-      alert("Your cart is empty");
+      showModal('error', 'Empty Cart', 'Your cart is empty. Please add items from the menu.');
       return;
     }
 
@@ -68,40 +120,45 @@ const ShoppingCart = () => {
     const tableId = localStorage.getItem("tableId");
 
     if (!restaurantId || !tableId) {
-       alert("Missing table information. Please scan the QR code again.");
+       showModal('error', 'Missing Information', 'Missing table information. Please scan the QR code again.');
        return;
     }
 
     setIsProcessing(true);
 
     try {
-      const orderData = {
-        restaurantId,
-        tableId,
-        customerName: user?.fullName || localStorage.getItem("customerName") || "Guest",
-        customerPhone: user?.phone || localStorage.getItem("customerPhone") || "",
-        specialInstructions: specialInstructions,
-      };
-
-      // Use smart placeOrder method that handles create/add logic
-      const result = await orderService.placeOrder(cartItems, orderData);
-
-      if (result.success) {
-        // Clear cart after successful order
-        clearCart();
+      // Check for active order first to show confirmation if needed
+      const activeOrder = await orderService.getActiveOrderByTable(tableId, restaurantId);
+      
+      if (activeOrder.data) {
+        const status = activeOrder.data.status;
+        const ALLOWED_STATUSES_TO_ADD = ['SERVED'];
         
-        // Optional: Show toast or modal
-        // alert(`Order placed successfully! Order #${result.data?.orderNumber}`);
-        navigate("/customer/order-status-tracking");
-      } else {
-         throw new Error(result.message || "Failed to place order");
+        if (!ALLOWED_STATUSES_TO_ADD.includes(status)) {
+             showModal('error', 'Order In Progress', `You have an order in progress (${status}). Please wait for all items to be served before placing a new order.`);
+             setIsProcessing(false);
+             return;
+        }
+
+        // Show Confirmation Modal
+        showModal(
+            'confirm', 
+            'Active Session Found', 
+            'You have an active dining session. Would you like to add these items to your existing order?', 
+            () => confirmPlaceOrder()
+        );
+        // Do not verify/process further here, wait for callback
+        return;
       }
+
+      // No active order, proceed directly
+      await confirmPlaceOrder();
+      
     } catch (error) {
-      console.error("Checkout error:", error);
-      alert(error.response?.data?.message || error.message || "Failed to place order. Please try again.");
-    } finally {
+      console.error("Checkout check error:", error);
+      showModal('error', 'Error', "Failed to check order status. Please try again.");
       setIsProcessing(false);
-    }
+    } 
   };
 
   const { itemCount, subtotal, tax, total } = getCartSummary();
@@ -275,6 +332,79 @@ const ShoppingCart = () => {
           </div>
         </main>
       </div>
+      
+      {/* Custom Modal */}
+      {modalState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className={`bg-card w-full max-w-sm rounded-xl border-2 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 ${
+                modalState.type === 'error' ? 'border-error/50' : 
+                modalState.type === 'success' ? 'border-success/50' : 'border-primary/50'
+            }`}>
+                <div className={`p-4 flex items-center gap-3 ${
+                    modalState.type === 'error' ? 'bg-error/10 border-b border-error/20' : 
+                    modalState.type === 'success' ? 'bg-success/10 border-b border-success/20' : 'bg-primary/10 border-b border-primary/20'
+                }`}>
+                    <div className={`p-2 rounded-full ${
+                        modalState.type === 'error' ? 'bg-error/20 text-error' : 
+                        modalState.type === 'success' ? 'bg-success/20 text-success' : 'bg-primary/20 text-primary'
+                    }`}>
+                        <Icon name={
+                            modalState.type === 'error' ? 'AlertTriangle' : 
+                            modalState.type === 'success' ? 'CheckCircle' : 'Info'
+                        } size={24} />
+                    </div>
+                    <div>
+                        <h3 className={`font-bold text-lg leading-tight ${
+                             modalState.type === 'error' ? 'text-error' : 
+                             modalState.type === 'success' ? 'text-success' : 'text-primary'
+                        }`}>
+                            {modalState.title}
+                        </h3>
+                    </div>
+                </div>
+                
+                <div className="p-6">
+                    <p className="text-foreground text-sm leading-relaxed">
+                        {modalState.message}
+                    </p>
+                </div>
+
+                <div className="p-4 border-t border-border bg-muted/20 flex gap-3 justify-end">
+                    {modalState.type === 'confirm' ? (
+                        <>
+                             <button 
+                                onClick={closeModal}
+                                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <Button 
+                                onClick={() => {
+                                    if (modalState.onConfirm) modalState.onConfirm();
+                                    closeModal();
+                                }}
+                                variant="default"
+                                size="sm"
+                            >
+                                Confirm
+                            </Button>
+                        </>
+                    ) : (
+                         <Button 
+                            onClick={() => {
+                                if (modalState.onConfirm) modalState.onConfirm();
+                                closeModal();
+                            }}
+                            variant={modalState.type === 'error' ? 'destructive' : 'default'}
+                            fullWidth
+                        >
+                            {modalState.type === 'success' ? 'Awesome!' : 'Close'}
+                        </Button>
+                    )}
+                </div>
+            </div>
+        </div>
+      )}
     </>
   );
 };

@@ -269,6 +269,7 @@ async function main() {
       description:
         "Fresh rice paper rolls with shrimp, pork, vegetables, and vermicelli noodles. Served with peanut dipping sauce.",
       price: 65000,
+      image: "https://images.unsplash.com/photo-1594756202469-9ff9799b2e4e",
       categoryId: catAppetizers.id,
       restaurantId: restaurant.id,
       prepTime: 10,
@@ -319,6 +320,7 @@ async function main() {
       description:
         "Tender squid rings lightly battered and fried to golden perfection. Served with aioli sauce.",
       price: 85000,
+      image: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0",
       categoryId: catAppetizers.id,
       restaurantId: restaurant.id,
       prepTime: 12,
@@ -366,6 +368,7 @@ async function main() {
       description:
         "Aromatic beef broth with rice noodles, tender beef slices, fresh herbs, and lime.",
       price: 75000,
+      image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43",
       categoryId: catSoups.id,
       restaurantId: restaurant.id,
       prepTime: 15,
@@ -419,6 +422,7 @@ async function main() {
       description:
         "Crisp romaine lettuce, parmesan cheese, croutons, and creamy Caesar dressing.",
       price: 70000,
+      image: "https://images.unsplash.com/photo-1546793665-c74683f339c1",
       categoryId: catSoups.id,
       restaurantId: restaurant.id,
       prepTime: 8,
@@ -466,6 +470,7 @@ async function main() {
       description:
         "Premium Norwegian salmon grilled to perfection, served with lemon butter sauce, asparagus, and roasted potatoes.",
       price: 245000,
+      image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 20,
@@ -519,6 +524,7 @@ async function main() {
       description:
         "Australian Wagyu beef (250g) cooked to your preference. Served with black pepper sauce.",
       price: 450000,
+      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 25,
@@ -572,6 +578,7 @@ async function main() {
       description:
         "Tender chicken in aromatic green curry with coconut milk, bamboo shoots, and Thai basil. Served with jasmine rice.",
       price: 125000,
+      image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 18,
@@ -621,6 +628,7 @@ async function main() {
       description:
         "Quinoa, roasted vegetables, chickpeas, hummus, tahini dressing, and fresh herbs.",
       price: 95000,
+      image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 12,
@@ -668,6 +676,7 @@ async function main() {
       description:
         "Jumbo shrimp sautéed in garlic butter with white wine and parsley. Served with crusty bread.",
       price: 185000,
+      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
       categoryId: catSeafood.id,
       restaurantId: restaurant.id,
       prepTime: 15,
@@ -718,6 +727,7 @@ async function main() {
       description:
         "Whole lobster in creamy brandy sauce with mushrooms and cheese, gratinated to perfection.",
       price: 650000,
+      image: "https://images.unsplash.com/photo-1559737558-2f5a35f4523f",
       categoryId: catSeafood.id,
       restaurantId: restaurant.id,
       prepTime: 30,
@@ -765,6 +775,7 @@ async function main() {
       description:
         "Strong Vietnamese coffee with condensed milk served over ice.",
       price: 45000,
+      image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7",
       categoryId: catDrinks.id,
       restaurantId: restaurant.id,
       prepTime: 5,
@@ -813,6 +824,7 @@ async function main() {
       name: "Fresh Mango Smoothie",
       description: "Blended fresh mango with yogurt and honey.",
       price: 55000,
+      image: "https://images.unsplash.com/photo-1505252585461-04db1eb84625",
       categoryId: catDrinks.id,
       restaurantId: restaurant.id,
       prepTime: 5,
@@ -863,6 +875,7 @@ async function main() {
       description:
         "Espresso-soaked ladyfingers layered with mascarpone cream and dusted with cocoa powder.",
       price: 85000,
+      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9",
       categoryId: catDesserts.id,
       restaurantId: restaurant.id,
       prepTime: 8,
@@ -912,6 +925,7 @@ async function main() {
       name: "Vanilla Crème Brûlée",
       description: "Silky vanilla custard with caramelized sugar crust.",
       price: 75000,
+      image: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc",
       categoryId: catDesserts.id,
       restaurantId: restaurant.id,
       prepTime: 10,
@@ -958,6 +972,7 @@ async function main() {
       description:
         "Warm chocolate cake with liquid chocolate center. Served with vanilla ice cream.",
       price: 95000,
+      image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51",
       categoryId: catDesserts.id,
       restaurantId: restaurant.id,
       prepTime: 12,
@@ -1075,29 +1090,31 @@ async function main() {
     const sampleOrders = [
         {
             orderNumber: 'ORD-001',
-            status: 'SUBMITTED',
-            tableId: tables[4].id, // Table 5
+            status: 'RECEIVED',
+            tableId: tables[0].id, // Table 1
             restaurantId: restaurant.id,
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
-            specialInstructions: 'Customer celebrating anniversary - please ensure presentation is excellent',
-            submittedAt: new Date(), // Now
+            submittedAt: new Date(Date.now() - 5 * 60000), // 5 min ago
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
-                        menuItemId: grilledSalmon.id,
-                        quantity: 2,
-                        unitPrice: 245000,
-                        modifiers: ['Extra Lemon', 'No Butter'],
-                        specialInstructions: 'Well done, customer has fish allergy concerns'
+                        menuItemId: springRolls.id,
+                        quantity: 1,
+                        unitPrice: 65000,
+                        modifiers: ['Extra Cheese', 'Thin Crust'],
+                        specialInstructions: '',
+                        itemStatus: 'queued'
                     },
                     {
-                        menuItemId: caesarSalad.id,
-                        quantity: 1,
-                        unitPrice: 70000,
-                        modifiers: ['No Croutons', 'Dressing on Side'],
-                        specialInstructions: ''
+                        menuItemId: friedCalamari.id,
+                        quantity: 2,
+                        unitPrice: 85000,
+                        modifiers: ['Spicy', 'Ranch Dressing'],
+                        specialInstructions: '',
+                        itemStatus: 'queued'
                     }
                 ]
             }
@@ -1110,9 +1127,10 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(), // Now
-            acceptedAt: new Date(),
-            preparingAt: new Date(),
+            submittedAt: new Date(Date.now() - 15 * 60000),
+            acceptedAt: new Date(Date.now() - 14 * 60000),
+            preparingAt: new Date(Date.now() - 13 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
@@ -1120,44 +1138,47 @@ async function main() {
                         quantity: 1,
                         unitPrice: 65000,
                         modifiers: ['Extra Cheese', 'Thin Crust'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'cooking'
                     },
                     {
                         menuItemId: friedCalamari.id,
                         quantity: 3,
                         unitPrice: 85000,
                         modifiers: ['Spicy', 'Ranch Dressing'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     }
                 ]
             }
         },
         {
             orderNumber: 'ORD-003',
-            status: 'PREPARING',
-            tableId: tables[7].id, // Table 8
+            status: 'RECEIVED',
+            tableId: tables[1].id, // Table 2
             restaurantId: restaurant.id,
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
-            submittedAt: new Date(), // Now
-            acceptedAt: new Date(),
-            preparingAt: new Date(),
+            submittedAt: new Date(Date.now() - 2 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
                         menuItemId: beefSteak.id,
-                        quantity: 2,
+                        quantity: 1,
                         unitPrice: 450000,
-                        modifiers: ['Medium Rare', 'Extra Pickles', 'No Onions'],
-                        specialInstructions: 'One burger without cheese for dietary restrictions'
+                        modifiers: ['Medium Rare'],
+                        specialInstructions: 'No onions',
+                        itemStatus: 'queued'
                     },
                     {
-                        menuItemId: mangoSmoothie.id,
+                        menuItemId: vietnameseCoffee.id,
                         quantity: 2,
-                        unitPrice: 55000,
+                        unitPrice: 45000,
                         modifiers: ['Large Size'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'queued'
                     }
                 ]
             }
@@ -1170,25 +1191,28 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(Date.now() - 10 * 60000), // 10 min ago
-            acceptedAt: new Date(Date.now() - 9 * 60000),
-            preparingAt: new Date(Date.now() - 8 * 60000),
-            readyAt: new Date(), // Now
+            submittedAt: new Date(Date.now() - 25 * 60000),
+            acceptedAt: new Date(Date.now() - 24 * 60000),
+            preparingAt: new Date(Date.now() - 20 * 60000),
+            readyAt: new Date(Date.now() - 5 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
                         menuItemId: chickenCurry.id,
                         quantity: 1,
                         unitPrice: 125000,
-                        modifiers: ['Extra Spicy', 'Brown Rice'],
-                        specialInstructions: ''
+                        modifiers: ['Extra Spicy'],
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     },
                     {
                         menuItemId: springRolls.id,
                         quantity: 4,
                         unitPrice: 65000,
                         modifiers: ['Vegetarian'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     }
                 ]
             }
@@ -1201,29 +1225,16 @@ async function main() {
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
-            submittedAt: new Date(), // Now
+            submittedAt: new Date(),
             orderItems: {
                 create: [
                     {
                         menuItemId: beefSteak.id,
                         quantity: 1,
                         unitPrice: 450000,
-                        modifiers: ['Medium', 'Garlic Butter'],
-                        specialInstructions: 'Customer prefers thicker cut'
-                    },
-                    {
-                        menuItemId: veganBowl.id,
-                        quantity: 1,
-                        unitPrice: 95000,
-                        modifiers: ['Extra Gravy'],
-                        specialInstructions: ''
-                    },
-                    {
-                        menuItemId: garlicShrimp.id,
-                        quantity: 1,
-                        unitPrice: 185000,
-                        modifiers: [],
-                        specialInstructions: ''
+                        modifiers: ['Medium'],
+                        specialInstructions: 'Customer prefers thicker cut',
+                        itemStatus: 'queued'
                     }
                 ]
             }
@@ -1236,10 +1247,11 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(Date.now() - 12 * 60000), // 12 min ago
+            submittedAt: new Date(Date.now() - 12 * 60000),
             acceptedAt: new Date(Date.now() - 11 * 60000),
             preparingAt: new Date(Date.now() - 10 * 60000),
-            readyAt: new Date(Date.now() - 2 * 60000), // 2 min ago
+            readyAt: new Date(Date.now() - 2 * 60000),
+            acceptedById: waiter.id,
             orderItems: {
                 create: [
                     {
@@ -1247,14 +1259,8 @@ async function main() {
                         quantity: 2,
                         unitPrice: 75000,
                         modifiers: ['Extra Croutons'],
-                        specialInstructions: ''
-                    },
-                    {
-                        menuItemId: friedCalamari.id,
-                        quantity: 1,
-                        unitPrice: 85000,
-                        modifiers: [],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     }
                 ]
             }
