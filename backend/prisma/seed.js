@@ -895,29 +895,30 @@ async function main() {
     const sampleOrders = [
         {
             orderNumber: 'ORD-001',
-            status: 'SUBMITTED',
-            tableId: tables[4].id, // Table 5
+            status: 'RECEIVED',
+            tableId: tables[0].id, // Table 1
             restaurantId: restaurant.id,
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
-            specialInstructions: 'Customer celebrating anniversary - please ensure presentation is excellent',
-            submittedAt: new Date(), // Now
+            submittedAt: new Date(Date.now() - 5 * 60000), // 5 min ago
             orderItems: {
                 create: [
                     {
-                        menuItemId: grilledSalmon.id,
-                        quantity: 2,
-                        unitPrice: 245000,
-                        modifiers: ['Extra Lemon', 'No Butter'],
-                        specialInstructions: 'Well done, customer has fish allergy concerns'
+                        menuItemId: springRolls.id,
+                        quantity: 1,
+                        unitPrice: 65000,
+                        modifiers: ['Extra Cheese', 'Thin Crust'],
+                        specialInstructions: '',
+                        itemStatus: 'queued'
                     },
                     {
-                        menuItemId: caesarSalad.id,
-                        quantity: 1,
-                        unitPrice: 70000,
-                        modifiers: ['No Croutons', 'Dressing on Side'],
-                        specialInstructions: ''
+                        menuItemId: friedCalamari.id,
+                        quantity: 2,
+                        unitPrice: 85000,
+                        modifiers: ['Spicy', 'Ranch Dressing'],
+                        specialInstructions: '',
+                        itemStatus: 'queued'
                     }
                 ]
             }
@@ -930,9 +931,9 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(), // Now
-            acceptedAt: new Date(),
-            preparingAt: new Date(),
+            submittedAt: new Date(Date.now() - 15 * 60000),
+            acceptedAt: new Date(Date.now() - 14 * 60000),
+            preparingAt: new Date(Date.now() - 13 * 60000),
             orderItems: {
                 create: [
                     {
@@ -940,44 +941,46 @@ async function main() {
                         quantity: 1,
                         unitPrice: 65000,
                         modifiers: ['Extra Cheese', 'Thin Crust'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'cooking'
                     },
                     {
                         menuItemId: friedCalamari.id,
                         quantity: 3,
                         unitPrice: 85000,
                         modifiers: ['Spicy', 'Ranch Dressing'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     }
                 ]
             }
         },
         {
             orderNumber: 'ORD-003',
-            status: 'PREPARING',
-            tableId: tables[7].id, // Table 8
+            status: 'RECEIVED',
+            tableId: tables[1].id, // Table 2
             restaurantId: restaurant.id,
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
-            submittedAt: new Date(), // Now
-            acceptedAt: new Date(),
-            preparingAt: new Date(),
+            submittedAt: new Date(Date.now() - 2 * 60000),
             orderItems: {
                 create: [
                     {
                         menuItemId: beefSteak.id,
-                        quantity: 2,
+                        quantity: 1,
                         unitPrice: 450000,
-                        modifiers: ['Medium Rare', 'Extra Pickles', 'No Onions'],
-                        specialInstructions: 'One burger without cheese for dietary restrictions'
+                        modifiers: ['Medium Rare'],
+                        specialInstructions: 'No onions',
+                        itemStatus: 'queued'
                     },
                     {
-                        menuItemId: mangoSmoothie.id,
+                        menuItemId: vietnameseCoffee.id,
                         quantity: 2,
-                        unitPrice: 55000,
+                        unitPrice: 45000,
                         modifiers: ['Large Size'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'queued'
                     }
                 ]
             }
@@ -990,25 +993,27 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(Date.now() - 10 * 60000), // 10 min ago
-            acceptedAt: new Date(Date.now() - 9 * 60000),
-            preparingAt: new Date(Date.now() - 8 * 60000),
-            readyAt: new Date(), // Now
+            submittedAt: new Date(Date.now() - 25 * 60000),
+            acceptedAt: new Date(Date.now() - 24 * 60000),
+            preparingAt: new Date(Date.now() - 20 * 60000),
+            readyAt: new Date(Date.now() - 5 * 60000),
             orderItems: {
                 create: [
                     {
                         menuItemId: chickenCurry.id,
                         quantity: 1,
                         unitPrice: 125000,
-                        modifiers: ['Extra Spicy', 'Brown Rice'],
-                        specialInstructions: ''
+                        modifiers: ['Extra Spicy'],
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     },
                     {
                         menuItemId: springRolls.id,
                         quantity: 4,
                         unitPrice: 65000,
                         modifiers: ['Vegetarian'],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     }
                 ]
             }
@@ -1021,29 +1026,16 @@ async function main() {
             customerId: customer1.id,
             customerName: customer1.fullName,
             customerPhone: customer1.phone,
-            submittedAt: new Date(), // Now
+            submittedAt: new Date(),
             orderItems: {
                 create: [
                     {
                         menuItemId: beefSteak.id,
                         quantity: 1,
                         unitPrice: 450000,
-                        modifiers: ['Medium', 'Garlic Butter'],
-                        specialInstructions: 'Customer prefers thicker cut'
-                    },
-                    {
-                        menuItemId: veganBowl.id,
-                        quantity: 1,
-                        unitPrice: 95000,
-                        modifiers: ['Extra Gravy'],
-                        specialInstructions: ''
-                    },
-                    {
-                        menuItemId: garlicShrimp.id,
-                        quantity: 1,
-                        unitPrice: 185000,
-                        modifiers: [],
-                        specialInstructions: ''
+                        modifiers: ['Medium'],
+                        specialInstructions: 'Customer prefers thicker cut',
+                        itemStatus: 'queued'
                     }
                 ]
             }
@@ -1056,10 +1048,10 @@ async function main() {
             customerId: customer2.id,
             customerName: customer2.fullName,
             customerPhone: customer2.phone,
-            submittedAt: new Date(Date.now() - 12 * 60000), // 12 min ago
+            submittedAt: new Date(Date.now() - 12 * 60000),
             acceptedAt: new Date(Date.now() - 11 * 60000),
             preparingAt: new Date(Date.now() - 10 * 60000),
-            readyAt: new Date(Date.now() - 2 * 60000), // 2 min ago
+            readyAt: new Date(Date.now() - 2 * 60000),
             orderItems: {
                 create: [
                     {
@@ -1067,14 +1059,8 @@ async function main() {
                         quantity: 2,
                         unitPrice: 75000,
                         modifiers: ['Extra Croutons'],
-                        specialInstructions: ''
-                    },
-                    {
-                        menuItemId: friedCalamari.id,
-                        quantity: 1,
-                        unitPrice: 85000,
-                        modifiers: [],
-                        specialInstructions: ''
+                        specialInstructions: '',
+                        itemStatus: 'ready'
                     }
                 ]
             }

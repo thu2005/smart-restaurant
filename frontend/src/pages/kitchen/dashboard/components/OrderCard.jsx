@@ -290,7 +290,48 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 pt-1">
-          {order?.status !== "ready" ? (
+          {order?.status === "received" ? (
+             <>
+               <Button
+                 variant="outline" 
+                 fullWidth
+                 iconName="Flame"
+                 iconPosition="left"
+                 size="sm"
+                 onClick={() => {
+                     // Start all items
+                     order.items.forEach(i => {
+                        if ((i.itemStatus || 'queued') === 'queued') {
+                            handleItemAction(i.id, 'start');
+                        }
+                     });
+                     onStatusChange(order.id, "preparing");
+                 }}
+                 className="text-xs font-bold py-2 h-9 border-warning/50 text-warning hover:bg-warning/10"
+               >
+                 START ALL
+               </Button>
+               <Button
+                 variant="default" 
+                 fullWidth
+                 iconName="CheckCircle"
+                 iconPosition="left"
+                 size="sm"
+                 onClick={() => {
+                     const unready = order.items.filter(i => (i.itemStatus || 'queued') !== 'ready');
+                     if (unready.length > 0) {
+                         setPendingUnreadyItems(unready);
+                         setShowConfirmModal(true);
+                     } else {
+                         onStatusChange(order.id, "ready");
+                     }
+                 }}
+                 className="text-xs font-bold py-2 h-9"
+               >
+                 READY ALL
+               </Button>
+             </>
+          ) : order?.status === "preparing" ? (
              <Button
                variant="default" 
                fullWidth
@@ -303,7 +344,6 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                        setPendingUnreadyItems(unready);
                        setShowConfirmModal(true);
                    } else {
-                       // If all matches ready (rare if button is shown), just sync
                        onStatusChange(order.id, "ready");
                    }
                }}
