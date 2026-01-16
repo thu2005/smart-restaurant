@@ -15,6 +15,7 @@ import authService from "services/authService";
 import CustomerLayout from "./layouts/CustomerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import KitchenLayout from "./layouts/KitchenLayout";
+import SuperAdminLayout from "./layouts/SuperAdminLayout";
 
 // Pages
 import ShoppingCart from "./pages/customer/shopping-cart";
@@ -38,6 +39,12 @@ import MenuItemList from "./pages/admin/menu/items/MenuItemList";
 import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
+import Reports from "./pages/admin/reports";
+
+// User Management Pages
+import UserManagement from "./pages/admin/users/UserManagement";
+import CreateUser from "./pages/admin/users/CreateUser";
+import EditUser from "./pages/admin/users/EditUser";
 
 // Waiter Pages
 import WaiterDashboard from "./pages/waiter";
@@ -50,7 +57,7 @@ const Routes = () => {
         <RouterRoutes>
           {/* QR Entry Route - New format with restaurantId and tableId */}
           <Route path="/qr/:restaurantId/:tableId" element={<QREntry />} />
-          
+
           {/* Table Entry Route - Legacy format (kept for backward compatibility) */}
           <Route path="/table/:tableId" element={<TableEntry />} />
 
@@ -59,7 +66,11 @@ const Routes = () => {
             path="/"
             element={
               authService.isAuthenticated() ? (
-                <Navigate to="/admin/menu/items" replace />
+                authService.getCurrentUser()?.role === "SUPER_ADMIN" ? (
+                  <Navigate to="/superadmin/users" replace />
+                ) : (
+                  <Navigate to="/admin/menu/items" replace />
+                )
               ) : (
                 <Onboarding />
               )
@@ -70,9 +81,24 @@ const Routes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          
+
           {/* Dedicated Customer Onboarding Route - for QR scans */}
           <Route path="/customer-onboarding" element={<Onboarding />} />
+
+          {/* Super Admin Routes - Protected */}
+          <Route
+            path="/superadmin"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN']}>
+                <SuperAdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/superadmin/users" replace />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/:id/edit" element={<EditUser />} />
+          </Route>
 
           {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>
@@ -108,9 +134,17 @@ const Routes = () => {
           >
             <Route
               index
-              element={<Navigate to="/admin/menu/items" replace />}
+              element={
+                <Navigate
+                  to={authService.getCurrentUser()?.role === "SUPER_ADMIN" ? "/admin/users" : "/admin/menu/items"}
+                  replace
+                />
+              }
             />
             <Route path="dashboard" element={<AdminDashboard />} />
+            
+            {/* Kitchen Display for Admin - with sidebar */}
+            <Route path="kitchen/dashboard" element={<KitchenDashboard />} />
 
             {/* Menu Management Routes */}
             <Route path="menu/categories" element={<CategoryList />} />
@@ -118,6 +152,12 @@ const Routes = () => {
             <Route path="menu/modifiers" element={<ModifierList />} />
             <Route path="tables" element={<TableManagement />} />
             <Route path="orders" element={<OrderList />} />
+            <Route path="reports" element={<Reports />} />
+            
+            {/* User Management Routes */}
+            <Route path="users" element={<UserManagement />} />
+            <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/:id/edit" element={<EditUser />} />
           </Route>
           {/* Legacy redirect */}
           <Route

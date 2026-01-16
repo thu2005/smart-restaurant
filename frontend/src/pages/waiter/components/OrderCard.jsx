@@ -96,48 +96,111 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                 </div>
             </div>
 
-            {/* Order Items */}
+            {/* Order Items - Active Batch */}
             <div className="p-4 space-y-3">
-                {order.orderItems?.map((item, index) => (
-                    <div
-                        key={index}
-                        className="flex items-start justify-between pb-3 border-b border-dashed border-border last:border-0 last:pb-0"
-                    >
-                        <div className="flex items-start gap-2 flex-1">
-                            <span className="bg-muted px-2 py-1 rounded text-xs font-bold min-w-[40px] text-center">
-                                {item.quantity}x
-                            </span>
-                            <div className="flex-1">
-                                <p className="font-medium text-sm text-foreground">
-                                    {item.menuItem?.name || "Unknown Item"}
-                                </p>
-                                {item.modifiers && item.modifiers.length > 0 && (
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        {Array.isArray(item.modifiers) 
-                                            ? item.modifiers.map(mod => {
-                                                // Handle both string format and object format
-                                                if (typeof mod === 'string') return mod;
-                                                if (typeof mod === 'object' && mod.name) {
-                                                    return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+                {/* Active Items Section */}
+                {(() => {
+                    const activeItems = order.orderItems?.filter(item => !['served', 'rejected', 'completed'].includes(item.itemStatus)) || [];
+                    
+                    if (activeItems.length > 0) {
+                        return activeItems.map((item, index) => (
+                             <div
+                                key={index}
+                                className="flex items-start justify-between pb-3 border-b border-dashed border-border last:border-0 last:pb-0"
+                            >
+                                <div className="flex items-start gap-2 flex-1">
+                                    <span className="bg-muted px-2 py-1 rounded text-xs font-bold min-w-[40px] text-center">
+                                        {item.quantity}x
+                                    </span>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-sm text-foreground">
+                                            {item.menuItem?.name || "Unknown Item"}
+                                        </p>
+                                {/* Modifier rendering logic... */}
+                                        {item.modifiers && item.modifiers.length > 0 && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                {Array.isArray(item.modifiers) 
+                                                    ? item.modifiers.map(mod => {
+                                                        // Handle both string format and object format
+                                                        if (typeof mod === 'string') return mod;
+                                                        if (typeof mod === 'object' && mod.name) {
+                                                            return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+                                                        }
+                                                        return '';
+                                                    }).filter(Boolean).join(", ")
+                                                    : ''
                                                 }
-                                                return '';
-                                            }).filter(Boolean).join(", ")
-                                            : ''
-                                        }
-                                    </p>
-                                )}
-                                {item.specialInstructions && (
-                                    <p className="text-xs text-warning italic mt-1">
-                                        Note: {item.specialInstructions}
-                                    </p>
-                                )}
+                                            </p>
+                                        )}
+                                        {item.specialInstructions && (
+                                            <p className="text-xs text-warning italic mt-1">
+                                                Note: {item.specialInstructions}
+                                            </p>
+                                        )}
+                                        {/* Show status badge for item if cooking/ready */}
+                                        {item.itemStatus && item.itemStatus !== 'queued' && (
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded ml-2 uppercase font-bold
+                                                ${item.itemStatus === 'ready' ? 'bg-success/20 text-success' : 
+                                                  item.itemStatus === 'cooking' ? 'bg-warning/20 text-warning' : 'bg-muted text-muted-foreground'}`}>
+                                                {item.itemStatus}
+                                            </span>
+                                        )} 
+                                    </div>
+                                </div>
+                                <span className="text-sm font-semibold text-foreground data-text ml-2">
+                                    {parseFloat(item.unitPrice * item.quantity).toLocaleString('vi-VN')}₫
+                                </span>
                             </div>
-                        </div>
-                        <span className="text-sm font-semibold text-foreground data-text ml-2">
-                            {parseFloat(item.unitPrice * item.quantity).toLocaleString('vi-VN')}₫
-                        </span>
-                    </div>
-                ))}
+                        ));
+                    } else {
+                        return <p className="text-sm text-muted-foreground text-center italic py-2">No active pending items.</p>;
+                    }
+                })()}
+
+                {/* Served/History Section */}
+                {(() => {
+                    const historyItems = order.orderItems?.filter(item => ['served', 'rejected', 'completed'].includes(item.itemStatus)) || [];
+                    
+                    if (historyItems.length > 0) {
+                        return (
+                            <div className="mt-4 pt-4 border-t border-border">
+                                <button 
+                                    onClick={(e) => {
+                                        const el = e.currentTarget.nextElementSibling;
+                                        el.classList.toggle('hidden');
+                                        e.currentTarget.textContent = el.classList.contains('hidden') ? `Show History (${historyItems.length})` : 'Hide History';
+                                    }}
+                                    className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors w-full text-center flex items-center justify-center gap-1"
+                                >
+                                   Show History ({historyItems.length})
+                                </button>
+                                <div className="hidden space-y-3 mt-3 animate-in fade-in slide-in-from-top-2">
+                                    {historyItems.map((item, index) => (
+                                         <div
+                                            key={`hist-${index}`}
+                                            className="flex items-start justify-between pb-2 opacity-60 hover:opacity-100 transition-opacity"
+                                        >
+                                            <div className="flex items-start gap-2 flex-1">
+                                                <span className="bg-muted/50 px-2 py-1 rounded text-xs font-medium min-w-[30px] text-center text-muted-foreground">
+                                                    {item.quantity}x
+                                                </span>
+                                                <div className="flex-1">
+                                                    <p className="text-sm text-muted-foreground line-through decoration-muted-foreground/50">
+                                                        {item.menuItem?.name || "Unknown Item"}
+                                                    </p>
+                                                    <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold bg-muted text-muted-foreground inline-block mt-0.5">
+                                                        {item.itemStatus}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return null;
+                })()}
 
                 {/* Total */}
                 <div className="flex items-center justify-between pt-2 border-t border-border">

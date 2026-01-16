@@ -233,7 +233,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
                                     </div>
                                     <div className="text-right ml-4">
                                         <p className="font-semibold text-foreground">
-                                            {formatCurrency(item.subtotal)}
+                                            {formatCurrency((item.unitPrice || 0) * (item.quantity || 0))}
                                         </p>
                                     </div>
                                 </div>

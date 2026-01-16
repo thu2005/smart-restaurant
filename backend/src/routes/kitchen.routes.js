@@ -80,6 +80,44 @@ router.put(
 
 /**
  * @swagger
+ * /api/kitchen/orders/{id}/items/{itemId}/status:
+ *   put:
+ *     summary: Update order item status
+ *     tags: [Kitchen]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - itemStatus
+ *             properties:
+ *               itemStatus:
+ *                 type: string
+ *                 enum: [queued, cooking, ready, cancelled]
+ *     responses:
+ *       200:
+ *         description: Item status updated
+ */
+router.put(
+    '/orders/:id/items/:itemId/status',
+    protect,
+    authorize('KITCHEN', 'ADMIN', 'SUPER_ADMIN'),
+    kitchenController.updateOrderItemStatus
+);
+
+/**
+ * @swagger
  * /api/kitchen/stats:
  *   get:
  *     summary: Get kitchen statistics

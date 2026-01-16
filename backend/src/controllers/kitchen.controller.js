@@ -61,9 +61,34 @@ exports.getKitchenStats = async (req, res, next) => {
             });
         }
 
-        const stats = await kitchenService.getKitchenStats(restaurantId);
-        res.status(200).json({ success: true, data: stats });
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateOrderItemStatus = async (req, res, next) => {
+    try {
+        const { itemStatus } = req.body;
+        const { id, itemId } = req.params;
+
+        const order = await kitchenService.updateOrderItemStatus(id, itemId, itemStatus);
+
+        // Emit socket event
+        const io = req.app.get('io');
+        if (io) {
+            io.to(order.restaurantId).emit('order_status_update', {
+                orderId: order.id,
+                status: order.status,
+                orderNumber: order.orderNumber,
+                itemStatusUpdate: true
+            });
+        }
+
+        res.status(200).json({ success: true, data: order });
+    } catch (error) {
+        if (error.message === 'Order not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
         next(error);
     }
 };

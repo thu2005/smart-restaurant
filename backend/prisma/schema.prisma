@@ -223,6 +223,11 @@ model MenuItem {
   orderCount        Int      @default(0) // Track popularity by order count
   dietary           String[] // e.g., ["vegetarian", "gluten-free"]
 
+  // Nutritional Information (JSON object)
+  nutritionalInfo Json? // { calories: 450, protein: "42g", carbs: "28g", fat: "26g", fiber: "4g", sodium: "680mg", sugar: "3g", cholesterol: "95mg" }
+  ingredients     String[] // Array of ingredient names
+  allergens       String[] // Array of allergen info
+
   // Availability
   isAvailable Boolean @default(true)
   stockStatus String  @default("available") // "available", "low-stock", "out-of-stock"
@@ -246,6 +251,7 @@ model MenuItem {
   reviews        Review[]
 
   @@index([restaurantId, categoryId, isAvailable])
+  @@index([restaurantId, orderCount])
 }
 
 model MenuItemPhoto {

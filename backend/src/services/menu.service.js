@@ -3,6 +3,23 @@ const fs = require("fs");
 const path = require("path");
 
 class MenuService {
+  // --- Helper method to calculate rating stats ---
+  async _calculateRatingStats(menuItemId) {
+    const reviews = await prisma.review.findMany({
+      where: { menuItemId },
+      select: { rating: true },
+    });
+
+    if (reviews.length === 0) {
+      return { averageRating: 0, reviewCount: 0 };
+    }
+
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = parseFloat((totalRating / reviews.length).toFixed(1));
+
+    return { averageRating, reviewCount: reviews.length };
+  }
+
   // --- Categories ---
   async getCategories(restaurantId, options = {}) {
     const {
@@ -224,8 +241,8 @@ class MenuService {
       prisma.menuItem.count({ where }),
     ]);
 
-    // Transform items to include computed status field
-    const transformedItems = items.map(item => {
+    // Transform items to include computed status field and rating stats
+    const transformedItems = await Promise.all(items.map(async item => {
       let status = 'available';
       if (item.stockStatus === 'sold_out') {
         status = 'sold_out';
@@ -235,11 +252,15 @@ class MenuService {
         status = 'unavailable';
       }
       
+      // Calculate rating stats
+      const ratingStats = await this._calculateRatingStats(item.id);
+      
       return {
         ...item,
         status, // Add computed status field
+        ...ratingStats,
       };
-    });
+    }));
 
     return {
       data: transformedItems,
@@ -269,10 +290,14 @@ class MenuService {
     });
     if (!item) throw new Error("Menu item not found");
 
+    // Calculate rating stats
+    const ratingStats = await this._calculateRatingStats(id);
+
     // Transform for frontend
     return {
       ...item,
       modifier_groups: item.modifierGroups.map((mg) => mg.modifierGroup),
+      ...ratingStats,
     };
   }
 
@@ -612,6 +637,215 @@ class MenuService {
         skipDuplicates: true,
       });
     }
+  }
+
+  // --- Enhanced Methods with Rating Stats ---
+  async getMenuItemsWithRatings(restaurantId, options = {}) {
+    const result = await this.getMenuItems(restaurantId, options);
+    
+    // Add rating stats to each item
+    const itemsWithRatings = await Promise.all(
+      result.data.map(async (item) => {
+        const ratingStats = await this._calculateRatingStats(item.id);
+        return { ...item, ...ratingStats };
+      })
+    );
+
+    return {
+      data: itemsWithRatings,
+      pagination: result.pagination,
+    };
+  }
+
+  async getMenuItemByIdWithRatings(id) {
+    const item = await this.getMenuItemById(id);
+    const ratingStats = await this._calculateRatingStats(id);
+    return { ...item, ...ratingStats };
+  }
+
+  // --- Nutritional Information ---
+  async getNutritionalInfo(itemId) {
+    const item = await prisma.menuItem.findUnique({
+      where: { id: itemId },
+      select: {
+        id: true,
+        name: true,
+        nutritionalInfo: true,
+        ingredients: true,
+        allergens: true,
+      },
+    });
+
+    if (!item) throw new Error("Menu item not found");
+    return item;
+  }
+
+  async updateNutritionalInfo(itemId, data) {
+    // Validate item exists
+    const item = await prisma.menuItem.findUnique({ where: { id: itemId } });
+    if (!item) throw new Error("Menu item not found");
+
+    const updateData = {};
+    
+    if (data.nutritionalInfo) {
+      updateData.nutritionalInfo = data.nutritionalInfo;
+    }
+    if (data.ingredients !== undefined) {
+      updateData.ingredients = data.ingredients;
+    }
+    if (data.allergens !== undefined) {
+      updateData.allergens = data.allergens;
+    }
+
+    return await prisma.menuItem.update({
+      where: { id: itemId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        nutritionalInfo: true,
+        ingredients: true,
+        allergens: true,
+      },
+    });
+  }
+
+  // --- Related Items ---
+  async getRelatedItems(itemId, limit = 6) {
+    const item = await prisma.menuItem.findUnique({
+      where: { id: itemId },
+      select: { categoryId: true, restaurantId: true, dietary: true },
+    });
+
+    if (!item) throw new Error("Menu item not found");
+
+    // Find related items by category, excluding the current item
+    const relatedItems = await prisma.menuItem.findMany({
+      where: {
+        restaurantId: item.restaurantId,
+        categoryId: item.categoryId,
+        id: { not: itemId },
+        isAvailable: true,
+      },
+      include: {
+        photos: { where: { isPrimary: true }, take: 1 },
+        category: true,
+      },
+      orderBy: { orderCount: 'desc' },
+      take: limit,
+    });
+
+    // Add rating stats
+    const itemsWithRatings = await Promise.all(
+      relatedItems.map(async (relatedItem) => {
+        const ratingStats = await this._calculateRatingStats(relatedItem.id);
+        return { ...relatedItem, ...ratingStats };
+      })
+    );
+
+    return itemsWithRatings;
+  }
+
+  // --- Popular Items ---
+  async getPopularItems(restaurantId, limit = 10) {
+    const items = await prisma.menuItem.findMany({
+      where: {
+        restaurantId,
+        isAvailable: true,
+      },
+      include: {
+        photos: { where: { isPrimary: true }, take: 1 },
+        category: true,
+      },
+      orderBy: { orderCount: 'desc' },
+      take: limit,
+    });
+
+    // Add rating stats
+    const itemsWithRatings = await Promise.all(
+      items.map(async (item) => {
+        const ratingStats = await this._calculateRatingStats(item.id);
+        return { ...item, ...ratingStats };
+      })
+    );
+
+    return itemsWithRatings;
+  }
+
+  // --- Items by Category ---
+  async getItemsByCategory(restaurantId, categoryId, options = {}) {
+    const { page = 1, limit = 20, sortBy = 'orderCount' } = options;
+
+    // Verify category exists and belongs to restaurant
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category || category.restaurantId !== restaurantId) {
+      throw new Error('Category not found or does not belong to this restaurant');
+    }
+
+    const skip = (page - 1) * limit;
+    const take = limit;
+
+    let orderBy = {};
+    switch (sortBy) {
+      case 'price':
+        orderBy = { price: 'asc' };
+        break;
+      case 'price_desc':
+        orderBy = { price: 'desc' };
+        break;
+      case 'name':
+        orderBy = { name: 'asc' };
+        break;
+      case 'orderCount':
+      default:
+        orderBy = { orderCount: 'desc' };
+        break;
+    }
+
+    const [items, total] = await Promise.all([
+      prisma.menuItem.findMany({
+        where: {
+          restaurantId,
+          categoryId,
+          isAvailable: true,
+        },
+        include: {
+          photos: { where: { isPrimary: true }, take: 1 },
+          category: true,
+        },
+        orderBy,
+        skip,
+        take,
+      }),
+      prisma.menuItem.count({
+        where: {
+          restaurantId,
+          categoryId,
+          isAvailable: true,
+        },
+      }),
+    ]);
+
+    // Add rating stats
+    const itemsWithRatings = await Promise.all(
+      items.map(async (item) => {
+        const ratingStats = await this._calculateRatingStats(item.id);
+        return { ...item, ...ratingStats };
+      })
+    );
+
+    return {
+      data: itemsWithRatings,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }
 

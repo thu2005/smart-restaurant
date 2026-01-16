@@ -60,7 +60,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const adminNavItems = [
     { path: "/admin/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
     {
-      path: "/kitchen/dashboard",
+      path: "/admin/kitchen/dashboard",
       label: "Kitchen Display",
       icon: "ChefHat",
     },
