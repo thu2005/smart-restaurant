@@ -74,6 +74,70 @@
             "min": "min"
         }
     },
+    "reports": {
+        "title": "Reports & Analytics",
+        "subtitle": "Track your restaurant's performance and insights",
+        "loading": "Loading reports...",
+        "error": {
+            "title": "Failed to Load Reports",
+            "retry": "Retry"
+        },
+        "dateRange": {
+            "last7days": "Last 7 Days",
+            "last30days": "Last 30 Days",
+            "thisMonth": "This Month",
+            "lastMonth": "Last Month",
+            "custom": "Custom Range"
+        },
+        "export": {
+            "pdf": "Export PDF",
+            "csv": "Export CSV",
+            "pdfTitle": "Export as PDF",
+            "csvTitle": "Export as CSV"
+        },
+        "metrics": {
+            "totalRevenue": "Total Revenue",
+            "totalOrders": "Total Orders",
+            "avgOrderValue": "Average Order Value",
+            "avgPrepTime": "Avg Prep Time",
+            "vsLastPeriod": "vs last period",
+            "currentPeriod": "Current period"
+        },
+        "charts": {
+            "revenueOverTime": {
+                "title": "Revenue Over Time",
+                "subtitle": "Track revenue trends across different time periods",
+                "noData": "No data available for the selected period",
+                "revenue": "Revenue",
+                "orders": "Orders",
+                "daily": "Daily",
+                "weekly": "Weekly",
+                "monthly": "Monthly"
+            },
+            "peakHours": {
+                "title": "Peak Hours",
+                "subtitle": "Busiest hours based on order volume",
+                "noData": "No peak hours data available",
+                "orders": "Orders"
+            }
+        },
+        "topItems": {
+            "title": "Top Selling Items",
+            "subtitle": "Best performing menu items by revenue",
+            "viewAll": "View All",
+            "noData": "No sales data available",
+            "rank": "Rank",
+            "item": "Item",
+            "category": "Category",
+            "orders": "Orders",
+            "revenue": "Revenue",
+            "trend": "Trend",
+            "modal": {
+                "title": "Top Selling Items - Full List",
+                "close": "Close"
+            }
+        }
+    },
     "admin": {
         "management": {
             "title": "Staff Management",

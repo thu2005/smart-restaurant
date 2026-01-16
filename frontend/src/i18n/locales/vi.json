@@ -74,6 +74,70 @@
             "min": "phút"
         }
     },
+    "reports": {
+        "title": "Báo Cáo & Phân Tích",
+        "subtitle": "Theo dõi hiệu suất và thông tin chi tiết của nhà hàng",
+        "loading": "Đang tải báo cáo...",
+        "error": {
+            "title": "Tải Báo Cáo Thất Bại",
+            "retry": "Thử Lại"
+        },
+        "dateRange": {
+            "last7days": "7 Ngày Qua",
+            "last30days": "30 Ngày Qua",
+            "thisMonth": "Tháng Này",
+            "lastMonth": "Tháng Trước",
+            "custom": "Tùy Chỉnh"
+        },
+        "export": {
+            "pdf": "Xuất PDF",
+            "csv": "Xuất CSV",
+            "pdfTitle": "Xuất dưới dạng PDF",
+            "csvTitle": "Xuất dưới dạng CSV"
+        },
+        "metrics": {
+            "totalRevenue": "Tổng Doanh Thu",
+            "totalOrders": "Tổng Đơn Hàng",
+            "avgOrderValue": "Giá Trị Đơn Trung Bình",
+            "avgPrepTime": "Thời Gian Chuẩn Bị TB",
+            "vsLastPeriod": "so với kỳ trước",
+            "currentPeriod": "Kỳ hiện tại"
+        },
+        "charts": {
+            "revenueOverTime": {
+                "title": "Doanh Thu Theo Thời Gian",
+                "subtitle": "Theo dõi xu hướng doanh thu qua các khoảng thời gian khác nhau",
+                "noData": "Không có dữ liệu cho khoảng thời gian đã chọn",
+                "revenue": "Doanh Thu",
+                "orders": "Đơn Hàng",
+                "daily": "Theo Ngày",
+                "weekly": "Theo Tuần",
+                "monthly": "Theo Tháng"
+            },
+            "peakHours": {
+                "title": "Giờ Cao Điểm",
+                "subtitle": "Giờ bận rộn nhất dựa trên số lượng đơn hàng",
+                "noData": "Không có dữ liệu giờ cao điểm",
+                "orders": "Đơn Hàng"
+            }
+        },
+        "topItems": {
+            "title": "Món Bán Chạy Nhất",
+            "subtitle": "Món ăn hoạt động tốt nhất theo doanh thu",
+            "viewAll": "Xem Tất Cả",
+            "noData": "Không có dữ liệu bán hàng",
+            "rank": "Hạng",
+            "item": "Món Ăn",
+            "category": "Danh Mục",
+            "orders": "Đơn Hàng",
+            "revenue": "Doanh Thu",
+            "trend": "Xu Hướng",
+            "modal": {
+                "title": "Món Bán Chạy Nhất - Danh Sách Đầy Đủ",
+                "close": "Đóng"
+            }
+        }
+    },
     "admin": {
         "management": {
             "title": "Quản Lý Nhân Viên",

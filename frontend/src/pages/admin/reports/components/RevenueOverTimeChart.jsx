@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     LineChart,
     Line,
@@ -13,10 +14,11 @@ import {
 } from 'recharts';
 
 const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
+    const { t } = useTranslation();
     const periodOptions = [
-        { value: 'daily', label: 'Daily' },
-        { value: 'weekly', label: 'Weekly' },
-        { value: 'monthly', label: 'Monthly' },
+        { value: 'daily', label: t('reports.charts.revenueOverTime.daily') },
+        { value: 'weekly', label: t('reports.charts.revenueOverTime.weekly') },
+        { value: 'monthly', label: t('reports.charts.revenueOverTime.monthly') },
     ];
 
     const formatXAxis = (value) => {
@@ -58,7 +60,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#e74c3c' }} />
-                            <span className="text-xs text-muted-foreground">Revenue:</span>
+                            <span className="text-xs text-muted-foreground">{t('reports.charts.revenueOverTime.revenue')}:</span>
                             <span className="text-sm font-semibold text-foreground data-text">
                                 ${(payload[0]?.value || 0).toFixed(2)}
                             </span>
@@ -66,7 +68,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                         {payload[1] && (
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 rounded-full bg-accent" />
-                                <span className="text-xs text-muted-foreground">Orders:</span>
+                                <span className="text-xs text-muted-foreground">{t('reports.charts.revenueOverTime.orders')}:</span>
                                 <span className="text-sm font-semibold text-foreground data-text">
                                     {payload[1]?.value}
                                 </span>
@@ -90,10 +92,10 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
                 <div>
                     <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-1">
-                        Revenue Over Time
+                        {t('reports.charts.revenueOverTime.title')}
                     </h3>
                     <p className="text-xs md:text-sm text-muted-foreground">
-                        Track revenue trends across different time periods
+                        {t('reports.charts.revenueOverTime.subtitle')}
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -115,7 +117,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
             <div className="w-full h-[300px]">
                 {(!chartData || chartData.length === 0) ? (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                        No data available for the selected period
+                        {t('reports.charts.revenueOverTime.noData')}
                     </div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
@@ -153,7 +155,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                                 stroke="#e74c3c"
                                 strokeWidth={3}
                                 fill="url(#colorRevenue)"
-                                name="Revenue ($)"
+                                name={t('reports.charts.revenueOverTime.revenue') + ' ($)'}
                             />
                         </AreaChart>
                     </ResponsiveContainer>

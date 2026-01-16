@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import OverviewMetrics from './components/OverviewMetrics';
 import RevenueOverTimeChart from './components/RevenueOverTimeChart';
 import PeakHoursChart from './components/PeakHoursChart';
@@ -9,6 +10,7 @@ import ExportButtons from './components/ExportButtons';
 import reportApi from '../../../services/reportApi';
 
 const Reports = () => {
+    const { t } = useTranslation();
     const [dateRange, setDateRange] = useState('last7days');
     const [chartPeriod, setChartPeriod] = useState('daily');
     const [loading, setLoading] = useState(true);
@@ -101,33 +103,33 @@ const Reports = () => {
             // Build metrics
             const newMetrics = [
                 {
-                    title: 'Total Revenue',
+                    title: t('reports.metrics.totalRevenue'),
                     value: `$${(comparison.totalRevenue.current / 100).toFixed(2)}`,
-                    change: `${comparison.totalRevenue.change >= 0 ? '+' : ''}${comparison.totalRevenue.change.toFixed(1)}% vs last period`,
+                    change: `${comparison.totalRevenue.change >= 0 ? '+' : ''}${comparison.totalRevenue.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.totalRevenue.change >= 0 ? 'positive' : 'negative',
                     icon: 'DollarSign',
                     iconColor: '#27ae60',
                 },
                 {
-                    title: 'Total Orders',
+                    title: t('reports.metrics.totalOrders'),
                     value: comparison.totalOrders.current.toString(),
-                    change: `${comparison.totalOrders.change >= 0 ? '+' : ''}${comparison.totalOrders.change.toFixed(1)}% vs last period`,
+                    change: `${comparison.totalOrders.change >= 0 ? '+' : ''}${comparison.totalOrders.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.totalOrders.change >= 0 ? 'positive' : 'negative',
                     icon: 'ShoppingBag',
                     iconColor: '#3498db',
                 },
                 {
-                    title: 'Average Order Value',
+                    title: t('reports.metrics.avgOrderValue'),
                     value: `$${(comparison.averageOrderValue.current / 100).toFixed(2)}`,
-                    change: `${comparison.averageOrderValue.change >= 0 ? '+' : ''}${comparison.averageOrderValue.change.toFixed(1)}% vs last period`,
+                    change: `${comparison.averageOrderValue.change >= 0 ? '+' : ''}${comparison.averageOrderValue.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.averageOrderValue.change >= 0 ? 'positive' : 'negative',
                     icon: 'TrendingUp',
                     iconColor: '#f39c12',
                 },
                 {
-                    title: 'Avg Prep Time',
-                    value: `${avgPrepTime} min`,
-                    change: 'Current period',
+                    title: t('reports.metrics.avgPrepTime'),
+                    value: `${avgPrepTime} ${t('common.time.min')}`,
+                    change: t('reports.metrics.currentPeriod'),
                     changeType: 'neutral',
                     icon: 'Clock',
                     iconColor: '#e74c3c',
@@ -216,7 +218,7 @@ const Reports = () => {
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-muted-foreground">Loading reports...</p>
+                        <p className="text-muted-foreground">{t('reports.loading')}</p>
                     </div>
                 </div>
             </div>
@@ -230,13 +232,13 @@ const Reports = () => {
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center">
                         <div className="text-red-500 text-5xl mb-4">⚠️</div>
-                        <h2 className="text-xl font-semibold mb-2">Failed to Load Reports</h2>
+                        <h2 className="text-xl font-semibold mb-2">{t('reports.error.title')}</h2>
                         <p className="text-muted-foreground mb-4">{error}</p>
                         <button
                             onClick={fetchReportData}
                             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
                         >
-                            Retry
+                            {t('reports.error.retry')}
                         </button>
                     </div>
                 </div>
@@ -251,10 +253,10 @@ const Reports = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                     <div>
                         <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-                            Reports & Analytics
+                            {t('reports.title')}
                         </h1>
                         <p className="text-sm md:text-base text-muted-foreground">
-                            Track your restaurant's performance and insights
+                            {t('reports.subtitle')}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
