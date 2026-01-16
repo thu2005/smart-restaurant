@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
@@ -7,6 +8,7 @@ import CategoryModal from "./CategoryModal";
 import { toast } from "sonner";
 
 const CategoryList = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,7 +37,7 @@ const CategoryList = () => {
       }
     } catch (error) {
       console.error("Failed to fetch categories:", error);
-      toast.error("Failed to load categories");
+      toast.error(t('admin.menu.categories.messages.loadError'));
       setCategories([]);
     } finally {
       setLoading(false);
@@ -66,10 +68,10 @@ const CategoryList = () => {
       // Note: In a real app, we might check if it has items first or handle soft delete
       // The assignment says "Soft delete or mark as inactive"
       await menuService.updateCategoryStatus(deleteConfirm, "inactive");
-      toast.success("Category deactivated");
+      toast.success(t('admin.menu.categories.messages.deleteSuccess'));
       fetchCategories();
     } catch (error) {
-      toast.error("Failed to delete category");
+      toast.error(t('admin.menu.categories.messages.deleteError'));
     } finally {
       setDeleteConfirm(null);
     }
@@ -83,16 +85,16 @@ const CategoryList = () => {
     try {
       if (editingCategory) {
         await menuService.updateCategory(editingCategory.id, data);
-        toast.success("Category updated successfully");
+        toast.success(t('admin.menu.categories.messages.updateSuccess'));
       } else {
         await menuService.createCategory(data);
-        toast.success("Category created successfully");
+        toast.success(t('admin.menu.categories.messages.createSuccess'));
       }
       setIsModalOpen(false);
       fetchCategories();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to save category");
+      toast.error(t('admin.menu.categories.messages.updateError'));
     }
   };
 
@@ -100,28 +102,28 @@ const CategoryList = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Menu Categories</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('admin.menu.categories.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your menu categories and their display order.
+            {t('admin.menu.categories.subtitle')}
           </p>
         </div>
         <Button onClick={handleCreate}>
           <Icon name="Plus" className="w-4 h-4 mr-2" />
-          Add Category
+          {t('admin.menu.categories.addCategory')}
         </Button>
       </div>
 
       <div className="flex justify-end mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Sort by:</span>
+          <span className="text-sm text-gray-500">{t('admin.menu.items.filters.sortBy')}:</span>
           <select
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
-            <option value="display_order">Display Order</option>
-            <option value="name">Name</option>
-            <option value="created_at">Creation Date</option>
+            <option value="display_order">{t('admin.menu.categories.sort.displayOrder')}</option>
+            <option value="name">{t('admin.menu.categories.sort.name')}</option>
+            <option value="created_at">{t('admin.menu.categories.sort.createdDate')}</option>
           </select>
         </div>
       </div>
@@ -131,17 +133,17 @@ const CategoryList = () => {
           <table className="w-full text-sm text-left">
             <thead className="border-b border-border">
               <tr>
-                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Order</th>
-                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('admin.menu.categories.table.order')}</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('admin.menu.categories.table.name')}</th>
                 <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">
-                  Description
+                  {t('admin.menu.categories.table.description')}
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden xl:table-cell">
-                  Created Date
+                  {t('admin.menu.categories.table.createdDate')}
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Items</th>
-                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('admin.menu.categories.table.status')}</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('admin.menu.categories.table.items')}</th>
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">{t('admin.menu.categories.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
@@ -151,7 +153,7 @@ const CategoryList = () => {
                     colSpan="7"
                     className="px-4 py-4 text-center text-gray-500"
                   >
-                    Loading...
+                    {t('common.messages.loading')}
                   </td>
                 </tr>
               ) : categories.length === 0 ? (
@@ -160,7 +162,7 @@ const CategoryList = () => {
                     colSpan="7"
                     className="px-4 py-4 text-center text-gray-500"
                   >
-                    No categories found.
+                    {t('admin.menu.categories.empty')}
                   </td>
                 </tr>
               ) : (
@@ -187,7 +189,7 @@ const CategoryList = () => {
                           : "bg-gray-100 text-gray-800"
                           }`}
                       >
-                        {category.status}
+                        {t(`common.status.${category.status}`)}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-muted-foreground">
@@ -223,8 +225,7 @@ const CategoryList = () => {
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-sm text-gray-500">
-            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)}{" "}
-            of {total} categories
+            {t('common.pagination.showingPage')} {page} {t('common.pagination.of')} {totalPages}
           </div>
           <div className="flex gap-2">
             <Button
@@ -233,7 +234,7 @@ const CategoryList = () => {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
             >
-              Previous
+              {t('common.pagination.previous')}
             </Button>
             <Button
               variant="outline"
@@ -241,7 +242,7 @@ const CategoryList = () => {
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= totalPages}
             >
-              Next
+              {t('common.pagination.next')}
             </Button>
           </div>
         </div>
@@ -251,23 +252,23 @@ const CategoryList = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleModalSubmit}
         initialData={editingCategory}
-        title={editingCategory ? "Edit Category" : "New Category"}
+        title={editingCategory ? t('admin.menu.categories.modal.editTitle') : t('admin.menu.categories.modal.newTitle')}
       />
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h3 className="text-lg font-semibold mb-4">Delete category?</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('admin.menu.categories.deleteConfirm')}</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this category? This will deactivate the category. This action cannot be undone.
+              {t('admin.menu.categories.deleteMessage')}
             </p>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={cancelDelete}>
-                Cancel
+                {t('common.actions.cancel')}
               </Button>
               <Button variant="destructive" onClick={confirmDelete}>
-                Delete
+                {t('common.actions.delete')}
               </Button>
             </div>
           </div>

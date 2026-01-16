@@ -27,7 +27,9 @@
             "clear": "Clear",
             "viewDetails": "View Details",
             "dismiss": "Dismiss",
-            "showLess": "Show Less"
+            "showLess": "Show Less",
+            "processing": "Processing...",
+            "deleting": "Deleting..."
         },
         "status": {
             "active": "Active",
@@ -99,7 +101,149 @@
                     "unavailable": "Unavailable"
                 },
                 "deleteConfirm": "Delete menu item?",
-                "deleteMessage": "Are you sure you want to delete this menu item? This action cannot be undone."
+                "deleteMessage": "Are you sure you want to delete this menu item? This action cannot be undone.",
+                "sort": {
+                    "nameAz": "Name (A-Z)"
+                },
+                "messages": {
+                    "createSuccess": "Item created successfully",
+                    "createSuccessWithPhotos": "Item created! You can now add photos and modifiers.",
+                    "updateSuccess": "Item updated successfully",
+                    "deleteSuccess": "Item deleted",
+                    "saveError": "Failed to save item",
+                    "deleteError": "Failed to delete item",
+                    "loadError": "Failed to load menu items",
+                    "loadDataError": "Failed to load data",
+                    "noRestaurant": "No restaurant assigned to your account"
+                },
+                "empty": {
+                    "noItems": "No items found.",
+                    "noRestaurantTitle": "No Restaurant Assigned",
+                    "noRestaurantDesc": "Your account doesn't have a restaurant assigned yet. Please contact the administrator to set up your restaurant."
+                },
+                "badges": {
+                    "chefChoice": "Chef's Choice"
+                },
+                "form": {
+                    "titleNew": "New Menu Item",
+                    "titleEdit": "Edit Menu Item",
+                    "titleCreate": "Create Menu Item",
+                    "titleEditName": "Editing {{name}}",
+                    "subtitleNew": "Add a new item to your menu",
+                    "tabs": {
+                        "details": "Details",
+                        "photos": "Photos",
+                        "modifiers": "Modifiers"
+                    },
+                    "infoBox": "First, save the basic item details. You can add photos and modifiers after the item is created.",
+                    "labels": {
+                        "name": "Item Name *",
+                        "category": "Category *",
+                        "price": "Price ($) *",
+                        "prepTime": "Prep Time (mins)",
+                        "description": "Description",
+                        "status": "Status",
+                        "chefRecommended": "Chef Recommended"
+                    },
+                    "placeholders": {
+                        "selectCategory": "Select Category",
+                        "name": "Item Name"
+                    },
+                    "validation": {
+                        "nameRequired": "Name is required",
+                        "nameMin": "Name must be at least 2 characters",
+                        "nameMax": "Name must not exceed 80 characters",
+                        "categoryRequired": "Category is required",
+                        "priceRequired": "Price is required",
+                        "pricePositive": "Price must be at least $0.01",
+                        "priceMax": "Price must not exceed $999,999",
+                        "prepTimeNegative": "Prep time cannot be negative",
+                        "prepTimeMax": "Prep time must not exceed 240 minutes",
+                        "descMax": "Description must not exceed 500 characters"
+                    },
+                    "buttons": {
+                        "create": "Create Item",
+                        "saveChanges": "Save Changes",
+                        "update": "Update Item",
+                        "saving": "Saving...",
+                        "done": "Done"
+                    }
+                },
+                "photos": {
+                    "title": "Item Photos",
+                    "uploadBtn": "Upload Photos",
+                    "uploadingBtn": "Uploading...",
+                    "primaryBadge": "Primary",
+                    "setPrimary": "Set as Primary",
+                    "deleteConfirm": "Delete this photo?",
+                    "deleteMessage": "Are you sure you want to delete this photo? This action cannot be undone.",
+                    "empty": "No photos uploaded yet.",
+                    "messages": {
+                        "uploadSuccess": "Photos uploaded successfully",
+                        "uploadError": "Failed to upload photos",
+                        "deleteSuccess": "Photo deleted",
+                        "deleteError": "Failed to delete photo",
+                        "primarySuccess": "Primary photo updated",
+                        "primaryError": "Failed to set primary photo"
+                    }
+                },
+                "modifiers": {
+                    "title": "Attached Modifier Groups",
+                    "titleList": "Modifier Groups",
+                    "subtitleList": "Manage customization options for your menu items.",
+                    "addGroup": "Add Group",
+                    "instruction": "Click on a modifier group to attach or detach it from this item.",
+                    "empty": "No modifier groups available. Create them in the Modifiers section.",
+                    "optionsCount": "{{count}} options",
+                    "select": "Select",
+                    "card": {
+                        "required": "Required",
+                        "options": "Options",
+                        "free": "Free"
+                    },
+                    "modal": {
+                        "titleNew": "New Modifier Group",
+                        "titleEdit": "Edit Modifier Group",
+                        "labels": {
+                            "name": "Group Name *",
+                            "selectionType": "Selection Type",
+                            "required": "Required Selection",
+                            "min": "Min Selections",
+                            "max": "Max Selections"
+                        },
+                        "placeholders": {
+                            "name": "e.g. Size, Toppings",
+                            "optionName": "Option Name",
+                            "price": "Price"
+                        },
+                        "types": {
+                            "single": "Single Select (Radio)",
+                            "multiple": "Multi Select (Checkbox)"
+                        },
+                        "options": {
+                            "title": "Options",
+                            "add": "Add Option"
+                        },
+                        "buttons": {
+                            "save": "Save Modifier Group",
+                            "saving": "Saving..."
+                        }
+                    },
+                    "delete": {
+                        "title": "Delete modifier group?",
+                        "message": "Are you sure you want to delete this modifier group? This will also remove it from all menu items. This action cannot be undone."
+                    },
+                    "messages": {
+                        "loadError": "Failed to load modifier groups",
+                        "updateSuccess": "Modifiers updated",
+                        "updateError": "Failed to update modifiers",
+                        "createSuccess": "Modifier group created",
+                        "saveSuccess": "Modifier group updated",
+                        "saveError": "Failed to save modifier group",
+                        "deleteSuccess": "Modifier group deleted",
+                        "deleteError": "Failed to delete modifier group"
+                    }
+                }
             },
             "categories": {
                 "title": "Menu Categories",
@@ -116,13 +260,51 @@
                     "actions": "Actions"
                 },
                 "deleteConfirm": "Delete category?",
-                "deleteMessage": "Are you sure you want to delete this category? This will deactivate the category. This action cannot be undone."
+                "deleteMessage": "Are you sure you want to delete this category? This will deactivate the category. This action cannot be undone.",
+                "sort": {
+                    "displayOrder": "Display Order",
+                    "name": "Name",
+                    "createdDate": "Creation Date"
+                },
+                "messages": {
+                    "createSuccess": "Category created successfully",
+                    "updateSuccess": "Category updated successfully",
+                    "deleteSuccess": "Category deactivated",
+                    "createError": "Failed to create category",
+                    "updateError": "Failed to save category",
+                    "deleteError": "Failed to delete category",
+                    "loadError": "Failed to load categories"
+                },
+                "modal": {
+                    "newTitle": "New Category",
+                    "editTitle": "Edit Category",
+                    "nameLabel": "Name *",
+                    "namePlaceholder": "Category Name",
+                    "descriptionLabel": "Description",
+                    "descriptionPlaceholder": "Optional description",
+                    "orderLabel": "Display Order",
+                    "orderPlaceholder": "0",
+                    "statusLabel": "Status",
+                    "saveBtn": "Save Category",
+                    "savingBtn": "Saving...",
+                    "validation": {
+                        "nameRequired": "Name is required",
+                        "nameMin": "Name must be at least 2 characters",
+                        "nameMax": "Name must be less than 50 characters",
+                        "descMax": "Description must not exceed 500 characters",
+                        "orderMin": "Order must be non-negative"
+                    }
+                },
+                "empty": "No categories found."
             }
         },
         "users": {
             "title": "Staff Management",
+            "titleAdmin": "Admin Management",
             "subtitle": "Manage restaurant staff accounts",
+            "subtitleAdmin": "Manage Admin accounts",
             "addStaff": "Add Staff",
+            "addAdmin": "Add Admin",
             "editStaff": "Edit Staff",
             "filters": {
                 "filterByRole": "Filter by Role",
@@ -141,6 +323,7 @@
                 "actions": "Actions"
             },
             "roles": {
+                "super_admin": "Super Admin",
                 "admin": "Admin",
                 "waiter": "Waiter",
                 "kitchen": "Kitchen Staff"
@@ -148,6 +331,19 @@
             "actions": {
                 "activate": "Activate",
                 "deactivate": "Deactivate"
+            },
+            "empty": "No users found",
+            "summary": "Showing {{count}} user",
+            "summaryPlural": "Showing {{count}} users",
+            "delete": {
+                "title": "Delete User",
+                "message": "Are you sure you want to permanently delete {{email}}? This action cannot be undone."
+            },
+            "status": {
+                "activateTitle": "Activate User?",
+                "deactivateTitle": "Deactivate User?",
+                "activateMessage": "Are you sure you want to activate {{name}}? They will be able to log in.",
+                "deactivateMessage": "Are you sure you want to deactivate {{name}}? They will not be able to log in."
             }
         },
         "dashboard": {

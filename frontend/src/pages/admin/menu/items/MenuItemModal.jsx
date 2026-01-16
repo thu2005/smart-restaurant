@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import menuService from "services/menuService";
@@ -10,6 +11,7 @@ import PhotoManager from "./components/PhotoManager";
 import ModifierSelector from "./components/ModifierSelector";
 
 const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("details");
   const [categories, setCategories] = useState([]);
   const [itemData, setItemData] = useState(null);
@@ -82,7 +84,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
         }
       } catch (error) {
         console.error(error);
-        toast.error("Failed to load data");
+        toast.error(t('admin.menu.items.messages.loadDataError'));
         onClose();
       } finally {
         setLoading(false);
@@ -96,13 +98,13 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
       let savedItem;
       if (isEditMode) {
         savedItem = await menuService.updateItem(currentId, data);
-        toast.success("Item updated successfully");
+        toast.success(t('admin.menu.items.messages.updateSuccess'));
         setItemData(savedItem);
         onSave(); // Refresh parent list
         onClose();
       } else {
         savedItem = await menuService.createItem(data);
-        toast.success("Item created! You can now add photos and modifiers.");
+        toast.success(t('admin.menu.items.messages.createSuccessWithPhotos'));
         setCurrentId(savedItem.id); // Switch to edit mode
         setItemData(savedItem);
         onSave(); // Refresh parent list
@@ -110,7 +112,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to save item");
+      toast.error(t('admin.menu.items.messages.saveError'));
     }
   };
 
@@ -132,7 +134,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="text-xl font-semibold">
-            {isEditMode ? "Edit Menu Item" : "New Menu Item"}
+            {isEditMode ? t('admin.menu.items.form.titleEdit') : t('admin.menu.items.form.titleNew')}
           </h2>
           <button
             onClick={onClose}
@@ -151,7 +153,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
               }`}
             onClick={() => setActiveTab("details")}
           >
-            Details
+            {t('admin.menu.items.form.tabs.details')}
           </button>
           <button
             className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "photos"
@@ -161,7 +163,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
             onClick={() => isEditMode && setActiveTab("photos")}
             disabled={!isEditMode}
           >
-            Photos
+            {t('admin.menu.items.form.tabs.photos')}
           </button>
           <button
             className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "modifiers"
@@ -171,7 +173,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
             onClick={() => isEditMode && setActiveTab("modifiers")}
             disabled={!isEditMode}
           >
-            Modifiers
+            {t('admin.menu.items.form.tabs.modifiers')}
           </button>
         </div>
 
@@ -185,8 +187,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                 </div>
                 <div>
                   <p className="text-sm text-blue-700">
-                    First, save the basic item details. You can add photos and
-                    modifiers after the item is created.
+                    {t('admin.menu.items.form.infoBox')}
                   </p>
                 </div>
               </div>
@@ -194,7 +195,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
           )}
 
           {loading ? (
-            <div className="flex justify-center py-8">Loading...</div>
+            <div className="flex justify-center py-8">{t('common.messages.loading')}</div>
           ) : (
             <>
               {activeTab === "details" && (
@@ -205,31 +206,31 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
-                      label="Item Name"
+                      label={t('admin.menu.items.form.labels.name')}
                       {...register("name", {
-                        required: "Name is required",
+                        required: t('admin.menu.items.form.validation.nameRequired'),
                         minLength: {
                           value: 2,
-                          message: "Name must be at least 2 characters"
+                          message: t('admin.menu.items.form.validation.nameMin')
                         },
                         maxLength: {
                           value: 80,
-                          message: "Name must not exceed 80 characters"
+                          message: t('admin.menu.items.form.validation.nameMax')
                         }
                       })}
                       error={errors.name?.message}
                     />
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Category
+                        {t('admin.menu.items.form.labels.category')}
                       </label>
                       <select
                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         {...register("category_id", {
-                          required: "Category is required",
+                          required: t('admin.menu.items.form.validation.categoryRequired'),
                         })}
                       >
-                        <option value="">Select Category</option>
+                        <option value="">{t('admin.menu.items.form.placeholders.selectCategory')}</option>
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
                             {cat.name}
@@ -243,33 +244,33 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                       )}
                     </div>
                     <Input
-                      label="Price ($)"
+                      label={t('admin.menu.items.form.labels.price')}
                       type="number"
                       step="0.01"
                       {...register("price", {
-                        required: "Price is required",
+                        required: t('admin.menu.items.form.validation.priceRequired'),
                         min: {
                           value: 0.01,
-                          message: "Price must be at least $0.01"
+                          message: t('admin.menu.items.form.validation.pricePositive')
                         },
                         max: {
                           value: 999999,
-                          message: "Price must not exceed $999,999"
+                          message: t('admin.menu.items.form.validation.priceMax')
                         }
                       })}
                       error={errors.price?.message}
                     />
                     <Input
-                      label="Prep Time (mins)"
+                      label={t('admin.menu.items.form.labels.prepTime')}
                       type="number"
                       {...register("prep_time_minutes", {
                         min: {
                           value: 0,
-                          message: "Prep time cannot be negative"
+                          message: t('admin.menu.items.form.validation.prepTimeNegative')
                         },
                         max: {
                           value: 240,
-                          message: "Prep time must not exceed 240 minutes"
+                          message: t('admin.menu.items.form.validation.prepTimeMax')
                         }
                       })}
                       error={errors.prep_time_minutes?.message}
@@ -278,14 +279,14 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
+                      {t('admin.menu.items.form.labels.description')}
                     </label>
                     <textarea
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[100px]"
                       {...register("description", {
                         maxLength: {
                           value: 500,
-                          message: "Description must not exceed 500 characters"
+                          message: t('admin.menu.items.form.validation.descMax')
                         }
                       })}
                     />
@@ -299,15 +300,15 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Status
+                        {t('admin.menu.items.form.labels.status')}
                       </label>
                       <select
                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         {...register("status")}
                       >
-                        <option value="available">Available</option>
-                        <option value="sold_out">Sold Out</option>
-                        <option value="unavailable">Unavailable</option>
+                        <option value="available">{t('admin.menu.items.status.available')}</option>
+                        <option value="sold_out">{t('admin.menu.items.status.soldOut')}</option>
+                        <option value="unavailable">{t('admin.menu.items.status.unavailable')}</option>
                       </select>
                     </div>
                     <div className="flex items-center space-x-2 pt-6">
@@ -321,7 +322,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                         htmlFor="is_chef_recommended"
                         className="text-sm font-medium text-gray-700"
                       >
-                        Chef Recommended
+                        {t('admin.menu.items.form.labels.chefRecommended')}
                       </label>
                     </div>
                   </div>
@@ -350,7 +351,7 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
         {/* Footer */}
         <div className="px-6 py-4 border-t bg-gray-50 flex justify-end gap-2 rounded-b-lg">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t('common.actions.cancel')}
           </Button>
           {activeTab === "details" && (
             <Button
@@ -359,13 +360,13 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
               disabled={isSubmitting || loading}
             >
               {isSubmitting
-                ? "Saving..."
+                ? t('admin.menu.items.form.buttons.saving')
                 : isEditMode
-                  ? "Save Changes"
-                  : "Create Item"}
+                  ? t('admin.menu.items.form.buttons.saveChanges')
+                  : t('admin.menu.items.form.buttons.create')}
             </Button>
           )}
-          {activeTab !== "details" && <Button onClick={onClose}>Done</Button>}
+          {activeTab !== "details" && <Button onClick={onClose}>{t('admin.menu.items.form.buttons.done')}</Button>}
         </div>
       </div>
     </div>,

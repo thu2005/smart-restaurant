@@ -27,7 +27,9 @@
             "clear": "Xóa",
             "viewDetails": "Xem Chi Tiết",
             "dismiss": "Bỏ Qua",
-            "showLess": "Thu Gọn"
+            "showLess": "Thu Gọn",
+            "processing": "Đang Xử Lý...",
+            "deleting": "Đang Xóa..."
         },
         "status": {
             "active": "Hoạt Động",
@@ -99,7 +101,149 @@
                     "unavailable": "Không Có Sẵn"
                 },
                 "deleteConfirm": "Xóa món ăn?",
-                "deleteMessage": "Bạn có chắc chắn muốn xóa món ăn này? Hành động này không thể hoàn tác."
+                "deleteMessage": "Bạn có chắc chắn muốn xóa món ăn này? Hành động này không thể hoàn tác.",
+                "sort": {
+                    "nameAz": "Tên (A-Z)"
+                },
+                "messages": {
+                    "createSuccess": "Tạo món ăn thành công",
+                    "createSuccessWithPhotos": "Đã tạo món ăn! Bạn có thể thêm ảnh và tùy chọn bổ sung ngay.",
+                    "updateSuccess": "Cập nhật món ăn thành công",
+                    "deleteSuccess": "Đã xóa món ăn",
+                    "saveError": "Không thể lưu món ăn",
+                    "deleteError": "Không thể xóa món ăn",
+                    "loadError": "Không thể tải menu",
+                    "loadDataError": "Không thể tải dữ liệu",
+                    "noRestaurant": "Tài khoản của bạn chưa được gán nhà hàng"
+                },
+                "empty": {
+                    "noItems": "Không tìm thấy món ăn nào.",
+                    "noRestaurantTitle": "Chưa Gán Nhà Hàng",
+                    "noRestaurantDesc": "Tài khoản của bạn chưa được gán nhà hàng nào. Vui lòng liên hệ quản trị viên để thiết lập."
+                },
+                "badges": {
+                    "chefChoice": "Bếp Trưởng Khuyên Dùng"
+                },
+                "form": {
+                    "titleNew": "Món Ăn Mới",
+                    "titleEdit": "Sửa Món Ăn",
+                    "titleCreate": "Tạo Món Ăn",
+                    "titleEditName": "Đang sửa {{name}}",
+                    "subtitleNew": "Thêm món ăn mới vào thực đơn",
+                    "tabs": {
+                        "details": "Chi Tiết",
+                        "photos": "Hình Ảnh",
+                        "modifiers": "Tùy Chọn"
+                    },
+                    "infoBox": "Trước tiên, hãy lưu thông tin cơ bản. Bạn có thể thêm ảnh và tùy chọn bổ sung sau khi món ăn được tạo.",
+                    "labels": {
+                        "name": "Tên Món *",
+                        "category": "Danh Mục *",
+                        "price": "Giá ($) *",
+                        "prepTime": "Thời Gian Chuẩn Bị (phút)",
+                        "description": "Mô Tả",
+                        "status": "Trạng Thái",
+                        "chefRecommended": "Bếp Trưởng Khuyên Dùng"
+                    },
+                    "placeholders": {
+                        "selectCategory": "Chọn Danh Mục",
+                        "name": "Tên Món Ăn"
+                    },
+                    "validation": {
+                        "nameRequired": "Tên là bắt buộc",
+                        "nameMin": "Tên phải có ít nhất 2 ký tự",
+                        "nameMax": "Tên không được vượt quá 80 ký tự",
+                        "categoryRequired": "Danh mục là bắt buộc",
+                        "priceRequired": "Giá là bắt buộc",
+                        "pricePositive": "Giá phải ít nhất là $0.01",
+                        "priceMax": "Giá không được vượt quá $999,999",
+                        "prepTimeNegative": "Thời gian chuẩn bị không được âm",
+                        "prepTimeMax": "Thời gian chuẩn bị không được quá 240 phút",
+                        "descMax": "Mô tả không được vượt quá 500 ký tự"
+                    },
+                    "buttons": {
+                        "create": "Tạo Món Ăn",
+                        "saveChanges": "Lưu Thay Đổi",
+                        "update": "Cập nhật Món Ăn",
+                        "saving": "Đang Lưu...",
+                        "done": "Hoàn Tất"
+                    }
+                },
+                "photos": {
+                    "title": "Hình Ảnh Món Ăn",
+                    "uploadBtn": "Tải Ảnh Lên",
+                    "uploadingBtn": "Đang Tải...",
+                    "primaryBadge": "Ảnh Chính",
+                    "setPrimary": "Đặt Làm Ảnh Chính",
+                    "deleteConfirm": "Xóa ảnh này?",
+                    "deleteMessage": "Bạn có chắc chắn muốn xóa ảnh này? Hành động này không thể hoàn tác.",
+                    "empty": "Chưa có ảnh nào được tải lên.",
+                    "messages": {
+                        "uploadSuccess": "Tải ảnh lên thành công",
+                        "uploadError": "Không thể tải ảnh lên",
+                        "deleteSuccess": "Đã xóa ảnh",
+                        "deleteError": "Không thể xóa ảnh",
+                        "primarySuccess": "Đã cập nhật ảnh chính",
+                        "primaryError": "Không thể đặt ảnh chính"
+                    }
+                },
+                "modifiers": {
+                    "title": "Nhóm Tùy Chọn Đã Gán",
+                    "titleList": "Nhóm Tùy Chọn",
+                    "subtitleList": "Quản lý các tùy chọn tùy chỉnh cho món ăn của bạn.",
+                    "addGroup": "Thêm Nhóm",
+                    "instruction": "Nhấp vào nhóm tùy chọn để gán hoặc bỏ gán khỏi món ăn này.",
+                    "empty": "Không có nhóm tùy chọn nào. Hãy tạo chúng trong phần Tùy Chọn.",
+                    "optionsCount": "{{count}} tùy chọn",
+                    "select": "Chọn",
+                    "card": {
+                        "required": "Bắt Buộc",
+                        "options": "Các Tùy Chọn",
+                        "free": "Miễn Phí"
+                    },
+                    "modal": {
+                        "titleNew": "Nhóm Tùy Chọn Mới",
+                        "titleEdit": "Sửa Nhóm Tùy Chọn",
+                        "labels": {
+                            "name": "Tên Nhóm *",
+                            "selectionType": "Loại Chọn",
+                            "required": "Bắt Buộc Chọn",
+                            "min": "Chọn Tối Thiểu",
+                            "max": "Chọn Tối Đa"
+                        },
+                        "placeholders": {
+                            "name": "ví dụ: Kích Cỡ, Topping",
+                            "optionName": "Tên Tùy Chọn",
+                            "price": "Giá"
+                        },
+                        "types": {
+                            "single": "Chọn Đơn (Radio)",
+                            "multiple": "Chọn Nhiều (Checkbox)"
+                        },
+                        "options": {
+                            "title": "Danh Sách Tùy Chọn",
+                            "add": "Thêm Tùy Chọn"
+                        },
+                        "buttons": {
+                            "save": "Lưu Nhóm Tùy Chọn",
+                            "saving": "Đang Lưu..."
+                        }
+                    },
+                    "delete": {
+                        "title": "Xóa nhóm tùy chọn?",
+                        "message": "Bạn có chắc chắn muốn xóa nhóm tùy chọn này? Hành động này sẽ xóa nó khỏi tất cả món ăn. Không thể hoàn tác."
+                    },
+                    "messages": {
+                        "loadError": "Không thể tải nhóm tùy chọn",
+                        "updateSuccess": "Đã cập nhật tùy chọn",
+                        "updateError": "Không thể cập nhật tùy chọn",
+                        "createSuccess": "Đã tạo nhóm tùy chọn",
+                        "saveSuccess": "Đã cập nhật nhóm tùy chọn",
+                        "saveError": "Không thể lưu nhóm tùy chọn",
+                        "deleteSuccess": "Đã xóa nhóm tùy chọn",
+                        "deleteError": "Không thể xóa nhóm tùy chọn"
+                    }
+                }
             },
             "categories": {
                 "title": "Danh Mục Món Ăn",
@@ -116,21 +260,59 @@
                     "actions": "Thao Tác"
                 },
                 "deleteConfirm": "Xóa danh mục?",
-                "deleteMessage": "Bạn có chắc chắn muốn xóa danh mục này? Danh mục sẽ bị vô hiệu hóa. Hành động này không thể hoàn tác."
+                "deleteMessage": "Bạn có chắc chắn muốn xóa danh mục này? Danh mục sẽ bị vô hiệu hóa. Hành động này không thể hoàn tác.",
+                "sort": {
+                    "displayOrder": "Thứ Tự Hiển Thị",
+                    "name": "Tên",
+                    "createdDate": "Ngày Tạo"
+                },
+                "messages": {
+                    "createSuccess": "Tạo danh mục thành công",
+                    "updateSuccess": "Cập nhật danh mục thành công",
+                    "deleteSuccess": "Đã vô hiệu hóa danh mục",
+                    "createError": "Không thể tạo danh mục",
+                    "updateError": "Không thể lưu danh mục",
+                    "deleteError": "Không thể xóa danh mục",
+                    "loadError": "Không thể tải danh mục"
+                },
+                "modal": {
+                    "newTitle": "Danh Mục Mới",
+                    "editTitle": "Sửa Danh Mục",
+                    "nameLabel": "Tên *",
+                    "namePlaceholder": "Tên Danh Mục",
+                    "descriptionLabel": "Mô Tả",
+                    "descriptionPlaceholder": "Mô tả tùy chọn",
+                    "orderLabel": "Thứ Tự Hiển Thị",
+                    "orderPlaceholder": "0",
+                    "statusLabel": "Trạng Thái",
+                    "saveBtn": "Lưu Danh Mục",
+                    "savingBtn": "Đang Lưu...",
+                    "validation": {
+                        "nameRequired": "Tên là bắt buộc",
+                        "nameMin": "Tên phải có ít nhất 2 ký tự",
+                        "nameMax": "Tên phải ít hơn 50 ký tự",
+                        "descMax": "Mô tả không được vượt quá 500 ký tự",
+                        "orderMin": "Thứ tự không được âm"
+                    }
+                },
+                "empty": "Không tìm thấy danh mục nào."
             }
         },
         "users": {
             "title": "Quản Lý Nhân Viên",
+            "titleAdmin": "Quản Lý Admin",
             "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+            "subtitleAdmin": "Quản lý tài khoản Admin",
             "addStaff": "Thêm Nhân Viên",
+            "addAdmin": "Thêm Admin",
             "editStaff": "Sửa Nhân Viên",
             "filters": {
                 "filterByRole": "Lọc theo Vai Trò",
                 "filterByStatus": "Lọc theo Trạng Thái",
                 "allRoles": "Tất Cả Vai Trò",
                 "allStatus": "Tất Cả Trạng Thái",
-                "active": "Hoạt Động",
-                "inactive": "Không Hoạt Động"
+                "active": "Đang Hoạt Động",
+                "inactive": "Ngừng Hoạt Động"
             },
             "table": {
                 "user": "Người Dùng",
@@ -141,13 +323,27 @@
                 "actions": "Thao Tác"
             },
             "roles": {
+                "super_admin": "Quản Trị Viên Cấp Cao",
                 "admin": "Quản Trị Viên",
                 "waiter": "Phục Vụ",
-                "kitchen": "Bếp"
+                "kitchen": "Nhân Viên Bếp"
             },
             "actions": {
                 "activate": "Kích Hoạt",
                 "deactivate": "Vô Hiệu Hóa"
+            },
+            "empty": "Không tìm thấy người dùng nào",
+            "summary": "Hiển thị {{count}} người dùng",
+            "summaryPlural": "Hiển thị {{count}} người dùng",
+            "delete": {
+                "title": "Xóa Người Dùng",
+                "message": "Bạn có chắc chắn muốn xóa vĩnh viễn {{email}}? Hành động này không thể hoàn tác."
+            },
+            "status": {
+                "activateTitle": "Kích Hoạt Người Dùng?",
+                "deactivateTitle": "Vô Hiệu Hóa Người Dùng?",
+                "activateMessage": "Bạn có chắc chắn muốn kích hoạt {{name}}? Họ sẽ có thể đăng nhập.",
+                "deactivateMessage": "Bạn có chắc chắn muốn vô hiệu hóa {{name}}? Họ sẽ không thể đăng nhập."
             }
         },
         "dashboard": {
