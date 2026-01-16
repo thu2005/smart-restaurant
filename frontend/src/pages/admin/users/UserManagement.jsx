@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import userService from "../../../services/userService";
 import Icon from "../../../components/AppIcon";
 import DeleteConfirmationModal from "../../../components/DeleteConfirmationModal";
+import StatusToggleModal from "../../../components/StatusToggleModal";
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -12,6 +13,8 @@ const UserManagement = () => {
     const [filterStatus, setFilterStatus] = useState("");
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, userId: null, userEmail: "" });
     const [deleting, setDeleting] = useState(false);
+    const [statusModal, setStatusModal] = useState({ isOpen: false, userId: null, userName: "", currentStatus: false });
+    const [toggling, setToggling] = useState(false);
 
     const currentUser = JSON.parse(localStorage.getItem("user"));
     const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
@@ -39,17 +42,27 @@ const UserManagement = () => {
         }
     };
 
-    const handleToggleStatus = async (userId, currentStatus) => {
-        if (!confirm(`Are you sure you want to ${currentStatus ? "deactivate" : "activate"} this user?`)) {
-            return;
-        }
+    const handleToggleStatus = async (userId, currentStatus, userName) => {
+        setStatusModal({ isOpen: true, userId, userName, currentStatus });
+    };
 
+    const confirmToggleStatus = async () => {
         try {
-            await userService.toggleUserStatus(userId, !currentStatus);
+            setToggling(true);
+            await userService.toggleUserStatus(statusModal.userId, !statusModal.currentStatus);
+            setStatusModal({ isOpen: false, userId: null, userName: "", currentStatus: false });
             fetchUsers();
         } catch (err) {
             console.error("Error toggling user status:", err);
-            alert(err.response?.data?.message || "Failed to update user status");
+            setError(err.response?.data?.message || "Failed to update user status");
+        } finally {
+            setToggling(false);
+        }
+    };
+
+    const closeStatusModal = () => {
+        if (!toggling) {
+            setStatusModal({ isOpen: false, userId: null, userName: "", currentStatus: false });
         }
     };
 
@@ -272,7 +285,7 @@ const UserManagement = () => {
                                                     <Icon name="Edit" size={18} />
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleToggleStatus(user.id, user.isActive)}
+                                                    onClick={() => handleToggleStatus(user.id, user.isActive, user.fullName)}
                                                     className={`${
                                                         user.isActive
                                                             ? "text-orange-600 hover:text-orange-900"
@@ -317,6 +330,16 @@ const UserManagement = () => {
                 title="Delete User"
                 message={`Are you sure you want to permanently delete ${deleteModal.userEmail}? This action cannot be undone.`}
                 loading={deleting}
+            />
+
+            {/* Status Toggle Modal */}
+            <StatusToggleModal
+                isOpen={statusModal.isOpen}
+                onClose={closeStatusModal}
+                onConfirm={confirmToggleStatus}
+                userName={statusModal.userName}
+                currentStatus={statusModal.currentStatus}
+                loading={toggling}
             />
         </div>
     );
