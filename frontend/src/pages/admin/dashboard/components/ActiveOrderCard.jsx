@@ -92,7 +92,7 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
           <div key={orderItem.id} className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
               <Image
-                src={orderItem?.menuItem?.image || "/assets/placeholder-food.jpg"}
+                src={orderItem?.menuItem?.photos?.[0]?.url || orderItem?.menuItem?.image || "/assets/placeholder-food.jpg"}
                 alt={orderItem?.menuItem?.name || "Food item"}
                 className="w-full h-full object-cover"
               />

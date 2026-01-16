@@ -119,8 +119,8 @@ class TableService {
       process.env.QR_BASE_URL ||
       process.env.FRONTEND_URL ||
       "http://localhost:5173";
-    // Pass restaurantId and tableId in the QR path
-    const qrContent = `${baseURL}/qr/${table.restaurantId}/${table.id}?token=${token}`;
+    // Pass restaurantId, tableId and tableNumber in the QR path
+    const qrContent = `${baseURL}/qr/${table.restaurantId}/${table.id}?tableNumber=${table.tableNumber}&token=${token}`;
     const qrCodeUrl = await generateQRCode(qrContent);
 
     return await prisma.table.update({

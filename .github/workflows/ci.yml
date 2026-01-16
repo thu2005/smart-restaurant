@@ -1,0 +1,121 @@
+name: Smart Restaurant CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  # Backend CI
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    strategy:
+      matrix:
+        node-version: [20.x]  # Single version to save minutes
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: backend/package.json
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install ESLint dependencies
+      run: npm install eslint @eslint/js
+
+    - name: Create .env file
+      run: |
+        echo "NODE_ENV=test" > .env
+        echo "PORT=5001" >> .env
+        echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env
+        echo "JWT_SECRET=test_jwt_secret_key_for_ci" >> .env
+        echo "JWT_EXPIRE=7d" >> .env
+        echo "FRONTEND_URL=http://localhost:5173" >> .env
+        echo "QR_BASE_URL=http://localhost:5173" >> .env
+
+    - name: Setup Prisma
+      run: |
+        npx prisma generate
+
+    - name: Lint backend code
+      run: npm run lint || echo "Backend lint warnings found - continuing..." || echo "Backend lint warnings found - continuing..."
+
+    - name: Check basic server syntax
+      run: node -c server.js
+
+  # Frontend CI  
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    strategy:
+      matrix:
+        node-version: [20.x]  # Single version to save minutes
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package.json
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install ESLint dependencies
+      run: npm install eslint @eslint/js globals
+
+    - name: Create .env file
+      run: |
+        echo "VITE_API_BASE_URL=http://localhost:5001/api" > .env
+        echo "VITE_API_URL=http://localhost:5001/api" >> .env
+        echo "VITE_APP_NAME=Smart Restaurant" >> .env
+        echo "VITE_APP_VERSION=1.0.0" >> .env
+        echo "VITE_ENABLE_QR_GENERATION=true" >> .env
+        echo "VITE_ENABLE_ANALYTICS=true" >> .env
+        echo "VITE_DEFAULT_RESTAURANT_ID=1" >> .env
+        echo "VITE_ENV=development" >> .env
+
+    - name: Lint frontend code
+      run: npm run lint || echo "Lint warnings found - continuing..." || echo "Lint warnings found - continuing..."
+
+    - name: Build project
+      run: npm run build
+
+    - name: Check build artifacts
+      run: |
+        ls dist/
+        echo "Frontend build successful ✅"

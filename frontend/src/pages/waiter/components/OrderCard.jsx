@@ -74,7 +74,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                 <div className="flex items-center gap-3">
                     {/* Table Number Badge */}
                     <div className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-bold text-sm md:text-base">
-                        T{order.table?.tableNumber || "?"}
+                        {order.table?.tableNumber || "?"}
                     </div>
                     <div>
                         <p className="font-semibold text-sm md:text-base text-foreground">
@@ -113,7 +113,17 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                 </p>
                                 {item.modifiers && item.modifiers.length > 0 && (
                                     <p className="text-xs text-muted-foreground mt-1">
-                                        {item.modifiers.join(", ")}
+                                        {Array.isArray(item.modifiers) 
+                                            ? item.modifiers.map(mod => {
+                                                // Handle both string format and object format
+                                                if (typeof mod === 'string') return mod;
+                                                if (typeof mod === 'object' && mod.name) {
+                                                    return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+                                                }
+                                                return '';
+                                            }).filter(Boolean).join(", ")
+                                            : ''
+                                        }
                                     </p>
                                 )}
                                 {item.specialInstructions && (
@@ -124,7 +134,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                             </div>
                         </div>
                         <span className="text-sm font-semibold text-foreground data-text ml-2">
-                            ${parseFloat(item.unitPrice * item.quantity).toFixed(2)}
+                            {parseFloat(item.unitPrice * item.quantity).toLocaleString('vi-VN')}₫
                         </span>
                     </div>
                 ))}
@@ -135,7 +145,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                         Total
                     </span>
                     <span className="font-bold text-base md:text-lg text-foreground data-text">
-                        ${calculateTotal().toFixed(2)}
+                        {calculateTotal().toLocaleString('vi-VN')}₫
                     </span>
                 </div>
             </div>

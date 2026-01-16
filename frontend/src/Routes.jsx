@@ -15,12 +15,14 @@ import authService from "services/authService";
 import CustomerLayout from "./layouts/CustomerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import KitchenLayout from "./layouts/KitchenLayout";
+import SuperAdminLayout from "./layouts/SuperAdminLayout";
 
 // Pages
 import ShoppingCart from "./pages/customer/shopping-cart";
 import MenuBrowse from "./pages/customer/menu-browse";
 import MenuItemDetail from "./pages/customer/menu-item-detail";
 import OrderStatusTracking from "./pages/customer/order-status-tracking";
+import Profile from "./pages/customer/profile";
 
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
@@ -38,6 +40,11 @@ import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
 import Reports from "./pages/admin/reports";
+
+// User Management Pages
+import UserManagement from "./pages/admin/users/UserManagement";
+import CreateUser from "./pages/admin/users/CreateUser";
+import EditUser from "./pages/admin/users/EditUser";
 import Settings from "./pages/admin/settings";
 
 // Waiter Pages
@@ -60,7 +67,11 @@ const Routes = () => {
             path="/"
             element={
               authService.isAuthenticated() ? (
-                <Navigate to="/admin/menu/items" replace />
+                authService.getCurrentUser()?.role === "SUPER_ADMIN" ? (
+                  <Navigate to="/superadmin/users" replace />
+                ) : (
+                  <Navigate to="/admin/menu/items" replace />
+                )
               ) : (
                 <Onboarding />
               )
@@ -74,6 +85,21 @@ const Routes = () => {
 
           {/* Dedicated Customer Onboarding Route - for QR scans */}
           <Route path="/customer-onboarding" element={<Onboarding />} />
+
+          {/* Super Admin Routes - Protected */}
+          <Route
+            path="/superadmin"
+            element={
+              <ProtectedRoute roles={['SUPER_ADMIN']}>
+                <SuperAdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/superadmin/users" replace />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/:id/edit" element={<EditUser />} />
+          </Route>
 
           {/* Customer Routes */}
           <Route path="/customer" element={<CustomerLayout />}>
@@ -95,6 +121,7 @@ const Routes = () => {
               path="order-status-tracking"
               element={<OrderStatusTracking />}
             />
+            <Route path="profile" element={<Profile />} />
           </Route>
 
           {/* Admin Routes - Protected */}
@@ -108,7 +135,12 @@ const Routes = () => {
           >
             <Route
               index
-              element={<Navigate to="/admin/menu/items" replace />}
+              element={
+                <Navigate
+                  to={authService.getCurrentUser()?.role === "SUPER_ADMIN" ? "/admin/users" : "/admin/menu/items"}
+                  replace
+                />
+              }
             />
             <Route path="dashboard" element={<AdminDashboard />} />
 
@@ -122,6 +154,11 @@ const Routes = () => {
             <Route path="tables" element={<TableManagement />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="reports" element={<Reports />} />
+
+            {/* User Management Routes */}
+            <Route path="users" element={<UserManagement />} />
+            <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/:id/edit" element={<EditUser />} />
             <Route path="settings" element={<Settings />} />
           </Route>
           {/* Legacy redirect */}

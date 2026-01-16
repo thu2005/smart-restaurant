@@ -76,7 +76,7 @@ exports.generateQR = async (req, res, next) => {
         const updatedTable = await tableService.updateQRToken(id, token);
 
         const baseURL = process.env.QR_BASE_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
-        const qrContent = `${baseURL}/qr/${table.restaurantId}/${table.id}?token=${token}`;
+        const qrContent = `${baseURL}/qr/${table.restaurantId}/${table.id}?tableNumber=${table.tableNumber}&token=${token}`;
 
         res.json({
             success: true,

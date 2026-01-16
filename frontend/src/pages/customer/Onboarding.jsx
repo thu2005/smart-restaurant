@@ -11,15 +11,17 @@ const Onboarding = () => {
   React.useEffect(() => {
     const rId = searchParams.get("restaurantId");
     const tId = searchParams.get("tableId");
+    const tNum = searchParams.get("tableNumber");
 
     if (rId) localStorage.setItem("restaurantId", rId);
     if (tId) localStorage.setItem("tableId", tId);
+    if (tNum) localStorage.setItem("tableNumber", tNum);
   }, [searchParams]);
 
   const handleDineNow = () => {
     // Check if we have restaurantId and tableId from QR scan
-    const restaurantId = localStorage.getItem('restaurantId');
-    const tableId = localStorage.getItem('tableId');
+    const restaurantId = localStorage.getItem("restaurantId");
+    const tableId = localStorage.getItem("tableId");
 
     if (!restaurantId || !tableId) {
       // No QR scan detected - ask user to scan QR code

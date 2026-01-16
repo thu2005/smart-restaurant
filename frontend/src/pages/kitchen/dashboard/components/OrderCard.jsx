@@ -160,15 +160,27 @@ const OrderCard = ({ order, onStatusChange, onComplete }) => {
                 {/* Modifiers */}
                 {item?.modifiers && item?.modifiers?.length > 0 && (
                   <div className="flex flex-wrap justify-center gap-2 mb-4">
-                    {item?.modifiers?.map((mod, modIndex) => (
-                      <span
-                        key={modIndex}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-border rounded-full text-sm font-medium text-foreground shadow-sm"
-                      >
-                        <Icon name="Plus" size={12} className="text-primary/70" />
-                        {mod}
-                      </span>
-                    ))}
+                    {item?.modifiers?.map((mod, modIndex) => {
+                      // Handle both string format and object format
+                      let modText = '';
+                      if (typeof mod === 'string') {
+                        modText = mod;
+                      } else if (typeof mod === 'object' && mod.name) {
+                        modText = mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+                      }
+                      
+                      if (!modText) return null;
+                      
+                      return (
+                        <span
+                          key={modIndex}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-border rounded-full text-sm font-medium text-foreground shadow-sm"
+                        >
+                          <Icon name="Plus" size={12} className="text-primary/70" />
+                          {modText}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
 

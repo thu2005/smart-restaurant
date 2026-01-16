@@ -396,4 +396,77 @@ router.get(
     orderController.getWaiterOrders
 );
 
+/**
+ * @swagger
+ * /api/orders/active:
+ *   get:
+ *     summary: Get active order for a table (not completed/cancelled)
+ *     tags: [Order]
+ *     parameters:
+ *       - in: query
+ *         name: tableId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Active order found (or null if none)
+ */
+router.get('/active', orderController.getActiveOrderByTable);
+
+/**
+ * @swagger
+ * /api/orders/{orderId}/items:
+ *   post:
+ *     summary: Add items to existing order (for "add more items" flow)
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - items
+ *             properties:
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     menuItemId:
+ *                       type: string
+ *                     quantity:
+ *                       type: integer
+ *                     modifiers:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     specialInstructions:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Items added to order successfully
+ */
+router.post(
+    '/:orderId/items',
+    [
+        check('items', 'Items must be an array').isArray(),
+        check('items.*.menuItemId', 'Menu Item ID is required').not().isEmpty(),
+        check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 })
+    ],
+    orderController.addItemsToOrder
+);
+
 module.exports = router;
