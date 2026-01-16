@@ -122,7 +122,7 @@ const OrderStatusTracking = () => {
       totalItems: apiOrder.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0,
       status: mapOrderStatus(apiOrder.status),
       estimatedReadyTime: calculateEstimatedTime(apiOrder.status, apiOrder.createdAt),
-      items: apiOrder.orderItems?.map(item => {
+      items: (apiOrder.orderItems?.map(item => {
         const menuItem = item.menuItem;
         const primaryPhoto = menuItem?.photos?.find(p => p.isPrimary) || menuItem?.photos?.[0];
         
@@ -138,7 +138,17 @@ const OrderStatusTracking = () => {
           modifiers: parseModifiers(item.modifiers),
           specialInstructions: item.specialInstructions || "",
         };
-      }) || [],
+      }) || []).sort((a, b) => {
+        // Sort priority: active items (queued/cooking/ready) first, served/completed last
+        const statusPriority = {
+          'queued': 1,
+          'cooking': 2,
+          'ready': 3,
+          'served': 4,
+          'completed': 5
+        };
+        return (statusPriority[a.status] || 0) - (statusPriority[b.status] || 0);
+      }),
       kitchenNotes: [] // API doesn't provide this yet
     };
   };
