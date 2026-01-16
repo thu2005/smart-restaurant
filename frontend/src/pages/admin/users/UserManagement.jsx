@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import userService from "../../../services/userService";
 import Icon from "../../../components/AppIcon";
+import DeleteConfirmationModal from "../../../components/DeleteConfirmationModal";
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -9,6 +10,8 @@ const UserManagement = () => {
     const [error, setError] = useState(null);
     const [filterRole, setFilterRole] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, userId: null, userEmail: "" });
+    const [deleting, setDeleting] = useState(false);
 
     const currentUser = JSON.parse(localStorage.getItem("user"));
     const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
@@ -51,16 +54,26 @@ const UserManagement = () => {
     };
 
     const handleDeleteUser = async (userId, userEmail) => {
-        if (!confirm(`Are you sure you want to permanently delete ${userEmail}? This action cannot be undone.`)) {
-            return;
-        }
+        setDeleteModal({ isOpen: true, userId, userEmail });
+    };
 
+    const confirmDelete = async () => {
         try {
-            await userService.deleteUser(userId);
+            setDeleting(true);
+            await userService.deleteUser(deleteModal.userId);
+            setDeleteModal({ isOpen: false, userId: null, userEmail: "" });
             fetchUsers();
         } catch (err) {
             console.error("Error deleting user:", err);
-            alert(err.response?.data?.message || "Failed to delete user");
+            setError(err.response?.data?.message || "Failed to delete user");
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const closeDeleteModal = () => {
+        if (!deleting) {
+            setDeleteModal({ isOpen: false, userId: null, userEmail: "" });
         }
     };
 
@@ -95,17 +108,19 @@ const UserManagement = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold">User Management</h1>
+                    <h1 className="text-3xl font-bold">
+                        {isSuperAdmin ? "Admin Management" : "Staff Management"}
+                    </h1>
                     <p className="text-gray-600 mt-1">
                         {isSuperAdmin ? "Manage Admin accounts" : "Manage restaurant staff accounts"}
                     </p>
                 </div>
                 <Link
                     to={`${usersBasePath}/create`}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    className="flex items-center gap-2 bg-primary text-sm text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition"
                 >
                     <Icon name="Plus" size={20} />
-                    Create User
+                    {isSuperAdmin ? "Add Admin" : "Add Staff"}
                 </Link>
             </div>
 
@@ -293,6 +308,16 @@ const UserManagement = () => {
                     Showing {users.length} user{users.length !== 1 ? "s" : ""}
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={confirmDelete}
+                title="Delete User"
+                message={`Are you sure you want to permanently delete ${deleteModal.userEmail}? This action cannot be undone.`}
+                loading={deleting}
+            />
         </div>
     );
 };

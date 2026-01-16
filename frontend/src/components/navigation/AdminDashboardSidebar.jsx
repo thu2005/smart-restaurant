@@ -85,7 +85,7 @@ const AdminDashboardSidebar = ({
     {
       section: "Account",
       items: [
-        { path: "/admin/users", label: "User Management", icon: "Users" },
+        { path: "/admin/users", label: "Staff Management", icon: "Users" },
       ],
     },
   ];

@@ -104,34 +104,37 @@ const CreateUser = () => {
     };
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
-            {/* Header */}
-            <div className="mb-6">
-                <button
-                    onClick={() => navigate(usersBasePath)}
-                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-                >
-                    <Icon name="ArrowLeft" size={20} />
-                    Back to Users
-                </button>
-                <h1 className="text-3xl font-bold">Create User</h1>
-                <p className="text-gray-600 mt-1">
-                    {isSuperAdmin
-                        ? "Create a new Admin account"
-                        : "Create a new Waiter or Kitchen Staff account"}
-                </p>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-start gap-2">
-                    <Icon name="AlertCircle" size={20} className="flex-shrink-0 mt-0.5" />
-                    <span>{error}</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+                {/* Header */}
+                <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            {isSuperAdmin ? "Create Admin" : "Create Staff"}
+                        </h2>
+                        <p className="text-sm text-gray-600 mt-1">
+                            {isSuperAdmin
+                                ? "Create a new Admin account"
+                                : "Create a new Waiter or Kitchen Staff account"}
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => navigate(usersBasePath)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition"
+                    >
+                        <Icon name="X" size={20} />
+                    </button>
                 </div>
-            )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* Error Message */}
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2">
+                            <Icon name="AlertCircle" size={20} className="flex-shrink-0 mt-0.5" />
+                            <span>{error}</span>
+                        </div>
+                    )}
                 {/* Full Name */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -253,7 +256,7 @@ const CreateUser = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <>
@@ -263,14 +266,14 @@ const CreateUser = () => {
                         ) : (
                             <>
                                 <Icon name="Plus" size={20} />
-                                Create User
+                                {isSuperAdmin ? "Create Admin" : "Create Staff"}
                             </>
                         )}
                     </button>
                     <button
                         type="button"
                         onClick={() => navigate(usersBasePath)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                     >
                         Cancel
                     </button>
@@ -285,6 +288,7 @@ const CreateUser = () => {
                 adminName={createdAdmin?.fullName || ""}
             />
         </div>
+    </div>
     );
 };
 
