@@ -105,6 +105,7 @@ const OrderStatusTracking = () => {
       if (s === 'completed') return 'completed';
       if (s === 'ready') return 'ready';
       if (s === 'cooking') return 'cooking';
+      if (s === 'rejected') return 'rejected';
       return 'queued';
     };
 

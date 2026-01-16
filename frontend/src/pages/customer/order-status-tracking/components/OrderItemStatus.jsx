@@ -42,6 +42,15 @@ const OrderItemStatus = ({ item, currentTime }) => {
           borderColor: "border-muted/20",
           progress: 100,
         };
+      case "rejected":
+        return {
+          label: "Rejected",
+          color: "bg-error",
+          textColor: "text-error",
+          bgColor: "bg-error/10",
+          borderColor: "border-error/20",
+          progress: 0,
+        };
       default:
         return {
           label: "Unknown",

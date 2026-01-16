@@ -327,10 +327,21 @@ class OrderService {
              if (hasServedItems) {
                  // Revert to SERVED instead of REJECTED
                  newStatus = 'SERVED';
-                 // Optionally we could mark the 'new' items as rejected here if we knew which ones they were.
-                 // But typically the Waiter Rejects the *whole* 'Submitted' state.
-                 // Ideally we should find items that are NOT served and reject them?
-                 // For simplicity, let's just ensure the Order Status doesn't die.
+                 
+                 // Mark all non-served items as rejected to prevent them from affecting future batches
+                 await prisma.orderItem.updateMany({
+                     where: { 
+                         orderId: orderId,
+                         itemStatus: { notIn: ['served', 'completed', 'rejected'] }
+                     },
+                     data: { itemStatus: 'rejected' }
+                 });
+             } else {
+                 // No served items yet, mark all items as rejected
+                 await prisma.orderItem.updateMany({
+                     where: { orderId: orderId },
+                     data: { itemStatus: 'rejected' }
+                 });
              }
         }
 
