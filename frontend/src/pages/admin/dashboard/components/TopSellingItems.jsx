@@ -49,8 +49,8 @@ const TopSellingItems = ({ items }) => {
               <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-muted border border-border/50 relative">
                 {item?.image ? (
                   <Image
-                    src={item?.image}
-                    alt={item?.imageAlt}
+                    src={item.image}
+                    alt={item?.name || "Menu item"}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -124,7 +124,7 @@ const TopSellingItems = ({ items }) => {
             {hoveredItem?.image ? (
               <img
                 src={hoveredItem.image}
-                alt={hoveredItem.name}
+                alt={hoveredItem?.name || "Menu item"}
                 className="w-full h-full object-cover"
               />
             ) : (

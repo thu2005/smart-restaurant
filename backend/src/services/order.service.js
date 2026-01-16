@@ -282,7 +282,16 @@ class OrderService {
             where,
             include: {
                 orderItems: {
-                    include: { menuItem: true },
+                    include: { 
+                        menuItem: {
+                            include: {
+                                photos: {
+                                    where: { isPrimary: true },
+                                    take: 1
+                                }
+                            }
+                        }
+                    },
                 },
                 table: true,
                 customer: true,

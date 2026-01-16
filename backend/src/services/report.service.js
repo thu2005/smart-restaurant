@@ -98,7 +98,11 @@ class ReportService {
             include: {
                 menuItem: {
                     include: {
-                        category: true
+                        category: true,
+                        photos: {
+                            where: { isPrimary: true },
+                            take: 1
+                        }
                     }
                 }
             }
@@ -117,7 +121,7 @@ class ReportService {
                     menuItemId,
                     name: item.menuItem.name,
                     category: item.menuItem.category?.name || 'Uncategorized',
-                    image: item.menuItem.image,
+                    image: item.menuItem.photos?.[0]?.url || item.menuItem.image || null,
                     totalRevenue: 0,
                     totalQuantity: 0,
                     unitPrice: parseFloat(item.menuItem.price),
