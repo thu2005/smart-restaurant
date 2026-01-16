@@ -269,6 +269,7 @@ async function main() {
       description:
         "Fresh rice paper rolls with shrimp, pork, vegetables, and vermicelli noodles. Served with peanut dipping sauce.",
       price: 65000,
+      image: "https://images.unsplash.com/photo-1594756202469-9ff9799b2e4e",
       categoryId: catAppetizers.id,
       restaurantId: restaurant.id,
       prepTime: 10,
@@ -307,6 +308,7 @@ async function main() {
       description:
         "Tender squid rings lightly battered and fried to golden perfection. Served with aioli sauce.",
       price: 85000,
+      image: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0",
       categoryId: catAppetizers.id,
       restaurantId: restaurant.id,
       prepTime: 12,
@@ -342,6 +344,7 @@ async function main() {
       description:
         "Aromatic beef broth with rice noodles, tender beef slices, fresh herbs, and lime.",
       price: 75000,
+      image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43",
       categoryId: catSoups.id,
       restaurantId: restaurant.id,
       prepTime: 15,
@@ -383,6 +386,7 @@ async function main() {
       description:
         "Crisp romaine lettuce, parmesan cheese, croutons, and creamy Caesar dressing.",
       price: 70000,
+      image: "https://images.unsplash.com/photo-1546793665-c74683f339c1",
       categoryId: catSoups.id,
       restaurantId: restaurant.id,
       prepTime: 8,
@@ -418,6 +422,7 @@ async function main() {
       description:
         "Premium Norwegian salmon grilled to perfection, served with lemon butter sauce, asparagus, and roasted potatoes.",
       price: 245000,
+      image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 20,
@@ -459,6 +464,7 @@ async function main() {
       description:
         "Australian Wagyu beef (250g) cooked to your preference. Served with black pepper sauce.",
       price: 450000,
+      image: "https://images.unsplash.com/photo-1600891964092-4316c288032e",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 25,
@@ -500,6 +506,7 @@ async function main() {
       description:
         "Tender chicken in aromatic green curry with coconut milk, bamboo shoots, and Thai basil. Served with jasmine rice.",
       price: 125000,
+      image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 18,
@@ -537,6 +544,7 @@ async function main() {
       description:
         "Quinoa, roasted vegetables, chickpeas, hummus, tahini dressing, and fresh herbs.",
       price: 95000,
+      image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
       categoryId: catMains.id,
       restaurantId: restaurant.id,
       prepTime: 12,
@@ -572,6 +580,7 @@ async function main() {
       description:
         "Jumbo shrimp sautéed in garlic butter with white wine and parsley. Served with crusty bread.",
       price: 185000,
+      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
       categoryId: catSeafood.id,
       restaurantId: restaurant.id,
       prepTime: 15,
@@ -610,6 +619,7 @@ async function main() {
       description:
         "Whole lobster in creamy brandy sauce with mushrooms and cheese, gratinated to perfection.",
       price: 650000,
+      image: "https://images.unsplash.com/photo-1559737558-2f5a35f4523f",
       categoryId: catSeafood.id,
       restaurantId: restaurant.id,
       prepTime: 30,
@@ -645,6 +655,7 @@ async function main() {
       description:
         "Strong Vietnamese coffee with condensed milk served over ice.",
       price: 45000,
+      image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7",
       categoryId: catDrinks.id,
       restaurantId: restaurant.id,
       prepTime: 5,
@@ -681,6 +692,7 @@ async function main() {
       name: "Fresh Mango Smoothie",
       description: "Blended fresh mango with yogurt and honey.",
       price: 55000,
+      image: "https://images.unsplash.com/photo-1505252585461-04db1eb84625",
       categoryId: catDrinks.id,
       restaurantId: restaurant.id,
       prepTime: 5,
@@ -719,6 +731,7 @@ async function main() {
       description:
         "Espresso-soaked ladyfingers layered with mascarpone cream and dusted with cocoa powder.",
       price: 85000,
+      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9",
       categoryId: catDesserts.id,
       restaurantId: restaurant.id,
       prepTime: 8,
@@ -756,6 +769,7 @@ async function main() {
       name: "Vanilla Crème Brûlée",
       description: "Silky vanilla custard with caramelized sugar crust.",
       price: 75000,
+      image: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc",
       categoryId: catDesserts.id,
       restaurantId: restaurant.id,
       prepTime: 10,
@@ -790,6 +804,7 @@ async function main() {
       description:
         "Warm chocolate cake with liquid chocolate center. Served with vanilla ice cream.",
       price: 95000,
+      image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51",
       categoryId: catDesserts.id,
       restaurantId: restaurant.id,
       prepTime: 12,

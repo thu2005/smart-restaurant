@@ -86,18 +86,23 @@ const OrderStatusTracking = () => {
       totalItems: apiOrder.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0,
       status: mapStatus(apiOrder.status),
       estimatedReadyTime: calculateEstimatedTime(apiOrder.status, apiOrder.createdAt),
-      items: apiOrder.orderItems?.map(item => ({
-        id: item.id,
-        name: item.menuItem?.name || "Unknown Item",
-        image: item.menuItem?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c", // Fallback image
-        imageAlt: item.menuItem?.description || item.menuItem?.name,
-        quantity: item.quantity,
-        status: mapStatus(item.itemStatus || apiOrder.status), // Use item status if available, else order status
-        estimatedTime: new Date(Date.now() + 15 * 60000), // Placeholder
-        preparedBy: "Kitchen Staff", // Placeholder
-        modifiers: parseModifiers(item.modifiers),
-        specialInstructions: item.specialInstructions || "",
-      })) || [],
+      items: apiOrder.orderItems?.map(item => {
+        const menuItem = item.menuItem;
+        const primaryPhoto = menuItem?.photos?.find(p => p.isPrimary) || menuItem?.photos?.[0];
+        
+        return {
+          id: item.id,
+          name: menuItem?.name || "Unknown Item",
+          image: menuItem?.image || primaryPhoto?.url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+          imageAlt: menuItem?.description || menuItem?.name,
+          quantity: item.quantity,
+          status: mapStatus(item.itemStatus || apiOrder.status),
+          estimatedTime: new Date(Date.now() + 15 * 60000),
+          preparedBy: "Kitchen Staff",
+          modifiers: parseModifiers(item.modifiers),
+          specialInstructions: item.specialInstructions || "",
+        };
+      }) || [],
       kitchenNotes: [] // API doesn't provide this yet
     };
   };

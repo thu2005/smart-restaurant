@@ -92,7 +92,11 @@ class OrderService {
             },
             include: {
                 orderItems: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true
             },
@@ -128,7 +132,11 @@ class OrderService {
             },
             include: {
                 orderItems: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true,
                 customer: true
@@ -253,7 +261,11 @@ class OrderService {
             where: { id: orderId },
             include: {
                 orderItems: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true,
                 customer: true
@@ -282,7 +294,11 @@ class OrderService {
             where,
             include: {
                 orderItems: {
-                    include: { menuItem: true },
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
                 },
                 table: true,
                 customer: true,
@@ -372,7 +388,13 @@ class OrderService {
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: {
-                orderItems: { include: { menuItem: true } },
+                orderItems: { 
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    } 
+                },
                 bill: true,
                 payment: true,
                 table: true
@@ -466,7 +488,7 @@ class OrderService {
 
         return await prisma.order.findUnique({
             where: { id: orderId },
-            include: { bill: true, orderItems: { include: { menuItem: true } } }
+            include: { bill: true, orderItems: { include: { menuItem: { include: { photos: true } } } } }
         });
     }
 
@@ -523,7 +545,13 @@ class OrderService {
         return await prisma.order.findMany({
             where,
             include: {
-                orderItems: { include: { menuItem: true } },
+                orderItems: { 
+                    include: { 
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    } 
+                },
                 table: true,
                 customer: true
             },

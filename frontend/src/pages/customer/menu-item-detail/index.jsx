@@ -311,7 +311,7 @@ const MenuItemDetail = () => {
          addToCart({
            menuItemId: menuItem.id,
            name: menuItem.name,
-           image: menuItem.photos?.[0]?.url || menuItem.image,
+           image: menuItem.image || menuItem.photos?.find(p => p.isPrimary)?.url || menuItem.photos?.[0]?.url,
            price: itemPrice,
            quantity: quantity,
            modifiers: modifiersList,
