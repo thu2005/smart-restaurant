@@ -1,4 +1,274 @@
 {
+    "common": {
+        "actions": {
+            "save": "Lưu",
+            "cancel": "Hủy",
+            "delete": "Xóa",
+            "edit": "Sửa",
+            "add": "Thêm",
+            "create": "Tạo",
+            "update": "Cập Nhật",
+            "search": "Tìm Kiếm",
+            "filter": "Lọc",
+            "export": "Xuất",
+            "import": "Nhập",
+            "upload": "Tải Lên",
+            "download": "Tải Xuống",
+            "submit": "Gửi",
+            "confirm": "Xác Nhận",
+            "back": "Quay Lại",
+            "next": "Tiếp Theo",
+            "previous": "Trước",
+            "close": "Đóng",
+            "viewAll": "Xem Tất Cả",
+            "refresh": "Làm Mới",
+            "reset": "Đặt Lại",
+            "apply": "Áp Dụng",
+            "clear": "Xóa",
+            "viewDetails": "Xem Chi Tiết",
+            "dismiss": "Bỏ Qua",
+            "showLess": "Thu Gọn"
+        },
+        "status": {
+            "active": "Hoạt Động",
+            "inactive": "Không Hoạt Động",
+            "available": "Có Sẵn",
+            "unavailable": "Không Có Sẵn",
+            "pending": "Đang Chờ",
+            "completed": "Hoàn Thành",
+            "lowStock": "Sắp Hết",
+            "soldOut": "Hết Hàng",
+            "na": "N/A"
+        },
+        "messages": {
+            "loading": "Đang tải...",
+            "noData": "Không có dữ liệu",
+            "error": "Đã xảy ra lỗi",
+            "success": "Thành công",
+            "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+            "cannotUndo": "Hành động này không thể hoàn tác",
+            "deleteSuccess": "Xóa thành công",
+            "deleteError": "Không thể xóa",
+            "updateSuccess": "Cập nhật thành công",
+            "updateError": "Không thể cập nhật",
+            "createSuccess": "Tạo thành công",
+            "createError": "Không thể tạo",
+            "saveSuccess": "Lưu thành công",
+            "saveError": "Không thể lưu"
+        },
+        "pagination": {
+            "showingPage": "Đang hiển thị trang",
+            "previous": "Trước",
+            "next": "Tiếp"
+        },
+        "time": {
+            "min": "phút"
+        }
+    },
+    "admin": {
+        "menu": {
+            "items": {
+                "title": "Món Ăn",
+                "subtitle": "Quản lý thực đơn nhà hàng",
+                "addItem": "Thêm Món",
+                "editItem": "Sửa Món",
+                "searchPlaceholder": "Tìm kiếm món ăn...",
+                "filters": {
+                    "allCategories": "Tất Cả Danh Mục",
+                    "allStatuses": "Tất Cả Trạng Thái",
+                    "sortBy": "Sắp xếp theo",
+                    "newest": "Mới Nhất",
+                    "oldest": "Cũ Nhất",
+                    "priceHighLow": "Giá: Cao đến Thấp",
+                    "priceLowHigh": "Giá: Thấp đến Cao",
+                    "popularity": "Phổ Biến Nhất"
+                },
+                "table": {
+                    "name": "Tên",
+                    "category": "Danh Mục",
+                    "price": "Giá",
+                    "createdDate": "Ngày Tạo",
+                    "status": "Trạng Thái",
+                    "tags": "Thẻ",
+                    "actions": "Thao Tác"
+                },
+                "status": {
+                    "available": "Có Sẵn",
+                    "lowStock": "Sắp Hết",
+                    "soldOut": "Hết Hàng",
+                    "unavailable": "Không Có Sẵn"
+                },
+                "deleteConfirm": "Xóa món ăn?",
+                "deleteMessage": "Bạn có chắc chắn muốn xóa món ăn này? Hành động này không thể hoàn tác."
+            },
+            "categories": {
+                "title": "Danh Mục Món Ăn",
+                "subtitle": "Quản lý danh mục và thứ tự hiển thị",
+                "addCategory": "Thêm Danh Mục",
+                "editCategory": "Sửa Danh Mục",
+                "table": {
+                    "order": "Thứ Tự",
+                    "name": "Tên",
+                    "description": "Mô Tả",
+                    "createdDate": "Ngày Tạo",
+                    "status": "Trạng Thái",
+                    "items": "Số Món",
+                    "actions": "Thao Tác"
+                },
+                "deleteConfirm": "Xóa danh mục?",
+                "deleteMessage": "Bạn có chắc chắn muốn xóa danh mục này? Danh mục sẽ bị vô hiệu hóa. Hành động này không thể hoàn tác."
+            }
+        },
+        "users": {
+            "title": "Quản Lý Nhân Viên",
+            "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+            "addStaff": "Thêm Nhân Viên",
+            "editStaff": "Sửa Nhân Viên",
+            "filters": {
+                "filterByRole": "Lọc theo Vai Trò",
+                "filterByStatus": "Lọc theo Trạng Thái",
+                "allRoles": "Tất Cả Vai Trò",
+                "allStatus": "Tất Cả Trạng Thái",
+                "active": "Hoạt Động",
+                "inactive": "Không Hoạt Động"
+            },
+            "table": {
+                "user": "Người Dùng",
+                "role": "Vai Trò",
+                "restaurant": "Nhà Hàng",
+                "status": "Trạng Thái",
+                "created": "Ngày Tạo",
+                "actions": "Thao Tác"
+            },
+            "roles": {
+                "admin": "Quản Trị Viên",
+                "waiter": "Phục Vụ",
+                "kitchen": "Bếp"
+            },
+            "actions": {
+                "activate": "Kích Hoạt",
+                "deactivate": "Vô Hiệu Hóa"
+            }
+        },
+        "dashboard": {
+            "title": "Bảng Điều Khiển",
+            "welcome": "Chào mừng trở lại",
+            "overview": "Tổng Quan",
+            "todayStats": "Thống Kê Hôm Nay",
+            "metrics": {
+                "todayRevenue": "Doanh Thu Hôm Nay",
+                "currentOrders": "Đơn Hiện Tại",
+                "tableOccupancy": "Bàn Đang Dùng",
+                "avgOrderValue": "Giá Trị Đơn TB",
+                "vsLastPeriod": "so với kỳ trước"
+            },
+            "sections": {
+                "activeOrders": "Đơn Hàng Đang Hoạt Động",
+                "tableStatus": "Trạng Thái Bàn",
+                "tableStatusDesc": "Tổng quan thời gian thực về khu vực bàn ăn",
+                "liveUpdates": "Cập Nhật Trực Tiếp",
+                "recentActivity": "Hoạt Động Gần Đây",
+                "recentActivityDesc": "Cập nhật mới nhất từ nhà hàng",
+                "revenueChart": "Doanh Thu Theo Thời Gian",
+                "topSelling": "Món Bán Chạy",
+                "quickActions": "Thao Tác Nhanh",
+                "alerts": "Cảnh Báo"
+            },
+            "quickActions": {
+                "manageMenu": "Quản Lý Thực Đơn",
+                "manageMenuDesc": "Thêm hoặc sửa món ăn",
+                "kitchenDisplay": "Màn Hình Bếp",
+                "kitchenDisplayDesc": "Xem đơn hàng trực tiếp",
+                "tableSetup": "Thiết Lập Bàn",
+                "tableSetupDesc": "Cấu hình bàn ăn",
+                "viewReports": "Xem Báo Cáo",
+                "viewReportsDesc": "Phân tích & thống kê"
+            },
+            "orderStatus": {
+                "pending": "Chờ Xử Lý",
+                "preparing": "Đang Chuẩn Bị",
+                "ready": "Sẵn Sàng",
+                "served": "Đã Phục Vụ",
+                "completed": "Hoàn Thành",
+                "overdue": "Quá Giờ",
+                "cancelled": "Đã Hủy",
+                "rejected": "Từ Chối"
+            },
+            "tableStatus": {
+                "available": "Trống",
+                "occupied": "Đang Dùng",
+                "reserved": "Đã Đặt",
+                "cleaning": "Đang Dọn"
+            },
+            "dateRanges": {
+                "today": "Hôm Nay",
+                "yesterday": "Hôm Qua",
+                "week": "Tuần Này",
+                "month": "Tháng Này",
+                "year": "Năm Nay"
+            },
+            "time": {
+                "justNow": "Vừa xong",
+                "minutesAgo": "{{count}} phút trước",
+                "hoursAgo": "{{count}} giờ trước",
+                "daysAgo": "{{count}} ngày trước"
+            },
+            "chart": {
+                "peakHour": "Giờ Cao Điểm",
+                "peakDate": "Ngày Cao Điểm",
+                "peakMonth": "Tháng Cao Điểm",
+                "orders": "Đơn Hàng"
+            },
+            "alerts": {
+                "moreAlerts": "Xem thêm {{count}} cảnh báo"
+            },
+            "orders": {
+                "unknownItem": "Món Không Xác Định",
+                "foodItem": "Món ăn",
+                "qty": "SL:",
+                "details": "Đơn hàng #{{number}}"
+            },
+            "tables": {
+                "tableNumber": "Bàn {{number}}",
+                "seats": "{{count}} Ghế",
+                "noTables": "Không tìm thấy bàn nào. Thêm bàn để xem tại đây."
+            },
+            "revenue": {
+                "title": "Phân Tích Doanh Thu",
+                "subtitle": "Hiệu suất bán hàng và xu hướng đơn hàng",
+                "noData": "Không có dữ liệu cho khoảng thời gian này",
+                "totalRevenue": "Tổng Doanh Thu",
+                "totalOrders": "Tổng Đơn Hàng",
+                "series": {
+                    "revenue": "Doanh Thu ($)",
+                    "orders": "Đơn Hàng"
+                }
+            },
+            "activity": {
+                "noActivity": "Không có hoạt động gần đây"
+            },
+            "items": {
+                "ordersCount": "{{count}} đơn",
+                "growth": "tăng trưởng {{count}}%",
+                "rank": "Hạng #{{number}}",
+                "revenueLabel": "Doanh Thu",
+                "ordersLabel": "Đơn Hàng",
+                "mainMenu": "Thực Đơn Chính"
+            },
+            "actions": {
+                "viewMenu": "Xem Thực Đơn"
+            }
+        },
+        "reports": {
+            "title": "Báo Cáo",
+            "subtitle": "Xem báo cáo doanh thu và hiệu suất",
+            "dateRange": "Khoảng Thời Gian",
+            "topSellingItems": "Món Bán Chạy",
+            "revenueOverTime": "Doanh Thu Theo Thời Gian",
+            "peakHours": "Giờ Cao Điểm",
+            "export": "Xuất Báo Cáo"
+        }
+    },
     "settings": {
         "title": "Cài Đặt",
         "subtitle": "Quản lý tài khoản và tùy chọn nhà hàng",

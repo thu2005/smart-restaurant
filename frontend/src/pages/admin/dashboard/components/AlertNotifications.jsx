@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
 const AlertNotifications = ({ alerts, onDismiss, onViewDetails }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getAlertIcon = (severity) => {
@@ -59,7 +61,7 @@ const AlertNotifications = ({ alerts, onDismiss, onViewDetails }) => {
                   onClick={() => onViewDetails(alert?.id)}
                   className="bg-transparent border-current hover:bg-current/10"
                 >
-                  View Details
+                  {t('common.actions.viewDetails')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -67,7 +69,7 @@ const AlertNotifications = ({ alerts, onDismiss, onViewDetails }) => {
                   onClick={() => onDismiss(alert?.id)}
                   className="hover:bg-current/10"
                 >
-                  Dismiss
+                  {t('common.actions.dismiss')}
                 </Button>
               </div>
             </div>
@@ -83,11 +85,11 @@ const AlertNotifications = ({ alerts, onDismiss, onViewDetails }) => {
           >
             {isExpanded ? (
               <>
-                Show Less <Icon name="ChevronUp" size={16} />
+                {t('common.actions.showLess')} <Icon name="ChevronUp" size={16} />
               </>
             ) : (
               <>
-                See {remainingCount} More Alerts <Icon name="ChevronDown" size={16} />
+                {t('admin.dashboard.alerts.moreAlerts', { count: remainingCount })} <Icon name="ChevronDown" size={16} />
               </>
             )}
           </button>

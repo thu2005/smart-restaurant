@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import MetricCard from "./components/MetricCard";
 import ActiveOrderCard from "./components/ActiveOrderCard";
@@ -12,6 +13,7 @@ import AlertNotifications from "./components/AlertNotifications";
 import dashboardApi from "../../../services/dashboardApi";
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState("today");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -67,7 +69,7 @@ const AdminDashboard = () => {
       // Update metrics
       const newMetrics = [
         {
-          title: "Today's Revenue",
+          title: t('admin.dashboard.metrics.todayRevenue'),
           value: `$${((data.revenue.totalRevenue || 0) / 100)}`,
           change: revChange,
           changeType: revChangeType,
@@ -76,7 +78,7 @@ const AdminDashboard = () => {
           trend: [45, 52, 48, 65, 58, 72, 68, 75, 82, 78, 85, 92],
         },
         {
-          title: "Current Orders",
+          title: t('admin.dashboard.metrics.currentOrders'),
           value: data.activeOrders?.length?.toString() || "0",
           change: `+${data.activeOrders?.length || 0}`,
           changeType: "positive",
@@ -85,7 +87,7 @@ const AdminDashboard = () => {
           trend: [30, 35, 40, 38, 45, 42, 48, 52, 55, 58, 60, 65],
         },
         {
-          title: "Table Occupancy",
+          title: t('admin.dashboard.metrics.tableOccupancy'),
           value: `${data.tableOccupancy?.occupiedTables || 0}/${data.tableOccupancy?.totalTables || 0}`,
           change: `${Math.round((data.tableOccupancy?.occupancyRate || 0) * 100)}%`,
           changeType: "neutral",
@@ -94,7 +96,7 @@ const AdminDashboard = () => {
           trend: [60, 65, 70, 68, 72, 75, 78, 76, 80, 82, 85, 88],
         },
         {
-          title: "Avg Order Value",
+          title: t('admin.dashboard.metrics.avgOrderValue'),
           value: `$${((data.revenue.averageOrderValue || 0) / 100)}`,
           change: aovChange,
           changeType: aovChangeType,
@@ -127,7 +129,7 @@ const AdminDashboard = () => {
       setLoading(false);
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
-      setError(err.message || "Failed to load dashboard data");
+      setError(err.message || t('common.messages.error'));
       setLoading(false);
     }
   };
@@ -266,13 +268,13 @@ const AdminDashboard = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-red-500 text-5xl mb-4">⚠️</div>
-            <h2 className="text-xl font-semibold mb-2">Failed to Load Dashboard</h2>
+            <h2 className="text-xl font-semibold mb-2">{t('common.messages.error')}</h2>
             <p className="text-muted-foreground mb-4">{error}</p>
             <button
               onClick={fetchDashboardData}
               className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
             >
-              Retry
+              {t('common.actions.refresh')}
             </button>
           </div>
         </div>
@@ -284,10 +286,10 @@ const AdminDashboard = () => {
     <div className="px-4 md:px-6 lg:px-8 py-6 md:py-8 max-w-[1920px] mx-auto">
       <div className="mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-          Admin Dashboard
+          {t('admin.dashboard.title')}
         </h1>
         <p className="text-sm md:text-base text-muted-foreground">
-          Welcome back! Here's what's happening with your restaurant today.
+          {t('admin.dashboard.welcome')}!
         </p>
       </div>
 

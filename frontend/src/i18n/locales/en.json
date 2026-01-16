@@ -1,4 +1,274 @@
 {
+    "common": {
+        "actions": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "delete": "Delete",
+            "edit": "Edit",
+            "add": "Add",
+            "create": "Create",
+            "update": "Update",
+            "search": "Search",
+            "filter": "Filter",
+            "export": "Export",
+            "import": "Import",
+            "upload": "Upload",
+            "download": "Download",
+            "submit": "Submit",
+            "confirm": "Confirm",
+            "back": "Back",
+            "next": "Next",
+            "previous": "Previous",
+            "close": "Close",
+            "viewAll": "View All",
+            "refresh": "Refresh",
+            "reset": "Reset",
+            "apply": "Apply",
+            "clear": "Clear",
+            "viewDetails": "View Details",
+            "dismiss": "Dismiss",
+            "showLess": "Show Less"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "available": "Available",
+            "unavailable": "Unavailable",
+            "pending": "Pending",
+            "completed": "Completed",
+            "lowStock": "Low Stock",
+            "soldOut": "Sold Out",
+            "na": "N/A"
+        },
+        "messages": {
+            "loading": "Loading...",
+            "noData": "No data available",
+            "error": "An error occurred",
+            "success": "Success",
+            "confirmDelete": "Are you sure you want to delete this?",
+            "cannotUndo": "This action cannot be undone",
+            "deleteSuccess": "Deleted successfully",
+            "deleteError": "Failed to delete",
+            "updateSuccess": "Updated successfully",
+            "updateError": "Failed to update",
+            "createSuccess": "Created successfully",
+            "createError": "Failed to create",
+            "saveSuccess": "Saved successfully",
+            "saveError": "Failed to save"
+        },
+        "pagination": {
+            "showingPage": "Showing page",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "time": {
+            "min": "min"
+        }
+    },
+    "admin": {
+        "menu": {
+            "items": {
+                "title": "Menu Items",
+                "subtitle": "Manage your restaurant's menu items",
+                "addItem": "Add Item",
+                "editItem": "Edit Item",
+                "searchPlaceholder": "Search items...",
+                "filters": {
+                    "allCategories": "All Categories",
+                    "allStatuses": "All Statuses",
+                    "sortBy": "Sort by",
+                    "newest": "Newest First",
+                    "oldest": "Oldest First",
+                    "priceHighLow": "Price: High to Low",
+                    "priceLowHigh": "Price: Low to High",
+                    "popularity": "Most Popular"
+                },
+                "table": {
+                    "name": "Name",
+                    "category": "Category",
+                    "price": "Price",
+                    "createdDate": "Created Date",
+                    "status": "Status",
+                    "tags": "Tags",
+                    "actions": "Actions"
+                },
+                "status": {
+                    "available": "Available",
+                    "lowStock": "Low Stock",
+                    "soldOut": "Sold Out",
+                    "unavailable": "Unavailable"
+                },
+                "deleteConfirm": "Delete menu item?",
+                "deleteMessage": "Are you sure you want to delete this menu item? This action cannot be undone."
+            },
+            "categories": {
+                "title": "Menu Categories",
+                "subtitle": "Manage your menu categories and their display order",
+                "addCategory": "Add Category",
+                "editCategory": "Edit Category",
+                "table": {
+                    "order": "Order",
+                    "name": "Name",
+                    "description": "Description",
+                    "createdDate": "Created Date",
+                    "status": "Status",
+                    "items": "Items",
+                    "actions": "Actions"
+                },
+                "deleteConfirm": "Delete category?",
+                "deleteMessage": "Are you sure you want to delete this category? This will deactivate the category. This action cannot be undone."
+            }
+        },
+        "users": {
+            "title": "Staff Management",
+            "subtitle": "Manage restaurant staff accounts",
+            "addStaff": "Add Staff",
+            "editStaff": "Edit Staff",
+            "filters": {
+                "filterByRole": "Filter by Role",
+                "filterByStatus": "Filter by Status",
+                "allRoles": "All Roles",
+                "allStatus": "All Status",
+                "active": "Active",
+                "inactive": "Inactive"
+            },
+            "table": {
+                "user": "User",
+                "role": "Role",
+                "restaurant": "Restaurant",
+                "status": "Status",
+                "created": "Created",
+                "actions": "Actions"
+            },
+            "roles": {
+                "admin": "Admin",
+                "waiter": "Waiter",
+                "kitchen": "Kitchen Staff"
+            },
+            "actions": {
+                "activate": "Activate",
+                "deactivate": "Deactivate"
+            }
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Welcome back",
+            "overview": "Overview",
+            "todayStats": "Today's Statistics",
+            "metrics": {
+                "todayRevenue": "Today's Revenue",
+                "currentOrders": "Current Orders",
+                "tableOccupancy": "Table Occupancy",
+                "avgOrderValue": "Avg Order Value",
+                "vsLastPeriod": "vs last period"
+            },
+            "sections": {
+                "activeOrders": "Active Orders",
+                "tableStatus": "Table Status",
+                "tableStatusDesc": "Real-time overview of the dining floor",
+                "liveUpdates": "Live Updates",
+                "recentActivity": "Recent Activity",
+                "recentActivityDesc": "Latest updates from your restaurant",
+                "revenueChart": "Revenue Over Time",
+                "topSelling": "Top Selling Items",
+                "quickActions": "Quick Actions",
+                "alerts": "Alerts"
+            },
+            "quickActions": {
+                "manageMenu": "Manage Menu",
+                "manageMenuDesc": "Add or edit menu items",
+                "kitchenDisplay": "Kitchen Display",
+                "kitchenDisplayDesc": "View live orders",
+                "tableSetup": "Table Setup",
+                "tableSetupDesc": "Configure tables",
+                "viewReports": "View Reports",
+                "viewReportsDesc": "Analytics & insights"
+            },
+            "orderStatus": {
+                "pending": "Pending",
+                "preparing": "Preparing",
+                "ready": "Ready",
+                "served": "Served",
+                "completed": "Completed",
+                "overdue": "Overdue",
+                "cancelled": "Cancelled",
+                "rejected": "Rejected"
+            },
+            "tableStatus": {
+                "available": "Available",
+                "occupied": "Occupied",
+                "reserved": "Reserved",
+                "cleaning": "Cleaning"
+            },
+            "dateRanges": {
+                "today": "Today",
+                "yesterday": "Yesterday",
+                "week": "This Week",
+                "month": "This Month",
+                "year": "This Year"
+            },
+            "time": {
+                "justNow": "Just now",
+                "minutesAgo": "{{count}}m ago",
+                "hoursAgo": "{{count}}h ago",
+                "daysAgo": "{{count}}d ago"
+            },
+            "chart": {
+                "peakHour": "Peak Hour",
+                "peakDate": "Peak Date",
+                "peakMonth": "Peak Month",
+                "orders": "Orders"
+            },
+            "alerts": {
+                "moreAlerts": "See {{count}} More Alerts"
+            },
+            "orders": {
+                "unknownItem": "Unknown Item",
+                "foodItem": "Food item",
+                "qty": "Qty:",
+                "details": "Order #{number}"
+            },
+            "tables": {
+                "tableNumber": "Table {{number}}",
+                "seats": "{{count}} Seats",
+                "noTables": "No tables found. Add tables to see them here."
+            },
+            "revenue": {
+                "title": "Revenue Analytics",
+                "subtitle": "Sales performance and order trends",
+                "noData": "No data available for the selected period",
+                "totalRevenue": "Total Revenue",
+                "totalOrders": "Total Orders",
+                "series": {
+                    "revenue": "Revenue ($)",
+                    "orders": "Orders"
+                }
+            },
+            "activity": {
+                "noActivity": "No recent activity"
+            },
+            "items": {
+                "ordersCount": "{{count}} orders",
+                "growth": "{{count}}% growth",
+                "rank": "Rank #{{number}}",
+                "revenueLabel": "Revenue",
+                "ordersLabel": "Orders",
+                "mainMenu": "Main Menu"
+            },
+            "actions": {
+                "viewMenu": "View Menu"
+            }
+        },
+        "reports": {
+            "title": "Reports",
+            "subtitle": "View sales and performance reports",
+            "dateRange": "Date Range",
+            "topSellingItems": "Top Selling Items",
+            "revenueOverTime": "Revenue Over Time",
+            "peakHours": "Peak Hours",
+            "export": "Export Report"
+        }
+    },
     "settings": {
         "title": "Settings",
         "subtitle": "Manage your account and restaurant preferences",

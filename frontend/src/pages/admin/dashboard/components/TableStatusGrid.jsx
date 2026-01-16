@@ -1,29 +1,31 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const TableStatusGrid = ({ tables, onTableClick }) => {
+  const { t } = useTranslation();
   const getStatusConfig = (status) => {
     const normalizedStatus = status?.toLowerCase() || "available";
     const configs = {
       available: {
         legendColor: "bg-emerald-600",
         icon: "CheckCircle",
-        label: "Available",
+        label: t('admin.dashboard.tableStatus.available'),
       },
       occupied: {
         legendColor: "bg-blue-600",
         icon: "Users",
-        label: "Occupied",
+        label: t('admin.dashboard.tableStatus.occupied'),
       },
       reserved: {
         legendColor: "bg-orange-600",
         icon: "Clock",
-        label: "Reserved",
+        label: t('admin.dashboard.tableStatus.reserved'),
       },
       cleaning: {
         legendColor: "bg-gray-600",
         icon: "Sparkles",
-        label: "Cleaning",
+        label: t('admin.dashboard.tableStatus.cleaning'),
       },
     };
     return configs[normalizedStatus] || configs.available;
@@ -34,15 +36,15 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-heading font-bold text-foreground">
-            Table Status
+            {t('admin.dashboard.sections.tableStatus')}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Real-time overview of the dining floor
+            {t('admin.dashboard.sections.tableStatusDesc')}
           </p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-success/10 rounded-full">
           <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-          <span className="text-xs font-semibold text-success">Live Updates</span>
+          <span className="text-xs font-semibold text-success">{t('admin.dashboard.sections.liveUpdates')}</span>
         </div>
       </div>
 
@@ -89,7 +91,7 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
 
               <div className="text-center w-full relative z-10">
                 <h4 className="font-bold text-lg mb-2">
-                  Table {table.tableNumber}
+                  {t('admin.dashboard.tables.tableNumber', { number: table.tableNumber })}
                 </h4>
                 <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/10 shadow-sm">
                   {config.label}
@@ -98,7 +100,7 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
                 {table.capacity && (
                   <div className="flex items-center justify-center gap-1.5 text-white/80 mt-3 font-medium">
                     <Icon name="Users" size={14} />
-                    <span className="text-xs">{table.capacity} Seats</span>
+                    <span className="text-xs">{t('admin.dashboard.tables.seats', { count: table.capacity })}</span>
                   </div>
                 )}
               </div>
@@ -109,7 +111,7 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
         {!tables?.length && (
           <div className="col-span-full py-12 text-center text-muted-foreground bg-muted/20 rounded-xl border border-dashed border-muted">
             <Icon name="Grid3x3" size={48} className="mx-auto mb-4 opacity-50" />
-            <p>No tables found. Add tables to see them here.</p>
+            <p>{t('admin.dashboard.tables.noTables')}</p>
           </div>
         )}
       </div>
@@ -121,7 +123,7 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
           return (
             <div key={status} className="flex items-center gap-2">
               <div className={`w-3 h-3 rounded-full ${conf.legendColor}`} />
-              <span className="text-sm font-medium text-muted-foreground capitalize">{status}</span>
+              <span className="text-sm font-medium text-muted-foreground capitalize">{t(`admin.dashboard.tableStatus.${status}`)}</span>
             </div>
           )
         })}
