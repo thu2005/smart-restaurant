@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/AppIcon";
 
@@ -25,7 +26,10 @@ const Onboarding = () => {
 
     if (!restaurantId || !tableId) {
       // No QR scan detected - ask user to scan QR code
-      alert("Please scan the QR code at your table to start ordering.");
+      toast.error("Please scan the QR code at your table to start ordering.", {
+        description: "A valid QR code is required.",
+        duration: 4000
+      });
       return;
     }
 

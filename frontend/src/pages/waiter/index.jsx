@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { io } from "socket.io-client";
+import { toast } from "sonner";
 import WaiterHeader from "./components/WaiterHeader";
 import OrderTabs from "./components/OrderTabs";
 import OrderCard from "./components/OrderCard";
@@ -7,6 +8,8 @@ import RejectModal from "./components/RejectModal";
 import BillSummary from "./components/BillSummary";
 import DiscountModal from "./components/DiscountModal";
 import PaymentModal from "./components/PaymentModal";
+import BillRequestToast from "./components/BillRequestToast";
+import OrderDetailsModal from "./components/OrderDetailsModal";
 import waiterService from "../../services/waiterService";
 import authService from "../../services/authService";
 
@@ -31,6 +34,13 @@ const WaiterDashboard = () => {
     const [discountModalOpen, setDiscountModalOpen] = useState(false);
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [selectedOrderForBill, setSelectedOrderForBill] = useState(null);
+    
+    // Toast notification state
+    const [billRequestNotification, setBillRequestNotification] = useState(null);
+    
+    // Order details modal state
+    const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false);
+    const [selectedOrderForView, setSelectedOrderForView] = useState(null);
 
     const user = authService.getCurrentUser();
     const restaurantId = user?.restaurantId;
@@ -42,6 +52,11 @@ const WaiterDashboard = () => {
         if (!restaurantId) return;
         fetchOrders();
         fetchTables();
+        
+        // Request notification permission
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
     }, [restaurantId]);
 
     // Initialize WebSocket connection
@@ -49,7 +64,7 @@ const WaiterDashboard = () => {
         if (!restaurantId) return;
 
         // Socket.IO connects to base server URL (not /api)
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5002/api";
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
         const socketUrl = apiUrl.replace('/api', ''); // Remove /api suffix for socket connection
         const newSocket = io(socketUrl);
 
@@ -78,6 +93,71 @@ const WaiterDashboard = () => {
             // Refresh to show the updated order with new items
             if (fetchOrdersRef.current) {
                 fetchOrdersRef.current();
+            }
+        });
+
+        newSocket.on("bill_requested", ({ orderId, orderNumber, tableNumber, billData }) => {
+            console.log("💰 Bill requested:", orderNumber, "Table:", tableNumber);
+            
+            // Show toast notification
+            setBillRequestNotification({
+                orderId,
+                orderNumber,
+                tableNumber,
+                total: billData.total
+            });
+            
+            // Show browser notification to waiter (if permission granted)
+            if (Notification.permission === "granted") {
+                new Notification("Bill Requested", {
+                    body: `Table ${tableNumber} - ${orderNumber} has requested the bill ($${billData.total.toFixed(2)})`,
+                    icon: "/favicon.ico"
+                });
+            }
+            
+            // Play notification sound (optional)
+            try {
+                const audio = new Audio('/notification.mp3');
+                audio.play().catch(e => console.log('Audio play failed:', e));
+            } catch (e) {
+                console.log('Audio notification failed:', e);
+            }
+            
+            // Refresh tables view to show the bill request
+            if (activeTab === "tables") {
+                fetchTables();
+            }
+        });
+
+        newSocket.on("payment_received", ({ orderId }) => {
+            console.log("✅ Payment received for order:", orderId);
+            
+            // Show success toast notification
+            toast.success("Payment Received!", {
+                description: "The order has been paid successfully. You can now mark it as completed.",
+                duration: 5000
+            });
+            
+            // Show browser notification
+            if (Notification.permission === "granted") {
+                new Notification("Payment Received", {
+                    body: `Payment received successfully!`,
+                    icon: "/favicon.ico"
+                });
+            }
+            
+            // Remove bill from local state and refresh
+            setBills(prev => {
+                const newBills = { ...prev };
+                delete newBills[orderId];
+                return newBills;
+            });
+            
+            // Refresh tables to update status
+            if (activeTab === "tables") {
+                fetchTables();
+            } else {
+                fetchOrders();
             }
         });
 
@@ -206,7 +286,10 @@ const WaiterDashboard = () => {
             fetchOrders();
         } catch (err) {
             console.error("Error accepting order:", err);
-            alert("Failed to accept order. Please try again.");
+            toast.error("Failed to accept order", {
+                description: "Please try again.",
+                duration: 3000
+            });
         }
     };
 
@@ -223,7 +306,10 @@ const WaiterDashboard = () => {
             fetchOrders();
         } catch (err) {
             console.error("Error rejecting order:", err);
-            alert("Failed to reject order. Please try again.");
+            toast.error("Failed to reject order", {
+                description: "Please try again.",
+                duration: 3000
+            });
         }
     };
 
@@ -233,7 +319,10 @@ const WaiterDashboard = () => {
             fetchOrders();
         } catch (err) {
             console.error("Error marking order as served:", err);
-            alert("Failed to mark order as served. Please try again.");
+            toast.error("Failed to mark order as served", {
+                description: "Please try again.",
+                duration: 3000
+            });
         }
     };
 
@@ -249,7 +338,56 @@ const WaiterDashboard = () => {
             setBills(prev => ({ ...prev, [order.id]: billData }));
         } catch (err) {
             console.error("Error creating bill:", err);
-            alert("Failed to create bill. Please try again.");
+            toast.error("Failed to create bill", {
+                description: "Please try again.",
+                duration: 3000
+            });
+        }
+    };
+
+    const handleViewOrderDetails = async (orderId) => {
+        try {
+            // Fetch full order details
+            const response = await waiterService.getOrderById(orderId);
+            setSelectedOrderForView(response.data);
+            setOrderDetailsModalOpen(true);
+            setBillRequestNotification(null); // Clear toast when modal opens
+        } catch (err) {
+            console.error("Error fetching order details:", err);
+            toast.error("Failed to load order details", {
+                description: "Please try again.",
+                duration: 3000
+            });
+        }
+    };
+
+    const handleCreateBillFromModal = async (order) => {
+        try {
+            const response = await waiterService.createBill(order.id);
+            // Ensure bill data is properly parsed
+            const billData = response.data?.bill || response.data;
+            setBills(prev => ({ ...prev, [order.id]: billData }));
+            
+            // Show success notification
+            toast.success("Bill created successfully!", {
+                description: "The customer can now proceed with payment.",
+                duration: 4000
+            });
+            
+            // Socket notification will be sent by backend automatically
+            // Refresh data
+            if (activeTab === "tables") {
+                fetchTables();
+            } else {
+                fetchOrders();
+            }
+        } catch (err) {
+            console.error("Error creating bill:", err);
+            toast.error("Failed to create bill", {
+                description: "Please try again.",
+                duration: 3000
+            });
+            throw err;
         }
     };
 
@@ -269,7 +407,10 @@ const WaiterDashboard = () => {
             setBills(prev => ({ ...prev, [selectedOrderForBill.id]: billData }));
         } catch (err) {
             console.error("Error applying discount:", err);
-            alert("Failed to apply discount. Please try again.");
+            toast.error("Failed to apply discount", {
+                description: "Please try again.",
+                duration: 3000
+            });
         }
     };
 
@@ -278,7 +419,10 @@ const WaiterDashboard = () => {
             await waiterService.printBill(order.id);
         } catch (err) {
             console.error("Error printing bill:", err);
-            alert("Failed to print bill. Please try again.");
+            toast.error("Failed to print bill", {
+                description: "Please try again.",
+                duration: 3000
+            });
         }
     };
 
@@ -309,10 +453,16 @@ const WaiterDashboard = () => {
             });
 
             fetchTables();
-            alert("Payment processed successfully!");
+            toast.success("Payment processed successfully!", {
+                description: "The order has been marked as paid.",
+                duration: 4000
+            });
         } catch (err) {
             console.error("Error processing payment:", err);
-            alert("Failed to process payment. Please try again.");
+            toast.error("Failed to process payment", {
+                description: "Please try again.",
+                duration: 3000
+            });
         }
     };
 
@@ -400,8 +550,20 @@ const WaiterDashboard = () => {
                                                 />
 
                                                 {/* Bill Management Section */}
-                                                {order.status === 'SERVED' && (
+                                                {(order.status === 'SERVED' || order.status === 'PAYMENT_PENDING') && (
                                                     <div className="bg-muted/20 rounded-lg p-4 space-y-3">
+                                                        {/* Bill Request Indicator */}
+                                                        {order.status === 'PAYMENT_PENDING' && !bills[order.id] && (
+                                                            <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 mb-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-2 h-2 bg-warning rounded-full animate-pulse" />
+                                                                    <p className="text-sm font-semibold text-warning">
+                                                                        Customer Requested Bill
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        
                                                         {!bills[order.id] ? (
                                                             <button
                                                                 onClick={() => handleCreateBill(order)}
@@ -466,6 +628,26 @@ const WaiterDashboard = () => {
                 onClose={() => setPaymentModalOpen(false)}
                 onConfirm={handleConfirmPayment}
                 bill={selectedOrderForBill ? bills[selectedOrderForBill.id] : null}
+            />
+
+            <OrderDetailsModal
+                isOpen={orderDetailsModalOpen}
+                onClose={() => {
+                    setOrderDetailsModalOpen(false);
+                    setSelectedOrderForView(null);
+                }}
+                order={selectedOrderForView}
+                onCreateBill={handleCreateBillFromModal}
+            />
+
+            <BillRequestToast
+                notification={billRequestNotification}
+                onClose={() => setBillRequestNotification(null)}
+                onViewOrder={() => {
+                    if (billRequestNotification?.orderId) {
+                        handleViewOrderDetails(billRequestNotification.orderId);
+                    }
+                }}
             />
         </div>
     );

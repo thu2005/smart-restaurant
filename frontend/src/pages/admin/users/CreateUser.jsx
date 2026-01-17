@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import userService from "../../../services/userService";
 import restaurantService from "../../../services/restaurantService";
 import Icon from "../../../components/AppIcon";
@@ -94,7 +95,10 @@ const CreateUser = () => {
             navigate(usersBasePath);
         } catch (err) {
             console.error("Error creating restaurant:", err);
-            alert(err.response?.data?.message || "Failed to create restaurant");
+            toast.error("Failed to create restaurant", {
+                description: err.response?.data?.message || "Please try again.",
+                duration: 4000
+            });
         }
     };
 
