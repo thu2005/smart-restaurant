@@ -129,10 +129,15 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`📑 Swagger Docs available at http://localhost:${PORT}/api-docs`);
 });
 
-// Socket.IO setup (placeholder for now)
+
+// Parse allowed origins from env (comma-separated)
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+  .split(",")
+  .map(origin => origin.trim());
+
 const io = require("socket.io")(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5174",
+    origin: allowedOrigins,
     credentials: true,
   },
 });

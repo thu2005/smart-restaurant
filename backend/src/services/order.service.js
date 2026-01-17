@@ -28,8 +28,8 @@ class OrderService {
                 // item.modifiers can be:
                 // 1. Array of IDs: ["mod-id-1", "mod-id-2"]
                 // 2. Array of objects: [{id: "mod-id-1", quantity: 2}, ...]
-                
-                const modifierIds = item.modifiers.map(m => 
+
+                const modifierIds = item.modifiers.map(m =>
                     typeof m === 'object' ? m.id : m
                 );
 
@@ -44,12 +44,12 @@ class OrderService {
                     const modId = typeof modifier === 'object' ? modifier.id : modifier;
                     const quantity = typeof modifier === 'object' ? (modifier.quantity || 1) : 1;
                     const option = options.find(opt => opt.id === modId);
-                    
+
                     if (!option) return null;
-                    
+
                     const priceAdjustment = Number(option.priceAdjustment) * quantity;
                     modifiersPrice += priceAdjustment;
-                    
+
                     return {
                         id: option.id,
                         name: option.name,
@@ -92,7 +92,7 @@ class OrderService {
             },
             include: {
                 orderItems: {
-                    include: { 
+                    include: {
                         menuItem: {
                             include: { photos: true }
                         }
@@ -132,14 +132,15 @@ class OrderService {
             },
             include: {
                 orderItems: {
-                    include: { 
+                    include: {
                         menuItem: {
                             include: { photos: true }
                         }
                     }
                 },
                 table: true,
-                customer: true
+                customer: true,
+                bill: true  // Include bill relation
             },
             orderBy: { createdAt: 'desc' }
         });
@@ -180,7 +181,7 @@ class OrderService {
             let modifierDetails = [];
 
             if (item.modifiers && Array.isArray(item.modifiers) && item.modifiers.length > 0) {
-                const modifierIds = item.modifiers.map(m => 
+                const modifierIds = item.modifiers.map(m =>
                     typeof m === 'object' ? m.id : m
                 );
 
@@ -194,12 +195,12 @@ class OrderService {
                     const modId = typeof modifier === 'object' ? modifier.id : modifier;
                     const quantity = typeof modifier === 'object' ? (modifier.quantity || 1) : 1;
                     const option = options.find(opt => opt.id === modId);
-                    
+
                     if (!option) return null;
-                    
+
                     const priceAdjustment = Number(option.priceAdjustment) * quantity;
                     modifiersPrice += priceAdjustment;
-                    
+
                     return {
                         id: option.id,
                         name: option.name,
@@ -261,7 +262,7 @@ class OrderService {
             where: { id: orderId },
             include: {
                 orderItems: {
-                    include: { 
+                    include: {
                         menuItem: {
                             include: { photos: true }
                         }
@@ -294,7 +295,7 @@ class OrderService {
             where,
             include: {
                 orderItems: {
-                    include: { 
+                    include: {
                         menuItem: {
                             include: { photos: true }
                         }
@@ -310,7 +311,7 @@ class OrderService {
         // Calculate total for each order
         return orders.map(order => {
             let total = 0;
-            
+
             if (order.bill) {
                 // If bill exists, use bill total
                 total = Number(order.bill.total);
@@ -334,8 +335,51 @@ class OrderService {
         });
     }
 
+    async getOrderById(orderId) {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                orderItems: {
+                    include: {
+                        menuItem: {
+                            include: { photos: true }
+                        }
+                    }
+                },
+                table: true,
+                customer: true,
+                bill: true,
+            }
+        });
+
+        if (!order) {
+            return null;
+        }
+
+        // Calculate total
+        let total = 0;
+        if (order.bill) {
+            total = Number(order.bill.total);
+        } else {
+            let subtotal = 0;
+            for (const item of order.orderItems) {
+                subtotal += (Number(item.unitPrice) * item.quantity);
+            }
+            const discount = Number(order.discount) || 0;
+            const taxRate = 0.1;
+            const subtotalAfterDiscount = Math.max(0, subtotal - discount);
+            const tax = subtotalAfterDiscount * taxRate;
+            total = subtotalAfterDiscount + tax;
+        }
+
+        return {
+            ...order,
+            total: total
+        };
+    }
+
     async updateStatus(orderId, status, userId, rejectionReason = null) {
-        const order = await prisma.order.findUnique({ 
+        const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: { orderItems: true }
         });
@@ -350,26 +394,26 @@ class OrderService {
         // we should NOT set the whole order to REJECTED (which implies the whole meal is cancelled).
         // Instead, we should set it back to SERVED (meaning "Previous state was good, new request denied").
         if (status === 'REJECTED') {
-             const hasServedItems = order.orderItems.some(item => item.itemStatus === 'served');
-             if (hasServedItems) {
-                 // Revert to SERVED instead of REJECTED
-                 newStatus = 'SERVED';
-                 
-                 // Mark all non-served items as rejected to prevent them from affecting future batches
-                 await prisma.orderItem.updateMany({
-                     where: { 
-                         orderId: orderId,
-                         itemStatus: { notIn: ['served', 'completed', 'rejected'] }
-                     },
-                     data: { itemStatus: 'rejected' }
-                 });
-             } else {
-                 // No served items yet, mark all items as rejected
-                 await prisma.orderItem.updateMany({
-                     where: { orderId: orderId },
-                     data: { itemStatus: 'rejected' }
-                 });
-             }
+            const hasServedItems = order.orderItems.some(item => item.itemStatus === 'served');
+            if (hasServedItems) {
+                // Revert to SERVED instead of REJECTED
+                newStatus = 'SERVED';
+
+                // Mark all non-served items as rejected to prevent them from affecting future batches
+                await prisma.orderItem.updateMany({
+                    where: {
+                        orderId: orderId,
+                        itemStatus: { notIn: ['served', 'completed', 'rejected'] }
+                    },
+                    data: { itemStatus: 'rejected' }
+                });
+            } else {
+                // No served items yet, mark all items as rejected
+                await prisma.orderItem.updateMany({
+                    where: { orderId: orderId },
+                    data: { itemStatus: 'rejected' }
+                });
+            }
         }
 
         updateData.status = newStatus;
@@ -377,7 +421,7 @@ class OrderService {
         if (newStatus === 'RECEIVED') {
             updateData.acceptedAt = now;
             updateData.acceptedById = userId; // Waiter
-        } else if (status === 'REJECTED') { 
+        } else if (status === 'REJECTED') {
             if (newStatus === 'REJECTED') {
                 updateData.rejectionReason = rejectionReason;
             }
@@ -389,7 +433,7 @@ class OrderService {
             updateData.servedAt = now;
             // Update all non-rejected items to 'served'
             await prisma.orderItem.updateMany({
-                where: { 
+                where: {
                     orderId: orderId,
                     itemStatus: { not: 'rejected' }
                 },
@@ -397,9 +441,9 @@ class OrderService {
             });
         } else if (newStatus === 'COMPLETED') {
             updateData.completedAt = now;
-             // Update all non-rejected items to 'completed'
-             await prisma.orderItem.updateMany({
-                where: { 
+            // Update all non-rejected items to 'completed'
+            await prisma.orderItem.updateMany({
+                where: {
                     orderId: orderId,
                     itemStatus: { not: 'rejected' }
                 },
@@ -424,14 +468,13 @@ class OrderService {
 
         if (!order) throw new Error('Order not found');
 
-        // Check if bill already exists
-        const existingBill = await prisma.bill.findUnique({ where: { orderId } });
-        if (existingBill) return this.getBillDetails(orderId);
-
-        // Calculate totals
+        // Calculate totals based on CURRENT order items
         let subtotal = 0;
         for (const item of order.orderItems) {
-            subtotal += (Number(item.unitPrice) * item.quantity);
+            // Ensure we don't count cancelled/rejected items if logic requires (optional, assuming all in list are billable)
+            if (item.itemStatus !== 'rejected' && item.itemStatus !== 'cancelled') {
+                subtotal += (Number(item.unitPrice) * item.quantity);
+            }
         }
         const discount = Number(order.discount) || 0;
         const taxRate = 0.1;
@@ -439,25 +482,43 @@ class OrderService {
         const tax = subtotalAfterDiscount * taxRate;
         const total = subtotalAfterDiscount + tax;
 
-        // Transaction: Update status + Create Bill
-        await prisma.$transaction([
-            prisma.order.update({
-                where: { id: orderId },
-                data: { status: 'PAYMENT_PENDING' }
-            }),
-            prisma.bill.create({
+        // Check if bill already exists
+        const existingBill = await prisma.bill.findUnique({ where: { orderId } });
+
+        if (existingBill) {
+            // Update existing bill with new totals
+            await prisma.bill.update({
+                where: { id: existingBill.id },
                 data: {
-                    orderId,
-                    restaurantId: order.restaurantId,
-                    billNumber: order.orderNumber.replace('ORD', 'BILL'),
                     subtotal,
                     discount,
                     tax,
                     total,
-                    createdBy: userId
+                    updatedAt: new Date()
+                    // createdBy: userId // Optional: update who updated it?
                 }
-            })
-        ]);
+            });
+        } else {
+            // Create new bill
+            await prisma.$transaction([
+                prisma.order.update({
+                    where: { id: orderId },
+                    data: { status: 'PAYMENT_PENDING' }
+                }),
+                prisma.bill.create({
+                    data: {
+                        orderId,
+                        restaurantId: order.restaurantId,
+                        billNumber: order.orderNumber.replace('ORD', 'BILL'),
+                        subtotal,
+                        discount,
+                        tax,
+                        total,
+                        createdBy: userId
+                    }
+                })
+            ]);
+        }
 
         return await this.getBillDetails(orderId);
     }
@@ -466,12 +527,12 @@ class OrderService {
         const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: {
-                orderItems: { 
-                    include: { 
+                orderItems: {
+                    include: {
                         menuItem: {
                             include: { photos: true }
                         }
-                    } 
+                    }
                 },
                 bill: true,
                 payment: true,
@@ -518,7 +579,14 @@ class OrderService {
                 modifiers: item.modifiers,
                 total: Number(item.unitPrice) * item.quantity
             })),
-            bill: billData
+            bill: billData,
+            // Include order and table for socket notification
+            order: {
+                id: order.id,
+                orderNumber: order.orderNumber,
+                restaurantId: order.restaurantId,
+                table: order.table
+            }
         };
     }
 
@@ -571,7 +639,7 @@ class OrderService {
     }
 
     async updateOrderItemStatus(orderId, itemId, itemStatus) {
-        const order = await prisma.order.findUnique({ 
+        const order = await prisma.order.findUnique({
             where: { id: orderId },
             include: { orderItems: true }
         });
@@ -596,7 +664,7 @@ class OrderService {
 
             // Check if there are any items that are NOT ready and still need prep
             // We ignore items that are already 'served', 'completed', or 'rejected'
-            const pendingItems = allItems.filter(item => 
+            const pendingItems = allItems.filter(item =>
                 !['ready', 'served', 'completed', 'rejected'].includes(item.itemStatus)
             );
 
@@ -604,7 +672,7 @@ class OrderService {
                 // All items that needed prep are now done!
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { 
+                    data: {
                         status: 'READY',
                         readyAt: new Date()
                     }
@@ -634,8 +702,8 @@ class OrderService {
                 restaurantId: waiter.restaurantId,
                 status: { notIn: ['COMPLETED', 'CANCELLED'] },
                 OR: [
-                    { acceptedById: waiterId },  
-                    { status: { in: ['READY', 'SERVED'] } }  
+                    { acceptedById: waiterId },
+                    { status: { in: ['READY', 'SERVED'] } }
                 ]
             },
             include: {
@@ -664,14 +732,14 @@ class OrderService {
         // For READY orders, show all ready orders for the restaurant (not just waiter's own)
         // so waiters can serve any ready order from kitchen
         const where = {};
-        
+
         if (status === 'READY') {
             // Get waiter's restaurant ID
             const waiter = await prisma.user.findUnique({
                 where: { id: waiterId },
                 select: { restaurantId: true }
             });
-            
+
             if (waiter && waiter.restaurantId) {
                 where.restaurantId = waiter.restaurantId;
                 where.status = 'READY';
@@ -685,12 +753,12 @@ class OrderService {
         return await prisma.order.findMany({
             where,
             include: {
-                orderItems: { 
-                    include: { 
+                orderItems: {
+                    include: {
                         menuItem: {
                             include: { photos: true }
                         }
-                    } 
+                    }
                 },
                 table: true,
                 customer: true
