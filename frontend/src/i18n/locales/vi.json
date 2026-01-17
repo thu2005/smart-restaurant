@@ -961,6 +961,14 @@
             "subtitle": "Quản lý đơn hàng và theo dõi chế biến theo thời gian thực",
             "liveUpdates": "Cập Nhật Trực Tiếp"
         },
+        "columns": {
+            "received": "Đã Nhận",
+            "preparing": "Đang Nấu",
+            "ready": "Sẵn Sàng",
+            "noNewOrders": "Không có đơn mới",
+            "kitchenClear": "Bếp đã xong việc",
+            "noOrdersReady": "Chưa có đơn sẵn sàng"
+        },
         "stats": {
             "new": "Đơn Mới",
             "preparing": "Đang Chế Biến",
@@ -1013,7 +1021,17 @@
             "actions": {
                 "start": "Bắt Đầu Nấu",
                 "ready": "Báo Sẵn Sàng",
-                "complete": "Hoàn Thành"
+                "complete": "Hoàn Thành",
+                "startAll": "BẮT ĐẦU TẤT CẢ",
+                "readyAll": "SẴN SÀNG TẤT CẢ",
+                "markAllReady": "Đánh Dấu Tất Cả Sẵn Sàng"
+            },
+            "noPendingItems": "Không có món nào cần chuẩn bị.",
+            "waitingForWaiter": "Đợi Phục Vụ",
+            "modal": {
+                "unfinishedItemsTitle": "Món Chưa Hoàn Thành",
+                "unfinishedItemsSubtitle": "Một số món chưa được đánh dấu Xong",
+                "confirmReadyMessage": "Bạn có chắc muốn đánh dấu đơn hàng này là SẴN SÀNG? Các món sau vẫn đang nấu/chờ:"
             }
         },
         "empty": {

@@ -168,7 +168,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
           {(() => {
             const activeItems = order?.items?.filter(item => !['served', 'rejected', 'completed'].includes(item.itemStatus || 'queued')) || [];
             if (activeItems.length === 0) {
-              return <p className="text-sm text-muted-foreground text-center italic py-2">No pending items to prepare.</p>;
+              return <p className="text-sm text-muted-foreground text-center italic py-2">{t('kitchen.orders.noPendingItems')}</p>;
             }
 
             return activeItems.map((item, index) => {
@@ -249,14 +249,15 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                           color="var(--color-error)"
                         />
                         <span className="text-xs text-error font-bold uppercase tracking-wider">
-                          Allergens: {item?.allergens?.join(", ")}
+                          {t('kitchen.orders.card.allergens')}: {item?.allergens?.join(", ")}
                         </span>
                       </div>
                     )}
                   </div>
                 </div>
-              ))
-          }
+              );
+            })();
+          })()}
         </div>
 
         {/* Order Notes */}
@@ -300,7 +301,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                 }}
                 className="text-xs font-bold py-2 h-9 border-warning/50 text-warning hover:bg-warning/10"
               >
-                START ALL
+                {t('kitchen.orders.actions.startAll')}
               </Button>
               <Button
                 variant="default"
@@ -319,7 +320,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                 }}
                 className="text-xs font-bold py-2 h-9"
               >
-                READY ALL
+                {t('kitchen.orders.actions.readyAll')}
               </Button>
             </>
           ) : order?.status === "preparing" ? (
@@ -340,12 +341,12 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
               }}
               className="text-sm font-semibold py-2 h-9"
             >
-              Mark All Ready
+              {t('kitchen.orders.actions.markAllReady')}
             </Button>
           ) : (
             <div className="w-full p-2 text-center text-success font-bold bg-success/10 border border-success/20 rounded-md flex items-center justify-center gap-2 text-sm">
               <Icon name="CheckCircle" size={16} />
-              Waiting for Waiter
+              {t('kitchen.orders.waitingForWaiter')}
             </div>
           )}
         </div>
@@ -360,13 +361,13 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                 <Icon name="AlertTriangle" size={20} className="text-warning" />
               </div>
               <div>
-                <h3 className="font-bold text-lg leading-tight">Unfinished Items</h3>
-                <p className="text-xs text-muted-foreground">Some items are not marked as Done</p>
+                <h3 className="font-bold text-lg leading-tight">{t('kitchen.orders.modal.unfinishedItemsTitle')}</h3>
+                <p className="text-xs text-muted-foreground">{t('kitchen.orders.modal.unfinishedItemsSubtitle')}</p>
               </div>
             </div>
 
             <div className="p-4 max-h-[60vh] overflow-y-auto">
-              <p className="text-sm text-foreground mb-3">Are you sure you want to mark this order as <strong>READY</strong>? The following items are still cooking/queued:</p>
+              <p className="text-sm text-foreground mb-3">{t('kitchen.orders.modal.confirmReadyMessage')}</p>
               <ul className="space-y-2 mb-2">
                 {pendingUnreadyItems.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm p-2 bg-muted/40 rounded-lg">
@@ -382,7 +383,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                 onClick={() => setShowConfirmModal(false)}
                 className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
               >
-                Cancel
+                {t('common.actions.cancel')}
               </button>
               <Button
                 onClick={() => {
@@ -394,7 +395,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                 size="sm"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                Mark All Ready
+                {t('kitchen.orders.actions.markAllReady')}
               </Button>
             </div>
           </div>

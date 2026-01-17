@@ -897,6 +897,14 @@
             "subtitle": "Real-time order management and preparation tracking",
             "liveUpdates": "Live Updates"
         },
+        "columns": {
+            "received": "Received",
+            "preparing": "Preparing",
+            "ready": "Ready",
+            "noNewOrders": "No new orders",
+            "kitchenClear": "Kitchen is clear",
+            "noOrdersReady": "No orders ready"
+        },
         "stats": {
             "new": "New Orders",
             "preparing": "Preparing",
@@ -949,7 +957,17 @@
             "actions": {
                 "start": "Start Preparing",
                 "ready": "Mark as Ready",
-                "complete": "Complete Order"
+                "complete": "Complete Order",
+                "startAll": "START ALL",
+                "readyAll": "READY ALL",
+                "markAllReady": "Mark All Ready"
+            },
+            "noPendingItems": "No pending items to prepare.",
+            "waitingForWaiter": "Waiting for Waiter",
+            "modal": {
+                "unfinishedItemsTitle": "Unfinished Items",
+                "unfinishedItemsSubtitle": "Some items are not marked as Done",
+                "confirmReadyMessage": "Are you sure you want to mark this order as READY? The following items are still cooking/queued:"
             }
         },
         "empty": {
