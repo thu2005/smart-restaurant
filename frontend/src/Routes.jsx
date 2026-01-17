@@ -23,6 +23,7 @@ import MenuBrowse from "./pages/customer/menu-browse";
 import MenuItemDetail from "./pages/customer/menu-item-detail";
 import OrderStatusTracking from "./pages/customer/order-status-tracking";
 import Profile from "./pages/customer/profile";
+import PaymentResult from "./pages/customer/payment/result";
 
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
@@ -121,6 +122,7 @@ const Routes = () => {
               element={<OrderStatusTracking />}
             />
             <Route path="profile" element={<Profile />} />
+            <Route path="payment/result" element={<PaymentResult />} />
           </Route>
 
           {/* Admin Routes - Protected */}

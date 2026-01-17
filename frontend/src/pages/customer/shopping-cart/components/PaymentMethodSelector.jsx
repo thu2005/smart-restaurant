@@ -94,6 +94,44 @@ const PaymentMethodSelector = ({ onPaymentMethodChange }) => {
         </button>
 
         <button
+          onClick={() => handleMethodSelect("momo")}
+          className={`
+            w-full flex items-center justify-between p-3 md:p-4 rounded-md border-2 transition-smooth touch-target
+            ${
+              selectedMethod === "momo"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
+            }
+          `}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`
+              w-5 h-5 rounded-full border-2 flex items-center justify-center
+              ${
+                selectedMethod === "momo"
+                  ? "border-primary"
+                  : "border-muted-foreground"
+              }
+            `}
+            >
+              {selectedMethod === "momo" && (
+                <div className="w-3 h-3 rounded-full bg-primary" />
+              )}
+            </div>
+            <div className="w-5 h-5 bg-[#A50064] rounded flex items-center justify-center">
+              <span className="text-white text-xs font-bold">M</span>
+            </div>
+            <span className="text-sm md:text-base font-medium text-foreground">
+              Momo Wallet
+            </span>
+          </div>
+          <span className="text-xs md:text-sm text-muted-foreground">
+            Fast & Secure
+          </span>
+        </button>
+
+        <button
           onClick={() => handleMethodSelect("cash")}
           className={`
             w-full flex items-center justify-between p-3 md:p-4 rounded-md border-2 transition-smooth touch-target
