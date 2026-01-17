@@ -41,14 +41,14 @@ const orderService = {
           quantity: item.quantity,
           modifiers: Array.isArray(item.modifiers)
             ? item.modifiers.map((m) => {
-                if (typeof m === 'object') {
-                  return {
-                    id: m.id,
-                    quantity: m.quantity || 1
-                  };
-                }
-                return { id: m, quantity: 1 };
-              })
+              if (typeof m === 'object') {
+                return {
+                  id: m.id,
+                  quantity: m.quantity || 1
+                };
+              }
+              return { id: m, quantity: 1 };
+            })
             : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),
@@ -100,6 +100,17 @@ const orderService = {
       return response.data;
     } catch (error) {
       console.error("Error creating bill:", error);
+      throw error;
+    }
+  },
+
+  // Customer requests bill 
+  requestBill: async (orderId) => {
+    try {
+      const response = await api.post(`/orders/${orderId}/request-bill`);
+      return response.data;
+    } catch (error) {
+      console.error("Error requesting bill:", error);
       throw error;
     }
   },
@@ -210,14 +221,14 @@ const orderService = {
           quantity: item.quantity,
           modifiers: Array.isArray(item.modifiers)
             ? item.modifiers.map((m) => {
-                if (typeof m === 'object') {
-                  return {
-                    id: m.id,
-                    quantity: m.quantity || 1
-                  };
-                }
-                return { id: m, quantity: 1 };
-              })
+              if (typeof m === 'object') {
+                return {
+                  id: m.id,
+                  quantity: m.quantity || 1
+                };
+              }
+              return { id: m, quantity: 1 };
+            })
             : [],
           specialInstructions: item.specialInstructions || item.notes || "",
         })),

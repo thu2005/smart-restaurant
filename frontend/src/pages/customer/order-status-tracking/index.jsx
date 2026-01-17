@@ -2,13 +2,16 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { io } from "socket.io-client";
+import { toast } from "sonner";
 import OrderHeader from "./components/OrderHeader";
 import OrderTimeline from "./components/OrderTimeline";
 import OrderItemStatus from "./components/OrderItemStatus";
 import KitchenNotes from "./components/KitchenNotes";
+import BillPaymentSection from "./components/BillPaymentSection";
 import Button from "../../../components/ui/Button";
 import Icon from "../../../components/AppIcon";
 import orderService from "../../../services/orderService";
+import paymentService from "../../../services/paymentService";
 
 const OrderStatusTracking = () => {
   const navigate = useNavigate();
@@ -39,9 +42,8 @@ const OrderStatusTracking = () => {
       }
     } catch (err) {
       console.error("Failed to fetch order:", err);
-      // Don't set error if it's just no active order found (api might return 404 or null)
-      // But usually getActiveOrderByTable returns null data if no order
-      setOrderData(null); 
+      
+      setOrderData(null);
     } finally {
       setLoading(false);
     }
@@ -50,10 +52,10 @@ const OrderStatusTracking = () => {
   // Initialize Socket.IO connection for real-time updates
   useEffect(() => {
     const restaurantId = localStorage.getItem('restaurantId');
-    
+
     if (!restaurantId) return;
 
-    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     const newSocket = io(socketUrl.replace('/api', ''));
 
     newSocket.on("connect", () => {
@@ -64,7 +66,27 @@ const OrderStatusTracking = () => {
       fetchOrder();
     });
 
-    newSocket.on("disconnect", () => {});
+    newSocket.on("bill_created", ({ orderId, billData }) => {
+      console.log("Bill created by waiter:", orderId);
+      // Show success notification
+      toast.success(`Your bill is ready! Total: ${billData.total.toLocaleString('vi-VN')}₫`, {
+        description: "You can now proceed with payment.",
+        duration: 5000
+      });
+      fetchOrder(); // Refresh to show bill details
+    });
+
+    newSocket.on("payment_confirmed", ({ orderId }) => {
+      console.log("Payment confirmed:", orderId);
+      // Show payment success
+      toast.success("Payment received! Thank you for your visit!", {
+        description: "Your order has been completed successfully.",
+        duration: 5000
+      });
+      fetchOrder();
+    });
+
+    newSocket.on("disconnect", () => { });
 
     setSocket(newSocket);
 
@@ -76,7 +98,7 @@ const OrderStatusTracking = () => {
   // Initial fetch + Fallback polling
   useEffect(() => {
     fetchOrder();
-    
+
     // Fallback polling every 30 seconds (in case socket doesn't work)
     const pollInterval = setInterval(fetchOrder, 30000);
     return () => clearInterval(pollInterval);
@@ -113,10 +135,11 @@ const OrderStatusTracking = () => {
       // Simple heuristic: 15 mins for prep, etc.
       const baseTime = new Date(timestamp);
       if (status === 'PREPARING') return new Date(baseTime.getTime() + 20 * 60000);
-      return new Date(baseTime.getTime() + 30 * 60000); 
+      return new Date(baseTime.getTime() + 30 * 60000);
     };
 
     return {
+      id: apiOrder.id,
       orderNumber: apiOrder.orderNumber,
       tableNumber: apiOrder.table?.tableNumber || "?",
       timestamp: new Date(apiOrder.createdAt || apiOrder.submittedAt),
@@ -126,7 +149,7 @@ const OrderStatusTracking = () => {
       items: (apiOrder.orderItems?.map(item => {
         const menuItem = item.menuItem;
         const primaryPhoto = menuItem?.photos?.find(p => p.isPrimary) || menuItem?.photos?.[0];
-        
+
         return {
           id: item.id,
           name: menuItem?.name || "Unknown Item",
@@ -157,13 +180,13 @@ const OrderStatusTracking = () => {
   const parseModifiers = (modifiers) => {
     if (!modifiers) return [];
     if (Array.isArray(modifiers)) {
-       return modifiers.map(mod => {
-          if (typeof mod === 'string') return mod;
-          if (typeof mod === 'object' && mod.name) {
-              return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
-          }
-          return '';
-       }).filter(Boolean);
+      return modifiers.map(mod => {
+        if (typeof mod === 'string') return mod;
+        if (typeof mod === 'object' && mod.name) {
+          return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+        }
+        return '';
+      }).filter(Boolean);
     }
     return [];
   };
@@ -179,6 +202,28 @@ const OrderStatusTracking = () => {
 
   const handleBackToMenu = () => {
     navigate("/customer/menu-browse");
+  };
+
+  const handleRequestBill = async () => {
+    if (!orderData) return;
+
+    try {
+      setLoading(true);
+      await orderService.requestBill(orderData.id); // Use requestBill for customers
+      toast.success("Bill requested successfully!", {
+        description: "The waiter will bring your bill shortly.",
+        duration: 4000
+      });
+      fetchOrder(); // Refresh to show PAYMENT_PENDING status
+    } catch (err) {
+      console.error("Error requesting bill:", err);
+      toast.error("Failed to request bill", {
+        description: "Please try again or contact staff.",
+        duration: 4000
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getOverallProgress = () => {
@@ -307,6 +352,35 @@ const OrderStatusTracking = () => {
 
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
+                {/* Request Bill Button */}
+                {orderData?.status === 'served' && (
+                  <div className="bg-card border border-border rounded-lg p-6 shadow-warm">
+                    <h3 className="text-lg font-heading font-semibold text-foreground mb-4">
+                      Ready to Pay?
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Request your bill when you're ready to complete your order.
+                    </p>
+                    <Button
+                      variant="primary"
+                      fullWidth
+                      iconName="FileText"
+                      iconPosition="left"
+                      onClick={handleRequestBill}
+                    >
+                      Request Bill
+                    </Button>
+                  </div>
+                )}
+
+                {/* Bill & Payment Section */}
+                {orderData?.bill && orderData?.status === 'payment_pending' && (
+                  <BillPaymentSection 
+                    order={orderData} 
+                    onPay={handlePayment}
+                  />
+                )}
+
                 {orderData?.kitchenNotes.length > 0 && (
                   <KitchenNotes
                     notes={orderData?.kitchenNotes}
