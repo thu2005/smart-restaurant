@@ -2,9 +2,8 @@ import React from "react";
 import Icon from "../../../../components/AppIcon";
 
 const OrderSummary = ({ subtotal, tax, total, itemCount, estimatedTime }) => {
-  const taxRate = 0.08;
-  const calculatedTax = subtotal * taxRate;
-  const calculatedTotal = subtotal + calculatedTax;
+  // Tax is calculated on the final bill, not here
+  const calculatedTotal = subtotal;
 
   return (
     <div className="bg-card border border-border rounded-lg p-4 md:p-6 shadow-warm">
@@ -18,15 +17,6 @@ const OrderSummary = ({ subtotal, tax, total, itemCount, estimatedTime }) => {
           </span>
           <span className="text-sm md:text-base font-medium text-foreground data-text">
             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-sm md:text-base text-muted-foreground">
-            Tax (8%)
-          </span>
-          <span className="text-sm md:text-base font-medium text-foreground data-text">
-            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculatedTax)}
           </span>
         </div>
 

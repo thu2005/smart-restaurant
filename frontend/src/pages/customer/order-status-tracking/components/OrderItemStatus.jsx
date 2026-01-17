@@ -5,23 +5,23 @@ import Icon from "../../../../components/AppIcon";
 const OrderItemStatus = ({ item, currentTime }) => {
   const getStatusConfig = () => {
     switch (item?.status) {
-      case "received":
+      case "queued":
         return {
-          label: "Received",
-          color: "bg-accent",
-          textColor: "text-accent",
-          bgColor: "bg-accent/10",
-          borderColor: "border-accent/20",
-          progress: 0,
+          label: "In Queue",
+          color: "bg-slate-400",
+          textColor: "text-slate-500",
+          bgColor: "bg-slate-50",
+          borderColor: "border-slate-200",
+          progress: 10,
         };
-      case "preparing":
+      case "cooking":
         return {
-          label: "Preparing",
+          label: "Cooking",
           color: "bg-warning",
           textColor: "text-warning",
           bgColor: "bg-warning/10",
           borderColor: "border-warning/20",
-          progress: 50,
+          progress: 65,
         };
       case "ready":
         return {
@@ -33,13 +33,23 @@ const OrderItemStatus = ({ item, currentTime }) => {
           progress: 100,
         };
       case "served":
+      case "completed":
         return {
-          label: "Served",
+          label: item?.status === "completed" ? "Completed" : "Served",
           color: "bg-muted",
           textColor: "text-muted-foreground",
           bgColor: "bg-muted/10",
           borderColor: "border-muted/20",
           progress: 100,
+        };
+      case "rejected":
+        return {
+          label: "Rejected",
+          color: "bg-error",
+          textColor: "text-error",
+          bgColor: "bg-error/10",
+          borderColor: "border-error/20",
+          progress: 0,
         };
       default:
         return {
@@ -92,7 +102,7 @@ const OrderItemStatus = ({ item, currentTime }) => {
             >
               <div
                 className={`w-1.5 h-1.5 rounded-full ${statusConfig?.color} ${
-                  item?.status === "preparing" ? "animate-pulse" : ""
+                  item?.status === "cooking" ? "animate-pulse" : ""
                 }`}
               />
               {statusConfig?.label}

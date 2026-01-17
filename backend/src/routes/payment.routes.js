@@ -53,4 +53,34 @@ router.post(
 
 router.post('/webhook', paymentController.webhook);
 
+/**
+ * @swagger
+ * /api/payments/momo/callback:
+ *   post:
+ *     summary: Momo payment callback/IPN endpoint
+ *     tags: [Payment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Callback processed
+ */
+router.post('/momo/callback', paymentController.momoCallback);
+
+/**
+ * @swagger
+ * /api/payments/momo/return:
+ *   get:
+ *     summary: Momo payment return URL (customer redirect after payment)
+ *     tags: [Payment]
+ *     responses:
+ *       200:
+ *         description: Return processed
+ */
+router.get('/momo/return', paymentController.momoReturn);
+
 module.exports = router;

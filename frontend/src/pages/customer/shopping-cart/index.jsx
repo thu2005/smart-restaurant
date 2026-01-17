@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { io } from "socket.io-client";
+import { toast } from "sonner";
 import { useCart } from "../../../contexts/CartContext";
 import orderService from "../../../services/orderService";
 import authService from "../../../services/authService";
+import paymentService from "../../../services/paymentService";
 import { tableAPI } from "../../../services/tableService";
 import CartItemCard from "./components/CartItemCard";
 import OrderSummary from "./components/OrderSummary";
 import SpecialInstructionsSection from "./components/SpecialInstructionsSection";
 import PaymentMethodSelector from "./components/PaymentMethodSelector";
+import BillPaymentSection from "../order-status-tracking/components/BillPaymentSection";
 import TableVerification from "./components/TableVerification";
 import EmptyCartState from "./components/EmptyCartState";
 import Button from "../../../components/ui/Button";
@@ -24,6 +28,55 @@ const ShoppingCart = () => {
   const [tableNumber] = useState(localStorage.getItem("tableNumber") || "N/A");
   const [tableDetails, setTableDetails] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeOrder, setActiveOrder] = useState(null);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: 'success', // success, error, confirm
+    title: '',
+    message: '',
+    onConfirm: null
+  });
+
+  const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false }));
+
+  const showModal = (type, title, message, onConfirm = null) => {
+    setModalState({
+      isOpen: true,
+      type,
+      title,
+      message,
+      onConfirm
+    });
+  };
+
+  // Fetch active order with bill
+  const fetchActiveOrder = async () => {
+    try {
+      const tableId = localStorage.getItem("tableId");
+      const restaurantId = localStorage.getItem("restaurantId");
+      console.log('Fetching active order for table:', tableId, 'restaurant:', restaurantId);
+      if (tableId && restaurantId) {
+        const response = await orderService.getActiveOrderByTable(tableId, restaurantId);
+        console.log('Active order response:', response);
+        console.log('Response data keys:', Object.keys(response?.data || {}));
+        console.log('Full response.data:', JSON.stringify(response?.data, null, 2));
+        if (response?.data) {
+          if (response.data.bill) {
+            console.log('Active order has bill! Setting activeOrder state');
+            console.log('Bill data:', response.data.bill);
+            setActiveOrder(response.data);
+          } else {
+            console.log('No bill found in active order');
+            console.log('Order status:', response.data.status);
+            console.log('Checking if bill exists elsewhere in response...');
+            setActiveOrder(null);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch active order:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchTableInfo = async () => {
@@ -38,6 +91,43 @@ const ShoppingCart = () => {
       }
     };
     fetchTableInfo();
+    fetchActiveOrder(); // Fetch active order on mount
+  }, []);
+
+  // Setup socket listener for bill creation
+  useEffect(() => {
+    const restaurantId = localStorage.getItem('restaurantId');
+    if (!restaurantId) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const socket = io(socketUrl.replace('/api', ''));
+
+    socket.on("connect", () => {
+      socket.emit("join_restaurant", restaurantId);
+    });
+
+    socket.on("bill_created", ({ orderId, billData }) => {
+      console.log("SOCKET EVENT: bill_created received!");
+      console.log("Order ID:", orderId);
+      console.log("Bill Data:", billData);
+      toast.success(`Your bill is ready! Total: ${billData.total.toLocaleString('vi-VN')}₫`, {
+        description: "You can now proceed with payment.",
+        duration: 5000
+      });
+      console.log("Fetching active order to show bill...");
+      fetchActiveOrder(); // Refresh to show bill
+    });
+
+    socket.on("payment_confirmed", () => {
+      toast.success("Payment received! Thank you!", {
+        duration: 5000
+      });
+      setActiveOrder(null); // Clear bill after payment
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const handleUpdateQuantity = (cartId, newQuantity) => {
@@ -52,35 +142,79 @@ const ShoppingCart = () => {
     setPaymentMethod(method);
   };
 
-  const handleCheckout = async () => {
-    if (!paymentMethod) {
-      alert("Please select a payment method");
-      return;
-    }
-
-    if (cartItems.length === 0) {
-      alert("Your cart is empty");
-      return;
-    }
-
-    // Validate Context (Table/Restaurant)
-    const restaurantId = localStorage.getItem("restaurantId");
-    const tableId = localStorage.getItem("tableId");
-
-    if (!restaurantId || !tableId) {
-       alert("Missing table information. Please scan the QR code again.");
-       return;
-    }
-
-    setIsProcessing(true);
+  const handlePayment = async (paymentMethod) => {
+    if (!activeOrder || !activeOrder.bill) return;
 
     try {
+      setIsProcessing(true);
+      
+      const restaurantId = localStorage.getItem("restaurantId");
+      const bill = activeOrder.bill;
+      
+      // Calculate orderItems subtotal
+      const orderItems = activeOrder.orderItems || activeOrder.items || [];
+      const subtotal = orderItems.reduce((sum, item) => {
+        const itemPrice = parseFloat(item.unitPrice || item.price || item.menuItem?.price || 0);
+        const quantity = parseInt(item.quantity || 1);
+        return sum + (itemPrice * quantity);
+      }, 0);
+      
+      const discount = parseFloat(bill.discount || 0);
+      const tax = (subtotal - discount) * 0.1;
+      const total = subtotal - discount + tax;
+      
+      const response = await paymentService.createPayment({
+        orderId: activeOrder.id,
+        restaurantId: restaurantId,
+        amount: total,
+        method: paymentMethod.toUpperCase(),
+        tip: 0,
+        tax: tax
+      });
+      
+      console.log('Payment response:', response.data);
+      
+      // If MoMo payment, redirect to payment URL
+      if (paymentMethod.toLowerCase() === 'momo' && response.data?.data?.gatewayResponse?.payUrl) {
+        const payUrl = response.data.data.gatewayResponse.payUrl;
+        console.log('Redirecting to MoMo payment:', payUrl);
+        toast.info("Redirecting to MoMo payment...", { duration: 2000 });
+        
+        // Redirect to MoMo payment page
+        setTimeout(() => {
+          window.location.href = payUrl;
+        }, 1000);
+        return;
+      }
+      
+      // For other payment methods (CASH, CARD)
+      toast.success("Payment processed successfully!", {
+        description: "Thank you for your visit!",
+        duration: 5000
+      });
+      
+      setActiveOrder(null); // Clear bill after payment
+      clearCart(); // Clear cart
+    } catch (err) {
+      console.error("Error processing payment:", err);
+      toast.error("Payment failed", {
+        description: err.response?.data?.message || "Please try again or contact staff.",
+        duration: 4000
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const confirmPlaceOrder = async (extraOrderData = {}) => {
+    try {
       const orderData = {
-        restaurantId,
-        tableId,
+        restaurantId: localStorage.getItem("restaurantId"),
+        tableId: localStorage.getItem("tableId"),
         customerName: user?.fullName || localStorage.getItem("customerName") || "Guest",
         customerPhone: user?.phone || localStorage.getItem("customerPhone") || "",
         specialInstructions: specialInstructions,
+        ...extraOrderData
       };
 
       // Use smart placeOrder method that handles create/add logic
@@ -89,17 +223,74 @@ const ShoppingCart = () => {
       if (result.success) {
         // Clear cart after successful order
         clearCart();
-        
-        // Optional: Show toast or modal
-        // alert(`Order placed successfully! Order #${result.data?.orderNumber}`);
-        navigate("/customer/order-status-tracking");
+
+        showModal('success', 'Order Placed!', `Your order #${result.data?.orderNumber} has been placed successfully.`, () => {
+          navigate("/customer/order-status-tracking");
+        });
+
       } else {
-         throw new Error(result.message || "Failed to place order");
+        throw new Error(result.message || "Failed to place order");
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      alert(error.response?.data?.message || error.message || "Failed to place order. Please try again.");
+      showModal('error', 'Order Failed', error.response?.data?.message || error.message || "Failed to place order. Please try again.");
     } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (!paymentMethod) {
+      showModal('error', 'Payment Required', 'Please select a payment method before proceeding.');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      showModal('error', 'Empty Cart', 'Your cart is empty. Please add items from the menu.');
+      return;
+    }
+
+    // Validate Context (Table/Restaurant)
+    const restaurantId = localStorage.getItem("restaurantId");
+    const tableId = localStorage.getItem("tableId");
+
+    if (!restaurantId || !tableId) {
+      showModal('error', 'Missing Information', 'Missing table information. Please scan the QR code again.');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Check for active order first to show confirmation if needed
+      const activeOrder = await orderService.getActiveOrderByTable(tableId, restaurantId);
+
+      if (activeOrder.data) {
+        const status = activeOrder.data.status;
+        const ALLOWED_STATUSES_TO_ADD = ['SERVED'];
+
+        if (!ALLOWED_STATUSES_TO_ADD.includes(status)) {
+          showModal('error', 'Order In Progress', `You have an order in progress (${status}). Please wait for all items to be served before placing a new order.`);
+          setIsProcessing(false);
+          return;
+        }
+
+        // Show Confirmation Modal
+        showModal(
+          'confirm',
+          'Active Session Found',
+          'You have an active dining session. Would you like to add these items to your existing order?',
+          () => confirmPlaceOrder()
+        );
+        return;
+      }
+
+      // No active order, proceed directly
+      await confirmPlaceOrder();
+
+    } catch (error) {
+      console.error("Checkout check error:", error);
+      showModal('error', 'Error', "Failed to check order status. Please try again.");
       setIsProcessing(false);
     }
   };
@@ -182,9 +373,28 @@ const ShoppingCart = () => {
                 onChange={setSpecialInstructions}
               />
 
-              <PaymentMethodSelector
-                onPaymentMethodChange={handlePaymentMethodChange}
-              />
+              {/* Bill Details Section - Appears after waiter creates bill */}
+              {activeOrder?.bill && (
+                <>
+                  <div className="bg-primary/5 border-2 border-primary rounded-lg p-4 mb-4">
+                    <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                      <Icon name="Receipt" size={18} />
+                      Bill Ready - Please review and proceed with payment below
+                    </p>
+                  </div>
+                  <BillPaymentSection 
+                    order={activeOrder} 
+                    onPay={handlePayment}
+                  />
+                </>
+              )}
+
+              {/* Only show payment method selector if no bill yet */}
+              {!activeOrder?.bill && (
+                <PaymentMethodSelector
+                  onPaymentMethodChange={handlePaymentMethodChange}
+                />
+              )}
             </div>
 
             <div className="lg:col-span-1">
@@ -275,6 +485,75 @@ const ShoppingCart = () => {
           </div>
         </main>
       </div>
+
+      {/* Custom Modal */}
+      {modalState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className={`bg-card w-full max-w-sm rounded-xl border-2 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 ${modalState.type === 'error' ? 'border-error/50' :
+              modalState.type === 'success' ? 'border-success/50' : 'border-primary/50'
+            }`}>
+            <div className={`p-4 flex items-center gap-3 ${modalState.type === 'error' ? 'bg-error/10 border-b border-error/20' :
+                modalState.type === 'success' ? 'bg-success/10 border-b border-success/20' : 'bg-primary/10 border-b border-primary/20'
+              }`}>
+              <div className={`p-2 rounded-full ${modalState.type === 'error' ? 'bg-error/20 text-error' :
+                  modalState.type === 'success' ? 'bg-success/20 text-success' : 'bg-primary/20 text-primary'
+                }`}>
+                <Icon name={
+                  modalState.type === 'error' ? 'AlertTriangle' :
+                    modalState.type === 'success' ? 'CheckCircle' : 'Info'
+                } size={24} />
+              </div>
+              <div>
+                <h3 className={`font-bold text-lg leading-tight ${modalState.type === 'error' ? 'text-error' :
+                    modalState.type === 'success' ? 'text-success' : 'text-primary'
+                  }`}>
+                  {modalState.title}
+                </h3>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-foreground text-sm leading-relaxed">
+                {modalState.message}
+              </p>
+            </div>
+
+            <div className="p-4 border-t border-border bg-muted/20 flex gap-3 justify-end">
+              {modalState.type === 'confirm' ? (
+                <>
+                  <button
+                    onClick={closeModal}
+                    className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <Button
+                    onClick={() => {
+                      if (modalState.onConfirm) modalState.onConfirm();
+                      closeModal();
+                    }}
+                    variant="default"
+                    size="sm"
+                  >
+                    Confirm
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={() => {
+                    if (modalState.onConfirm) modalState.onConfirm();
+                    closeModal();
+                  }}
+                  variant={modalState.type === 'error' ? 'destructive' : 'default'}
+                  fullWidth
+                >
+                  {modalState.type === 'success' ? 'Awesome!' : 'Close'}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -104,6 +104,17 @@ const orderService = {
     }
   },
 
+  // Customer requests bill 
+  requestBill: async (orderId) => {
+    try {
+      const response = await api.post(`/orders/${orderId}/request-bill`);
+      return response.data;
+    } catch (error) {
+      console.error("Error requesting bill:", error);
+      throw error;
+    }
+  },
+
   // Get bill details
   getBill: async (orderId) => {
     try {

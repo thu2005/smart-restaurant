@@ -144,7 +144,7 @@ const AdminDashboard = () => {
     const restaurantId = getRestaurantId();
     if (!restaurantId) return;
 
-    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     const newSocket = io(socketUrl);
 
     newSocket.on("connect", () => {

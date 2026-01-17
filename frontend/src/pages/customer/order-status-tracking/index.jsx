@@ -1,97 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { io } from "socket.io-client";
+import { toast } from "sonner";
 import OrderHeader from "./components/OrderHeader";
 import OrderTimeline from "./components/OrderTimeline";
 import OrderItemStatus from "./components/OrderItemStatus";
 import KitchenNotes from "./components/KitchenNotes";
+import BillPaymentSection from "./components/BillPaymentSection";
 import Button from "../../../components/ui/Button";
 import Icon from "../../../components/AppIcon";
+import orderService from "../../../services/orderService";
+import paymentService from "../../../services/paymentService";
 
 const OrderStatusTracking = () => {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-
-  // Mock order data with real-time status
-  const [orderData] = useState({
-    orderNumber: "ORD-1234",
-    tableNumber: 12,
-    timestamp: new Date(Date.now() - 8 * 60 * 1000), // 8 minutes ago
-    totalItems: 4,
-    status: "preparing",
-    estimatedReadyTime: new Date(Date.now() + 7 * 60 * 1000), // 7 minutes from now
-    items: [
-      {
-        id: 1,
-        name: "Grilled Salmon with Herbs",
-        image:
-          "https://img.rocket.new/generatedImages/rocket_gen_img_1017a97cd-1765873722883.png",
-        imageAlt:
-          "Perfectly grilled salmon fillet with fresh herbs and lemon on white ceramic plate",
-        quantity: 2,
-        status: "ready",
-        estimatedTime: new Date(Date.now() - 2 * 60 * 1000),
-        preparedBy: "Chef Maria",
-        modifiers: ["Medium", "No garlic"],
-        specialInstructions: "No garlic please",
-      },
-      {
-        id: 2,
-        name: "Caesar Salad",
-        image: "https://images.unsplash.com/photo-1706781286074-236e1098912b",
-        imageAlt:
-          "Fresh Caesar salad with crispy romaine lettuce and parmesan cheese",
-        quantity: 1,
-        status: "preparing",
-        estimatedTime: new Date(Date.now() + 3 * 60 * 1000),
-        preparedBy: "Chef John",
-        modifiers: ["Dressing on side"],
-        specialInstructions: "",
-      },
-      {
-        id: 3,
-        name: "Margherita Pizza",
-        image: "https://images.unsplash.com/photo-1615192606904-9cee34bf93c4",
-        imageAlt:
-          "Traditional Margherita pizza with fresh mozzarella and basil",
-        quantity: 1,
-        status: "preparing",
-        estimatedTime: new Date(Date.now() + 7 * 60 * 1000),
-        preparedBy: "Chef Marco",
-        modifiers: ["Large", "Thin crust"],
-        specialInstructions: "Extra basil",
-      },
-      {
-        id: 4,
-        name: "Chocolate Lava Cake",
-        image: "https://images.unsplash.com/photo-1608108132333-2d5739d9426b",
-        imageAlt:
-          "Decadent chocolate lava cake with molten center and vanilla ice cream",
-        quantity: 2,
-        status: "received",
-        estimatedTime: new Date(Date.now() + 12 * 60 * 1000),
-        preparedBy: "Pastry Chef Anna",
-        modifiers: ["With ice cream"],
-        specialInstructions: "",
-      },
-    ],
-
-    kitchenNotes: [
-      {
-        id: 1,
-        timestamp: new Date(Date.now() - 5 * 60 * 1000),
-        message: "Salmon dishes ready for pickup",
-        type: "info",
-      },
-      {
-        id: 2,
-        timestamp: new Date(Date.now() - 3 * 60 * 1000),
-        message: "Working on salad and pizza",
-        type: "info",
-      },
-    ],
-  });
+  const [orderData, setOrderData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   // Update current time every second
   useEffect(() => {
@@ -102,20 +31,169 @@ const OrderStatusTracking = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Simulate WebSocket updates (in real app, this would be actual WebSocket)
-  useEffect(() => {
-    const simulateUpdate = setInterval(() => {
-      // In production, this would receive real-time updates from kitchen
-      console.log("Checking for order updates...");
-    }, 5000);
-
-    return () => clearInterval(simulateUpdate);
+  const fetchOrder = useCallback(async () => {
+    try {
+      const response = await orderService.getActiveOrderByTable();
+      if (response && response.data) {
+        setOrderData(transformConstants(response.data));
+        setError(null);
+      } else {
+        setOrderData(null);
+      }
+    } catch (err) {
+      console.error("Failed to fetch order:", err);
+      
+      setOrderData(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // Initialize Socket.IO connection for real-time updates
+  useEffect(() => {
+    const restaurantId = localStorage.getItem('restaurantId');
+
+    if (!restaurantId) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const newSocket = io(socketUrl.replace('/api', ''));
+
+    newSocket.on("connect", () => {
+      newSocket.emit("join_restaurant", restaurantId);
+    });
+
+    newSocket.on("order_status_update", ({ orderId, status }) => {
+      fetchOrder();
+    });
+
+    newSocket.on("bill_created", ({ orderId, billData }) => {
+      console.log("Bill created by waiter:", orderId);
+      // Show success notification
+      toast.success(`Your bill is ready! Total: ${billData.total.toLocaleString('vi-VN')}₫`, {
+        description: "You can now proceed with payment.",
+        duration: 5000
+      });
+      fetchOrder(); // Refresh to show bill details
+    });
+
+    newSocket.on("payment_confirmed", ({ orderId }) => {
+      console.log("Payment confirmed:", orderId);
+      // Show payment success
+      toast.success("Payment received! Thank you for your visit!", {
+        description: "Your order has been completed successfully.",
+        duration: 5000
+      });
+      fetchOrder();
+    });
+
+    newSocket.on("disconnect", () => { });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []); // Empty deps - socket setup once, fetchOrder is stable
+
+  // Initial fetch + Fallback polling
+  useEffect(() => {
+    fetchOrder();
+
+    // Fallback polling every 30 seconds (in case socket doesn't work)
+    const pollInterval = setInterval(fetchOrder, 30000);
+    return () => clearInterval(pollInterval);
+  }, [fetchOrder]);
+
+  const transformConstants = (apiOrder) => {
+    const mapOrderStatus = (status) => {
+      const s = status?.toUpperCase();
+      const statusMap = {
+        'SUBMITTED': 'submitted',
+        'RECEIVED': 'received',
+        'PREPARING': 'preparing',
+        'READY': 'ready',
+        'SERVED': 'served',
+        'PAYMENT_PENDING': 'payment_pending',
+        'COMPLETED': 'completed',
+        'CANCELLED': 'cancelled',
+        'REJECTED': 'rejected'
+      };
+      return statusMap[s] || 'submitted';
+    };
+
+    const mapItemStatus = (status) => {
+      const s = status?.toLowerCase();
+      if (s === 'served') return 'served';
+      if (s === 'completed') return 'completed';
+      if (s === 'ready') return 'ready';
+      if (s === 'cooking') return 'cooking';
+      if (s === 'rejected') return 'rejected';
+      return 'queued';
+    };
+
+    const calculateEstimatedTime = (status, timestamp) => {
+      // Simple heuristic: 15 mins for prep, etc.
+      const baseTime = new Date(timestamp);
+      if (status === 'PREPARING') return new Date(baseTime.getTime() + 20 * 60000);
+      return new Date(baseTime.getTime() + 30 * 60000);
+    };
+
+    return {
+      id: apiOrder.id,
+      orderNumber: apiOrder.orderNumber,
+      tableNumber: apiOrder.table?.tableNumber || "?",
+      timestamp: new Date(apiOrder.createdAt || apiOrder.submittedAt),
+      totalItems: apiOrder.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0,
+      status: mapOrderStatus(apiOrder.status),
+      estimatedReadyTime: calculateEstimatedTime(apiOrder.status, apiOrder.createdAt),
+      items: (apiOrder.orderItems?.map(item => {
+        const menuItem = item.menuItem;
+        const primaryPhoto = menuItem?.photos?.find(p => p.isPrimary) || menuItem?.photos?.[0];
+
+        return {
+          id: item.id,
+          name: menuItem?.name || "Unknown Item",
+          image: menuItem?.image || primaryPhoto?.url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+          imageAlt: menuItem?.description || menuItem?.name,
+          quantity: item.quantity,
+          status: mapItemStatus(item.itemStatus, apiOrder.status),
+          estimatedTime: new Date(Date.now() + 15 * 60000),
+          preparedBy: "Kitchen Staff",
+          modifiers: parseModifiers(item.modifiers),
+          specialInstructions: item.specialInstructions || "",
+        };
+      }) || []).sort((a, b) => {
+        // Sort priority: active items (queued/cooking/ready) first, served/completed last
+        const statusPriority = {
+          'queued': 1,
+          'cooking': 2,
+          'ready': 3,
+          'served': 4,
+          'completed': 5
+        };
+        return (statusPriority[a.status] || 0) - (statusPriority[b.status] || 0);
+      }),
+      kitchenNotes: [] // API doesn't provide this yet
+    };
+  };
+
+  const parseModifiers = (modifiers) => {
+    if (!modifiers) return [];
+    if (Array.isArray(modifiers)) {
+      return modifiers.map(mod => {
+        if (typeof mod === 'string') return mod;
+        if (typeof mod === 'object' && mod.name) {
+          return mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
+        }
+        return '';
+      }).filter(Boolean);
+    }
+    return [];
+  };
 
   const handleNotificationToggle = () => {
     setNotificationsEnabled(!notificationsEnabled);
     if (!notificationsEnabled) {
-      // Request notification permission
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
@@ -126,24 +204,69 @@ const OrderStatusTracking = () => {
     navigate("/customer/menu-browse");
   };
 
+  const handleRequestBill = async () => {
+    if (!orderData) return;
+
+    try {
+      setLoading(true);
+      await orderService.requestBill(orderData.id); // Use requestBill for customers
+      toast.success("Bill requested successfully!", {
+        description: "The waiter will bring your bill shortly.",
+        duration: 4000
+      });
+      fetchOrder(); // Refresh to show PAYMENT_PENDING status
+    } catch (err) {
+      console.error("Error requesting bill:", err);
+      toast.error("Failed to request bill", {
+        description: "Please try again or contact staff.",
+        duration: 4000
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getOverallProgress = () => {
+    if (!orderData) return 0;
     const statusWeights = {
-      received: 0,
+      submitted: 10,
+      received: 25,
       preparing: 50,
-      ready: 100,
-      served: 100,
+      ready: 80,
+      served: 95,
+      payment_pending: 100,
+      completed: 100,
+      cancelled: 0,
+      rejected: 0
     };
-    const totalWeight = orderData?.items?.reduce((sum, item) => {
-      return sum + (statusWeights?.[item?.status] || 0) * item?.quantity;
-    }, 0);
-    const maxWeight = orderData?.items?.reduce(
-      (sum, item) => sum + 100 * item?.quantity,
-      0
-    );
-    return Math.round((totalWeight / maxWeight) * 100);
+    // If order has a global status, use that for simplicity, or average items
+    return statusWeights[orderData.status] || 0;
   };
 
   const overallProgress = getOverallProgress();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!orderData) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto text-center pt-20">
+          <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted">
+            <Icon name="ShoppingBag" size={40} className="text-muted-foreground" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">No Active Order</h1>
+          <p className="text-muted-foreground mb-8">You don't have any active orders at the moment.</p>
+          <Button onClick={handleBackToMenu}>Browse Menu</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -188,6 +311,7 @@ const OrderStatusTracking = () => {
               />
 
               <OrderTimeline
+                orderStatus={orderData?.status}
                 items={orderData?.items}
                 overallProgress={overallProgress}
                 estimatedReadyTime={orderData?.estimatedReadyTime}
@@ -228,10 +352,41 @@ const OrderStatusTracking = () => {
 
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
-                <KitchenNotes
-                  notes={orderData?.kitchenNotes}
-                  currentTime={currentTime}
-                />
+                {/* Request Bill Button */}
+                {orderData?.status === 'served' && (
+                  <div className="bg-card border border-border rounded-lg p-6 shadow-warm">
+                    <h3 className="text-lg font-heading font-semibold text-foreground mb-4">
+                      Ready to Pay?
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Request your bill when you're ready to complete your order.
+                    </p>
+                    <Button
+                      variant="primary"
+                      fullWidth
+                      iconName="FileText"
+                      iconPosition="left"
+                      onClick={handleRequestBill}
+                    >
+                      Request Bill
+                    </Button>
+                  </div>
+                )}
+
+                {/* Bill & Payment Section */}
+                {orderData?.bill && orderData?.status === 'payment_pending' && (
+                  <BillPaymentSection 
+                    order={orderData} 
+                    onPay={handlePayment}
+                  />
+                )}
+
+                {orderData?.kitchenNotes.length > 0 && (
+                  <KitchenNotes
+                    notes={orderData?.kitchenNotes}
+                    currentTime={currentTime}
+                  />
+                )}
 
                 <div className="bg-card border border-border rounded-lg p-6 shadow-warm">
                   <h3 className="text-lg font-heading font-semibold text-foreground mb-4">

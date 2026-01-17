@@ -71,6 +71,25 @@ exports.getOrders = async (req, res, next) => {
     }
 };
 
+exports.getOrderById = async (req, res, next) => {
+    try {
+        const order = await orderService.getOrderById(req.params.id);
+        
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Check authorization - user must be staff of the restaurant or customer who owns the order
+        if (req.user.restaurantId && req.user.restaurantId !== order.restaurantId) {
+            return res.status(403).json({ success: false, message: 'Unauthorized access to this order' });
+        }
+
+        res.status(200).json({ success: true, data: order });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.updateOrderStatus = async (req, res, next) => {
     try {
         const { status, rejectionReason } = req.body;
@@ -98,7 +117,35 @@ exports.updateOrderStatus = async (req, res, next) => {
 
 exports.createBill = async (req, res, next) => {
     try {
-        const bill = await orderService.createBill(req.params.id, req.user.id);
+        const bill = await orderService.createBill(req.params.id, req.user?.id);
+
+        // Emit socket event to notify customer that bill is ready
+        const io = req.app.get('io');
+        if (io && bill.order) {
+            const eventData = {
+                orderId: bill.order.id,
+                orderNumber: bill.order.orderNumber,
+                tableNumber: bill.order.table?.tableNumber,
+                billData: {
+                    subtotal: bill.bill.subtotal,
+                    tax: bill.bill.tax,
+                    total: bill.bill.total
+                }
+            };
+            
+            // Determine if this is from customer request or waiter creating bill
+            // If user is a waiter/staff, emit bill_created, otherwise bill_requested
+            const isWaiterCreated = req.user && (req.user.role === 'WAITER' || req.user.role === 'ADMIN');
+            const eventName = isWaiterCreated ? 'bill_created' : 'bill_requested';
+            
+            console.log(`[SOCKET] Emitting ${eventName}`, {
+                restaurantId: bill.order.restaurantId,
+                ...eventData
+            });
+            
+            io.to(bill.order.restaurantId).emit(eventName, eventData);
+        }
+
         res.status(200).json({ success: true, data: bill });
     } catch (error) {
         if (error.message === 'Order not found') {
@@ -195,18 +242,18 @@ exports.getWaiterOrders = async (req, res, next) => {
 exports.getActiveOrderByTable = async (req, res, next) => {
     try {
         const { tableId, restaurantId } = req.query;
-        
+
         if (!tableId || !restaurantId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'tableId and restaurantId are required' 
+            return res.status(400).json({
+                success: false,
+                message: 'tableId and restaurantId are required'
             });
         }
 
         const order = await orderService.getActiveOrderByTable(tableId, restaurantId);
-        
-        res.status(200).json({ 
-            success: true, 
+
+        res.status(200).json({
+            success: true,
             data: order // null if no active order
         });
     } catch (error) {
@@ -229,9 +276,9 @@ exports.addItemsToOrder = async (req, res, next) => {
         const { items } = req.body; // Array of { menuItemId, quantity, modifiers, specialInstructions }
 
         if (!items || !Array.isArray(items) || items.length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'items array is required and must not be empty' 
+            return res.status(400).json({
+                success: false,
+                message: 'items array is required and must not be empty'
             });
         }
 
