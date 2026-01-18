@@ -1061,6 +1061,11 @@
             "loginRegister": "Login / Register",
             "logout": "Logout"
         },
+        "language": {
+            "title": "Language",
+            "english": "English",
+            "vietnamese": "Vietnamese"
+        },
         "kitchen": {
             "title": "Kitchen Display",
             "live": "Live",
@@ -1117,6 +1122,575 @@
                 "create": "Create Restaurant",
                 "creating": "Creating...",
                 "skip": "Skip for Now"
+            }
+        }
+    },
+    "customer": {
+        "onboarding": {
+            "title": "Smart Restaurant",
+            "subtitle": "Experience the future of dining",
+            "startMeal": "Start your meal",
+            "dineAsGuest": "Dine as Guest",
+            "orJoinUs": "Or join us",
+            "login": "Login",
+            "register": "Register",
+            "terms": "By continuing, you agree to our Terms of Service and Privacy Policy.",
+            "errors": {
+                "scanQR": "Please scan the QR code at your table to start ordering.",
+                "qrRequired": "A valid QR code is required."
+            }
+        },
+        "menu": {
+            "title": "Browse Our Menu",
+            "subtitle": "Discover delicious dishes crafted with fresh ingredients",
+            "search": {
+                "placeholder": "Search menu items...",
+                "noResults": "No items found",
+                "noResultsWithQuery": "We couldn't find any items matching \"{{query}}\". Try adjusting your search or filters.",
+                "noResultsFilters": "No items match your current filters. Try adjusting your selection.",
+                "tryAgain": "Try adjusting your search or filters"
+            },
+            "sort": {
+                "label": "Sort By",
+                "newest": "Newest Items",
+                "priceLowHigh": "Price: Low to High",
+                "priceHighLow": "Price: High to Low",
+                "nameAZ": "Name: A to Z",
+                "mostOrdered": "Most Ordered"
+            },
+            "showingItems": "Showing {{count}} items",
+            "activeFilters": "Active Filters:",
+            "categories": {
+                "all": "All Items",
+                "popular": "Popular"
+            },
+            "filters": {
+                "title": "Filters",
+                "dietary": "Dietary",
+                "price": "Price Range",
+                "availability": "Availability",
+                "sort": "Sort",
+                "sortBy": "Sort By",
+                "specialOptions": "Special Options",
+                "popularItems": "Popular Items Only",
+                "chefRecommended": "Chef Recommended",
+                "availableNow": "Available Now",
+                "reset": "Reset All",
+                "apply": "Apply Filters",
+                "active": "{{count}} filter active",
+                "active_plural": "{{count}} filters active"
+            },
+            "dietary": {
+                "vegetarian": "Vegetarian",
+                "vegan": "Vegan",
+                "glutenFree": "Gluten-Free",
+                "dairyFree": "Dairy-Free",
+                "nutFree": "Nut-Free",
+                "halal": "Halal"
+            },
+            "item": {
+                "addToCart": "Add to Cart",
+                "quickAdd": "Quick Add",
+                "customize": "Customize",
+                "viewDetails": "View Details",
+                "unavailable": "Currently Unavailable",
+                "availableNow": "Available Now",
+                "soldOut": "Sold Out",
+                "lowStock": "Low Stock",
+                "popular": "Popular",
+                "chefChoice": "Chef's Choice",
+                "prepTime": "{{time}} min"
+            },
+            "cart": {
+                "title": "My Order",
+                "subtitle": "Review your order and proceed to checkout",
+                "items": "{{count}} item in cart",
+                "items_plural": "{{count}} items in cart",
+                "yourItems": "Your Items ({{count}})",
+                "viewCart": "View Cart",
+                "addMore": "Add More",
+                "placeOrder": "Place Order",
+                "continueShopping": "Continue Shopping",
+                "billReady": "Bill Ready - Please review and proceed with payment below",
+                "features": {
+                    "tableService": {
+                        "title": "Table Service",
+                        "desc": "Your order will be delivered to your table"
+                    },
+                    "multipleOrders": {
+                        "title": "Multiple Orders",
+                        "desc": "You can place additional orders during your meal"
+                    },
+                    "securePayment": {
+                        "title": "Secure Payment",
+                        "desc": "All transactions are encrypted and secure"
+                    }
+                },
+                "modals": {
+                    "empty": {
+                        "title": "Empty Cart",
+                        "message": "Your cart is empty. Please add items from the menu."
+                    },
+                    "paymentRequired": {
+                        "title": "Payment Required",
+                        "message": "Please select a payment method before proceeding."
+                    },
+                    "missingInfo": {
+                        "title": "Missing Information",
+                        "message": "Missing table information. Please scan the QR code again."
+                    },
+                    "orderInProgress": {
+                        "title": "Order In Progress",
+                        "message": "You have an order in progress ({{status}}). Please wait for all items to be served before placing a new order."
+                    },
+                    "addToCurrent": {
+                        "title": "Add to Current Order",
+                        "message": "Would you like to add these items to your current order?"
+                    },
+                    "success": {
+                        "title": "Order Placed!",
+                        "message": "Your order #{{orderNumber}} has been placed successfully."
+                    },
+                    "failed": {
+                        "title": "Order Failed",
+                        "message": "Failed to place order. Please try again."
+                    }
+                },
+                "summary": {
+                    "title": "Order Summary",
+                    "items": "Items ({{count}})",
+                    "total": "Total",
+                    "estimatedTime": "Estimated Prep Time",
+                    "timeRange": "Your order will be ready in approximately {{min}}-{{max}} minutes"
+                },
+                "emptyState": {
+                    "title": "Your Cart is Empty",
+                    "description": "Looks like you haven't added any items to your cart yet. Browse our delicious menu and start ordering!",
+                    "browseMenu": "Browse Menu",
+                    "quickService": {
+                        "title": "Quick Service",
+                        "desc": "Orders ready in 20-25 minutes"
+                    },
+                    "freshIngredients": {
+                        "title": "Fresh Ingredients",
+                        "desc": "Made with quality ingredients"
+                    },
+                    "securePayment": {
+                        "title": "Secure Payment",
+                        "desc": "Safe and encrypted transactions"
+                    }
+                },
+                "specialInstructions": {
+                    "title": "Special Instructions",
+                    "description": "Add any dietary requirements, allergies, or special requests for the kitchen",
+                    "placeholder": "E.g., No onions, extra spicy, gluten-free preparation...",
+                    "optional": "Optional - Help us serve you better"
+                },
+                "paymentMethod": {
+                    "title": "Payment Method",
+                    "card": "Credit/Debit Card",
+                    "momo": "Momo Wallet",
+                    "cash": "Pay at Counter",
+                    "secure": "Secure",
+                    "fastSecure": "Fast & Secure",
+                    "savedCards": "Saved Cards",
+                    "addNewCard": "Add New Card",
+                    "cardNumber": "Card Number",
+                    "cardholderName": "Cardholder Name",
+                    "expiryDate": "Expiry Date",
+                    "cvv": "CVV",
+                    "saveCard": "Save this card for future orders",
+                    "encrypted": "Your payment information is encrypted and secure. We use Stripe for payment processing."
+                },
+                "tableInfo": {
+                    "title": "Table Information",
+                    "table": "Table {{number}}",
+                    "guests": "Up to {{count}} guests",
+                    "available": "Available",
+                    "occupied": "Occupied",
+                    "note": "Your order will be prepared and delivered directly to this table. Please ensure you stay at Table {{number}} to receive your items promptly."
+                },
+                "item": {
+                    "edit": "(Click to edit)",
+                    "note": "Note:",
+                    "each": "each"
+                }
+            },
+            "empty": {
+                "title": "No menu items found",
+                "description": "Try adjusting your filters or search criteria",
+                "action": "Clear Filters"
+            }
+        },
+        "itemDetail": {
+            "customization": {
+                "title": "Customize Your Order",
+                "required": "Required",
+                "optional": "Optional",
+                "addons": "(Add-ons)",
+                "select": "Select {{count}}",
+                "selectUpTo": "Select up to {{count}}",
+                "requiredError": "Please select a {{name}}",
+                "requiredDescription": "This option is required."
+            },
+            "quantity": "Quantity",
+            "addToCart": "Add to Cart - {{price}}",
+            "updateCart": "Update Cart",
+            "totalItems": "Total ({{count}} item)",
+            "totalItems_plural": "Total ({{count}} items)",
+            "unavailable": "Unavailable",
+            "reviewCount": "({{count}} reviews)",
+            "caloriesValue": "{{value}} cal",
+            "spicy": "Spicy",
+            "allergenInfo": "Allergen Information",
+            "contains": "Contains: {{allergens}}",
+            "loading": "Loading menu item...",
+            "notFound": {
+                "title": "Item Not Found",
+                "message": "The requested menu item could not be found."
+            },
+            "backToMenu": "Back to Menu",
+            "reviews": {
+                "title": "Customer Reviews",
+                "rating": "{{rating}} out of 5",
+                "viewAll": "View All Reviews",
+                "basedOn": "Based on {{count}} reviews"
+            },
+            "relatedItems": {
+                "title": "You May Also Like",
+                "viewAll": "View All",
+                "add": "Add",
+                "new": "New"
+            },
+            "nutritionalInfo": "Nutritional Information & Ingredients",
+            "nutritionFacts": "Nutrition Facts",
+            "ingredients": "Ingredients",
+            "nutrition": {
+                "calories": "Calories",
+                "protein": "Protein",
+                "carbs": "Carbs",
+                "fat": "Fat",
+                "fiber": "Fiber",
+                "sodium": "Sodium",
+                "sugar": "Sugar",
+                "cholesterol": "Cholesterol"
+            },
+            "specialInstructions": {
+                "title": "Special Instructions",
+                "placeholder": "e.g., No onions, extra sauce, well done...",
+                "description": "Let us know if you have any special requests for this item"
+            },
+            "gallery": {
+                "previous": "Previous image",
+                "next": "Next image",
+                "viewImage": "View image {{index}}"
+            }
+        },
+        "cart": {
+            "title": "Your Cart",
+            "subtitle": "Review your items and place your order",
+            "empty": {
+                "title": "Your cart is empty",
+                "description": "Add items from the menu to get started",
+                "action": "Browse Menu"
+            },
+            "item": {
+                "modifiers": "Customizations",
+                "instructions": "Special Instructions",
+                "edit": "Edit",
+                "remove": "Remove"
+            },
+            "orderSummary": {
+                "title": "Order Summary",
+                "subtotal": "Subtotal",
+                "tax": "Tax",
+                "discount": "Discount",
+                "total": "Total"
+            },
+            "yourItems": "Your Items ({{count}})",
+            "addMore": "Add More Items",
+            "table": {
+                "title": "Table Information",
+                "number": "Table {{number}}",
+                "verify": "Verify Table"
+            },
+            "tableInfo": {
+                "title": "Table Information",
+                "table": "Table {{number}}",
+                "guests": "{{count}} Guests",
+                "available": "Available",
+                "occupied": "Occupied",
+                "note": "You are ordering for {{number}}"
+            },
+            "summary": {
+                "title": "Order Summary",
+                "items": "{{count}} items",
+                "total": "Total",
+                "estimatedTime": "Estimated Prep Time",
+                "timeRange": "{{min}}-{{max}} minutes"
+            },
+            "specialInstructions": {
+                "title": "Order Notes (Optional)",
+                "placeholder": "Add any special requests for your order"
+            },
+            "payment": {
+                "title": "Payment Method",
+                "selectMethod": "Select payment method",
+                "cash": "Cash",
+                "card": "Credit/Debit Card",
+                "momo": "MoMo Wallet",
+                "payNow": "Pay Now",
+                "payLater": "Pay Later"
+            },
+            "placeOrder": "Place Order",
+            "checkout": "Proceed to Checkout",
+            "continueShopping": "Continue Shopping",
+            "viewCart": "View Cart",
+            "billReady": "Your bill is ready for payment",
+            "features": {
+                "tableService": {
+                    "title": "Table Service",
+                    "desc": "Order delivery directly to your table"
+                },
+                "multipleOrders": {
+                    "title": "Multiple Orders",
+                    "desc": "Add items throughout your meal"
+                },
+                "securePayment": {
+                    "title": "Secure Payment",
+                    "desc": "Pay safely with multiple options"
+                }
+            }
+        },
+        "orderStatus": {
+            "title": "Order Status",
+            "orderNumber": "Order #{{number}}",
+            "table": "Table {{number}}",
+            "placedAt": "Placed at {{time}}",
+            "status": {
+                "pending": "Order Received",
+                "accepted": "Accepted",
+                "preparing": "Being Prepared",
+                "ready": "Ready to Serve",
+                "served": "Served",
+                "completed": "Completed"
+            },
+            "timeline": {
+                "title": "Order Timeline",
+                "pending": "Order placed",
+                "accepted": "Kitchen confirmed",
+                "preparing": "Food is being prepared",
+                "ready": "Order is ready",
+                "served": "Order served at table"
+            },
+            "items": {
+                "title": "Order Items",
+                "status": {
+                    "queued": "Queued",
+                    "cooking": "Cooking",
+                    "ready": "Ready"
+                }
+            },
+            "kitchenNotes": {
+                "title": "Kitchen Notes",
+                "estimatedTime": "Estimated time: {{time}} min"
+            },
+            "bill": {
+                "title": "Bill Summary",
+                "requestBill": "Request Bill",
+                "billRequested": "Bill Requested",
+                "payNow": "Pay Now",
+                "viewDetails": "View Details"
+            },
+            "actions": {
+                "backToMenu": "Back to Menu",
+                "orderMore": "Order More Items",
+                "notifications": "Enable Notifications"
+            },
+            "progress": "{{percent}}% Complete"
+        },
+        "orderHistory": {
+            "title": "Order History",
+            "empty": {
+                "title": "No orders yet",
+                "description": "Your past orders will appear here",
+                "action": "Start Ordering"
+            },
+            "filters": {
+                "all": "All Orders",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "order": {
+                "date": "{{date}}",
+                "items": "{{count}} item",
+                "items_plural": "{{count}} items",
+                "total": "Total: {{amount}}",
+                "reorder": "Reorder",
+                "viewDetails": "View Details"
+            }
+        },
+        "profile": {
+            "title": "Profile",
+            "personalInfo": {
+                "title": "Personal Information",
+                "name": "Full Name",
+                "email": "Email",
+                "phone": "Phone Number",
+                "save": "Save Changes"
+            },
+            "preferences": {
+                "title": "Preferences",
+                "language": "Language",
+                "notifications": "Notifications",
+                "dietary": "Dietary Restrictions"
+            },
+            "orderHistory": {
+                "title": "Order History",
+                "viewAll": "View All Orders",
+                "empty": "You haven't placed any orders yet.",
+                "signInRequired": {
+                    "title": "Sign In Required",
+                    "message": "Please sign in to view your order history."
+                },
+                "itemCount": "{{count}} items",
+                "total": "Total",
+                "reorder": "Reorder",
+                "viewReceipt": "View Receipt"
+            },
+            "profile": {
+                "title": "Profile",
+                "guest": "Guest Customer",
+                "role": "Member",
+                "edit": "Edit Profile",
+                "tabs": {
+                    "history": "Order History",
+                    "settings": "Settings"
+                },
+                "settings": {
+                    "comingSoon": "Account settings are coming soon!"
+                },
+                "items": "Items: "
+            },
+            "logout": "Logout"
+        },
+        "orderTracking": {
+            "title": "Order Status",
+            "subtitle": "Track your order preparation in real-time",
+            "noOrder": {
+                "title": "No Active Order",
+                "message": "You don't have any active orders at the moment.",
+                "browseMenu": "Browse Menu"
+            },
+            "backToMenu": "Back to Menu",
+            "itemStatusTitle": "Item Status",
+            "notifications": {
+                "on": "Notifications On",
+                "off": "Notifications Off",
+                "billReady": "Your bill is ready! Total: {{total}}",
+                "proceedPayment": "You can now proceed with payment.",
+                "paymentSuccess": "Payment received! Thank you for your visit!",
+                "orderCompleted": "Your order has been completed successfully.",
+                "billRequested": "Bill requested successfully!",
+                "billRequestDesc": "The waiter will bring your bill shortly.",
+                "billRequestFail": "Failed to request bill",
+                "contactStaff": "Please try again or contact staff."
+            },
+            "status": {
+                "submitted": "Order Submitted",
+                "received": "Order Received",
+                "preparing": "Preparing",
+                "ready": "Ready to Serve",
+                "served": "Served",
+                "payment_pending": "Processing Bill",
+                "completed": "Paid & Completed",
+                "cancelled": "Cancelled",
+                "rejected": "Rejected",
+                "unknown": "Status Pending"
+            },
+            "timeline": {
+                "title": "Order Progress",
+                "estimatedTime": "Estimated ready time",
+                "overallProgress": "Overall Progress",
+                "timeRemaining": {
+                    "enjoy": "Enjoy your meal!",
+                    "ready": "Ready now"
+                },
+                "steps": {
+                    "submitted": "Order Submitted",
+                    "accepted": "Order Accepted",
+                    "preparing": "Preparing",
+                    "ready": "Ready to Serve",
+                    "served": "Served"
+                }
+            },
+            "header": {
+                "table": "Table {{number}}",
+                "items": "{{count}} items",
+                "elapsed": "{{time}} elapsed"
+            },
+            "itemStatus": {
+                "queued": "In Queue",
+                "cooking": "Cooking",
+                "ready": "Ready",
+                "served": "Served",
+                "completed": "Completed",
+                "rejected": "Rejected",
+                "unknown": "Unknown",
+                "preparedBy": "Prepared by: {{name}}",
+                "readyNow": "Ready now!",
+                "inProgress": "In progress"
+            },
+            "actions": {
+                "readyToPay": "Ready to Pay?",
+                "requestBill": "Request Bill",
+                "requestBillDesc": "Request your bill when you're ready to complete your order.",
+                "needHelp": "Need Help?",
+                "contactStaff": "Contact Staff",
+                "helpDesc": "If you have questions about your order, our staff is here to assist you."
+            },
+            "info": {
+                "realTimeUpdates": "Real-time Updates",
+                "updatesDesc": "This page automatically updates as your order progresses through preparation."
+            },
+            "bill": {
+                "restaurantName": "Smart Restaurant",
+                "tableDate": "Table {{table}} | {{date}}",
+                "orderNumber": "Order #{{number}}",
+                "subtotal": "Subtotal",
+                "tax": "Tax (10%)",
+                "discount": "Discount",
+                "total": "Total",
+                "payButton": "Pay {{amount}}",
+                "continueMomo": "Continue to MoMo",
+                "processing": "Processing Payment...",
+                "securePayment": "Secure payment processing by Smart Restaurant"
+            }
+        },
+        "payment": {
+            "result": {
+                "success": {
+                    "title": "Payment Successful!",
+                    "message": "Your payment has been processed",
+                    "orderNumber": "Order #{{number}}"
+                },
+                "failed": {
+                    "title": "Payment Failed",
+                    "message": "Your payment could not be processed",
+                    "tryAgain": "Try Again"
+                },
+                "pending": {
+                    "title": "Payment Pending",
+                    "helmet": "Processing Payment - Smart Restaurant",
+                    "message": "Your payment is being processed"
+                },
+                "actions": {
+                    "viewOrder": "View Order Status",
+                    "backToMenu": "Back to Menu",
+                    "backToCart": "Back to Cart"
+                },
+                "orderId": "Order ID",
+                "footer": "Need help? Contact our staff for assistance."
             }
         }
     }

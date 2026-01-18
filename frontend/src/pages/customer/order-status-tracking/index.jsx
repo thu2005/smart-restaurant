@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
 import OrderHeader from "./components/OrderHeader";
@@ -14,6 +15,7 @@ import orderService from "../../../services/orderService";
 import paymentService from "../../../services/paymentService";
 
 const OrderStatusTracking = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -42,7 +44,7 @@ const OrderStatusTracking = () => {
       }
     } catch (err) {
       console.error("Failed to fetch order:", err);
-      
+
       setOrderData(null);
     } finally {
       setLoading(false);
@@ -69,8 +71,8 @@ const OrderStatusTracking = () => {
     newSocket.on("bill_created", ({ orderId, billData }) => {
       console.log("Bill created by waiter:", orderId);
       // Show success notification
-      toast.success(`Your bill is ready! Total: ${billData.total.toLocaleString('vi-VN')}₫`, {
-        description: "You can now proceed with payment.",
+      toast.success(t("customer.orderTracking.notifications.billReady", { total: billData.total.toLocaleString('vi-VN') + '₫' }), {
+        description: t("customer.orderTracking.notifications.proceedPayment"),
         duration: 5000
       });
       fetchOrder(); // Refresh to show bill details
@@ -79,8 +81,8 @@ const OrderStatusTracking = () => {
     newSocket.on("payment_confirmed", ({ orderId }) => {
       console.log("Payment confirmed:", orderId);
       // Show payment success
-      toast.success("Payment received! Thank you for your visit!", {
-        description: "Your order has been completed successfully.",
+      toast.success(t("customer.orderTracking.notifications.paymentSuccess"), {
+        description: t("customer.orderTracking.notifications.orderCompleted"),
         duration: 5000
       });
       fetchOrder();
@@ -210,15 +212,15 @@ const OrderStatusTracking = () => {
     try {
       setLoading(true);
       await orderService.requestBill(orderData.id); // Use requestBill for customers
-      toast.success("Bill requested successfully!", {
-        description: "The waiter will bring your bill shortly.",
+      toast.success(t("customer.orderTracking.notifications.billRequested"), {
+        description: t("customer.orderTracking.notifications.billRequestDesc"),
         duration: 4000
       });
       fetchOrder(); // Refresh to show PAYMENT_PENDING status
     } catch (err) {
       console.error("Error requesting bill:", err);
-      toast.error("Failed to request bill", {
-        description: "Please try again or contact staff.",
+      toast.error(t("customer.orderTracking.notifications.billRequestFail"), {
+        description: t("customer.orderTracking.notifications.contactStaff"),
         duration: 4000
       });
     } finally {
@@ -229,10 +231,10 @@ const OrderStatusTracking = () => {
     console.log('Payment completed with method:', method);
     // Refresh order to show updated status
     await fetchOrder();
-    
+
     // Show success message
-    toast.success("Payment successful!", {
-      description: "Your order has been completed.",
+    toast.success(t("customer.orderTracking.notifications.paymentSuccess"), {
+      description: t("customer.orderTracking.notifications.orderCompleted"),
       duration: 4000
     });
   };
@@ -270,9 +272,9 @@ const OrderStatusTracking = () => {
           <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted">
             <Icon name="ShoppingBag" size={40} className="text-muted-foreground" />
           </div>
-          <h1 className="text-2xl font-bold mb-4">No Active Order</h1>
-          <p className="text-muted-foreground mb-8">You don't have any active orders at the moment.</p>
-          <Button onClick={handleBackToMenu}>Browse Menu</Button>
+          <h1 className="text-2xl font-bold mb-4">{t("customer.orderTracking.noOrder.title")}</h1>
+          <p className="text-muted-foreground mb-8">{t("customer.orderTracking.noOrder.message")}</p>
+          <Button onClick={handleBackToMenu}>{t("customer.orderTracking.noOrder.browseMenu")}</Button>
         </div>
       </div>
     );
@@ -282,11 +284,11 @@ const OrderStatusTracking = () => {
     <>
       <Helmet>
         <title>
-          Order Status - {orderData?.orderNumber} - Smart Restaurant
+          {t("customer.orderTracking.title")} - {orderData?.orderNumber} - Smart Restaurant
         </title>
         <meta
           name="description"
-          content="Track your order preparation progress in real-time"
+          content={t("customer.orderTracking.subtitle")}
         />
       </Helmet>
       <div className="min-h-screen bg-background">
@@ -299,13 +301,13 @@ const OrderStatusTracking = () => {
               onClick={handleBackToMenu}
               className="mb-4"
             >
-              Back to Menu
+              {t("customer.orderTracking.backToMenu")}
             </Button>
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-              Order Status
+              {t("customer.orderTracking.title")}
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              Track your order preparation in real-time
+              {t("customer.orderTracking.subtitle")}
             </p>
           </div>
 
@@ -331,7 +333,7 @@ const OrderStatusTracking = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl md:text-2xl font-heading font-bold text-foreground">
-                    Item Status ({orderData?.items?.length})
+                    {t("customer.orderTracking.itemStatusTitle")} ({orderData?.items?.length})
                   </h2>
                   <div className="flex items-center gap-2">
                     <Icon
@@ -345,8 +347,8 @@ const OrderStatusTracking = () => {
                       className="text-sm text-muted-foreground hover:text-foreground transition-smooth"
                     >
                       {notificationsEnabled
-                        ? "Notifications On"
-                        : "Notifications Off"}
+                        ? t("customer.orderTracking.notifications.on")
+                        : t("customer.orderTracking.notifications.off")}
                     </button>
                   </div>
                 </div>
@@ -366,10 +368,10 @@ const OrderStatusTracking = () => {
                 {orderData?.status === 'served' && (
                   <div className="bg-card border border-border rounded-lg p-6 shadow-warm">
                     <h3 className="text-lg font-heading font-semibold text-foreground mb-4">
-                      Ready to Pay?
+                      {t("customer.orderTracking.actions.readyToPay")}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Request your bill when you're ready to complete your order.
+                      {t("customer.orderTracking.actions.requestBillDesc")}
                     </p>
                     <Button
                       variant="primary"
@@ -378,15 +380,15 @@ const OrderStatusTracking = () => {
                       iconPosition="left"
                       onClick={handleRequestBill}
                     >
-                      Request Bill
+                      {t("customer.orderTracking.actions.requestBill")}
                     </Button>
                   </div>
                 )}
 
                 {/* Bill & Payment Section */}
                 {orderData?.bill && orderData?.status === 'payment_pending' && (
-                  <BillPaymentSection 
-                    order={orderData} 
+                  <BillPaymentSection
+                    order={orderData}
                     onPay={handlePayment}
                   />
                 )}
@@ -400,11 +402,10 @@ const OrderStatusTracking = () => {
 
                 <div className="bg-card border border-border rounded-lg p-6 shadow-warm">
                   <h3 className="text-lg font-heading font-semibold text-foreground mb-4">
-                    Need Help?
+                    {t("customer.orderTracking.actions.needHelp")}
                   </h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    If you have questions about your order, our staff is here to
-                    assist you.
+                    {t("customer.orderTracking.actions.helpDesc")}
                   </p>
                   <Button
                     variant="outline"
@@ -412,7 +413,7 @@ const OrderStatusTracking = () => {
                     iconName="MessageCircle"
                     iconPosition="left"
                   >
-                    Contact Staff
+                    {t("customer.orderTracking.actions.contactStaff")}
                   </Button>
                 </div>
 
@@ -426,11 +427,10 @@ const OrderStatusTracking = () => {
                     />
                     <div>
                       <h4 className="text-sm font-medium text-success mb-1">
-                        Real-time Updates
+                        {t("customer.orderTracking.info.realTimeUpdates")}
                       </h4>
                       <p className="text-xs text-success/80">
-                        This page automatically updates as your order progresses
-                        through preparation.
+                        {t("customer.orderTracking.info.updatesDesc")}
                       </p>
                     </div>
                   </div>

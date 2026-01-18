@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const QREntry = () => {
+  const { t } = useTranslation();
   const { restaurantId, tableId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ const QREntry = () => {
         navigate("/admin/menu/items", { replace: true });
       } else {
         // Not logged in - show onboarding (force showing it by redirecting to a dedicated route)
-        const onboardingUrl = tableNumber 
+        const onboardingUrl = tableNumber
           ? `/customer-onboarding?restaurantId=${restaurantId}&tableId=${tableId}&tableNumber=${tableNumber}`
           : `/customer-onboarding?restaurantId=${restaurantId}&tableId=${tableId}`;
         navigate(onboardingUrl, { replace: true });
@@ -46,8 +48,8 @@ const QREntry = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-50">
       <div className="text-center">
         <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600 mx-auto mb-4"></div>
-        <p className="text-gray-700 text-lg font-medium">Processing QR Code...</p>
-        <p className="text-gray-500 text-sm mt-2">Please wait a moment</p>
+        <p className="text-gray-700 text-lg font-medium">{t("customer.qrEntry.processing")}</p>
+        <p className="text-gray-500 text-sm mt-2">{t("customer.qrEntry.wait")}</p>
       </div>
     </div>
   );

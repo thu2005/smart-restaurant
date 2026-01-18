@@ -1,7 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const ItemInfo = ({ item }) => {
+  const { t } = useTranslation();
+
   const getAvailabilityColor = (status) => {
     switch (status) {
       case "available":
@@ -18,13 +21,13 @@ const ItemInfo = ({ item }) => {
   const getAvailabilityText = (status) => {
     switch (status) {
       case "available":
-        return "Available";
+        return t("customer.menu.item.availableNow", "Available");
       case "low-stock":
-        return "Low Stock";
+        return t("customer.menu.item.lowStock", "Low Stock");
       case "sold-out":
-        return "Sold Out";
+        return t("customer.menu.item.soldOut", "Sold Out");
       default:
-        return "Unknown";
+        return t("customer.itemDetail.availability.unknown", "Unknown");
     }
   };
 
@@ -46,7 +49,7 @@ const ItemInfo = ({ item }) => {
                 {item?.rating || '0.0'}
               </span>
               <span className="text-sm md:text-base text-muted-foreground">
-                ({item?.reviewCount || 0} reviews)
+                {t("customer.itemDetail.reviewCount", { count: item?.reviewCount || 0 })}
               </span>
             </div>
             <span
@@ -72,25 +75,25 @@ const ItemInfo = ({ item }) => {
           <div className="flex items-center gap-2">
             <Icon name="Clock" size={18} className="text-[var(--color-muted-foreground)]" />
             <span className="text-sm md:text-base text-muted-foreground">
-              {item?.prep_time_minutes || item?.prepTime} mins
+              {t("customer.menu.item.prepTime", { time: item?.prep_time_minutes || item?.prepTime })}
             </span>
           </div>
         ) : null}
-        
+
         {item?.calories > 0 && (
           <div className="flex items-center gap-2">
             <Icon name="Flame" size={18} className="text-[var(--color-muted-foreground)]" />
             <span className="text-sm md:text-base text-muted-foreground">
-              {item?.calories} cal
+              {t("customer.itemDetail.caloriesValue", { value: item?.calories })}
             </span>
           </div>
         )}
-        
+
         {item?.isSpicy && (
           <div className="flex items-center gap-2">
             <Icon name="Flame" size={18} className="text-error" />
             <span className="text-sm md:text-base text-error font-medium">
-              Spicy
+              {t("customer.itemDetail.spicy")}
             </span>
           </div>
         )}
@@ -106,10 +109,10 @@ const ItemInfo = ({ item }) => {
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm md:text-base font-medium text-warning mb-1">
-                Allergen Information
+                {t("customer.itemDetail.allergenInfo")}
               </p>
               <p className="text-sm md:text-base text-foreground">
-                Contains: {item?.allergens?.join(", ")}
+                {t("customer.itemDetail.contains", { allergens: item?.allergens?.join(", ") })}
               </p>
             </div>
           </div>

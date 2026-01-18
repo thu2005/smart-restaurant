@@ -1134,6 +1134,11 @@
             "loginRegister": "Đăng nhập / Đăng ký",
             "logout": "Đăng xuất"
         },
+        "language": {
+            "title": "Ngôn ngữ",
+            "english": "English",
+            "vietnamese": "Tiếng Việt"
+        },
         "kitchen": {
             "title": "Màn hình bếp",
             "live": "Trực tiếp",
@@ -1200,6 +1205,575 @@
             "create": "Tạo nhà hàng",
             "creating": "Đang tạo...",
             "skip": "Bỏ qua lúc này"
+        }
+    },
+    "customer": {
+        "onboarding": {
+            "title": "Nhà hàng Thông minh",
+            "subtitle": "Trải nghiệm tương lai của ẩm thực",
+            "startMeal": "Bắt đầu bữa ăn",
+            "dineAsGuest": "Dùng bữa với tư cách Khách",
+            "orJoinUs": "Hoặc tham gia cùng chúng tôi",
+            "login": "Đăng nhập",
+            "register": "Đăng ký",
+            "terms": "Bằng cách tiếp tục, bạn đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư của chúng tôi.",
+            "errors": {
+                "scanQR": "Vui lòng quét mã QR tại bàn của bạn để bắt đầu gọi món.",
+                "qrRequired": "Cần có mã QR hợp lệ."
+            }
+        },
+        "menu": {
+            "title": "Khám phá Thực đơn",
+            "subtitle": "Khám phá các món ăn ngon được chế biến từ nguyên liệu tươi sống",
+            "search": {
+                "placeholder": "Tìm món ăn...",
+                "noResults": "Không tìm thấy món ăn nào",
+                "noResultsWithQuery": "Không tìm thấy món nào phù hợp với \"{{query}}\". Thử điều chỉnh tìm kiếm hoặc bộ lọc.",
+                "noResultsFilters": "Không có món nào phù hợp với bộ lọc hiện tại. Thử điều chỉnh lựa chọn của bạn.",
+                "tryAgain": "Thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn"
+            },
+            "sort": {
+                "label": "Sắp xếp theo",
+                "newest": "Món mới nhất",
+                "priceLowHigh": "Giá: Thấp đến Cao",
+                "priceHighLow": "Giá: Cao đến Thấp",
+                "nameAZ": "Tên: A đến Z",
+                "mostOrdered": "Được đặt nhiều nhất"
+            },
+            "showingItems": "Hiển thị {{count}} món",
+            "activeFilters": "Bộ lọc đang dùng:",
+            "categories": {
+                "all": "Tất cả món",
+                "popular": "Phổ biến"
+            },
+            "filters": {
+                "title": "Bộ lọc",
+                "dietary": "Chế độ ăn",
+                "price": "Khoảng giá",
+                "availability": "Tình trạng",
+                "sort": "Sắp xếp",
+                "sortBy": "Sắp xếp theo",
+                "specialOptions": "Tùy chọn đặc biệt",
+                "popularItems": "Chỉ món phổ biến",
+                "chefRecommended": "Đầu bếp khuyên dùng",
+                "availableNow": "Có sẵn ngay",
+                "reset": "Đặt lại tất cả",
+                "apply": "Áp dụng bộ lọc",
+                "active": "{{count}} bộ lọc đang áp dụng",
+                "active_plural": "{{count}} bộ lọc đang áp dụng"
+            },
+            "dietary": {
+                "vegetarian": "Chay",
+                "vegan": "Thuần chay",
+                "glutenFree": "Không Gluten",
+                "dairyFree": "Không sữa",
+                "nutFree": "Không hạt",
+                "halal": "Halal"
+            },
+            "item": {
+                "addToCart": "Thêm vào giỏ",
+                "quickAdd": "Thêm nhanh",
+                "customize": "Tùy chỉnh",
+                "viewDetails": "Xem chi tiết",
+                "unavailable": "Hiện không có sẵn",
+                "availableNow": "Có sẵn",
+                "soldOut": "Hết hàng",
+                "lowStock": "Sắp hết",
+                "popular": "Phổ biến",
+                "chefChoice": "Gợi ý của bếp",
+                "prepTime": "{{time}} phút"
+            },
+            "cart": {
+                "title": "Đơn hàng của bạn",
+                "subtitle": "Xem lại đơn hàng và tiến hành thanh toán",
+                "items": "{{count}} món trong giỏ",
+                "items_plural": "{{count}} món trong giỏ",
+                "yourItems": "Món của bạn ({{count}})",
+                "viewCart": "Xem giỏ hàng",
+                "addMore": "Thêm món",
+                "placeOrder": "Đặt hàng",
+                "continueShopping": "Tiếp tục mua sắm",
+                "billReady": "Hóa đơn đã sẵn sàng - Vui lòng kiểm tra và thanh toán bên dưới",
+                "features": {
+                    "tableService": {
+                        "title": "Phục vụ tại bàn",
+                        "desc": "Đơn hàng sẽ được mang đến bàn của bạn"
+                    },
+                    "multipleOrders": {
+                        "title": "Đặt nhiều lần",
+                        "desc": "Bạn có thể đặt thêm món trong bữa ăn"
+                    },
+                    "securePayment": {
+                        "title": "Thanh toán an toàn",
+                        "desc": "Mọi giao dịch đều được mã hóa và bảo mật"
+                    }
+                },
+                "modals": {
+                    "empty": {
+                        "title": "Giỏ hàng trống",
+                        "message": "Giỏ hàng của bạn đang trống. Vui lòng thêm món từ thực đơn."
+                    },
+                    "paymentRequired": {
+                        "title": "Yêu cầu thanh toán",
+                        "message": "Vui lòng chọn phương thức thanh toán trước khi tiếp tục."
+                    },
+                    "missingInfo": {
+                        "title": "Thiếu thông tin",
+                        "message": "Thiếu thông tin bàn. Vui lòng quét lại mã QR."
+                    },
+                    "orderInProgress": {
+                        "title": "Đơn hàng đang xử lý",
+                        "message": "Bạn đang có đơn hàng đang xử lý ({{status}}). Vui lòng đợi món được phục vụ hết trước khi đặt đơn mới."
+                    },
+                    "addToCurrent": {
+                        "title": "Thêm vào đơn hiện tại",
+                        "message": "Bạn có muốn thêm các món này vào đơn hàng hiện tại không?"
+                    },
+                    "success": {
+                        "title": "Đặt hàng thành công!",
+                        "message": "Đơn hàng #{{orderNumber}} của bạn đã được đặt thành công."
+                    },
+                    "failed": {
+                        "title": "Đặt hàng thất bại",
+                        "message": "Không thể đặt hàng. Vui lòng thử lại."
+                    }
+                },
+                "summary": {
+                    "title": "Tóm tắt đơn hàng",
+                    "items": "Số lượng ({{count}})",
+                    "total": "Tổng cộng",
+                    "estimatedTime": "Thời gian chuẩn bị dự kiến",
+                    "timeRange": "Đơn hàng sẽ sẵn sàng trong khoảng {{min}}-{{max}} phút"
+                },
+                "emptyState": {
+                    "title": "Giỏ hàng của bạn đang trống",
+                    "description": "Có vẻ như bạn chưa thêm món nào vào giỏ. Hãy xem thực đơn và bắt đầu đặt món!",
+                    "browseMenu": "Xem thực đơn",
+                    "quickService": {
+                        "title": "Phục vụ nhanh",
+                        "desc": "Đơn hàng sẵn sàng trong 20-25 phút"
+                    },
+                    "freshIngredients": {
+                        "title": "Nguyên liệu tươi",
+                        "desc": "Được chế biến từ nguyên liệu chất lượng"
+                    },
+                    "securePayment": {
+                        "title": "Thanh toán an toàn",
+                        "desc": "Giao dịch an toàn và bảo mật"
+                    }
+                },
+                "specialInstructions": {
+                    "title": "Hướng dẫn đặc biệt",
+                    "description": "Thêm yêu cầu về chế độ ăn uống, dị ứng hoặc yêu cầu đặc biệt cho nhà bếp",
+                    "placeholder": "Ví dụ: Không hành, thêm cay, không gluten...",
+                    "optional": "Tùy chọn - Giúp chúng tôi phục vụ bạn tốt hơn"
+                },
+                "paymentMethod": {
+                    "title": "Phương thức thanh toán",
+                    "card": "Thẻ tín dụng/Ghi nợ",
+                    "momo": "Ví MoMo",
+                    "cash": "Thanh toán tại quầy",
+                    "secure": "Bảo mật",
+                    "fastSecure": "Nhanh & Bảo mật",
+                    "savedCards": "Thẻ đã lưu",
+                    "addNewCard": "Thêm thẻ mới",
+                    "cardNumber": "Số thẻ",
+                    "cardholderName": "Tên chủ thẻ",
+                    "expiryDate": "Ngày hết hạn",
+                    "cvv": "CVV",
+                    "saveCard": "Lưu thẻ này cho lần sau",
+                    "encrypted": "Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi sử dụng Stripe để xử lý thanh toán."
+                },
+                "tableInfo": {
+                    "title": "Thông tin bàn",
+                    "table": "Bàn {{number}}",
+                    "guests": "Tối đa {{count}} khách",
+                    "available": "Có sẵn",
+                    "occupied": "Đang phục vụ",
+                    "note": "Đơn hàng sẽ được chuẩn bị và mang đến trực tiếp bàn này. Vui lòng ngồi tại Bàn {{number}} để nhận món nhanh nhất."
+                },
+                "item": {
+                    "edit": "(Nhấn để sửa)",
+                    "note": "Ghi chú:",
+                    "each": "mỗi món"
+                }
+            },
+            "empty": {
+                "title": "Không tìm thấy món ăn nào",
+                "description": "Thử điều chỉnh bộ lọc hoặc tiêu chí tìm kiếm của bạn",
+                "action": "Xóa bộ lọc"
+            }
+        },
+        "itemDetail": {
+            "customization": {
+                "title": "Tùy chỉnh món ăn",
+                "required": "Bắt buộc",
+                "optional": "Tùy chọn",
+                "addons": "(Món thêm)",
+                "select": "Chọn {{count}}",
+                "selectUpTo": "Chọn tối đa {{count}}",
+                "requiredError": "Vui lòng chọn {{name}}",
+                "requiredDescription": "Tùy chọn này là bắt buộc."
+            },
+            "quantity": "Số lượng",
+            "addToCart": "Thêm vào giỏ - {{price}}",
+            "updateCart": "Cập nhật giỏ hàng",
+            "totalItems": "Tổng ({{count}} món)",
+            "totalItems_plural": "Tổng ({{count}} món)",
+            "unavailable": "Không có sẵn",
+            "reviewCount": "({{count}} đánh giá)",
+            "caloriesValue": "{{value}} cal",
+            "spicy": "Cay",
+            "allergenInfo": "Thông tin dị ứng",
+            "contains": "Chứa: {{allergens}}",
+            "loading": "Đang tải món ăn...",
+            "notFound": {
+                "title": "Không tìm thấy món",
+                "message": "Không tìm thấy món ăn bạn yêu cầu."
+            },
+            "backToMenu": "Quay lại thực đơn",
+            "reviews": {
+                "title": "Đánh giá của khách hàng",
+                "rating": "{{rating}} trên 5",
+                "viewAll": "Xem tất cả đánh giá",
+                "basedOn": "Dựa trên {{count}} đánh giá"
+            },
+            "relatedItems": {
+                "title": "Có thể bạn cũng thích",
+                "viewAll": "Xem tất cả",
+                "add": "Thêm",
+                "new": "Mới"
+            },
+            "nutritionalInfo": "Thông tin dinh dưỡng & Thành phần",
+            "nutritionFacts": "Giá trị dinh dưỡng",
+            "ingredients": "Thành phần",
+            "nutrition": {
+                "calories": "Calories",
+                "protein": "Protein",
+                "carbs": "Carbs",
+                "fat": "Chất béo",
+                "fiber": "Chất xơ",
+                "sodium": "Natri",
+                "sugar": "Đường",
+                "cholesterol": "Cholesterol"
+            },
+            "specialInstructions": {
+                "title": "Hướng dẫn đặc biệt",
+                "placeholder": "Ví dụ: Không hành, thêm sốt...",
+                "description": "Hãy cho chúng tôi biết nếu bạn có yêu cầu đặc biệt"
+            },
+            "gallery": {
+                "previous": "Ảnh trước",
+                "next": "Ảnh tiếp",
+                "viewImage": "Xem ảnh {{index}}"
+            }
+        },
+        "cart": {
+            "title": "Giỏ hàng của bạn",
+            "subtitle": "Xem lại món ăn và đặt hàng",
+            "empty": {
+                "title": "Giỏ hàng trống",
+                "description": "Thêm món từ thực đơn để bắt đầu",
+                "action": "Xem thực đơn"
+            },
+            "item": {
+                "modifiers": "Tùy chỉnh",
+                "instructions": "Ghi chú đặc biệt",
+                "edit": "Sửa",
+                "remove": "Xóa"
+            },
+            "orderSummary": {
+                "title": "Tóm tắt đơn hàng",
+                "subtotal": "Tạm tính",
+                "tax": "Thuế",
+                "discount": "Giảm giá",
+                "total": "Tổng cộng"
+            },
+            "yourItems": "Món của bạn ({{count}})",
+            "addMore": "Thêm món",
+            "table": {
+                "title": "Thông tin bàn",
+                "number": "Bàn {{number}}",
+                "verify": "Xác minh bàn"
+            },
+            "tableInfo": {
+                "title": "Thông tin bàn",
+                "table": "Bàn {{number}}",
+                "guests": "{{count}} Khách",
+                "available": "Trống",
+                "occupied": "Đang sử dụng",
+                "note": "Bạn đang đặt món cho {{number}}"
+            },
+            "summary": {
+                "title": "Tóm tắt đơn hàng",
+                "items": "{{count}} món",
+                "total": "Tổng cộng",
+                "estimatedTime": "Thời gian chuẩn bị ước tính",
+                "timeRange": "{{min}}-{{max}} phút"
+            },
+            "specialInstructions": {
+                "title": "Ghi chú cho đơn hàng (Tùy chọn)",
+                "placeholder": "Thêm yêu cầu đặc biệt cho đơn hàng của bạn"
+            },
+            "payment": {
+                "title": "Phương thức thanh toán",
+                "selectMethod": "Chọn phương thức thanh toán",
+                "cash": "Tiền mặt",
+                "card": "Thẻ tín dụng/Ghi nợ",
+                "momo": "Ví MoMo",
+                "payNow": "Thanh toán ngay",
+                "payLater": "Thanh toán sau"
+            },
+            "placeOrder": "Đặt món",
+            "checkout": "Tiến hành thanh toán",
+            "continueShopping": "Tiếp tục mua sắm",
+            "viewCart": "Xem giỏ hàng",
+            "billReady": "Hóa đơn của bạn đã sẵn sàng để thanh toán",
+            "features": {
+                "tableService": {
+                    "title": "Phục vụ tại bàn",
+                    "desc": "Giao món trực tiếp đến bàn của bạn"
+                },
+                "multipleOrders": {
+                    "title": "Đặt nhiều lần",
+                    "desc": "Thêm món trong suốt bữa ăn"
+                },
+                "securePayment": {
+                    "title": "Thanh toán an toàn",
+                    "desc": "Thanh toán bảo mật với nhiều tùy chọn"
+                }
+            }
+        },
+        "orderStatus": {
+            "title": "Trạng thái đơn hàng",
+            "orderNumber": "Đơn hàng #{{number}}",
+            "table": "Bàn {{number}}",
+            "placedAt": "Đặt lúc {{time}}",
+            "status": {
+                "pending": "Đã nhận đơn",
+                "accepted": "Đã chấp nhận",
+                "preparing": "Đang chuẩn bị",
+                "ready": "Sẵn sàng phục vụ",
+                "served": "Đã phục vụ",
+                "completed": "Hoàn thành"
+            },
+            "timeline": {
+                "title": "Tiến trình đơn hàng",
+                "pending": "Đã đặt món",
+                "accepted": "Bếp đã xác nhận",
+                "preparing": "Món ăn đang được chuẩn bị",
+                "ready": "Món ăn đã sẵn sàng",
+                "served": "Món ăn đã được phục vụ tại bàn"
+            },
+            "items": {
+                "title": "Món ăn",
+                "status": {
+                    "queued": "Đang chờ",
+                    "cooking": "Đang nấu",
+                    "ready": "Sẵn sàng"
+                }
+            },
+            "kitchenNotes": {
+                "title": "Ghi chú từ bếp",
+                "estimatedTime": "Thời gian dự kiến: {{time}} phút"
+            },
+            "bill": {
+                "title": "Tóm tắt hóa đơn",
+                "requestBill": "Yêu cầu hóa đơn",
+                "billRequested": "Đã yêu cầu hóa đơn",
+                "payNow": "Thanh toán ngay",
+                "viewDetails": "Xem chi tiết"
+            },
+            "actions": {
+                "backToMenu": "Quay lại thực đơn",
+                "orderMore": "Đặt thêm món",
+                "notifications": "Bật thông báo"
+            },
+            "progress": "{{percent}}% Hoàn thành"
+        },
+        "orderHistory": {
+            "title": "Lịch sử đơn hàng",
+            "empty": {
+                "title": "Chưa có đơn hàng nào",
+                "description": "Các đơn hàng trước đây của bạn sẽ xuất hiện ở đây",
+                "action": "Bắt đầu đặt món"
+            },
+            "filters": {
+                "all": "Tất cả đơn",
+                "completed": "Hoàn thành",
+                "cancelled": "Đã hủy"
+            },
+            "order": {
+                "date": "{{date}}",
+                "items": "{{count}} món",
+                "items_plural": "{{count}} món",
+                "total": "Tổng: {{amount}}",
+                "reorder": "Đặt lại",
+                "viewDetails": "Xem chi tiết"
+            }
+        },
+        "profile": {
+            "title": "Hồ sơ",
+            "personalInfo": {
+                "title": "Thông tin cá nhân",
+                "name": "Họ tên",
+                "email": "Email",
+                "phone": "Số điện thoại",
+                "save": "Lưu thay đổi"
+            },
+            "preferences": {
+                "title": "Tùy chọn",
+                "language": "Ngôn ngữ",
+                "notifications": "Thông báo",
+                "dietary": "Hạn chế ăn uống"
+            },
+            "orderHistory": {
+                "title": "Lịch sử đơn hàng",
+                "viewAll": "Xem tất cả",
+                "empty": "Bạn chưa có đơn hàng nào.",
+                "signInRequired": {
+                    "title": "Yêu cầu đăng nhập",
+                    "message": "Vui lòng đăng nhập để xem lịch sử đơn hàng."
+                },
+                "itemCount": "{{count}} món",
+                "total": "Tổng cộng",
+                "reorder": "Đặt lại",
+                "viewReceipt": "Xem hóa đơn"
+            },
+            "profile": {
+                "title": "Hồ sơ",
+                "guest": "Khách vãng lai",
+                "role": "Thành viên",
+                "edit": "Chỉnh sửa hồ sơ",
+                "tabs": {
+                    "history": "Lịch sử đơn hàng",
+                    "settings": "Cài đặt"
+                },
+                "settings": {
+                    "comingSoon": "Tính năng cài đặt tài khoản sắp ra mắt!"
+                },
+                "items": "Món: "
+            },
+            "logout": "Đăng xuất"
+        },
+        "orderTracking": {
+            "title": "Trạng thái đơn hàng",
+            "subtitle": "Theo dõi quá trình chuẩn bị đơn hàng theo thời gian thực",
+            "noOrder": {
+                "title": "Không có đơn hàng",
+                "message": "Bạn chưa có đơn hàng nào vào lúc này.",
+                "browseMenu": "Xem thực đơn"
+            },
+            "backToMenu": "Quay lại thực đơn",
+            "itemStatusTitle": "Trạng thái món ăn",
+            "notifications": {
+                "on": "Bật thông báo",
+                "off": "Tắt thông báo",
+                "billReady": "Hóa đơn của bạn đã sẵn sàng! Tổng cộng: {{total}}",
+                "proceedPayment": "Bạn có thể tiến hành thanh toán ngay bây giờ.",
+                "paymentSuccess": "Đã nhận thanh toán! Cảm ơn quý khách!",
+                "orderCompleted": "Đơn hàng của bạn đã hoàn tất.",
+                "billRequested": "Đã yêu cầu hóa đơn thành công!",
+                "billRequestDesc": "Nhân viên sẽ mang hóa đơn đến ngay.",
+                "billRequestFail": "Yêu cầu hóa đơn thất bại",
+                "contactStaff": "Vui lòng thử lại hoặc liên hệ nhân viên."
+            },
+            "status": {
+                "submitted": "Đã gửi đơn",
+                "received": "Đã nhận đơn",
+                "preparing": "Đang chuẩn bị",
+                "ready": "Sẵn sàng phục vụ",
+                "served": "Đã phục vụ",
+                "payment_pending": "Đang xử lý hóa đơn",
+                "completed": "Đã thanh toán",
+                "cancelled": "Đã hủy",
+                "rejected": "Đã từ chối",
+                "unknown": "Đang chờ xử lý"
+            },
+            "timeline": {
+                "title": "Tiến độ đơn hàng",
+                "estimatedTime": "Dự kiến hoàn thành",
+                "overallProgress": "Tiến độ tổng thể",
+                "timeRemaining": {
+                    "enjoy": "Chúc quý khách ngon miệng!",
+                    "ready": "Đã sẵn sàng"
+                },
+                "steps": {
+                    "submitted": "Gửi đơn",
+                    "accepted": "Đã nhận",
+                    "preparing": "Chuẩn bị",
+                    "ready": "Sẵn sàng",
+                    "served": "Phục vụ"
+                }
+            },
+            "header": {
+                "table": "Bàn {{number}}",
+                "items": "{{count}} món",
+                "elapsed": "{{time}} trôi qua"
+            },
+            "itemStatus": {
+                "queued": "Hàng chờ",
+                "cooking": "Đang nấu",
+                "ready": "Sẵn sàng",
+                "served": "Đã phục vụ",
+                "completed": "Hoàn tất",
+                "rejected": "Từ chối",
+                "unknown": "Không rõ",
+                "preparedBy": "Chuẩn bị bởi: {{name}}",
+                "readyNow": "Sẵn sàng ngay!",
+                "inProgress": "Đang thực hiện"
+            },
+            "actions": {
+                "readyToPay": "Thanh toán ngay?",
+                "requestBill": "Yêu cầu hóa đơn",
+                "requestBillDesc": "Yêu cầu hóa đơn khi bạn đã dùng bữa xong.",
+                "needHelp": "Cần hỗ trợ?",
+                "contactStaff": "Gọi nhân viên",
+                "helpDesc": "Nếu có thắc mắc, nhân viên của chúng tôi luôn sẵn sàng hỗ trợ bạn."
+            },
+            "info": {
+                "realTimeUpdates": "Cập nhật thời gian thực",
+                "updatesDesc": "Trang này tự động cập nhật tiến độ đơn hàng của bạn."
+            },
+            "bill": {
+                "restaurantName": "Nhà hàng Thông minh",
+                "tableDate": "Bàn {{table}} | {{date}}",
+                "orderNumber": "Đơn #{{number}}",
+                "subtotal": "Tạm tính",
+                "tax": "Thuế (10%)",
+                "discount": "Giảm giá",
+                "total": "Tổng cộng",
+                "payButton": "Thanh toán {{amount}}",
+                "continueMomo": "Tiếp tục với MoMo",
+                "processing": "Đang xử lý thanh toán...",
+                "securePayment": "Thanh toán bảo mật bởi Smart Restaurant"
+            }
+        },
+        "payment": {
+            "result": {
+                "success": {
+                    "title": "Thanh toán thành công!",
+                    "message": "Thanh toán của bạn đã được xử lý",
+                    "orderNumber": "Đơn hàng #{{number}}"
+                },
+                "failed": {
+                    "title": "Thanh toán thất bại",
+                    "message": "Không thể xử lý thanh toán của bạn",
+                    "tryAgain": "Thử lại"
+                },
+                "pending": {
+                    "title": "Đang xử lý thanh toán",
+                    "helmet": "Đang xử lý thanh toán - Nhà hàng Thông minh",
+                    "message": "Thanh toán của bạn đang được xử lý"
+                },
+                "actions": {
+                    "viewOrder": "Xem trạng thái đơn hàng",
+                    "backToMenu": "Quay lại thực đơn",
+                    "backToCart": "Quay lại giỏ hàng"
+                },
+                "orderId": "Mã đơn hàng",
+                "footer": "Cần giúp đỡ? Liên hệ nhân viên để được hỗ trợ."
+            }
         }
     }
 }

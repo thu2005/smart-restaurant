@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
 import { useCart } from "../../../contexts/CartContext";
@@ -20,6 +21,7 @@ import Icon from "../../../components/AppIcon";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { cartItems, updateQuantity, removeFromCart, clearCart, getCartSummary, getEstimatedWaitTime } = useCart();
   const user = authService.getCurrentUser();
 
@@ -159,10 +161,10 @@ const ShoppingCart = () => {
 
     try {
       setIsProcessing(true);
-      
+
       const restaurantId = localStorage.getItem("restaurantId");
       const bill = activeOrder.bill;
-      
+
       // Calculate orderItems subtotal
       const orderItems = activeOrder.orderItems || activeOrder.items || [];
       const subtotal = orderItems.reduce((sum, item) => {
@@ -170,11 +172,11 @@ const ShoppingCart = () => {
         const quantity = parseInt(item.quantity || 1);
         return sum + (itemPrice * quantity);
       }, 0);
-      
+
       const discount = parseFloat(bill.discount || 0);
       const tax = (subtotal - discount) * 0.1;
       const total = subtotal - discount + tax;
-      
+
       const response = await paymentService.createPayment({
         orderId: activeOrder.id,
         restaurantId: restaurantId,
@@ -183,28 +185,28 @@ const ShoppingCart = () => {
         tip: 0,
         tax: tax
       });
-      
+
       console.log('Payment response:', response.data);
-      
+
       // If MoMo payment, redirect to payment URL
       if (paymentMethod.toLowerCase() === 'momo' && response.data?.data?.gatewayResponse?.payUrl) {
         const payUrl = response.data.data.gatewayResponse.payUrl;
         console.log('Redirecting to MoMo payment:', payUrl);
         toast.info("Redirecting to MoMo payment...", { duration: 2000 });
-        
+
         // Redirect to MoMo payment page
         setTimeout(() => {
           window.location.href = payUrl;
         }, 1000);
         return;
       }
-      
+
       // For other payment methods (CASH, CARD)
       toast.success("Payment processed successfully!", {
         description: "Thank you for your visit!",
         duration: 5000
       });
-      
+
       setActiveOrder(null); // Clear bill after payment
       clearCart(); // Clear cart
     } catch (err) {
@@ -236,7 +238,7 @@ const ShoppingCart = () => {
         // Clear cart after successful order
         clearCart();
 
-        showModal('success', 'Order Placed!', `Your order #${result.data?.orderNumber} has been placed successfully.`, () => {
+        showModal('success', t('customer.cart.modals.success.title'), t('customer.cart.modals.success.message', { orderNumber: result.data?.orderNumber }), () => {
           navigate("/customer/order-status-tracking");
         });
 
@@ -245,7 +247,7 @@ const ShoppingCart = () => {
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      showModal('error', 'Order Failed', error.response?.data?.message || error.message || "Failed to place order. Please try again.");
+      showModal('error', t('customer.cart.modals.failed.title'), error.response?.data?.message || error.message || t('customer.cart.modals.failed.message'));
     } finally {
       setIsProcessing(false);
     }
@@ -253,12 +255,12 @@ const ShoppingCart = () => {
 
   const handleCheckout = async () => {
     if (!paymentMethod) {
-      showModal('error', 'Payment Required', 'Please select a payment method before proceeding.');
+      showModal('error', t('customer.cart.modals.paymentRequired.title'), t('customer.cart.modals.paymentRequired.message'));
       return;
     }
 
     if (cartItems.length === 0) {
-      showModal('error', 'Empty Cart', 'Your cart is empty. Please add items from the menu.');
+      showModal('error', t('customer.cart.modals.empty.title'), t('customer.cart.modals.empty.message'));
       return;
     }
 
@@ -267,7 +269,7 @@ const ShoppingCart = () => {
     const tableId = localStorage.getItem("tableId");
 
     if (!restaurantId || !tableId) {
-      showModal('error', 'Missing Information', 'Missing table information. Please scan the QR code again.');
+      showModal('error', t('customer.cart.modals.missingInfo.title'), t('customer.cart.modals.missingInfo.message'));
       return;
     }
 
@@ -283,7 +285,7 @@ const ShoppingCart = () => {
         const ALLOWED_STATUSES_TO_ADD = ['SERVED', 'PAYMENT_PENDING'];
 
         if (!ALLOWED_STATUSES_TO_ADD.includes(status)) {
-          showModal('error', 'Order In Progress', `You have an order in progress (${status}). Please wait for all items to be served before placing a new order.`);
+          showModal('error', t('customer.cart.modals.orderInProgress.title'), t('customer.cart.modals.orderInProgress.message', { status }));
           setIsProcessing(false);
           return;
         }
@@ -291,8 +293,8 @@ const ShoppingCart = () => {
         // Show Confirmation Modal
         showModal(
           'confirm',
-          'Add to Current Order',
-          'Would you like to add these items to your current order?',
+          t('customer.cart.modals.addToCurrent.title'),
+          t('customer.cart.modals.addToCurrent.message'),
           () => confirmPlaceOrder()
         );
         return;
@@ -303,7 +305,7 @@ const ShoppingCart = () => {
 
     } catch (error) {
       console.error("Checkout check error:", error);
-      showModal('error', 'Error', "Failed to check order status. Please try again.");
+      showModal('error', t('common.error'), "Failed to check order status. Please try again.");
       setIsProcessing(false);
     }
   };
@@ -315,7 +317,7 @@ const ShoppingCart = () => {
     return (
       <>
         <Helmet>
-          <title>Shopping Cart - Smart Restaurant</title>
+          <title>{t('customer.cart.title')} - Smart Restaurant</title>
           <meta
             name="description"
             content="Review and manage your order before checkout"
@@ -331,7 +333,7 @@ const ShoppingCart = () => {
   return (
     <>
       <Helmet>
-        <title>{`My Order (${itemCount}) - Smart Restaurant`}</title>
+        <title>{`${t('customer.cart.title')} (${itemCount}) - Smart Restaurant`}</title>
         <meta
           name="description"
           content="Review your order and proceed to checkout"
@@ -342,10 +344,10 @@ const ShoppingCart = () => {
         <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-              My Order
+              {t('customer.cart.title')}
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              Review your order and proceed to checkout
+              {t('customer.cart.subtitle')}
             </p>
           </div>
 
@@ -359,7 +361,7 @@ const ShoppingCart = () => {
               <div className="space-y-3 md:space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl md:text-2xl font-heading font-semibold text-foreground">
-                    Your Items ({itemCount})
+                    {t('customer.cart.yourItems', { count: itemCount })}
                   </h2>
                   <Button
                     variant="ghost"
@@ -368,7 +370,7 @@ const ShoppingCart = () => {
                     iconPosition="left"
                     onClick={() => navigate("/customer/menu-browse")}
                   >
-                    Add More
+                    {t('customer.cart.addMore')}
                   </Button>
                 </div>
 
@@ -394,11 +396,11 @@ const ShoppingCart = () => {
                   <div className="bg-primary/5 border-2 border-primary rounded-lg p-4 mb-4">
                     <p className="text-sm font-semibold text-primary flex items-center gap-2">
                       <Icon name="Receipt" size={18} />
-                      Bill Ready - Please review and proceed with payment below
+                      {t('customer.cart.billReady')}
                     </p>
                   </div>
-                  <BillPaymentSection 
-                    order={activeOrder} 
+                  <BillPaymentSection
+                    order={activeOrder}
                     onPay={handlePayment}
                   />
                 </>
@@ -432,7 +434,7 @@ const ShoppingCart = () => {
                   loading={isProcessing}
                   disabled={!paymentMethod}
                 >
-                  {isProcessing ? "Processing..." : "Place Order"}
+                  {isProcessing ? t('common.status.processing') : t('customer.cart.placeOrder')}
                 </Button>
 
                 <Button
@@ -443,7 +445,7 @@ const ShoppingCart = () => {
                   iconPosition="left"
                   onClick={() => navigate("/customer/menu-browse")}
                 >
-                  Continue Shopping
+                  {t('customer.cart.continueShopping')}
                 </Button>
 
                 <div className="bg-muted/50 rounded-lg p-4 md:p-6 space-y-3">
@@ -455,10 +457,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        Table Service
+                        {t('customer.cart.features.tableService.title')}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        Your order will be delivered to your table
+                        {t('customer.cart.features.tableService.desc')}
                       </p>
                     </div>
                   </div>
@@ -471,10 +473,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        Multiple Orders
+                        {t('customer.cart.features.multipleOrders.title')}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        You can place additional orders during your meal
+                        {t('customer.cart.features.multipleOrders.desc')}
                       </p>
                     </div>
                   </div>
@@ -487,10 +489,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        Secure Payment
+                        {t('customer.cart.features.securePayment.title')}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        All transactions are encrypted and secure
+                        {t('customer.cart.features.securePayment.desc')}
                       </p>
                     </div>
                   </div>
@@ -505,13 +507,13 @@ const ShoppingCart = () => {
       {modalState.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className={`bg-card w-full max-w-sm rounded-xl border-2 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 ${modalState.type === 'error' ? 'border-error/50' :
-              modalState.type === 'success' ? 'border-success/50' : 'border-primary/50'
+            modalState.type === 'success' ? 'border-success/50' : 'border-primary/50'
             }`}>
             <div className={`p-4 flex items-center gap-3 ${modalState.type === 'error' ? 'bg-error/10 border-b border-error/20' :
-                modalState.type === 'success' ? 'bg-success/10 border-b border-success/20' : 'bg-primary/10 border-b border-primary/20'
+              modalState.type === 'success' ? 'bg-success/10 border-b border-success/20' : 'bg-primary/10 border-b border-primary/20'
               }`}>
               <div className={`p-2 rounded-full ${modalState.type === 'error' ? 'bg-error/20 text-error' :
-                  modalState.type === 'success' ? 'bg-success/20 text-success' : 'bg-primary/20 text-primary'
+                modalState.type === 'success' ? 'bg-success/20 text-success' : 'bg-primary/20 text-primary'
                 }`}>
                 <Icon name={
                   modalState.type === 'error' ? 'AlertTriangle' :
@@ -520,7 +522,7 @@ const ShoppingCart = () => {
               </div>
               <div>
                 <h3 className={`font-bold text-lg leading-tight ${modalState.type === 'error' ? 'text-error' :
-                    modalState.type === 'success' ? 'text-success' : 'text-primary'
+                  modalState.type === 'success' ? 'text-success' : 'text-primary'
                   }`}>
                   {modalState.title}
                 </h3>

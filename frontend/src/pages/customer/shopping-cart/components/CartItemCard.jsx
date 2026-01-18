@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Image from "../../../../components/AppImage";
 
 import Button from "../../../../components/ui/Button";
 
 const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const isReadOnly = !onUpdateQuantity || !onRemove;
 
   const handleQuantityChange = (newQuantity) => {
@@ -21,7 +23,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
   };
 
   return (
-    <div 
+    <div
       onClick={handleEditItem}
       className={`bg-card border border-border rounded-lg p-4 md:p-6 shadow-warm transition-smooth ${!isReadOnly ? 'hover:shadow-warm-md cursor-pointer group' : ''}`}
     >
@@ -40,7 +42,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
               {item?.name}
               {!isReadOnly && (
                 <span className="ml-2 text-xs font-normal text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                  (Click to edit)
+                  {t("customer.itemDetail.item.edit", "(Click to edit)")}
                 </span>
               )}
             </h3>
@@ -63,7 +65,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
               {item?.modifiers?.map((modifier, index) => {
                 const quantity = modifier?.quantity || 1;
                 const totalPrice = (modifier?.priceAdjustment || 0) * quantity;
-                
+
                 return (
                   <p
                     key={index}
@@ -86,7 +88,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
           {item?.specialInstructions && (
             <div className="mb-3 p-2 bg-muted/50 rounded-md">
               <p className="text-xs md:text-sm text-foreground">
-                <span className="font-medium">Note:</span>{" "}
+                <span className="font-medium">{t("customer.itemDetail.item.note", "Note:")}</span>{" "}
                 {item?.specialInstructions}
               </p>
             </div>
@@ -96,14 +98,14 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
             {isReadOnly ? (
               // Read-only: Just show quantity without controls
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Quantity:</span>
+                <span className="text-sm text-muted-foreground">{t("customer.itemDetail.quantity", "Quantity")}:</span>
                 <span className="text-base md:text-lg font-semibold text-foreground data-text">
                   {item?.quantity}
                 </span>
               </div>
             ) : (
               // Editable: Show quantity controls
-              <div 
+              <div
                 className="flex items-center gap-2 md:gap-3 bg-muted rounded-md p-1"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -135,7 +137,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price * item?.quantity)}
               </p>
               <p className="text-xs md:text-sm text-muted-foreground data-text">
-                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price)} each
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item?.price)} {t("customer.itemDetail.item.each", "each")}
               </p>
             </div>
           </div>

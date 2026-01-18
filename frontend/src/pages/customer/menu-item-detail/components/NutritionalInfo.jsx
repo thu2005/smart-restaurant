@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const NutritionalInfo = ({ nutritionalData, ingredients }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -15,7 +17,7 @@ const NutritionalInfo = ({ nutritionalData, ingredients }) => {
             <Icon name="Info" size={20} color="var(--color-primary)" />
           </div>
           <span className="text-base md:text-lg font-heading font-semibold text-foreground">
-            Nutritional Information & Ingredients
+            {t("customer.itemDetail.nutritionalInfo", "Nutritional Information & Ingredients")}
           </span>
         </div>
         <Icon
@@ -28,7 +30,7 @@ const NutritionalInfo = ({ nutritionalData, ingredients }) => {
         <div className="p-4 md:p-6 bg-card rounded-lg md:rounded-xl border border-border space-y-4 md:space-y-6">
           <div>
             <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-3">
-              Nutrition Facts
+              {t("customer.itemDetail.nutritionFacts", "Nutrition Facts")}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               {nutritionalData?.map((item, index) => (
@@ -37,7 +39,7 @@ const NutritionalInfo = ({ nutritionalData, ingredients }) => {
                   className="p-3 md:p-4 bg-muted rounded-lg text-center"
                 >
                   <p className="text-xs md:text-sm text-muted-foreground mb-1">
-                    {item?.label}
+                    {t(`customer.itemDetail.nutrition.${item?.label.toLowerCase()}`, item?.label)}
                   </p>
                   <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
                     {item?.value}
@@ -49,7 +51,7 @@ const NutritionalInfo = ({ nutritionalData, ingredients }) => {
 
           <div>
             <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-3">
-              Ingredients
+              {t("customer.itemDetail.ingredients", "Ingredients")}
             </h3>
             <p className="text-sm md:text-base text-foreground leading-relaxed">
               {ingredients?.join(", ")}

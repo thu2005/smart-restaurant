@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 
 const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
+  const { t } = useTranslation();
   const getRatingPercentage = (count, total) => {
     return total > 0 ? (count / total) * 100 : 0;
   };
@@ -15,7 +17,7 @@ const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
   return (
     <div className="space-y-4 md:space-y-6">
       <h2 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-foreground">
-        Customer Reviews
+        {t("customer.itemDetail.reviews.title")}
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-1 p-4 md:p-6 bg-card rounded-lg md:rounded-xl border border-border">
@@ -38,7 +40,7 @@ const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
               ))}
             </div>
             <p className="text-sm md:text-base text-muted-foreground">
-              Based on {totalReviews} reviews
+              {t("customer.itemDetail.reviews.basedOn", { count: totalReviews })}
             </p>
           </div>
 

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import authService from "../../../services/authService";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const user = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("history");
 
@@ -48,7 +50,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-8">
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-12">
-        
+
         {/* Profile Header */}
         <div className="bg-card rounded-xl md:rounded-2xl border border-border p-6 md:p-8 mb-6 md:mb-8 flex flex-col md:flex-row items-center gap-6 shadow-warm-sm">
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 flex items-center justify-center text-primary text-4xl md:text-5xl font-bold border-4 border-white shadow-sm">
@@ -56,20 +58,20 @@ const Profile = () => {
           </div>
           <div className="flex-1 text-center md:text-left space-y-2">
             <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
-              {user?.name || "Guest Customer"}
+              {user?.name || t("customer.profile.guest", "Guest Customer")}
             </h1>
             <p className="text-muted-foreground flex items-center justify-center md:justify-start gap-2">
               <Icon name="Mail" size={16} />
-              {user?.email || "No email provided"}
+              {user?.email || t("customer.profile.noEmail", "No email provided")}
             </p>
             <p className="text-sm font-medium text-primary bg-primary/10 inline-block px-3 py-1 rounded-full">
-              {user?.role || "Member"}
+              {user?.role ? t(`customer.profile.roles.${user.role.toLowerCase()}`, user.role) : t("customer.profile.role", "Member")}
             </p>
           </div>
           <div className="flex-shrink-0">
-             <Button variant="outline" iconName="Edit2">
-                Edit Profile
-             </Button>
+            <Button variant="outline" iconName="Edit2">
+              {t("customer.profile.edit", "Edit Profile")}
+            </Button>
           </div>
         </div>
 
@@ -77,23 +79,21 @@ const Profile = () => {
         <div className="flex border-b border-border mb-6">
           <button
             onClick={() => setActiveTab("history")}
-            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors ${
-              activeTab === "history"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors ${activeTab === "history"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
           >
-            Order History
+            {t("customer.profile.tabs.history", "Order History")}
           </button>
           <button
             onClick={() => setActiveTab("settings")}
-            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors ${
-              activeTab === "settings"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors ${activeTab === "settings"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
           >
-            Settings
+            {t("customer.profile.tabs.settings", "Settings")}
           </button>
         </div>
 
@@ -110,14 +110,14 @@ const Profile = () => {
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <span className="font-heading font-bold text-lg">
-                          Order #{order.id}
+                          {t("customer.orderTracking.bill.orderNumber", { number: order.id })}
                         </span>
                         <span
                           className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${getStatusColor(
                             order.status
                           )}`}
                         >
-                          {order.status}
+                          {t(`customer.orderTracking.status.${order.status}`, order.status)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
@@ -126,7 +126,7 @@ const Profile = () => {
                       </p>
                     </div>
                     <div className="text-left md:text-right">
-                      <p className="text-sm text-muted-foreground">Total Amount</p>
+                      <p className="text-sm text-muted-foreground">{t("customer.orderHistory.total", "Total Amount")}</p>
                       <p className="font-heading font-bold text-xl text-primary data-text">
                         {new Intl.NumberFormat("vi-VN", {
                           style: "currency",
@@ -135,20 +135,20 @@ const Profile = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="bg-muted/50 rounded-lg p-3">
                     <p className="text-sm text-foreground">
-                      <span className="font-medium">Items: </span>
+                      <span className="font-medium">{t("customer.profile.items", "Items: ")}</span>
                       {order.items.join(", ")}
                     </p>
                   </div>
-                  
+
                   <div className="mt-4 flex justify-end gap-3">
                     <Button variant="outline" size="sm" iconName="Repeat">
-                      Reorder
+                      {t("customer.orderHistory.reorder", "Reorder")}
                     </Button>
                     <Button variant="ghost" size="sm" iconName="FileText">
-                      View Receipt
+                      {t("customer.orderHistory.viewReceipt", "View Receipt")}
                     </Button>
                   </div>
                 </div>
@@ -157,7 +157,7 @@ const Profile = () => {
           ) : (
             <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
               <Icon name="Settings" size={48} className="mx-auto mb-4 opacity-50" />
-              <p>Account settings are coming soon!</p>
+              <p>{t("customer.profile.settings.comingSoon", "Account settings are coming soon!")}</p>
             </div>
           )}
         </div>

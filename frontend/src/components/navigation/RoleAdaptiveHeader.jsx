@@ -6,11 +6,13 @@ import Button from "../ui/Button";
 import authService from "../../services/authService";
 import { useCart } from "../../contexts/CartContext";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { changeLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(authService.getCurrentUser());
   const [tableNumber, setTableNumber] = useState(
@@ -189,6 +191,39 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
               </Button>
             )}
           </div>
+
+          {/* Language Toggle - Mobile */}
+          <div className="px-2 py-3 border-b border-border">
+            <p className="text-xs font-medium text-muted-foreground mb-2 px-2">
+              {t("nav.language.title", "Language")}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  changeLanguage('en');
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${i18n.language === 'en'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted text-foreground hover:bg-muted/70'
+                  }`}
+              >
+                🇬🇧 {t("nav.language.english", "English")}
+              </button>
+              <button
+                onClick={() => {
+                  changeLanguage('vi');
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${i18n.language === 'vi'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted text-foreground hover:bg-muted/70'
+                  }`}
+              >
+                🇻🇳 {t("nav.language.vietnamese", "Tiếng Việt")}
+              </button>
+            </div>
+          </div>
         </div>
       </div>,
       document.body
@@ -258,6 +293,30 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                 </span>
               </div>
             )}
+
+            {/* Language Toggle - Desktop */}
+            <div className="hidden md:flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-full border border-border">
+              <button
+                onClick={() => changeLanguage('en')}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${i18n.language === 'en'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                title={t("nav.language.english", "English")}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => changeLanguage('vi')}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${i18n.language === 'vi'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                title={t("nav.language.vietnamese", "Tiếng Việt")}
+              >
+                VI
+              </button>
+            </div>
 
             {/* Auth Section */}
             {user ? (
