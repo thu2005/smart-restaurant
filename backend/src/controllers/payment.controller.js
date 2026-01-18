@@ -27,6 +27,46 @@ exports.createPayment = async (req, res, next) => {
     }
 };
 
+exports.createStripePaymentIntent = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, errors: errors.array() });
+        }
+
+        const result = await paymentService.createStripePaymentIntent(req.body);
+
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.confirmStripePayment = async (req, res, next) => {
+    try {
+        const { paymentIntentId } = req.body;
+        
+        const result = await paymentService.confirmStripePayment(paymentIntentId);
+
+        if (result.success) {
+            const io = req.app.get('io');
+            if (io && result.restaurantId) {
+                io.to(result.restaurantId).emit('payment_received', { 
+                    orderId: result.orderId,
+                    paymentId: result.paymentId 
+                });
+            }
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.webhook = async (req, res, next) => {
     try {
         // In a real app, verify Stripe signature header here

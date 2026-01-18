@@ -768,6 +768,44 @@ class OrderService {
     }
 
     // Helper to streamline PDF generation logic
+    /**
+     * Get bills for a restaurant, filter by paid/unpaid
+     * @param {string} restaurantId
+     * @param {string} status - 'PAID', 'UNPAID', or undefined for all
+     */
+    async getBillsByStatus(restaurantId, status) {
+        // Find all bills for restaurant
+        const bills = await prisma.bill.findMany({
+            where: { restaurantId },
+            include: {
+                order: {
+                    include: {
+                        payment: true,
+                        table: true,
+                        customer: true
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        // Attach payment status
+        return bills.filter(bill => {
+            const payment = bill.order?.payment;
+            if (status === 'PAID') {
+                return payment && payment.status === 'COMPLETED';
+            }
+            if (status === 'UNPAID') {
+                return !payment || payment.status !== 'COMPLETED';
+            }
+            return true; // all
+        }).map(bill => ({
+            ...bill,
+            paymentStatus: bill.order?.payment?.status || 'UNPAID',
+            paidAt: bill.order?.payment?.paidAt || null
+        }));
+    }
+
     async generateBillPDF(orderId, res) {
         const PDFDocument = require('pdfkit');
         const billData = await this.getBillDetails(orderId);

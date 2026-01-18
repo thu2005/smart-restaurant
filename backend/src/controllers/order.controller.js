@@ -302,3 +302,24 @@ exports.addItemsToOrder = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Get bills for a restaurant, filter by paid/unpaid
+ * Query: ?restaurantId=...&status=PAID|UNPAID
+ */
+exports.getBillsByStatus = async (req, res, next) => {
+    try {
+        const { restaurantId, status } = req.query;
+        if (!restaurantId) {
+            return res.status(400).json({ success: false, message: 'restaurantId is required' });
+        }
+        // Only allow staff of restaurant
+        if (req.user.restaurantId && req.user.restaurantId !== restaurantId) {
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
+        }
+        const bills = await orderService.getBillsByStatus(restaurantId, status);
+        res.status(200).json({ success: true, data: bills });
+    } catch (error) {
+        next(error);
+    }
+};
