@@ -998,38 +998,6 @@
             "action": "Refresh Orders"
         }
     },
-    "auth": {
-        "login": {
-            "title": "Welcome Back",
-            "tab": "Sign In",
-            "submit": "Sign In",
-            "submitting": "Signing in...",
-            "noAccount": "Don't have an account?",
-            "registerLink": "Register"
-        },
-        "register": {
-            "title": "Create Account",
-            "tab": "Register",
-            "submit": "Create Account",
-            "submitting": "Creating account...",
-            "hasAccount": "Already have an account?",
-            "loginLink": "Sign In"
-        },
-        "form": {
-            "fullName": "Full Name",
-            "fullNamePlaceholder": "Enter your full name",
-            "phone": "Phone (Optional)",
-            "phonePlaceholder": "Enter your phone number",
-            "email": "Email",
-            "emailPlaceholder": "Enter your email",
-            "password": "Password",
-            "passwordPlaceholderCtx": "Create a password (min 6 chars)",
-            "passwordPlaceholder": "Enter your password"
-        },
-        "errors": {
-            "general": "An error occurred. Please try again."
-        }
-    },
     "nav": {
         "sections": {
             "userManagement": "User Management",
@@ -1692,6 +1660,230 @@
                 "orderId": "Order ID",
                 "footer": "Need help? Contact our staff for assistance."
             }
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Sign in to your account",
+            "subtitle": "Smart Restaurant Management System",
+            "email": "Email Address",
+            "password": "Password",
+            "submit": "Sign in",
+            "noAccount": "Don't have an account?",
+            "signUpLink": "Sign up here",
+            "testCredentials": {
+                "title": "Test Credentials:",
+                "email": "Email: admin@cafepoirot.com",
+                "password": "Password: password123"
+            },
+            "errors": {
+                "emailRequired": "Email is required",
+                "emailInvalid": "Invalid email address",
+                "passwordRequired": "Password is required"
+            },
+            "success": "Login successful!",
+            "failed": "Failed to login. Please check your credentials."
+        },
+        "register": {
+            "title": "Create an account",
+            "subtitle": "Join Smart Restaurant today",
+            "fullName": "Full Name",
+            "email": "Email Address",
+            "password": "Password",
+            "confirmPassword": "Confirm Password",
+            "submit": "Sign up",
+            "hasAccount": "Already have an account?",
+            "signInLink": "Sign in",
+            "passwordHint": "Must be 8+ characters with uppercase, lowercase, number, and special character",
+            "errors": {
+                "nameRequired": "Full name is required",
+                "nameMin": "Name must be at least 2 characters",
+                "namePattern": "Name must only contain letters and spaces",
+                "emailRequired": "Email is required",
+                "emailInvalid": "Invalid email address",
+                "passwordRequired": "Password is required",
+                "passwordMin": "Password must be at least 8 characters",
+                "passwordPattern": "Password must include uppercase, lowercase, number, and special character",
+                "confirmRequired": "Please confirm your password",
+                "passwordMismatch": "Passwords do not match"
+            },
+            "success": "Registration successful! Welcome!",
+            "successVerify": "Registration successful! Please check your email to verify.",
+            "failed": "Failed to register. Please try again."
+        },
+        "verifyEmail": {
+            "verifying": {
+                "title": "Verifying Email",
+                "message": "Verifying your email address..."
+            },
+            "success": {
+                "title": "Email Verified!",
+                "message": "Your email has been successfully verified!",
+                "button": "Go to Login"
+            },
+            "error": {
+                "title": "Verification Failed",
+                "messageDefault": "Failed to verify email. The link may be invalid or expired.",
+                "messageNoToken": "Invalid verification link. Token is missing.",
+                "button": "Back to Login"
+            },
+            "footer": "© {{year}} Smart Restaurant. All rights reserved."
+        }
+    },
+    "notFound": {
+        "title": "Page Not Found",
+        "message": "The page you're looking for doesn't exist. Let's get you back!",
+        "goBack": "Go Back",
+        "backToHome": "Back to Home"
+    },
+    "waiter": {
+        "header": {
+            "title": "Waiter Dashboard",
+            "role": "Waiter",
+            "logout": "Logout"
+        },
+        "tabs": {
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "ready": "Ready to Serve",
+            "tables": "My Tables",
+            "completed": "Completed"
+        },
+        "loading": "Loading...",
+        "error": "Failed to load orders. Please try again.",
+        "noOrders": "No orders found",
+        "noTables": "No assigned tables",
+        "processing": "processing...",
+        "time": {
+            "justNow": "Just now",
+            "minAgo": "{{count}} min ago",
+            "hoursAgo": "{{hours}}h {{minutes}}m ago"
+        },
+        "status": {
+            "SUBMITTED": "Pending",
+            "RECEIVED": "Accepted",
+            "PREPARING": "In Kitchen",
+            "READY": "Ready",
+            "SERVED": "Served",
+            "COMPLETED": "Paid & Completed"
+        },
+        "order": {
+            "number": "Order #{{number}}",
+            "table": "Table {{number}}",
+            "placedAt": "Placed at {{time}}",
+            "items": "{{count}} items",
+            "note": "Note",
+            "total": "Total",
+            "noActiveItems": "No active pending items.",
+            "showHistory": "Show History ({{count}})",
+            "hideHistory": "Hide History"
+        },
+        "action": {
+            "reject": "Reject",
+            "accept": "Accept & Send to Kitchen",
+            "serve": "Mark as Served",
+            "viewKitchen": "View in Kitchen",
+            "cancel": "Cancel"
+        },
+        "table": {
+            "location": "No location",
+            "capacity": "Capacity: {{count}}",
+            "activeOrders": "{{count}} active order(s)"
+        },
+        "bill": {
+            "title": "Bill Summary",
+            "requested": "Customer Requested Bill",
+            "requestedTitle": "Bill Requested",
+            "newRequest": "New customer request",
+            "tableNumber": "Table {{number}}",
+            "hasRequested": "has requested the bill",
+            "viewDetails": "View Order Details",
+            "summary": {
+                "title": "Bill Summary",
+                "subtotal": "Subtotal",
+                "tax": "Tax (10%)",
+                "discount": "Discount",
+                "total": "Total"
+            },
+            "number": "Bill #{{number}}",
+            "create": "Create Bill",
+            "print": "Print Bill",
+            "applyDiscount": "Apply Discount",
+            "processPayment": "Process Payment",
+            "created": "Bill created successfully!",
+            "createdDesc": "The customer can now proceed with payment.",
+            "paymentSuccess": "Payment processed successfully!",
+            "paymentDesc": "The order has been marked as paid."
+        },
+        "reject": {
+            "title": "Reject Order",
+            "reason": "Rejection Reason",
+            "reasonPlaceholder": "e.g., Out of stock, Kitchen overloaded...",
+            "error": "Please provide a rejection reason",
+            "cancel": "Cancel",
+            "confirm": "Confirm Reject"
+        },
+        "discount": {
+            "title": "Apply Discount",
+            "order": "Order",
+            "type": "Discount Type",
+            "percentage": "Percentage (%)",
+            "fixed": "Fixed Amount ($)",
+            "amount": "Amount",
+            "value": "Discount Value",
+            "valuePlaceholder": "Enter amount",
+            "current": "Current Total",
+            "newTotal": "New Total",
+            "cancel": "Cancel",
+            "apply": "Apply Discount",
+            "errors": {
+                "valueRequired": "Discount value is required",
+                "valueMin": "Discount must be greater than 0"
+            }
+        },
+        "payment": {
+            "title": "Process Payment",
+            "method": "Payment Method",
+            "methods": {
+                "cash": "Cash",
+                "card": "Card"
+            },
+            "cash": "Cash",
+            "card": "Card",
+            "momo": "MoMo",
+            "total": "Total Amount",
+            "cancel": "Cancel",
+            "confirm": "Confirm Payment"
+        },
+        "orderDetails": {
+            "title": "Order Details",
+            "table": "Table {{number}}",
+            "customerInfo": "Customer Information",
+            "name": "Name",
+            "phone": "Phone",
+            "orderInfo": "Order Information",
+            "items": "Order Items",
+            "quantity": "Quantity: {{count}}",
+            "billInfo": "Bill Information",
+            "close": "Close"
+        },
+        "notifications": {
+            "billRequested": "Bill Requested",
+            "billDesc": "Table {{table}} - {{order}} has requested the bill ({{total}})",
+            "paymentReceived": "Payment Received",
+            "paymentDesc": "Payment received successfully!",
+            "viewOrder": "View Order"
+        },
+        "toasts": {
+            "acceptFailed": "Failed to accept order",
+            "rejectFailed": "Failed to reject order",
+            "serveFailed": "Failed to mark order as served",
+            "billFailed": "Failed to create bill",
+            "discountFailed": "Failed to apply discount",
+            "printFailed": "Failed to print bill",
+            "paymentFailed": "Failed to process payment",
+            "orderDetailsFailed": "Failed to load order details",
+            "tryAgain": "Please try again."
         }
     }
 }

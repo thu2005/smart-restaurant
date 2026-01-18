@@ -1071,38 +1071,6 @@
             "action": "Làm Mới Danh Sách"
         }
     },
-    "auth": {
-        "login": {
-            "title": "Chào mừng trở lại",
-            "tab": "Đăng nhập",
-            "submit": "Đăng nhập",
-            "submitting": "Đang đăng nhập...",
-            "noAccount": "Chưa có tài khoản?",
-            "registerLink": "Đăng ký"
-        },
-        "register": {
-            "title": "Tạo tài khoản",
-            "tab": "Đăng ký",
-            "submit": "Tạo tài khoản",
-            "submitting": "Đang tạo tài khoản...",
-            "hasAccount": "Đã có tài khoản?",
-            "loginLink": "Đăng nhập"
-        },
-        "form": {
-            "fullName": "Họ và tên",
-            "fullNamePlaceholder": "Nhập họ và tên của bạn",
-            "phone": "Số điện thoại (Tùy chọn)",
-            "phonePlaceholder": "Nhập số điện thoại của bạn",
-            "email": "Email",
-            "emailPlaceholder": "Nhập email của bạn",
-            "password": "Mật khẩu",
-            "passwordPlaceholderCtx": "Tạo mật khẩu (tối thiểu 6 ký tự)",
-            "passwordPlaceholder": "Nhập mật khẩu của bạn"
-        },
-        "errors": {
-            "general": "Đã xảy ra lỗi. Vui lòng thử lại."
-        }
-    },
     "nav": {
         "sections": {
             "userManagement": "Quản lý người dùng",
@@ -1774,6 +1742,230 @@
                 "orderId": "Mã đơn hàng",
                 "footer": "Cần giúp đỡ? Liên hệ nhân viên để được hỗ trợ."
             }
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Đăng nhập",
+            "subtitle": "Hệ thống Quản lý Nhà hàng Thông minh",
+            "email": "Địa chỉ Email",
+            "password": "Mật khẩu",
+            "submit": "Đăng nhập",
+            "noAccount": "Chưa có tài khoản?",
+            "signUpLink": "Đăng ký tại đây",
+            "testCredentials": {
+                "title": "Tài khoản thử nghiệm:",
+                "email": "Email: admin@cafepoirot.com",
+                "password": "Mật khẩu: password123"
+            },
+            "errors": {
+                "emailRequired": "Vui lòng nhập Email",
+                "emailInvalid": "Email không hợp lệ",
+                "passwordRequired": "Vui lòng nhập mật khẩu"
+            },
+            "success": "Đăng nhập thành công!",
+            "failed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+        },
+        "register": {
+            "title": "Tạo tài khoản",
+            "subtitle": "Tham gia Smart Restaurant ngay hôm nay",
+            "fullName": "Họ và Tên",
+            "email": "Địa chỉ Email",
+            "password": "Mật khẩu",
+            "confirmPassword": "Xác nhận mật khẩu",
+            "submit": "Đăng ký",
+            "hasAccount": "Đã có tài khoản?",
+            "signInLink": "Đăng nhập",
+            "passwordHint": "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+            "errors": {
+                "nameRequired": "Vui lòng nhập họ tên",
+                "nameMin": "Họ tên phải có ít nhất 2 ký tự",
+                "namePattern": "Họ tên chỉ được chứa chữ cái và khoảng trắng",
+                "emailRequired": "Vui lòng nhập Email",
+                "emailInvalid": "Email không hợp lệ",
+                "passwordRequired": "Vui lòng nhập mật khẩu",
+                "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự",
+                "passwordPattern": "Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+                "confirmRequired": "Vui lòng xác nhận mật khẩu",
+                "passwordMismatch": "Mật khẩu không khớp"
+            },
+            "success": "Đăng ký thành công! Chào mừng bạn!",
+            "successVerify": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực.",
+            "failed": "Đăng ký thất bại. Vui lòng thử lại."
+        },
+        "verifyEmail": {
+            "verifying": {
+                "title": "Đang xác thực Email",
+                "message": "Đang xác thực địa chỉ email của bạn..."
+            },
+            "success": {
+                "title": "Email Đã Được Xác Thực!",
+                "message": "Email của bạn đã được xác thực thành công!",
+                "button": "Đi tới Đăng nhập"
+            },
+            "error": {
+                "title": "Xác Thực Thất Bại",
+                "messageDefault": "Không thể xác thực email. Liên kết có thể không hợp lệ hoặc đã hết hạn.",
+                "messageNoToken": "Liên kết xác thực không hợp lệ. Thiếu mã token.",
+                "button": "Quay lại Đăng nhập"
+            },
+            "footer": "© {{year}} Smart Restaurant. Bảo lưu mọi quyền."
+        }
+    },
+    "notFound": {
+        "title": "Không tìm thấy trang",
+        "message": "Trang bạn tìm kiếm không tồn tại. Hãy quay lại nào!",
+        "goBack": "Quay lại",
+        "backToHome": "Về trang chủ"
+    },
+    "waiter": {
+        "header": {
+            "title": "Bảng Điều Khiển Phục Vụ",
+            "role": "Nhân viên phục vụ",
+            "logout": "Đăng xuất"
+        },
+        "tabs": {
+            "pending": "Chờ duyệt",
+            "accepted": "Đã nhận",
+            "ready": "Sẵn sàng phục vụ",
+            "tables": "Bàn của tôi",
+            "completed": "Hoàn thành"
+        },
+        "loading": "Đang tải...",
+        "error": "Không thể tải đơn hàng. Vui lòng thử lại.",
+        "noOrders": "Không có đơn hàng",
+        "noTables": "Chưa được phân công bàn",
+        "processing": "đang xử lý...",
+        "time": {
+            "justNow": "Vừa xong",
+            "minAgo": "{{count}} phút trước",
+            "hoursAgo": "{{hours}}g {{minutes}}p trước"
+        },
+        "status": {
+            "SUBMITTED": "Chờ duyệt",
+            "RECEIVED": "Đã nhận",
+            "PREPARING": "Đang nấu",
+            "READY": "Sẵn sàng",
+            "SERVED": "Đã phục vụ",
+            "COMPLETED": "Đã thanh toán"
+        },
+        "order": {
+            "number": "Đơn #{{number}}",
+            "table": "Bàn {{number}}",
+            "placedAt": "Đặt lúc {{time}}",
+            "items": "{{count}} món",
+            "note": "Ghi chú",
+            "total": "Tổng cộng",
+            "noActiveItems": "Không có món đang chờ.",
+            "showHistory": "Xem lịch sử ({{count}})",
+            "hideHistory": "Ẩn lịch sử"
+        },
+        "action": {
+            "reject": "Từ chối",
+            "accept": "Nhận & Gửi bếp",
+            "serve": "Đã phục vụ",
+            "viewKitchen": "Xem ở bếp",
+            "cancel": "Hủy"
+        },
+        "table": {
+            "location": "Không có vị trí",
+            "capacity": "Sức chứa: {{count}}",
+            "activeOrders": "{{count}} đơn đang hoạt động"
+        },
+        "bill": {
+            "title": "Chi tiết hóa đơn",
+            "requested": "Khách yêu cầu thanh toán",
+            "requestedTitle": "Yêu cầu hóa đơn",
+            "newRequest": "Yêu cầu mới từ khách",
+            "tableNumber": "Bàn {{number}}",
+            "hasRequested": "đã yêu cầu hóa đơn",
+            "viewDetails": "Xem chi tiết đơn",
+            "summary": {
+                "title": "Tóm tắt hóa đơn",
+                "subtotal": "Tạm tính",
+                "tax": "Thuế (10%)",
+                "discount": "Giảm giá",
+                "total": "Tổng cộng"
+            },
+            "number": "Hóa đơn #{{number}}",
+            "create": "Tạo hóa đơn",
+            "print": "In hóa đơn",
+            "applyDiscount": "Áp dụng giảm giá",
+            "processPayment": "Xử lý thanh toán",
+            "created": "Hóa đơn đã được tạo!",
+            "createdDesc": "Khách hàng có thể tiến hành thanh toán.",
+            "paymentSuccess": "Thanh toán thành công!",
+            "paymentDesc": "Đơn hàng đã được đánh dấu là đã thanh toán."
+        },
+        "reject": {
+            "title": "Từ chối đơn hàng",
+            "reason": "Lý do từ chối",
+            "reasonPlaceholder": "Ví dụ: Hết hàng, Bếp quá tải...",
+            "error": "Vui lòng nhập lý do từ chối",
+            "cancel": "Hủy",
+            "confirm": "Xác nhận từ chối"
+        },
+        "discount": {
+            "title": "Áp dụng giảm giá",
+            "order": "Đơn hàng",
+            "type": "Loại giảm giá",
+            "percentage": "Phần trăm (%)",
+            "fixed": "Số tiền cố định (₫)",
+            "amount": "Số tiền",
+            "value": "Giá trị giảm",
+            "valuePlaceholder": "Nhập số tiền/phần trăm",
+            "current": "Tổng hiện tại",
+            "newTotal": "Tổng mới",
+            "cancel": "Hủy",
+            "apply": "Áp dụng",
+            "errors": {
+                "valueRequired": "Vui lòng nhập giá trị giảm",
+                "valueMin": "Giá trị giảm phải lớn hơn 0"
+            }
+        },
+        "payment": {
+            "title": "Xử lý thanh toán",
+            "method": "Phương thức thanh toán",
+            "methods": {
+                "cash": "Tiền mặt",
+                "card": "Thẻ"
+            },
+            "cash": "Tiền mặt",
+            "card": "Thẻ",
+            "momo": "MoMo",
+            "total": "Tổng tiền",
+            "cancel": "Hủy",
+            "confirm": "Xác nhận thanh toán"
+        },
+        "orderDetails": {
+            "title": "Chi tiết đơn hàng",
+            "table": "Bàn {{number}}",
+            "customerInfo": "Thông tin khách hàng",
+            "name": "Tên",
+            "phone": "Số điện thoại",
+            "orderInfo": "Thông tin đơn hàng",
+            "items": "Danh sách món",
+            "quantity": "Số lượng: {{count}}",
+            "billInfo": "Thông tin hóa đơn",
+            "close": "Đóng"
+        },
+        "notifications": {
+            "billRequested": "Yêu cầu thanh toán",
+            "billDesc": "Bàn {{table}} - {{order}} đã yêu cầu thanh toán ({{total}})",
+            "paymentReceived": "Đã nhận thanh toán",
+            "paymentDesc": "Thanh toán đã được nhận thành công!",
+            "viewOrder": "Xem đơn hàng"
+        },
+        "toasts": {
+            "acceptFailed": "Không thể nhận đơn",
+            "rejectFailed": "Không thể từ chối đơn",
+            "serveFailed": "Không thể đánh dấu đã phục vụ",
+            "billFailed": "Không thể tạo hóa đơn",
+            "discountFailed": "Không thể áp dụng giảm giá",
+            "printFailed": "Không thể in hóa đơn",
+            "paymentFailed": "Không thể xử lý thanh toán",
+            "orderDetailsFailed": "Không thể tải chi tiết đơn hàng",
+            "tryAgain": "Vui lòng thử lại."
         }
     }
 }

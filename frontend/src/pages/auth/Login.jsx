@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import authService from "../../services/authService";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import AppImage from "../../components/AppImage";
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await authService.login(data.email, data.password);
-      toast.success("Login successful!");
+      toast.success(t("auth.login.success"));
 
       // Check if user came from QR scan (has restaurantId and tableId)
       const restaurantId = localStorage.getItem("restaurantId");
@@ -59,7 +61,7 @@ const Login = () => {
     } catch (error) {
       console.error("Login error:", error);
       toast.error(
-        error.message || "Failed to login. Please check your credentials."
+        error.message || t("auth.login.failed")
       );
     } finally {
       setIsLoading(false);
@@ -78,10 +80,10 @@ const Login = () => {
             />
           </div>
           <h2 className="mt-[-20px] text-3xl font-extrabold text-foreground">
-            Sign in to your account
+            {t("auth.login.title")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Smart Restaurant Management System
+            {t("auth.login.subtitle")}
           </p>
         </div>
 
@@ -89,56 +91,56 @@ const Login = () => {
           <div className="space-y-4">
             <Input
               id="email"
-              label="Email Address"
+              label={t("auth.login.email")}
               type="email"
               autoComplete="email"
               required
               error={errors.email?.message}
               {...register("email", {
-                required: "Email is required",
+                required: t("auth.login.errors.emailRequired"),
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
+                  message: t("auth.login.errors.emailInvalid"),
                 },
               })}
             />
 
             <Input
               id="password"
-              label="Password"
+              label={t("auth.login.password")}
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               required
               error={errors.password?.message}
               showPassword={showPassword}
               onTogglePassword={() => setShowPassword((v) => !v)}
-              {...register("password", { required: "Password is required" })}
+              {...register("password", { required: t("auth.login.errors.passwordRequired") })}
             />
           </div>
 
           <div>
             <Button type="submit" className="w-full" isLoading={isLoading}>
-              Sign in
+              {t("auth.login.submit")}
             </Button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              {t("auth.login.noAccount")}{" "}
               <button
                 type="button"
                 onClick={() => navigate("/register")}
                 className="font-medium text-primary hover:text-primary/80 transition-colors"
               >
-                Sign up here
+                {t("auth.login.signUpLink")}
               </button>
             </p>
           </div>
 
           <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-md text-sm text-foreground">
-            <p className="font-semibold">Test Credentials:</p>
-            <p>Email: admin@cafepoirot.com</p>
-            <p>Password: password123</p>
+            <p className="font-semibold">{t("auth.login.testCredentials.title")}</p>
+            <p>{t("auth.login.testCredentials.email")}</p>
+            <p>{t("auth.login.testCredentials.password")}</p>
           </div>
         </form>
       </div>
