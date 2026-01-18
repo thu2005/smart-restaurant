@@ -256,7 +256,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                   </div>
                 </div>
               );
-            })();
+            });
           })()}
         </div>
 
