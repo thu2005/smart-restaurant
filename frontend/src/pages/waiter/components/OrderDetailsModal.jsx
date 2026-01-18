@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 import Button from "../../../components/ui/Button";
 
 const OrderDetailsModal = ({ isOpen, onClose, order, onCreateBill, bill, onPrintBill, onApplyDiscount }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [isCreatingBill, setIsCreatingBill] = useState(false);
 
     if (!isOpen || !order) return null;
@@ -20,9 +22,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onCreateBill, bill, onPrint
         }
     };
 
-    const formatCurrency = (amount) => {
-        return `$${parseFloat(amount).toFixed(2)}`;
-    };
+
 
     // Calculate totals
     const subtotal = bill

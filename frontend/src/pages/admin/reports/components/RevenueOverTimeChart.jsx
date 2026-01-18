@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../../../contexts/CurrencyContext';
 import {
     LineChart,
     Line,
@@ -15,6 +16,7 @@ import {
 
 const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
     const { t } = useTranslation();
+    const { formatCurrency, currencySymbol } = useCurrency();
     const periodOptions = [
         { value: 'daily', label: t('reports.charts.revenueOverTime.daily') },
         { value: 'weekly', label: t('reports.charts.revenueOverTime.weekly') },
@@ -45,7 +47,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
 
     const formatYAxis = (value) => {
         if (value >= 1000) {
-            return `$${(value / 1000).toFixed(1)}k`;
+            return `${currencySymbol}${(value / 1000).toFixed(1)}k`;
         }
         return `$${value}`;
     };
@@ -62,7 +64,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#e74c3c' }} />
                             <span className="text-xs text-muted-foreground">{t('reports.charts.revenueOverTime.revenue')}:</span>
                             <span className="text-sm font-semibold text-foreground data-text">
-                                ${(payload[0]?.value || 0).toFixed(2)}
+                                {formatCurrency(payload[0]?.value || 0)}
                             </span>
                         </div>
                         {payload[1] && (

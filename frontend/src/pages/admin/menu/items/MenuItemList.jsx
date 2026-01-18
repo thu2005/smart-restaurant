@@ -8,10 +8,12 @@ import Button from "components/ui/Button";
 import Input from "components/ui/Input";
 import Icon from "components/AppIcon";
 import { toast } from "sonner";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import MenuItemModal from "./MenuItemModal";
 
 const MenuItemList = () => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
@@ -313,7 +315,7 @@ const MenuItemList = () => {
                       {item.category_name || "-"}
                     </td>
                     <td className="px-4 py-4 font-semibold text-foreground whitespace-nowrap">
-                      ${Number(item.price).toFixed(2)}
+                      {formatCurrency(Number(item.price))}
                     </td>
                     <td className="px-4 py-4 text-muted-foreground whitespace-nowrap hidden xl:table-cell">
                       {item.created_at

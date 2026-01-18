@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
 import OrderHeader from "./components/OrderHeader";
@@ -16,6 +17,7 @@ import paymentService from "../../../services/paymentService";
 
 const OrderStatusTracking = () => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -71,7 +73,7 @@ const OrderStatusTracking = () => {
     newSocket.on("bill_created", ({ orderId, billData }) => {
       console.log("Bill created by waiter:", orderId);
       // Show success notification
-      toast.success(t("customer.orderTracking.notifications.billReady", { total: billData.total.toLocaleString('vi-VN') + '₫' }), {
+      toast.success(t("customer.orderTracking.notifications.billReady", { total: formatCurrency(billData.total) }), {
         description: t("customer.orderTracking.notifications.proceedPayment"),
         duration: 5000
       });

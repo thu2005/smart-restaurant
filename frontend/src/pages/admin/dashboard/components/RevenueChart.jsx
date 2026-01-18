@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import {
   BarChart,
   Bar,
@@ -15,6 +16,7 @@ import Select from "../../../../components/ui/Select";
 
 const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
 
   const dateRangeOptions = [
     { value: "today", label: t('admin.dashboard.dateRanges.today') },
@@ -210,7 +212,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
               <div className="w-3 h-3 rounded-full bg-primary" />
               <span className="text-xs text-muted-foreground">{t('admin.dashboard.revenue.series.revenue')}:</span>
               <span className="text-sm font-semibold text-foreground data-text">
-                ${(payload?.[0]?.value || 0).toFixed(2)}
+                {formatCurrency(payload?.[0]?.value || 0)}
               </span>
             </div>
             {payload?.[1] && (

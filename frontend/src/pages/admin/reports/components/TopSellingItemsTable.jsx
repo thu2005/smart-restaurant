@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../../../contexts/CurrencyContext';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 const TopSellingItemsTable = ({ items, onViewAll }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     if (!items || items.length === 0) {
         return (
             <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
@@ -116,7 +118,7 @@ const TopSellingItemsTable = ({ items, onViewAll }) => {
                                         {item.orderCount || item.totalQuantity}
                                     </td>
                                     <td className="py-4 px-2 text-right font-semibold text-foreground data-text">
-                                        ${((item.revenue || item.totalRevenue) / 100).toFixed(2)}
+                                        {formatCurrency((item.revenue || item.totalRevenue) / 100)}
                                     </td>
                                     <td className="py-4 px-2 text-right">
                                         <span className={`inline-flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-success' : 'text-error'}`}>

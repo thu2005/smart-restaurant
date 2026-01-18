@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Icon from "../../../../components/AppIcon";
 import Input from "../../../../components/ui/Input";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -8,6 +9,7 @@ import axios from 'axios';
 
 const BillPaymentSection = ({ order, onPay }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [isProcessing, setIsProcessing] = useState(false);
     const [stripeClientSecret, setStripeClientSecret] = useState(null);
@@ -168,7 +170,7 @@ const BillPaymentSection = ({ order, onPay }) => {
                                         </div>
                                     </div>
                                     <span className="font-semibold text-foreground ml-4 data-text">
-                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(lineTotal)}
+                                        {formatCurrency(lineTotal)}
                                     </span>
                                 </div>
                             );
@@ -180,21 +182,21 @@ const BillPaymentSection = ({ order, onPay }) => {
                 <div className="space-y-2 pt-4 border-t-2 border-dashed border-gray-300">
                     <div className="flex justify-between text-sm text-muted-foreground">
                         <span>{t("customer.orderTracking.bill.subtotal")}</span>
-                        <span className="data-text">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}</span>
+                        <span className="data-text">{formatCurrency(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                         <div className="flex justify-between text-sm text-success">
                             <span>{t("customer.orderTracking.bill.discount")}</span>
-                            <span className="data-text">-{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(discount)}</span>
+                            <span className="data-text">-{formatCurrency(discount)}</span>
                         </div>
                     )}
                     <div className="flex justify-between text-sm text-muted-foreground">
                         <span>{t("customer.orderTracking.bill.tax")}</span>
-                        <span className="data-text">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tax)}</span>
+                        <span className="data-text">{formatCurrency(tax)}</span>
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                         <span className="text-lg font-bold text-foreground">{t("customer.orderTracking.bill.total")}</span>
-                        <span className="text-2xl font-bold text-primary data-text">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}</span>
+                        <span className="text-2xl font-bold text-primary data-text">{formatCurrency(total)}</span>
                     </div>
                 </div>
             </div>
@@ -308,7 +310,7 @@ const BillPaymentSection = ({ order, onPay }) => {
                             </>
                         ) : (
                             <>
-                                {selectedMethod === 'momo' ? t("customer.orderTracking.bill.continueMomo", "Continue to MoMo") : t("customer.orderTracking.bill.payButton", { amount: total.toLocaleString('vi-VN') + '₫' })}
+                                {selectedMethod === 'momo' ? t("customer.orderTracking.bill.continueMomo", "Continue to MoMo") : t("customer.orderTracking.bill.payButton", { amount: formatCurrency(total) })}
                                 <Icon name="ArrowRight" size={18} />
                             </>
                         )}

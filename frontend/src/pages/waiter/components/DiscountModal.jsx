@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 
 const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [discountType, setDiscountType] = useState("percentage"); // "percentage" or "fixed"
     const [discountValue, setDiscountValue] = useState("");
     const [error, setError] = useState("");
@@ -144,19 +146,19 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
                         <div className="mb-4 p-3 bg-muted/30 rounded-lg space-y-1 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Subtotal:</span>
-                                <span className="text-foreground">{new Intl.NumberFormat('vi-VN').format(calculateSubtotal())}₫</span>
+                                <span className="text-foreground">{formatCurrency(calculateSubtotal())}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Tax (10%):</span>
-                                <span className="text-foreground">{new Intl.NumberFormat('vi-VN').format(calculateSubtotal() * 0.1)}₫</span>
+                                <span className="text-foreground">{formatCurrency(calculateSubtotal() * 0.1)}</span>
                             </div>
                             <div className="flex justify-between text-success">
                                 <span>{t("waiter.bill.summary.discount")}:</span>
-                                <span>-{new Intl.NumberFormat('vi-VN').format(calculateDiscountAmount())}₫</span>
+                                <span>-{formatCurrency(calculateDiscountAmount())}</span>
                             </div>
                             <div className="flex justify-between font-bold pt-2 border-t border-border">
                                 <span className="text-foreground">{t("waiter.discount.newTotal")}:</span>
-                                <span className="text-primary">{new Intl.NumberFormat('vi-VN').format(calculateTotal())}₫</span>
+                                <span className="text-primary">{formatCurrency(calculateTotal())}</span>
                             </div>
                         </div>
                     )}

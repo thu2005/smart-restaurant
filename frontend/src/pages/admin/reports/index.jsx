@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../../contexts/CurrencyContext';
 import OverviewMetrics from './components/OverviewMetrics';
 import RevenueOverTimeChart from './components/RevenueOverTimeChart';
 import PeakHoursChart from './components/PeakHoursChart';
@@ -11,6 +12,7 @@ import reportApi from '../../../services/reportApi';
 
 const Reports = () => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [dateRange, setDateRange] = useState('last7days');
     const [chartPeriod, setChartPeriod] = useState('daily');
     const [loading, setLoading] = useState(true);
@@ -104,7 +106,7 @@ const Reports = () => {
             const newMetrics = [
                 {
                     title: t('reports.metrics.totalRevenue'),
-                    value: `$${(comparison.totalRevenue.current / 100).toFixed(2)}`,
+                    value: formatCurrency((comparison.totalRevenue.current / 100)),
                     change: `${comparison.totalRevenue.change >= 0 ? '+' : ''}${comparison.totalRevenue.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.totalRevenue.change >= 0 ? 'positive' : 'negative',
                     icon: 'DollarSign',
@@ -120,7 +122,7 @@ const Reports = () => {
                 },
                 {
                     title: t('reports.metrics.avgOrderValue'),
-                    value: `$${(comparison.averageOrderValue.current / 100).toFixed(2)}`,
+                    value: formatCurrency((comparison.averageOrderValue.current / 100)),
                     change: `${comparison.averageOrderValue.change >= 0 ? '+' : ''}${comparison.averageOrderValue.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.averageOrderValue.change >= 0 ? 'positive' : 'negative',
                     icon: 'TrendingUp',

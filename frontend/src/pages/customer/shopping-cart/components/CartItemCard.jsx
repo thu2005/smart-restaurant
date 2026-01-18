@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Image from "../../../../components/AppImage";
 
 import Button from "../../../../components/ui/Button";
@@ -8,6 +9,7 @@ import Button from "../../../../components/ui/Button";
 const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const isReadOnly = !onUpdateQuantity || !onRemove;
 
   const handleQuantityChange = (newQuantity) => {
@@ -76,7 +78,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => {
                     {modifier?.name}
                     {totalPrice > 0 && (
                       <span className="text-primary ml-1">
-                        (+{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice)})
+                        (+{formatCurrency(totalPrice)})
                       </span>
                     )}
                   </p>

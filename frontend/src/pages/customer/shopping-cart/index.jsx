@@ -124,7 +124,7 @@ const ShoppingCart = () => {
       console.log("SOCKET EVENT: bill_created received!");
       console.log("Order ID:", orderId);
       console.log("Bill Data:", billData);
-      toast.success(`Your bill is ready! Total: ${billData.total.toLocaleString('vi-VN')}₫`, {
+      toast.success(`Your bill is ready! Total: ${formatCurrency(billData.total)}`, {
         description: "You can now proceed with payment.",
         duration: 5000
       });

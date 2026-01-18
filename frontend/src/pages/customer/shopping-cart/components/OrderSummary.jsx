@@ -1,9 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Icon from "../../../../components/AppIcon";
 
 const OrderSummary = ({ subtotal, tax, total, itemCount, estimatedTime }) => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   // Tax is calculated on the final bill, not here
   const calculatedTotal = subtotal;
 
@@ -18,7 +20,7 @@ const OrderSummary = ({ subtotal, tax, total, itemCount, estimatedTime }) => {
             {t("customer.cart.summary.items", { count: itemCount })}
           </span>
           <span className="text-sm md:text-base font-medium text-foreground data-text">
-            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}
+            {formatCurrency(subtotal)}
           </span>
         </div>
 
@@ -28,7 +30,7 @@ const OrderSummary = ({ subtotal, tax, total, itemCount, estimatedTime }) => {
               {t("customer.cart.summary.total", "Total")}
             </span>
             <span className="text-xl md:text-2xl lg:text-3xl font-bold text-primary data-text">
-              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculatedTotal)}
+              {formatCurrency(calculatedTotal)}
             </span>
           </div>
         </div>

@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../../../contexts/CurrencyContext';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 
 const TopItemsModal = ({ items, onClose }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     if (!items || items.length === 0) return null;
 
     const getRankBadgeClass = (rank) => {
@@ -104,7 +106,7 @@ const TopItemsModal = ({ items, onClose }) => {
                                             {item.orderCount || item.totalQuantity}
                                         </td>
                                         <td className="py-4 px-2 text-right font-semibold text-foreground data-text">
-                                            ${((item.revenue || item.totalRevenue) / 100).toFixed(2)}
+                                            {formatCurrency((item.revenue || item.totalRevenue) / 100)}
                                         </td>
                                         <td className="py-4 px-2 text-right">
                                             <span className={`inline-flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-success' : 'text-error'}`}>

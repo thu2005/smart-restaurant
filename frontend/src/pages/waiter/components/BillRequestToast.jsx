@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 
 const BillRequestToast = ({ notification, onClose, onViewOrder }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     useEffect(() => {
         if (notification) {
             // Auto-dismiss after 8 seconds
@@ -52,7 +54,7 @@ const BillRequestToast = ({ notification, onClose, onViewOrder }) => {
                         {t("waiter.bill.hasRequested")}
                     </p>
                     <p className="text-lg font-bold text-amber-600 mt-2">
-                        {t("waiter.bill.summary.total")}: ${parseFloat(total).toFixed(2)}
+                        {t("waiter.bill.summary.total")}: {formatCurrency(parseFloat(total))}
                     </p>
                 </div>
 

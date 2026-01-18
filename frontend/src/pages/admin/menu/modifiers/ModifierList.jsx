@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import { createPortal } from "react-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 
 const ModifierList = () => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -216,7 +218,7 @@ const ModifierList = () => {
                     <span>{option.name}</span>
                     <span className="text-gray-500">
                       {option.price_adjustment > 0
-                        ? `+$${option.price_adjustment.toFixed(2)}`
+                        ? `+${formatCurrency(option.price_adjustment)}`
                         : t('admin.menu.items.modifiers.card.free')}
                     </span>
                   </li>

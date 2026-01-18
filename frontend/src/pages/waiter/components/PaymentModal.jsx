@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 
 const PaymentModal = ({ isOpen, onClose, onConfirm, bill }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [paymentMethod, setPaymentMethod] = useState("CASH");
 
     const paymentMethods = [
@@ -42,21 +44,21 @@ const PaymentModal = ({ isOpen, onClose, onConfirm, bill }) => {
                     <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">{t("waiter.bill.summary.subtotal")}:</span>
-                            <span className="text-foreground">{new Intl.NumberFormat('vi-VN').format(parseFloat(bill.subtotal))}₫</span>
+                            <span className="text-foreground">{formatCurrency(parseFloat(bill.subtotal))}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">{t("waiter.bill.summary.tax")}:</span>
-                            <span className="text-foreground">{new Intl.NumberFormat('vi-VN').format(parseFloat(bill.tax))}₫</span>
+                            <span className="text-foreground">{formatCurrency(parseFloat(bill.tax))}</span>
                         </div>
                         {bill.discount > 0 && (
                             <div className="flex justify-between text-success">
                                 <span>{t("waiter.bill.summary.discount")}:</span>
-                                <span>-{new Intl.NumberFormat('vi-VN').format(parseFloat(bill.discount))}₫</span>
+                                <span>-{formatCurrency(parseFloat(bill.discount))}</span>
                             </div>
                         )}
                         <div className="flex justify-between font-bold text-base pt-2 border-t border-border">
                             <span className="text-foreground">{t("waiter.bill.summary.total")}:</span>
-                            <span className="text-primary">{new Intl.NumberFormat('vi-VN').format(parseFloat(bill.total))}₫</span>
+                            <span className="text-primary">{formatCurrency(parseFloat(bill.total))}</span>
                         </div>
                     </div>
                 </div>

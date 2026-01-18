@@ -1,13 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 
 const BillSummary = ({ bill, compact = false }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     if (!bill) return null;
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('vi-VN').format(parseFloat(amount)) + '₫';
-    };
 
     if (compact) {
         return (
