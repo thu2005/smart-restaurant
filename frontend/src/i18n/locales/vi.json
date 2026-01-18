@@ -44,7 +44,8 @@
             "completed": "Hoàn Thành",
             "lowStock": "Sắp Hết",
             "soldOut": "Hết Hàng",
-            "na": "N/A"
+            "na": "N/A",
+            "notAvailable": "Không khả dụng"
         },
         "messages": {
             "loading": "Đang tải...",
@@ -1164,7 +1165,7 @@
     "restaurant": {
         "create": {
             "title": "Tạo nhà hàng",
-            "description": "Tạo nhà hàng cho admin:",
+            "subtitle": "Tạo nhà hàng cho admin:",
             "form": {
                 "name": "Tên nhà hàng",
                 "description": "Mô tả",
@@ -1174,22 +1175,31 @@
                 "timezone": "Múi giờ",
                 "currency": "Tiền tệ",
                 "placeholders": {
-                    "name": "Ví dụ: Phở Cồ",
-                    "description": "Mô tả ngắn về nhà hàng",
+                    "name": "ví dụ: Café Poirot",
+                    "description": "Mô tả ngắn gọn về nhà hàng của bạn",
                     "phone": "+84 123 456 789",
-                    "email": "nhahang@example.com",
-                    "address": "123 Đường ABC, Quận X"
+                    "email": "restaurant@example.com",
+                    "address": "123 Tên đường, Thành phố"
                 }
             },
-            "info": {
-                "title": "Hệ thống đa chi nhánh",
-                "content": "Nhà hàng này sẽ được gán riêng cho tài khoản admin. Admin sẽ có toàn quyền kiểm soát thực đơn, bàn, đơn hàng và nhân viên của nhà hàng này."
-            },
-            "buttons": {
-                "create": "Tạo nhà hàng",
-                "creating": "Đang tạo...",
-                "skip": "Bỏ qua lúc này"
+            "timezone": "Múi giờ",
+            "currency": "Tiền tệ",
+            "placeholders": {
+                "name": "Ví dụ: Phở Cồ",
+                "description": "Mô tả ngắn về nhà hàng",
+                "phone": "+84 123 456 789",
+                "email": "nhahang@example.com",
+                "address": "123 Đường ABC, Quận X"
             }
+        },
+        "info": {
+            "title": "Hệ thống đa chi nhánh",
+            "content": "Nhà hàng này sẽ được gán riêng cho tài khoản admin. Admin sẽ có toàn quyền kiểm soát thực đơn, bàn, đơn hàng và nhân viên của nhà hàng này."
+        },
+        "buttons": {
+            "create": "Tạo nhà hàng",
+            "creating": "Đang tạo...",
+            "skip": "Bỏ qua lúc này"
         }
     }
 }

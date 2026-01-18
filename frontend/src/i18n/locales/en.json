@@ -44,7 +44,8 @@
             "completed": "Completed",
             "lowStock": "Low Stock",
             "soldOut": "Sold Out",
-            "na": "N/A"
+            "na": "N/A",
+            "notAvailable": "Not Available"
         },
         "messages": {
             "loading": "Loading...",
@@ -1091,7 +1092,7 @@
     "restaurant": {
         "create": {
             "title": "Create Restaurant",
-            "description": "Create a restaurant for admin:",
+            "subtitle": "Create a restaurant for admin:",
             "form": {
                 "name": "Restaurant Name",
                 "description": "Description",
