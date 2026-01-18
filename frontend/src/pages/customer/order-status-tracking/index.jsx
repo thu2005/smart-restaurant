@@ -225,7 +225,17 @@ const OrderStatusTracking = () => {
       setLoading(false);
     }
   };
-
+  const handlePayment = async (method) => {
+    console.log('Payment completed with method:', method);
+    // Refresh order to show updated status
+    await fetchOrder();
+    
+    // Show success message
+    toast.success("Payment successful!", {
+      description: "Your order has been completed.",
+      duration: 4000
+    });
+  };
   const getOverallProgress = () => {
     if (!orderData) return 0;
     const statusWeights = {

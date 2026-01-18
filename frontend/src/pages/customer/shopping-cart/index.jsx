@@ -65,6 +65,7 @@ const ShoppingCart = () => {
             console.log('Active order has bill! Setting activeOrder state');
             console.log('Bill data:', response.data.bill);
             setActiveOrder(response.data);
+            console.log('activeOrder state should now have bill. Checking after set...');
           } else {
             console.log('No bill found in active order');
             console.log('Order status:', response.data.status);
@@ -93,6 +94,17 @@ const ShoppingCart = () => {
     fetchTableInfo();
     fetchActiveOrder(); // Fetch active order on mount
   }, []);
+
+  // Debug: Log when activeOrder state changes
+  useEffect(() => {
+    console.log('🔄 activeOrder state changed:', activeOrder);
+    console.log('🔍 Has bill?', !!activeOrder?.bill);
+    if (activeOrder?.bill) {
+      console.log('✅ Bill exists in state, BillPaymentSection should render');
+    } else {
+      console.log('❌ No bill in state, showing cart/order flow');
+    }
+  }, [activeOrder]);
 
   // Setup socket listener for bill creation
   useEffect(() => {
@@ -267,7 +279,8 @@ const ShoppingCart = () => {
 
       if (activeOrder.data) {
         const status = activeOrder.data.status;
-        const ALLOWED_STATUSES_TO_ADD = ['SERVED'];
+        // Allow adding items to order in these statuses (single order per table session)
+        const ALLOWED_STATUSES_TO_ADD = ['SERVED', 'PAYMENT_PENDING'];
 
         if (!ALLOWED_STATUSES_TO_ADD.includes(status)) {
           showModal('error', 'Order In Progress', `You have an order in progress (${status}). Please wait for all items to be served before placing a new order.`);
@@ -278,8 +291,8 @@ const ShoppingCart = () => {
         // Show Confirmation Modal
         showModal(
           'confirm',
-          'Active Session Found',
-          'You have an active dining session. Would you like to add these items to your existing order?',
+          'Add to Current Order',
+          'Would you like to add these items to your current order?',
           () => confirmPlaceOrder()
         );
         return;
@@ -297,7 +310,8 @@ const ShoppingCart = () => {
 
   const { itemCount, subtotal, tax, total } = getCartSummary();
 
-  if (cartItems.length === 0) {
+  // Show empty cart only if there's no cart items AND no active order with bill
+  if (cartItems.length === 0 && !activeOrder?.bill) {
     return (
       <>
         <Helmet>
@@ -358,6 +372,7 @@ const ShoppingCart = () => {
                   </Button>
                 </div>
 
+                {/* Always show current cart items */}
                 {cartItems?.map((item) => (
                   <CartItemCard
                     key={item?.cartId}
