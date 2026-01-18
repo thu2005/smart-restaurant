@@ -1024,7 +1024,10 @@
                 "complete": "Hoàn Thành",
                 "startAll": "BẮT ĐẦU TẤT CẢ",
                 "readyAll": "SẴN SÀNG TẤT CẢ",
-                "markAllReady": "Đánh Dấu Tất Cả Sẵn Sàng"
+                "markAllReady": "Đánh Dấu Tất Cả Sẵn Sàng",
+                "cook": "Nấu",
+                "done": "Xong",
+                "itemReady": "Sẵn Sàng"
             },
             "noPendingItems": "Không có món nào cần chuẩn bị.",
             "waitingForWaiter": "Đợi Phục Vụ",

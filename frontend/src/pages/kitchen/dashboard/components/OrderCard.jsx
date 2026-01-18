@@ -265,7 +265,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                             className="flex items-center gap-1 px-2 py-0.5 bg-warning/20 hover:bg-warning/30 text-warning text-[10px] font-bold uppercase rounded-full border border-warning/50 transition-colors disabled:opacity-50"
                           >
                             <Icon name="Flame" size={12} className="text-warning" />
-                            {isItemLoading ? '...' : 'Cook'}
+                            {isItemLoading ? '...' : t('kitchen.orders.actions.cook')}
                           </button>
                         )}
 
@@ -277,14 +277,14 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                             className="flex items-center gap-1 px-2 py-0.5 bg-success/20 hover:bg-success/30 text-success text-[10px] font-bold uppercase rounded-full border border-success/50 transition-colors disabled:opacity-50"
                           >
                             <Icon name="Check" size={12} className="text-success" />
-                            {isItemLoading ? '...' : 'Done'}
+                            {isItemLoading ? '...' : t('kitchen.orders.actions.done')}
                           </button>
                         )}
 
                         {/* Done Badge */}
                         {itemStatus === 'ready' && (
                           <span className="flex items-center gap-1 px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold uppercase rounded-full border border-success/20">
-                            <Icon name="CheckCircle" size={12} /> Ready
+                            <Icon name="CheckCircle" size={12} /> {t('kitchen.orders.actions.itemReady')}
                           </span>
                         )}
                       </div>
