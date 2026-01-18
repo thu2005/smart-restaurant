@@ -38,6 +38,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
             PREPARING: { label: "In Kitchen", className: "bg-accent/20 text-accent" },
             READY: { label: "Ready", className: "bg-success/30 text-success" },
             SERVED: { label: "Served", className: "bg-muted text-muted-foreground" },
+            COMPLETED: { label: "Paid & Completed", className: "bg-primary/20 text-primary border border-primary/20" },
         };
 
         const config = statusConfig[order.status] || {
@@ -61,6 +62,9 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
         }
         if (order.status === "READY") {
             return "border-l-4 border-l-success";
+        }
+        if (order.status === "COMPLETED") {
+            return "border-l-4 border-l-primary opacity-75 hover:opacity-100 transition-opacity";
         }
         return "";
     };
@@ -100,11 +104,15 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
             <div className="p-4 space-y-3">
                 {/* Active Items Section */}
                 {(() => {
-                    const activeItems = order.orderItems?.filter(item => !['served', 'rejected', 'completed'].includes(item.itemStatus)) || [];
-                    
+                    // For COMPLETED orders, show everything as active list for better visibility
+                    const isCompleted = order.status === 'COMPLETED';
+                    const activeItems = order.orderItems?.filter(item =>
+                        isCompleted || !['served', 'rejected', 'completed'].includes(item.itemStatus)
+                    ) || [];
+
                     if (activeItems.length > 0) {
                         return activeItems.map((item, index) => (
-                             <div
+                            <div
                                 key={index}
                                 className="flex items-start justify-between pb-3 border-b border-dashed border-border last:border-0 last:pb-0"
                             >
@@ -116,10 +124,10 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                         <p className="font-medium text-sm text-foreground">
                                             {item.menuItem?.name || "Unknown Item"}
                                         </p>
-                                {/* Modifier rendering logic... */}
+                                        {/* Modifier rendering logic... */}
                                         {item.modifiers && item.modifiers.length > 0 && (
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                {Array.isArray(item.modifiers) 
+                                                {Array.isArray(item.modifiers)
                                                     ? item.modifiers.map(mod => {
                                                         // Handle both string format and object format
                                                         if (typeof mod === 'string') return mod;
@@ -140,11 +148,11 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                         {/* Show status badge for item if cooking/ready */}
                                         {item.itemStatus && item.itemStatus !== 'queued' && (
                                             <span className={`text-[10px] px-1.5 py-0.5 rounded ml-2 uppercase font-bold
-                                                ${item.itemStatus === 'ready' ? 'bg-success/20 text-success' : 
-                                                  item.itemStatus === 'cooking' ? 'bg-warning/20 text-warning' : 'bg-muted text-muted-foreground'}`}>
+                                                ${item.itemStatus === 'ready' ? 'bg-success/20 text-success' :
+                                                    item.itemStatus === 'cooking' ? 'bg-warning/20 text-warning' : 'bg-muted text-muted-foreground'}`}>
                                                 {item.itemStatus}
                                             </span>
-                                        )} 
+                                        )}
                                     </div>
                                 </div>
                                 <span className="text-sm font-semibold text-foreground data-text ml-2">
@@ -160,11 +168,11 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                 {/* Served/History Section */}
                 {(() => {
                     const historyItems = order.orderItems?.filter(item => ['served', 'rejected', 'completed'].includes(item.itemStatus)) || [];
-                    
+
                     if (historyItems.length > 0) {
                         return (
                             <div className="mt-4 pt-4 border-t border-border">
-                                <button 
+                                <button
                                     onClick={(e) => {
                                         const el = e.currentTarget.nextElementSibling;
                                         el.classList.toggle('hidden');
@@ -172,11 +180,11 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                     }}
                                     className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors w-full text-center flex items-center justify-center gap-1"
                                 >
-                                   Show History ({historyItems.length})
+                                    Show History ({historyItems.length})
                                 </button>
                                 <div className="hidden space-y-3 mt-3 animate-in fade-in slide-in-from-top-2">
                                     {historyItems.map((item, index) => (
-                                         <div
+                                        <div
                                             key={`hist-${index}`}
                                             className="flex items-start justify-between pb-2 opacity-60 hover:opacity-100 transition-opacity"
                                         >

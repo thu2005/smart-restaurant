@@ -212,6 +212,159 @@ class PaymentService {
     }
 
     /**
+     * Create Stripe PaymentIntent
+     * @param {Object} data - Payment data
+     * @returns {Object} PaymentIntent client secret and metadata
+     */
+    async createStripePaymentIntent(data) {
+        const { orderId, restaurantId, amount, tip, tax } = data;
+
+        // Check if order exists
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                payment: true,
+                orderItems: {
+                    include: { menuItem: true }
+                }
+            }
+        });
+
+        if (!order) throw new Error('Order not found');
+        if (order.payment && order.payment.status === 'COMPLETED') {
+            throw new Error('Order already paid');
+        }
+
+        // Calculate total
+        const totalPaid = parseFloat(amount) + (parseFloat(tip) || 0) + (parseFloat(tax) || 0);
+
+        // Check if a pending payment already exists, update it instead of creating new
+        let payment;
+        if (order.payment && (order.payment.status === 'PENDING' || order.payment.status === 'FAILED')) {
+            payment = await prisma.payment.update({
+                where: { id: order.payment.id },
+                data: {
+                    amount: parseFloat(amount),
+                    tip: parseFloat(tip) || 0,
+                    tax: parseFloat(tax) || 0,
+                    total: totalPaid,
+                    method: 'STRIPE',
+                    status: 'PENDING',
+                    gatewayResponse: null,
+                }
+            });
+        } else {
+            payment = await prisma.payment.create({
+                data: {
+                    orderId,
+                    restaurantId,
+                    amount: parseFloat(amount),
+                    tip: parseFloat(tip) || 0,
+                    tax: parseFloat(tax) || 0,
+                    total: totalPaid,
+                    method: 'STRIPE',
+                    status: 'PENDING',
+                }
+            });
+        }
+
+        // Create PaymentIntent
+        if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_mock') {
+            // Return mock for development
+            return {
+                clientSecret: 'mock_client_secret_' + payment.id,
+                paymentIntentId: 'mock_pi_' + Date.now(),
+                paymentId: payment.id,
+                amount: totalPaid
+            };
+        }
+
+        const intent = await stripe.paymentIntents.create({
+            amount: Math.round(totalPaid * 100), // Convert to cents
+            currency: 'vnd',
+            automatic_payment_methods: {
+                enabled: true,
+            },
+            metadata: {
+                orderId: String(orderId),
+                paymentId: String(payment.id),
+                restaurantId: String(restaurantId)
+            }
+        });
+
+        // Update payment with PaymentIntent ID
+        await prisma.payment.update({
+            where: { id: payment.id },
+            data: {
+                gatewayResponse: {
+                    paymentIntentId: intent.id,
+                    status: intent.status
+                }
+            }
+        });
+
+        return {
+            clientSecret: intent.client_secret,
+            paymentIntentId: intent.id,
+            paymentId: payment.id,
+            amount: totalPaid
+        };
+    }
+
+    /**
+     * Confirm Stripe payment status
+     * @param {string} paymentIntentId - Stripe PaymentIntent ID
+     * @returns {Object} Payment status
+     */
+    async confirmStripePayment(paymentIntentId) {
+        try {
+            // Retrieve PaymentIntent from Stripe
+            const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+            const { paymentId, orderId, restaurantId } = intent.metadata;
+
+            if (intent.status === 'succeeded') {
+                // Update payment status
+                await prisma.payment.update({
+                    where: { id: paymentId },
+                    data: {
+                        status: 'COMPLETED',
+                        gatewayResponse: intent,
+                        paidAt: new Date()
+                    }
+                });
+
+                // Update order status
+                await prisma.order.update({
+                    where: { id: orderId },
+                    data: { status: 'COMPLETED' }
+                });
+
+                return {
+                    success: true,
+                    status: 'succeeded',
+                    orderId,
+                    paymentId,
+                    restaurantId
+                };
+            } else {
+                return {
+                    success: false,
+                    status: intent.status,
+                    message: 'Payment not yet completed'
+                };
+            }
+        } catch (error) {
+            console.error('Confirm Payment Error:', error);
+            return {
+                success: false,
+                status: 'error',
+                message: error.message
+            };
+        }
+    }
+
+    /**
      * Create Momo payment request
      * @param {Object} data - Payment data
      * @returns {Object} Momo payment response with payUrl

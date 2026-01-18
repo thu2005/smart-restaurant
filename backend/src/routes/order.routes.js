@@ -522,4 +522,34 @@ router.post(
     orderController.addItemsToOrder
 );
 
+/**
+ * @swagger
+ * /api/orders/bills:
+ *   get:
+ *     summary: Get bills for restaurant, filter by paid/unpaid
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PAID, UNPAID]
+ *     responses:
+ *       200:
+ *         description: List of bills
+ */
+router.get(
+    '/bills',
+    protect,
+    authorize('WAITER', 'ADMIN', 'SUPER_ADMIN'),
+    orderController.getBillsByStatus
+);
+
 module.exports = router;
