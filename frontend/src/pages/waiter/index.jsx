@@ -35,7 +35,7 @@ const WaiterDashboard = () => {
     const [discountModalOpen, setDiscountModalOpen] = useState(false);
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [selectedOrderForBill, setSelectedOrderForBill] = useState(null);
-    
+
     // Bills list state
     const [billTab, setBillTab] = useState("ALL"); // ALL, PAID, UNPAID
     const [billList, setBillList] = useState([]);
@@ -672,7 +672,10 @@ const WaiterDashboard = () => {
                     setSelectedOrderForView(null);
                 }}
                 order={selectedOrderForView}
+                bill={selectedOrderForView ? bills[selectedOrderForView.id] : null}
                 onCreateBill={handleCreateBillFromModal}
+                onPrintBill={handlePrintBill}
+                onApplyDiscount={handleApplyDiscount}
             />
 
             <BillRequestToast
