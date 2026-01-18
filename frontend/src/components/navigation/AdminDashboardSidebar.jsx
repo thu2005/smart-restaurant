@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
 import authService from "../../services/authService";
+import { useTranslation } from "react-i18next";
 
 const AdminDashboardSidebar = ({
   isCollapsed = false,
@@ -12,6 +13,7 @@ const AdminDashboardSidebar = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [localCollapsed, setLocalCollapsed] = useState(isCollapsed);
   const [mobileOpen, setMobileOpen] = useState(isMobileOpen);
 
@@ -26,11 +28,11 @@ const AdminDashboardSidebar = ({
   // Super Admin only sees user management
   const superAdminNavigationItems = [
     {
-      section: "User Management",
+      section: t("nav.sections.userManagement"),
       items: [
         {
           path: "/admin/users",
-          label: "Manage Admins",
+          label: t("nav.items.manageAdmins"),
           icon: "Users",
         },
       ],
@@ -40,63 +42,63 @@ const AdminDashboardSidebar = ({
   // Regular admin sees all menu and operations
   const navigationItems = [
     {
-      section: "Main",
+      section: t("nav.sections.main"),
       items: [
         {
           path: "/admin/dashboard",
-          label: "Dashboard",
+          label: t("nav.items.dashboard"),
           icon: "LayoutDashboard",
         },
         {
           path: "/admin/kitchen/dashboard",
-          label: "Kitchen Display",
+          label: t("nav.items.kitchen"),
           icon: "ChefHat",
         },
       ],
     },
     {
-      section: "Management",
+      section: t("nav.sections.management"),
       items: [
         {
           path: "/admin/menu/items",
-          label: "Menu Items",
+          label: t("nav.items.menu"),
           icon: "UtensilsCrossed",
         },
         {
           path: "/admin/menu/categories",
-          label: "Categories",
+          label: t("nav.items.categories"),
           icon: "List",
         },
         {
           path: "/admin/menu/modifiers",
-          label: "Modifiers",
+          label: t("nav.items.modifiers"),
           icon: "Settings",
         },
-        { path: "/admin/orders", label: "Orders", icon: "ShoppingBag" },
-        { path: "/admin/tables", label: "Tables", icon: "Grid3x3" },
+        { path: "/admin/orders", label: t("nav.items.orders"), icon: "ShoppingBag" },
+        { path: "/admin/tables", label: t("nav.items.tables"), icon: "Grid3x3" },
       ],
     },
     {
-      section: "Reports",
+      section: t("nav.sections.reports"),
       items: [
-        { path: "/admin/reports", label: "Reports & Analytics", icon: "BarChart3" },
+        { path: "/admin/reports", label: t("nav.items.reports"), icon: "BarChart3" },
       ],
     },
     {
-      section: "Account",
+      section: t("nav.sections.account"),
       items: [
-        { path: "/admin/users", label: "Staff Management", icon: "Users" },
-        { path: "/admin/settings", label: "Settings", icon: "Settings" },
-        { path: "/admin/help", label: "Help", icon: "HelpCircle" },
+        { path: "/admin/users", label: t("nav.items.staff"), icon: "Users" },
+        { path: "/admin/settings", label: t("nav.items.settings"), icon: "Settings" },
+        { path: "/admin/help", label: t("nav.items.help"), icon: "HelpCircle" },
       ],
     },
   ];
 
   const mobileNavItems = [
-    { path: "/admin-dashboard", label: "Dashboard", icon: "LayoutDashboard" },
-    { path: "/kitchen-display-system", label: "Kitchen", icon: "ChefHat" },
-    { path: "/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
-    { path: "/admin/orders", label: "Orders", icon: "ShoppingBag" },
+    { path: "/admin-dashboard", label: t("nav.items.dashboard"), icon: "LayoutDashboard" },
+    { path: "/kitchen-display-system", label: t("nav.items.kitchen"), icon: "ChefHat" },
+    { path: "/menu-browse", label: t("nav.items.menuBrowse"), icon: "UtensilsCrossed" },
+    { path: "/admin/orders", label: t("nav.items.orders"), icon: "ShoppingBag" },
   ];
 
   const handleNavigation = (path) => {

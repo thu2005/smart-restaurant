@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Icon from "./AppIcon";
+import { useTranslation, Trans } from "react-i18next";
 
 const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -36,9 +38,11 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                 {/* Header */}
                 <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Create Restaurant</h2>
+                        <h2 className="text-2xl font-bold text-gray-900">{t('restaurant.create.title')}</h2>
                         <p className="text-sm text-gray-600 mt-1">
-                            Create a restaurant for admin: <span className="font-semibold">{adminName}</span>
+                            <Trans i18nKey="restaurant.create.subtitle" values={{ adminName }}>
+                                Create a restaurant for admin: <span className="font-semibold">{{ adminName }}</span>
+                            </Trans>
                         </p>
                     </div>
                     <button
@@ -55,7 +59,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                     {/* Restaurant Name */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Restaurant Name <span className="text-red-500">*</span>
+                            {t('restaurant.create.form.name')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -63,7 +67,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                             value={formData.name}
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="e.g., Café Poirot"
+                            placeholder={t('restaurant.create.form.placeholders.name')}
                             required
                         />
                     </div>
@@ -71,7 +75,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                     {/* Description */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Description
+                            {t('restaurant.create.form.description')}
                         </label>
                         <textarea
                             name="description"
@@ -79,7 +83,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                             onChange={handleChange}
                             rows={3}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Brief description of your restaurant"
+                            placeholder={t('restaurant.create.form.placeholders.description')}
                         />
                     </div>
 
@@ -88,7 +92,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                         {/* Phone */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number
+                                {t('restaurant.create.form.phone')}
                             </label>
                             <input
                                 type="tel"
@@ -96,14 +100,14 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                                 value={formData.phone}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="+84 123 456 789"
+                                placeholder={t('restaurant.create.form.placeholders.phone')}
                             />
                         </div>
 
                         {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email
+                                {t('restaurant.create.form.email')}
                             </label>
                             <input
                                 type="email"
@@ -111,7 +115,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="restaurant@example.com"
+                                placeholder={t('restaurant.create.form.placeholders.email')}
                             />
                         </div>
                     </div>
@@ -119,7 +123,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                     {/* Address */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Address
+                            {t('restaurant.create.form.address')}
                         </label>
                         <input
                             type="text"
@@ -127,7 +131,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                             value={formData.address}
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="123 Street Name, City"
+                            placeholder={t('restaurant.create.form.placeholders.address')}
                         />
                     </div>
 
@@ -136,7 +140,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                         {/* Timezone */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Timezone
+                                {t('restaurant.create.form.timezone')}
                             </label>
                             <select
                                 name="timezone"
@@ -157,7 +161,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                         {/* Currency */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Currency
+                                {t('restaurant.create.form.currency')}
                             </label>
                             <select
                                 name="currency"
@@ -180,10 +184,9 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
                         <Icon name="Info" size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
                         <div className="text-sm text-blue-800">
-                            <p className="font-semibold mb-1">Multi-Tenant System</p>
+                            <p className="font-semibold mb-1">{t('restaurant.create.info.title')}</p>
                             <p>
-                                This restaurant will be exclusively assigned to the admin account. The admin will
-                                have full control over this restaurant's menu, tables, orders, and staff.
+                                {t('restaurant.create.info.content')}
                             </p>
                         </div>
                     </div>
@@ -198,12 +201,12 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                             {loading ? (
                                 <>
                                     <Icon name="Loader2" size={20} className="animate-spin" />
-                                    Creating...
+                                    {t('restaurant.create.buttons.creating')}
                                 </>
                             ) : (
                                 <>
                                     <Icon name="Building2" size={20} />
-                                    Create Restaurant
+                                    {t('restaurant.create.buttons.create')}
                                 </>
                             )}
                         </button>
@@ -213,7 +216,7 @@ const CreateRestaurantModal = ({ isOpen, onClose, onSubmit, adminName }) => {
                             disabled={loading}
                             className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
                         >
-                            Skip for Now
+                            {t('restaurant.create.buttons.skip')}
                         </button>
                     </div>
                 </form>

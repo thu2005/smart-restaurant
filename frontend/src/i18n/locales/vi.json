@@ -72,6 +72,11 @@
         },
         "time": {
             "min": "phút"
+        },
+        "errorBoundary": {
+            "title": "Đã xảy ra lỗi",
+            "message": "Chúng tôi gặp lỗi không mong muốn khi xử lý yêu cầu của bạn.",
+            "back": "Quay lại"
         }
     },
     "reports": {
@@ -943,6 +948,28 @@
             "updateError": "Không thể cập nhật cài đặt",
             "uploadSuccess": "Tải tệp lên thành công",
             "uploadError": "Không thể tải tệp lên"
+        },
+        "tables": {
+            "title": "Quản Lý Bàn",
+            "subtitle": "Thiết lập và quản lý sơ đồ bàn",
+            "saveFailed": "Lưu bàn thất bại",
+            "printPreview": {
+                "titleSingle": "Xem trước in (Một bàn)",
+                "titleAll": "Xem trước in (Tất cả bàn)",
+                "layout": {
+                    "title": "Tùy Chọn Bố Cục",
+                    "single": "Trang Đơn",
+                    "singleDesc": "1 QR mỗi trang",
+                    "grid": "Bố Cục Lưới",
+                    "gridDesc": "6 QR mỗi trang"
+                },
+                "actions": {
+                    "title": "Thao Tác",
+                    "print": "In Ngay",
+                    "download": "Tải PDF"
+                },
+                "failed": "Không thể tải xem trước"
+            }
         }
     },
     "password": {
@@ -1041,6 +1068,128 @@
             "title": "Không Có Đơn Hàng",
             "description": "Tất cả đơn hàng đã hoàn thành. Bếp đã sẵn sàng cho đơn hàng mới.",
             "action": "Làm Mới Danh Sách"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Chào mừng trở lại",
+            "tab": "Đăng nhập",
+            "submit": "Đăng nhập",
+            "submitting": "Đang đăng nhập...",
+            "noAccount": "Chưa có tài khoản?",
+            "registerLink": "Đăng ký"
+        },
+        "register": {
+            "title": "Tạo tài khoản",
+            "tab": "Đăng ký",
+            "submit": "Tạo tài khoản",
+            "submitting": "Đang tạo tài khoản...",
+            "hasAccount": "Đã có tài khoản?",
+            "loginLink": "Đăng nhập"
+        },
+        "form": {
+            "fullName": "Họ và tên",
+            "fullNamePlaceholder": "Nhập họ và tên của bạn",
+            "phone": "Số điện thoại (Tùy chọn)",
+            "phonePlaceholder": "Nhập số điện thoại của bạn",
+            "email": "Email",
+            "emailPlaceholder": "Nhập email của bạn",
+            "password": "Mật khẩu",
+            "passwordPlaceholderCtx": "Tạo mật khẩu (tối thiểu 6 ký tự)",
+            "passwordPlaceholder": "Nhập mật khẩu của bạn"
+        },
+        "errors": {
+            "general": "Đã xảy ra lỗi. Vui lòng thử lại."
+        }
+    },
+    "nav": {
+        "sections": {
+            "userManagement": "Quản lý người dùng",
+            "main": "Chính",
+            "management": "Quản lý",
+            "reports": "Báo cáo",
+            "account": "Tài khoản"
+        },
+        "items": {
+            "manageAdmins": "Quản lý Admin",
+            "dashboard": "Bảng điều khiển",
+            "kitchen": "Màn hình bếp",
+            "menu": "Thực đơn",
+            "categories": "Danh mục",
+            "modifiers": "Tùy chọn món",
+            "orders": "Đơn hàng",
+            "tables": "Bàn",
+            "reports": "Báo cáo & Phân tích",
+            "staff": "Quản lý nhân viên",
+            "settings": "Cài đặt",
+            "help": "Trợ giúp",
+            "menuBrowse": "Thực đơn",
+            "cart": "Giỏ hàng",
+            "orderStatus": "Trạng thái đơn hàng",
+            "profile": "Hồ sơ"
+        },
+        "user": {
+            "member": "Thành viên",
+            "loginRegister": "Đăng nhập / Đăng ký",
+            "logout": "Đăng xuất"
+        },
+        "kitchen": {
+            "title": "Màn hình bếp",
+            "live": "Trực tiếp",
+            "filter": "Lọc đơn hàng",
+            "filters": {
+                "all": "Tất cả đơn",
+                "pending": "Chờ xử lý",
+                "preparing": "Đang chuẩn bị",
+                "ready": "Sẵn sàng"
+            }
+        }
+    },
+    "payment": {
+        "cardForm": {
+            "cardholderName": "Tên chủ thẻ",
+            "cardholderNamePlaceholder": "Nguyen Van A",
+            "cardDetails": "Chi tiết thẻ",
+            "saveCard": "Lưu thẻ này cho lần sau",
+            "secureNote": "Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi sử dụng Stripe để xử lý thanh toán.",
+            "pay": "Thanh toán",
+            "processing": "Đang xử lý...",
+            "errors": {
+                "nameRequired": "Vui lòng nhập tên chủ thẻ",
+                "failed": "Thanh toán thất bại. Vui lòng thử lại."
+            },
+            "loading": "Đang tải biểu mẫu..."
+        }
+    },
+    "restaurant": {
+        "create": {
+            "title": "Tạo nhà hàng",
+            "description": "Tạo nhà hàng cho admin:",
+            "form": {
+                "name": "Tên nhà hàng",
+                "description": "Mô tả",
+                "phone": "Số điện thoại",
+                "email": "Email",
+                "address": "Địa chỉ",
+                "timezone": "Múi giờ",
+                "currency": "Tiền tệ",
+                "placeholders": {
+                    "name": "Ví dụ: Phở Cồ",
+                    "description": "Mô tả ngắn về nhà hàng",
+                    "phone": "+84 123 456 789",
+                    "email": "nhahang@example.com",
+                    "address": "123 Đường ABC, Quận X"
+                }
+            },
+            "info": {
+                "title": "Hệ thống đa chi nhánh",
+                "content": "Nhà hàng này sẽ được gán riêng cho tài khoản admin. Admin sẽ có toàn quyền kiểm soát thực đơn, bàn, đơn hàng và nhân viên của nhà hàng này."
+            },
+            "buttons": {
+                "create": "Tạo nhà hàng",
+                "creating": "Đang tạo...",
+                "skip": "Bỏ qua lúc này"
+            }
         }
     }
 }

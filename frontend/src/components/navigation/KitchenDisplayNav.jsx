@@ -4,9 +4,11 @@ import Icon from "../AppIcon";
 import Button from "../ui/Button";
 import Select from "../ui/Select";
 import authService from "../../services/authService";
+import { useTranslation } from "react-i18next";
 
 const KitchenDisplayNav = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isHidden, setIsHidden] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -15,10 +17,10 @@ const KitchenDisplayNav = () => {
   const user = authService.getCurrentUser();
 
   const filterOptions = [
-    { value: "all", label: "All Orders" },
-    { value: "pending", label: "Pending" },
-    { value: "preparing", label: "Preparing" },
-    { value: "ready", label: "Ready" },
+    { value: "all", label: t("nav.kitchen.filters.all") },
+    { value: "pending", label: t("nav.kitchen.filters.pending") },
+    { value: "preparing", label: t("nav.kitchen.filters.preparing") },
+    { value: "ready", label: t("nav.kitchen.filters.ready") },
   ];
 
   const toggleSound = () => {
@@ -48,7 +50,7 @@ const KitchenDisplayNav = () => {
                 <Icon name="ChefHat" size={20} color="var(--color-primary)" />
               </div>
               <span className="text-lg font-heading font-semibold text-foreground">
-                Kitchen Display
+                {t("nav.kitchen.title")}
               </span>
             </div>
 
@@ -57,7 +59,7 @@ const KitchenDisplayNav = () => {
                 options={filterOptions}
                 value={filterStatus}
                 onChange={setFilterStatus}
-                placeholder="Filter orders"
+                placeholder={t("nav.kitchen.filter")}
                 className="w-48"
               />
             </div>
@@ -66,7 +68,7 @@ const KitchenDisplayNav = () => {
           <div className="kitchen-nav-section">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              <span className="text-sm font-medium text-foreground">Live</span>
+              <span className="text-sm font-medium text-foreground">{t("nav.kitchen.live")}</span>
             </div>
 
             <Button
@@ -85,7 +87,7 @@ const KitchenDisplayNav = () => {
               size="icon"
               iconName="Settings"
               className="touch-target"
-              aria-label="Settings"
+              aria-label={t("nav.items.settings")}
             />
 
             {/* User Profile & Logout */}
@@ -108,11 +110,11 @@ const KitchenDisplayNav = () => {
               {showUserMenu && (
                 <>
                   {/* Backdrop */}
-                  <div 
-                    className="fixed inset-0 z-40" 
+                  <div
+                    className="fixed inset-0 z-40"
                     onClick={() => setShowUserMenu(false)}
                   />
-                  
+
                   {/* Menu */}
                   <div className="absolute right-0 mt-2 w-56 bg-card rounded-lg shadow-warm-lg border border-border overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-border">
@@ -124,14 +126,14 @@ const KitchenDisplayNav = () => {
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="py-1">
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-smooth"
                       >
                         <Icon name="LogOut" size={16} className="text-destructive" />
-                        <span className="font-medium">Logout</span>
+                        <span className="font-medium">{t("nav.user.logout")}</span>
                       </button>
                     </div>
                   </div>
@@ -155,7 +157,7 @@ const KitchenDisplayNav = () => {
           options={filterOptions}
           value={filterStatus}
           onChange={setFilterStatus}
-          placeholder="Filter"
+          placeholder={t("nav.kitchen.filter")}
           className="w-32"
         />
       </div>

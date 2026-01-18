@@ -72,6 +72,11 @@
         },
         "time": {
             "min": "min"
+        },
+        "errorBoundary": {
+            "title": "Something went wrong",
+            "message": "We encountered an unexpected error while processing your request.",
+            "back": "Back"
         }
     },
     "reports": {
@@ -657,6 +662,19 @@
                 "regenerateFailed": "Failed to regenerate QR code",
                 "downloadFailed": "Download failed. Please try again.",
                 "saveFailed": "Failed to save table"
+            },
+            "printPreview": {
+                "titleSingle": "Print Preview (Single Table)",
+                "titleAll": "Print Preview (All Tables)",
+                "layout": "Layout Options",
+                "singlePage": "Single Page",
+                "singlePageDesc": "1 QR per page",
+                "grid": "Grid Layout",
+                "gridDesc": "6 QRs per page",
+                "actions": "Actions",
+                "printNow": "Print Now",
+                "downloadPdf": "Download PDF",
+                "failed": "Failed to load preview"
             }
         },
         "users": {
@@ -977,6 +995,128 @@
             "title": "No Active Orders",
             "description": "All orders have been completed. The kitchen is ready for new orders.",
             "action": "Refresh Orders"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "tab": "Sign In",
+            "submit": "Sign In",
+            "submitting": "Signing in...",
+            "noAccount": "Don't have an account?",
+            "registerLink": "Register"
+        },
+        "register": {
+            "title": "Create Account",
+            "tab": "Register",
+            "submit": "Create Account",
+            "submitting": "Creating account...",
+            "hasAccount": "Already have an account?",
+            "loginLink": "Sign In"
+        },
+        "form": {
+            "fullName": "Full Name",
+            "fullNamePlaceholder": "Enter your full name",
+            "phone": "Phone (Optional)",
+            "phonePlaceholder": "Enter your phone number",
+            "email": "Email",
+            "emailPlaceholder": "Enter your email",
+            "password": "Password",
+            "passwordPlaceholderCtx": "Create a password (min 6 chars)",
+            "passwordPlaceholder": "Enter your password"
+        },
+        "errors": {
+            "general": "An error occurred. Please try again."
+        }
+    },
+    "nav": {
+        "sections": {
+            "userManagement": "User Management",
+            "main": "Main",
+            "management": "Management",
+            "reports": "Reports",
+            "account": "Account"
+        },
+        "items": {
+            "manageAdmins": "Manage Admins",
+            "dashboard": "Dashboard",
+            "kitchen": "Kitchen Display",
+            "menu": "Menu Items",
+            "categories": "Categories",
+            "modifiers": "Modifiers",
+            "orders": "Orders",
+            "tables": "Tables",
+            "reports": "Reports & Analytics",
+            "staff": "Staff Management",
+            "settings": "Settings",
+            "help": "Help",
+            "menuBrowse": "Menu",
+            "cart": "Cart",
+            "orderStatus": "Order Status",
+            "profile": "Profile"
+        },
+        "user": {
+            "member": "Member",
+            "loginRegister": "Login / Register",
+            "logout": "Logout"
+        },
+        "kitchen": {
+            "title": "Kitchen Display",
+            "live": "Live",
+            "filter": "Filter orders",
+            "filters": {
+                "all": "All Orders",
+                "pending": "Pending",
+                "preparing": "Preparing",
+                "ready": "Ready"
+            }
+        }
+    },
+    "payment": {
+        "cardForm": {
+            "cardholderName": "Cardholder Name",
+            "cardholderNamePlaceholder": "Mori",
+            "cardDetails": "Card Details",
+            "saveCard": "Save this card for future orders",
+            "secureNote": "Your payment information is encrypted and secure. We use Stripe for payment processing.",
+            "pay": "Pay",
+            "processing": "Processing Payment...",
+            "errors": {
+                "nameRequired": "Please enter cardholder name",
+                "failed": "Payment failed. Please try again."
+            },
+            "loading": "Loading payment form..."
+        }
+    },
+    "restaurant": {
+        "create": {
+            "title": "Create Restaurant",
+            "description": "Create a restaurant for admin:",
+            "form": {
+                "name": "Restaurant Name",
+                "description": "Description",
+                "phone": "Phone Number",
+                "email": "Email",
+                "address": "Address",
+                "timezone": "Timezone",
+                "currency": "Currency",
+                "placeholders": {
+                    "name": "e.g., Café Poirot",
+                    "description": "Brief description of your restaurant",
+                    "phone": "+84 123 456 789",
+                    "email": "restaurant@example.com",
+                    "address": "123 Street Name, City"
+                }
+            },
+            "info": {
+                "title": "Multi-Tenant System",
+                "content": "This restaurant will be exclusively assigned to the admin account. The admin will have full control over this restaurant's menu, tables, orders, and staff."
+            },
+            "buttons": {
+                "create": "Create Restaurant",
+                "creating": "Creating...",
+                "skip": "Skip for Now"
+            }
         }
     }
 }

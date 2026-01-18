@@ -55,12 +55,32 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return t('common.status.notAvailable');
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) return t('common.status.notAvailable');
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    } catch (error) {
+      return t('common.status.notAvailable');
+    }
+  };
+
+  // Helper to get location translation with proper fallback
+  const getLocationText = (location) => {
+    if (!location) return t('common.status.notAvailable');
+
+    const translationKey = `admin.tables.locations.${location}`;
+    const translated = t(translationKey);
+
+    // If translation key is returned as-is (not found), return the original location
+    return translated !== translationKey ? translated : location;
   };
 
   // No QR data - show generate prompt
@@ -193,7 +213,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                       {t('admin.tables.qr.location')}
                     </span>
                     <span className="text-foreground font-bold text-lg">
-                      {t(`admin.tables.locations.${table?.location}`) || table?.location || t('common.status.notAvailable')}
+                      {getLocationText(table?.location)}
                     </span>
                   </div>
 
@@ -203,7 +223,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                       {t('admin.tables.qr.qrCreated')}
                     </span>
                     <span className="text-foreground font-bold text-lg">
-                      {formatDate(qrData?.createdAt)}
+                      {formatDate(qrData?.qrGeneratedAt || qrData?.createdAt || table?.qrGeneratedAt)}
                     </span>
                   </div>
                 </div>
