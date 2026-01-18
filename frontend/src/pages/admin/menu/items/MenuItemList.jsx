@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import Fuse from "fuse.js";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import menuService from "services/menuService";
@@ -13,6 +14,7 @@ const MenuItemList = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noRestaurant, setNoRestaurant] = useState(false);
@@ -83,10 +85,39 @@ const MenuItemList = () => {
     fetchItems();
   }, [selectedCategory, statusFilter, sortBy, page, limit]); // Trigger fetch on filter change
 
+  useEffect(() => {
+    if (!search) {
+      setFilteredItems(items);
+      return;
+    }
+    // Prefix search (case-insensitive)
+    const prefixMatches = items.filter(
+      (item) =>
+        item.name?.toLowerCase().startsWith(search.toLowerCase()) ||
+        item.category_name?.toLowerCase().startsWith(search.toLowerCase())
+    );
+
+    if (prefixMatches.length > 0) {
+      setFilteredItems(prefixMatches);
+    } else {
+      // Fuzzy search fallback
+      const fuse = new Fuse(items, {
+        keys: [
+          { name: "name", weight: 0.8 },
+          { name: "category_name", weight: 0.2 },
+        ],
+        threshold: 0.4,
+        ignoreLocation: true,
+      });
+      const result = fuse.search(search);
+      setFilteredItems(result.map((r) => r.item));
+    }
+  }, [search, items]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1); // Reset to page 1 on search
-    fetchItems();
+    // No need to fetchItems here, fuzzy search is client-side
   };
 
   const handleDelete = async (id) => {
@@ -270,7 +301,7 @@ const MenuItemList = () => {
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
+                filteredItems.map((item) => (
                   <tr key={item.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                     <td
                       className="px-4 py-4 font-medium text-foreground whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
