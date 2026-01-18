@@ -22,6 +22,7 @@ const WaiterDashboard = () => {
         accepted: 0,
         ready: 0,
         tables: 0,
+        completed: 0,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -35,9 +36,14 @@ const WaiterDashboard = () => {
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [selectedOrderForBill, setSelectedOrderForBill] = useState(null);
     
+    // Bills list state
+    const [billTab, setBillTab] = useState("ALL"); // ALL, PAID, UNPAID
+    const [billList, setBillList] = useState([]);
+    const [billLoading, setBillLoading] = useState(false);
+
     // Toast notification state
     const [billRequestNotification, setBillRequestNotification] = useState(null);
-    
+
     // Order details modal state
     const [orderDetailsModalOpen, setOrderDetailsModalOpen] = useState(false);
     const [selectedOrderForView, setSelectedOrderForView] = useState(null);
@@ -47,12 +53,31 @@ const WaiterDashboard = () => {
 
 
 
+    // Fetch bills for waiter
+    const fetchBills = useCallback(async () => {
+        if (!restaurantId) return;
+        setBillLoading(true);
+        try {
+            const status = billTab === "ALL" ? undefined : billTab;
+            const res = await waiterService.getBills(restaurantId, status);
+            setBillList(res.data || []);
+        } catch (err) {
+            console.error("Failed to load bills:", err);
+        } finally {
+            setBillLoading(false);
+        }
+    }, [restaurantId, billTab]);
+
+    useEffect(() => {
+        fetchBills();
+    }, [fetchBills]);
+
     // Fetch orders and tables on initial mount to show badge counts after reload
     useEffect(() => {
         if (!restaurantId) return;
         fetchOrders();
         fetchTables();
-        
+
         // Request notification permission
         if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();
@@ -98,7 +123,7 @@ const WaiterDashboard = () => {
 
         newSocket.on("bill_requested", ({ orderId, orderNumber, tableNumber, billData }) => {
             console.log("💰 Bill requested:", orderNumber, "Table:", tableNumber);
-            
+
             // Show toast notification
             setBillRequestNotification({
                 orderId,
@@ -106,7 +131,7 @@ const WaiterDashboard = () => {
                 tableNumber,
                 total: billData.total
             });
-            
+
             // Show browser notification to waiter (if permission granted)
             if (Notification.permission === "granted") {
                 new Notification("Bill Requested", {
@@ -114,7 +139,7 @@ const WaiterDashboard = () => {
                     icon: "/favicon.ico"
                 });
             }
-            
+
             // Play notification sound (optional)
             try {
                 const audio = new Audio('/notification.mp3');
@@ -122,7 +147,7 @@ const WaiterDashboard = () => {
             } catch (e) {
                 console.log('Audio notification failed:', e);
             }
-            
+
             // Refresh tables view to show the bill request
             if (activeTab === "tables") {
                 fetchTables();
@@ -131,13 +156,13 @@ const WaiterDashboard = () => {
 
         newSocket.on("payment_received", ({ orderId }) => {
             console.log("✅ Payment received for order:", orderId);
-            
+
             // Show success toast notification
             toast.success("Payment Received!", {
                 description: "The order has been paid successfully. You can now mark it as completed.",
                 duration: 5000
             });
-            
+
             // Show browser notification
             if (Notification.permission === "granted") {
                 new Notification("Payment Received", {
@@ -145,14 +170,14 @@ const WaiterDashboard = () => {
                     icon: "/favicon.ico"
                 });
             }
-            
+
             // Remove bill from local state and refresh
             setBills(prev => {
                 const newBills = { ...prev };
                 delete newBills[orderId];
                 return newBills;
             });
-            
+
             // Refresh tables to update status
             if (activeTab === "tables") {
                 fetchTables();
@@ -180,12 +205,13 @@ const WaiterDashboard = () => {
     // Update all badge counts
     const updateCounts = async () => {
         try {
-            const [pendingRes, receivedCount, preparingCount, readyRes, tablesRes] = await Promise.all([
+            const [pendingRes, receivedCount, preparingCount, readyRes, tablesRes, completedRes] = await Promise.all([
                 waiterService.getPendingOrders(restaurantId),
                 waiterService.getWaiterOrders("RECEIVED"),
                 waiterService.getWaiterOrders("PREPARING"),
                 waiterService.getWaiterOrders("READY"),
-                waiterService.getWaiterTables()
+                waiterService.getWaiterTables(),
+                waiterService.getWaiterOrders("COMPLETED")
             ]);
 
             setCounts({
@@ -193,6 +219,7 @@ const WaiterDashboard = () => {
                 accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
                 ready: readyRes.data?.length || 0,
                 tables: tablesRes.data?.length || 0,
+                completed: completedRes.data?.length || 0,
             });
         } catch (err) {
             console.error("Error updating counts:", err);
@@ -207,7 +234,7 @@ const WaiterDashboard = () => {
 
         try {
             // Fetch all data in parallel for better performance
-            const [currentTabData, pendingRes, receivedCount, preparingCount, readyRes] = await Promise.all([
+            const [currentTabData, pendingRes, receivedCount, preparingCount, readyRes, completedRes] = await Promise.all([
                 // Current tab data
                 (async () => {
                     switch (activeTab) {
@@ -223,6 +250,8 @@ const WaiterDashboard = () => {
                             };
                         case "ready":
                             return await waiterService.getWaiterOrders("READY");
+                        case "completed":
+                            return await waiterService.getWaiterOrders("COMPLETED");
                         default:
                             return { data: [] };
                     }
@@ -231,9 +260,11 @@ const WaiterDashboard = () => {
                 waiterService.getPendingOrders(restaurantId),
                 waiterService.getWaiterOrders("RECEIVED"),
                 waiterService.getWaiterOrders("PREPARING"),
-                waiterService.getWaiterOrders("READY")
+                waiterService.getWaiterOrders("READY"),
+                waiterService.getWaiterOrders("COMPLETED")
             ]);
 
+            // Set orders for current tab
             setOrders(currentTabData.data || []);
 
             setCounts({
@@ -241,6 +272,7 @@ const WaiterDashboard = () => {
                 accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
                 ready: readyRes.data?.length || 0,
                 tables: tables.length,
+                completed: completedRes.data?.length || 0,
             });
         } catch (err) {
             console.error("Error fetching orders:", err);
@@ -263,7 +295,7 @@ const WaiterDashboard = () => {
         try {
             const response = await waiterService.getWaiterTables();
             setTables(response.data || []);
-            
+
             // Update all counts
             await updateCounts();
         } catch (err) {
@@ -367,13 +399,13 @@ const WaiterDashboard = () => {
             // Ensure bill data is properly parsed
             const billData = response.data?.bill || response.data;
             setBills(prev => ({ ...prev, [order.id]: billData }));
-            
+
             // Show success notification
             toast.success("Bill created successfully!", {
                 description: "The customer can now proceed with payment.",
                 duration: 4000
             });
-            
+
             // Socket notification will be sent by backend automatically
             // Refresh data
             if (activeTab === "tables") {
@@ -563,7 +595,7 @@ const WaiterDashboard = () => {
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        
+
                                                         {!bills[order.id] ? (
                                                             <button
                                                                 onClick={() => handleCreateBill(order)}
@@ -606,6 +638,9 @@ const WaiterDashboard = () => {
                         )}
                     </>
                 )}
+
+                {/* Bills Management Section */}
+                {/* REMOVED: Bills Management UI */}
             </div>
 
             <RejectModal

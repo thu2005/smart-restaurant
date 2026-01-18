@@ -122,7 +122,7 @@ const PaymentResult = () => {
                     </Button>
                     
                     <Button
-                        onClick={() => navigate('/customer/menu')}
+                        onClick={() => navigate('/customer/menu-browse')}
                         variant="outline"
                         className="w-full"
                         size="lg"
