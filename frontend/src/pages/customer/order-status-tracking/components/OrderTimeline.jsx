@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const OrderTimeline = ({
@@ -8,10 +9,12 @@ const OrderTimeline = ({
   estimatedReadyTime,
   currentTime,
 }) => {
+  const { t } = useTranslation();
+
   const getTimeRemaining = () => {
-    if (['served', 'payment_pending', 'completed'].includes(orderStatus)) return "Enjoy your meal!";
+    if (['served', 'payment_pending', 'completed'].includes(orderStatus)) return t("customer.orderTracking.timeline.timeRemaining.enjoy", "Enjoy your meal!");
     const remaining = Math.floor((estimatedReadyTime - currentTime) / 1000);
-    if (remaining <= 0) return "Ready now";
+    if (remaining <= 0) return t("customer.orderTracking.timeline.timeRemaining.ready", "Ready now");
     const mins = Math.floor(remaining / 60);
     const secs = remaining % 60;
     return `${mins}:${secs?.toString()?.padStart(2, "0")}`;
@@ -26,27 +29,27 @@ const OrderTimeline = ({
 
   const milestones = [
     {
-      label: "Order Submitted",
+      label: t("customer.orderTracking.timeline.steps.submitted", "Order Submitted"),
       icon: "Send",
       completed: currentStep >= 0,
     },
     {
-      label: "Order Accepted",
+      label: t("customer.orderTracking.timeline.steps.accepted", "Order Accepted"),
       icon: "CheckCircle",
       completed: currentStep >= 1,
     },
     {
-      label: "Preparing",
+      label: t("customer.orderTracking.timeline.steps.preparing", "Preparing"),
       icon: "ChefHat",
       completed: currentStep >= 2,
     },
     {
-      label: "Ready to Serve",
+      label: t("customer.orderTracking.timeline.steps.ready", "Ready to Serve"),
       icon: "Bell",
       completed: currentStep >= 3,
     },
     {
-      label: "Served",
+      label: t("customer.orderTracking.timeline.steps.served", "Served"),
       icon: "Utensils",
       completed: currentStep >= 4,
     },
@@ -56,14 +59,14 @@ const OrderTimeline = ({
     <div className="bg-card border border-border rounded-lg p-6 shadow-warm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl md:text-2xl font-heading font-bold text-foreground">
-          Order Progress
+          {t("customer.orderTracking.timeline.title", "Order Progress")}
         </h2>
         <div className="text-right">
           <div className="text-2xl font-heading font-bold text-primary data-text">
             {getTimeRemaining()}
           </div>
           <div className="text-xs text-muted-foreground">
-            Estimated ready time
+            {t("customer.orderTracking.timeline.estimatedTime", "Estimated ready time")}
           </div>
         </div>
       </div>
@@ -71,7 +74,7 @@ const OrderTimeline = ({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-foreground">
-            Overall Progress
+            {t("customer.orderTracking.timeline.overallProgress", "Overall Progress")}
           </span>
           <span className="text-sm font-bold text-primary data-text">
             {overallProgress}%
@@ -93,10 +96,9 @@ const OrderTimeline = ({
               <div
                 className={`
                   relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
-                  ${
-                    milestone?.completed
-                      ? "bg-success text-success-foreground"
-                      : "bg-muted text-muted-foreground"
+                  ${milestone?.completed
+                    ? "bg-success text-success-foreground"
+                    : "bg-muted text-muted-foreground"
                   }
                 `}
               >
@@ -104,11 +106,10 @@ const OrderTimeline = ({
               </div>
               <div className="flex-1 pt-1">
                 <p
-                  className={`text-sm md:text-base font-medium ${
-                    milestone?.completed
+                  className={`text-sm md:text-base font-medium ${milestone?.completed
                       ? "text-foreground"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   {milestone?.label}
                 </p>

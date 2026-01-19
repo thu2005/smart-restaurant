@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Image from "../../../../components/AppImage";
 import Icon from "../../../../components/AppIcon";
 
 const ImageGallery = ({ images }) => {
+  const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handlePrevious = () => {
@@ -27,14 +29,14 @@ const ImageGallery = ({ images }) => {
             <button
               onClick={handlePrevious}
               className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-background/90 hover:bg-background rounded-full flex items-center justify-center transition-smooth shadow-warm touch-target"
-              aria-label="Previous image"
+              aria-label={t("customer.itemDetail.gallery.previous", "Previous image")}
             >
               <Icon name="ChevronLeft" size={20} />
             </button>
             <button
               onClick={handleNext}
               className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-background/90 hover:bg-background rounded-full flex items-center justify-center transition-smooth shadow-warm touch-target"
-              aria-label="Next image"
+              aria-label={t("customer.itemDetail.gallery.next", "Next image")}
             >
               <Icon name="ChevronRight" size={20} />
             </button>
@@ -55,13 +57,12 @@ const ImageGallery = ({ images }) => {
               onClick={() => setSelectedIndex(index)}
               className={`
                 flex-shrink-0 w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-md md:rounded-lg overflow-hidden border-2 transition-smooth
-                ${
-                  selectedIndex === index
-                    ? "border-primary"
-                    : "border-transparent hover:border-muted-foreground/30"
+                ${selectedIndex === index
+                  ? "border-primary"
+                  : "border-transparent hover:border-muted-foreground/30"
                 }
               `}
-              aria-label={`View image ${index + 1}`}
+              aria-label={t("customer.itemDetail.gallery.viewImage", { index: index + 1 })}
             >
               <Image
                 src={image?.url}

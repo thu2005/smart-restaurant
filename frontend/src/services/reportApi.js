@@ -187,14 +187,16 @@ export const calculatePreviousPeriod = (startDate, endDate) => {
  */
 export const exportToCSV = (data, filename = 'report.csv') => {
     // Convert data to CSV format
-    let csv = '';
+    // Add UTF-8 BOM for proper Vietnamese character encoding
+    let csv = '\uFEFF';  // UTF-8 BOM
 
     // Add overview metrics
     if (data.metrics) {
         csv += 'Overview Metrics\n';
         csv += 'Metric,Value,Change\n';
         data.metrics.forEach(metric => {
-            csv += `${metric.title},${metric.value},${metric.change}\n`;
+            // Wrap values in quotes to handle commas in formatted currency
+            csv += `"${metric.title}","${metric.value}","${metric.change}"\n`;
         });
         csv += '\n';
     }
@@ -204,7 +206,9 @@ export const exportToCSV = (data, filename = 'report.csv') => {
         csv += 'Top Selling Items\n';
         csv += 'Rank,Item,Category,Orders,Revenue\n';
         data.topItems.forEach((item, index) => {
-            csv += `${index + 1},${item.name},${item.category},${item.orderCount || item.totalQuantity},$${(item.revenue || item.totalRevenue) / 100}\n`;
+            // Format revenue properly - value is already formatted from frontend
+            const revenue = typeof item.revenue === 'string' ? item.revenue : item.revenue || item.totalRevenue;
+            csv += `${index + 1},${item.name},${item.category},${item.orderCount || item.totalQuantity},${revenue}\n`;
         });
     }
 

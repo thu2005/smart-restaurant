@@ -1,10 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
 const EmptyCartState = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col items-center justify-center py-12 md:py-16 lg:py-20 px-4">
@@ -13,12 +15,11 @@ const EmptyCartState = () => {
       </div>
 
       <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-3 md:mb-4 text-center">
-        Your Cart is Empty
+        {t("customer.cart.emptyState.title", "Your Cart is Empty")}
       </h2>
 
       <p className="text-sm md:text-base lg:text-lg text-muted-foreground text-center max-w-md mb-6 md:mb-8">
-        Looks like you haven't added any items to your cart yet. Browse our
-        delicious menu and start ordering!
+        {t("customer.cart.emptyState.description", "Looks like you haven't added any items to your cart yet. Browse our delicious menu and start ordering!")}
       </p>
 
       <Button
@@ -28,37 +29,37 @@ const EmptyCartState = () => {
         iconPosition="left"
         onClick={() => navigate("/customer/menu-browse")}
       >
-        Browse Menu
+        {t("customer.cart.emptyState.browseMenu", "Browse Menu")}
       </Button>
 
       <div className="mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full max-w-3xl">
         <div className="flex flex-col items-center text-center p-4 bg-card rounded-lg border border-border">
           <Icon name="Clock" size={32} className="text-primary mb-3" />
           <h3 className="text-sm md:text-base font-semibold text-foreground mb-2">
-            Quick Service
+            {t("customer.cart.emptyState.quickService.title", "Quick Service")}
           </h3>
           <p className="text-xs md:text-sm text-muted-foreground">
-            Orders ready in 20-25 minutes
+            {t("customer.cart.emptyState.quickService.desc", "Orders ready in 20-25 minutes")}
           </p>
         </div>
 
         <div className="flex flex-col items-center text-center p-4 bg-card rounded-lg border border-border">
           <Icon name="Star" size={32} className="text-primary mb-3" />
           <h3 className="text-sm md:text-base font-semibold text-foreground mb-2">
-            Fresh Ingredients
+            {t("customer.cart.emptyState.freshIngredients.title", "Fresh Ingredients")}
           </h3>
           <p className="text-xs md:text-sm text-muted-foreground">
-            Made with quality ingredients
+            {t("customer.cart.emptyState.freshIngredients.desc", "Made with quality ingredients")}
           </p>
         </div>
 
         <div className="flex flex-col items-center text-center p-4 bg-card rounded-lg border border-border">
           <Icon name="Shield" size={32} className="text-primary mb-3" />
           <h3 className="text-sm md:text-base font-semibold text-foreground mb-2">
-            Secure Payment
+            {t("customer.cart.emptyState.securePayment.title", "Secure Payment")}
           </h3>
           <p className="text-xs md:text-sm text-muted-foreground">
-            Safe and encrypted transactions
+            {t("customer.cart.emptyState.securePayment.desc", "Safe and encrypted transactions")}
           </p>
         </div>
       </div>

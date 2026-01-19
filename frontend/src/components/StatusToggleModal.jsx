@@ -1,11 +1,15 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "./AppIcon";
 
 const StatusToggleModal = ({ isOpen, onClose, onConfirm, userName, currentStatus, loading }) => {
+    const { t } = useTranslation();
     if (!isOpen) return null;
 
     const action = currentStatus ? "deactivate" : "activate";
-    const actionCapitalized = action.charAt(0).toUpperCase() + action.slice(1);
+    const titleKey = currentStatus ? "admin.users.status.deactivateTitle" : "admin.users.status.activateTitle";
+    const messageKey = currentStatus ? "admin.users.status.deactivateMessage" : "admin.users.status.activateMessage";
+    const actionLabelKey = "common.actions." + action;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
@@ -17,7 +21,7 @@ const StatusToggleModal = ({ isOpen, onClose, onConfirm, userName, currentStatus
                             <Icon name={currentStatus ? "UserX" : "UserCheck"} size={24} className={currentStatus ? "text-orange-600" : "text-green-600"} />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-gray-900">{actionCapitalized} User</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{t(titleKey)}</h2>
                         </div>
                     </div>
                 </div>
@@ -25,7 +29,7 @@ const StatusToggleModal = ({ isOpen, onClose, onConfirm, userName, currentStatus
                 {/* Content */}
                 <div className="p-6">
                     <p className="text-gray-600">
-                        Are you sure you want to {action} <span className="font-semibold">{userName}</span>?
+                        {t(messageKey, { name: userName })}
                     </p>
                 </div>
 
@@ -40,12 +44,12 @@ const StatusToggleModal = ({ isOpen, onClose, onConfirm, userName, currentStatus
                         {loading ? (
                             <>
                                 <Icon name="Loader2" size={20} className="animate-spin" />
-                                Processing...
+                                {t('common.actions.processing')}
                             </>
                         ) : (
                             <>
                                 <Icon name={currentStatus ? "UserX" : "UserCheck"} size={20} />
-                                {actionCapitalized}
+                                {t(actionLabelKey)}
                             </>
                         )}
                     </button>
@@ -55,7 +59,7 @@ const StatusToggleModal = ({ isOpen, onClose, onConfirm, userName, currentStatus
                         disabled={loading}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
                     >
-                        Cancel
+                        {t('common.actions.cancel')}
                     </button>
                 </div>
             </div>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import { createPortal } from "react-dom";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
@@ -7,6 +9,8 @@ import ModifierGroupModal from "./ModifierGroupModal";
 import { toast } from "sonner";
 
 const ModifierList = () => {
+  const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +38,7 @@ const ModifierList = () => {
       }
     } catch (error) {
       console.error("Failed to fetch modifier groups:", error);
-      toast.error("Failed to load modifier groups");
+      toast.error(t('admin.menu.items.modifiers.messages.loadError'));
       setGroups([]);
     } finally {
       setLoading(false);
@@ -63,11 +67,11 @@ const ModifierList = () => {
     if (!deleteConfirm) return;
     try {
       await menuService.deleteModifierGroup(deleteConfirm);
-      toast.success("Modifier group deleted");
+      toast.success(t('admin.menu.items.modifiers.messages.deleteSuccess'));
       fetchGroups();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete modifier group");
+      toast.error(t('admin.menu.items.modifiers.messages.deleteError'));
     } finally {
       setDeleteConfirm(null);
     }
@@ -91,9 +95,7 @@ const ModifierList = () => {
         });
         groupId = editingGroup.id;
 
-        // Handle options for existing group
-        // Delete all existing options and recreate (simpler approach)
-        // In production, you'd want to do proper diff/patch
+        // Handle options
         const existingOptions = editingGroup.options || [];
 
         // Delete removed options
@@ -114,13 +116,11 @@ const ModifierList = () => {
         if (data.options && data.options.length > 0) {
           for (const opt of data.options) {
             if (opt.id) {
-              // Update existing option
               await menuService.updateModifierOption(opt.id, {
                 name: opt.name,
                 price_adjustment: opt.price_adjustment || 0,
               });
             } else {
-              // Create new option
               await menuService.createModifierOption(groupId, {
                 name: opt.name,
                 price_adjustment: opt.price_adjustment || 0,
@@ -128,10 +128,9 @@ const ModifierList = () => {
             }
           }
         }
-
-        toast.success("Modifier group updated");
+        toast.success(t('admin.menu.items.modifiers.messages.saveSuccess'));
       } else {
-        // Create new group with options
+        // Create new group
         const newGroup = await menuService.createModifierGroup({
           name: data.name,
           selection_type: data.selection_type,
@@ -141,14 +140,14 @@ const ModifierList = () => {
           options: data.options || [],
         });
         groupId = newGroup.id;
-        toast.success("Modifier group created");
+        toast.success(t('admin.menu.items.modifiers.messages.createSuccess'));
       }
 
       setIsModalOpen(false);
       fetchGroups();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to save modifier group");
+      toast.error(t('admin.menu.items.modifiers.messages.saveError'));
     }
   };
 
@@ -156,14 +155,14 @@ const ModifierList = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Modifier Groups</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('admin.menu.items.modifiers.titleList')}</h1>
           <p className="text-muted-foreground">
-            Manage customization options for your menu items.
+            {t('admin.menu.items.modifiers.subtitleList')}
           </p>
         </div>
         <Button onClick={handleCreate}>
           <Icon name="Plus" className="w-4 h-4 mr-2" />
-          Add Group
+          {t('admin.menu.items.modifiers.addGroup')}
         </Button>
       </div>
 
@@ -178,11 +177,11 @@ const ModifierList = () => {
                 <h3 className="font-semibold text-lg">{group.name}</h3>
                 <div className="flex gap-2 mt-1">
                   <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 capitalize">
-                    {group.selection_type}
+                    {t(`admin.menu.items.modifiers.modal.types.${group.selection_type}`) || group.selection_type}
                   </span>
                   {group.is_required && (
                     <span className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded">
-                      Required
+                      {t('admin.menu.items.modifiers.card.required')}
                     </span>
                   )}
                 </div>
@@ -208,7 +207,7 @@ const ModifierList = () => {
 
             <div className="border-t pt-3">
               <p className="text-xs text-gray-500 mb-2 uppercase font-semibold">
-                Options
+                {t('admin.menu.items.modifiers.card.options')}
               </p>
               <ul className="space-y-2">
                 {group.options?.map((option) => (
@@ -219,8 +218,8 @@ const ModifierList = () => {
                     <span>{option.name}</span>
                     <span className="text-gray-500">
                       {option.price_adjustment > 0
-                        ? `+$${option.price_adjustment.toFixed(2)}`
-                        : "Free"}
+                        ? `+${formatCurrency(option.price_adjustment)}`
+                        : t('admin.menu.items.modifiers.card.free')}
                     </span>
                   </li>
                 ))}
@@ -234,8 +233,7 @@ const ModifierList = () => {
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-sm text-gray-500">
-            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)}{" "}
-            of {total} groups
+            {t('common.pagination.showing', { start: (page - 1) * limit + 1, end: Math.min(page * limit, total), total })}
           </div>
           <div className="flex gap-2">
             <Button
@@ -244,7 +242,7 @@ const ModifierList = () => {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
             >
-              Previous
+              {t('common.pagination.previous')}
             </Button>
             <Button
               variant="outline"
@@ -252,7 +250,7 @@ const ModifierList = () => {
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= totalPages}
             >
-              Next
+              {t('common.pagination.next')}
             </Button>
           </div>
         </div>
@@ -263,23 +261,23 @@ const ModifierList = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleModalSubmit}
         initialData={editingGroup}
-        title={editingGroup ? "Edit Modifier Group" : "New Modifier Group"}
+        title={editingGroup ? t('admin.menu.items.modifiers.modal.titleEdit') : t('admin.menu.items.modifiers.modal.titleNew')}
       />
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h3 className="text-lg font-semibold mb-4">Delete modifier group?</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('admin.menu.items.modifiers.delete.title')}</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this modifier group? This will also remove it from all menu items. This action cannot be undone.
+              {t('admin.menu.items.modifiers.delete.message')}
             </p>
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={cancelDelete}>
-                Cancel
+                {t('common.actions.cancel')}
               </Button>
               <Button variant="destructive" onClick={confirmDelete}>
-                Delete
+                {t('common.actions.delete')}
               </Button>
             </div>
           </div>

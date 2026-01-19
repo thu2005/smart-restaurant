@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "./AppIcon";
+import { withTranslation } from "react-i18next";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -18,6 +19,8 @@ class ErrorBoundary extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
+
     if (this.state?.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-neutral-50">
@@ -55,11 +58,10 @@ class ErrorBoundary extends React.Component {
             </div>
             <div className="flex flex-col gap-1 text-center">
               <h1 className="text-2xl font-medium text-neutral-800">
-                Something went wrong
+                {t('common.errorBoundary.title')}
               </h1>
               <p className="text-neutral-600 text-base w w-8/12 mx-auto">
-                We encountered an unexpected error while processing your
-                request.
+                {t('common.errorBoundary.message')}
               </p>
             </div>
             <div className="flex justify-center items-center mt-6">
@@ -70,7 +72,7 @@ class ErrorBoundary extends React.Component {
                 className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded flex items-center gap-2 transition-colors duration-200 shadow-sm"
               >
                 <Icon name="ArrowLeft" size={18} color="#fff" />
-                Back
+                {t('common.errorBoundary.back')}
               </button>
             </div>
           </div>
@@ -82,4 +84,4 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export default ErrorBoundary;
+export default withTranslation()(ErrorBoundary);

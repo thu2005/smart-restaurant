@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Icon from "../../../../components/AppIcon";
 import Input from "../../../../components/ui/Input";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -6,6 +8,8 @@ import StripePaymentWrapper from "../../../../components/payment/StripePaymentWr
 import axios from 'axios';
 
 const BillPaymentSection = ({ order, onPay }) => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [isProcessing, setIsProcessing] = useState(false);
     const [stripeClientSecret, setStripeClientSecret] = useState(null);
@@ -83,7 +87,7 @@ const BillPaymentSection = ({ order, onPay }) => {
             if (response.data.success) {
                 // Payment confirmed - just show success message, no need to call onPay
                 console.log('Payment confirmed successfully');
-                
+
                 // Show success notification
                 window.location.reload(); // Simple reload to refresh order status
             }
@@ -130,16 +134,16 @@ const BillPaymentSection = ({ order, onPay }) => {
                     <div className="flex justify-center gap-3 mb-3">
                         <Icon name="UtensilsCrossed" size={32} className="text-primary" />
                     </div>
-                    <h2 className="text-2xl font-bold text-foreground mb-1">Smart Restaurant</h2>
+                    <h2 className="text-2xl font-bold text-foreground mb-1">{t("customer.orderTracking.bill.restaurantName", "Smart Restaurant")}</h2>
                     <p className="text-sm text-muted-foreground">
-                        Table {order.tableNumber || localStorage.getItem('tableNumber') || 'N/A'} | {formatDate(order.createdAt)}
+                        {t("customer.orderTracking.bill.tableDate", { table: order.tableNumber || localStorage.getItem('tableNumber') || 'N/A', date: formatDate(order.createdAt) })}
                     </p>
                 </div>
 
                 {/* Order Items */}
                 <div className="mb-6">
                     <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                        Order #{order.orderNumber || order.id}
+                        {t("customer.orderTracking.bill.orderNumber", { number: order.orderNumber || order.id })}
                     </h3>
                     <div className="space-y-3">
                         {orderItems.map((item, index) => {
@@ -165,8 +169,8 @@ const BillPaymentSection = ({ order, onPay }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <span className="font-semibold text-foreground ml-4">
-                                        ${lineTotal.toFixed(2)}
+                                    <span className="font-semibold text-foreground ml-4 data-text">
+                                        {formatCurrency(lineTotal)}
                                     </span>
                                 </div>
                             );
@@ -177,22 +181,22 @@ const BillPaymentSection = ({ order, onPay }) => {
                 {/* Subtotal, Tax, Total */}
                 <div className="space-y-2 pt-4 border-t-2 border-dashed border-gray-300">
                     <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Subtotal</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>{t("customer.orderTracking.bill.subtotal")}</span>
+                        <span className="data-text">{formatCurrency(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                         <div className="flex justify-between text-sm text-success">
-                            <span>Discount</span>
-                            <span>-${discount.toFixed(2)}</span>
+                            <span>{t("customer.orderTracking.bill.discount")}</span>
+                            <span className="data-text">-{formatCurrency(discount)}</span>
                         </div>
                     )}
                     <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Tax (10%)</span>
-                        <span>${tax.toFixed(2)}</span>
+                        <span>{t("customer.orderTracking.bill.tax")}</span>
+                        <span className="data-text">{formatCurrency(tax)}</span>
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                        <span className="text-lg font-bold text-foreground">Total</span>
-                        <span className="text-2xl font-bold text-primary">${total.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-foreground">{t("customer.orderTracking.bill.total")}</span>
+                        <span className="text-2xl font-bold text-primary data-text">{formatCurrency(total)}</span>
                     </div>
                 </div>
             </div>
@@ -201,7 +205,7 @@ const BillPaymentSection = ({ order, onPay }) => {
             <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
                 <h3 className="font-heading font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Icon name="CreditCard" size={20} className="text-primary" />
-                    Payment Method
+                    {t("customer.cart.paymentMethod.title", "Payment Method")}
                 </h3>
 
                 <div className="space-y-3">
@@ -221,10 +225,10 @@ const BillPaymentSection = ({ order, onPay }) => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <Icon name="CreditCard" size={20} className="text-foreground" />
-                                <span className="font-medium">Credit/Debit Card</span>
+                                <span className="font-medium">{t("customer.cart.paymentMethod.card", "Credit/Debit Card")}</span>
                             </div>
                         </div>
-                        <span className="text-xs font-medium text-success bg-success/10 px-2 py-1 rounded">Secure</span>
+                        <span className="text-xs font-medium text-success bg-success/10 px-2 py-1 rounded">{t("customer.cart.paymentMethod.secure", "Secure")}</span>
                     </button>
 
                     <button
@@ -243,10 +247,10 @@ const BillPaymentSection = ({ order, onPay }) => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <span className="w-5 h-5 bg-[#A50064] rounded text-white text-[10px] flex items-center justify-center font-bold">M</span>
-                                <span className="font-medium">Momo Wallet</span>
+                                <span className="font-medium">{t("customer.cart.paymentMethod.momo", "Momo Wallet")}</span>
                             </div>
                         </div>
-                        <span className="text-xs text-muted-foreground">Fast & Secure</span>
+                        <span className="text-xs text-muted-foreground">{t("customer.cart.paymentMethod.fastSecure", "Fast & Secure")}</span>
                     </button>
 
                     <button
@@ -265,7 +269,7 @@ const BillPaymentSection = ({ order, onPay }) => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <Icon name="Banknote" size={20} className="text-foreground" />
-                                <span className="font-medium">Pay at Counter</span>
+                                <span className="font-medium">{t("customer.cart.paymentMethod.cash", "Pay at Counter")}</span>
                             </div>
                         </div>
                     </button>
@@ -302,18 +306,18 @@ const BillPaymentSection = ({ order, onPay }) => {
                         {isProcessing ? (
                             <>
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                Processing Payment...
+                                {t("customer.orderTracking.bill.processing", "Processing Payment...")}
                             </>
                         ) : (
                             <>
-                                {selectedMethod === 'momo' ? 'Continue to MoMo' : `Pay ${total.toLocaleString('vi-VN')}₫`}
+                                {selectedMethod === 'momo' ? t("customer.orderTracking.bill.continueMomo", "Continue to MoMo") : t("customer.orderTracking.bill.payButton", { amount: formatCurrency(total) })}
                                 <Icon name="ArrowRight" size={18} />
                             </>
                         )}
                     </button>
 
                     <p className="text-center text-xs text-muted-foreground">
-                        Secure payment processing by Smart Restaurant
+                        {t("customer.orderTracking.bill.securePayment", "Secure payment processing by Smart Restaurant")}
                     </p>
                 </>
             )}

@@ -1,5 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../../components/ui/Button";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -13,27 +14,29 @@ const FilterPanel = ({
   onApplyFilters,
   onResetFilters,
 }) => {
+  const { t } = useTranslation();
+
   const dietaryOptions = [
-    { value: "vegetarian", label: "Vegetarian" },
-    { value: "vegan", label: "Vegan" },
-    { value: "gluten-free", label: "Gluten Free" },
-    { value: "dairy-free", label: "Dairy Free" },
-    { value: "nut-free", label: "Nut Free" },
+    { value: "vegetarian", label: t("customer.menu.dietary.vegetarian") },
+    { value: "vegan", label: t("customer.menu.dietary.vegan") },
+    { value: "gluten-free", label: t("customer.menu.dietary.glutenFree") },
+    { value: "dairy-free", label: t("customer.menu.dietary.dairyFree") },
+    { value: "nut-free", label: t("customer.menu.dietary.nutFree") },
   ];
 
   const sortOptions = [
-    { value: "createdAt", label: "Newest Items" },
-    { value: "price", label: "Price: Low to High" },
-    { value: "price_desc", label: "Price: High to Low" },
-    { value: "name", label: "Name: A to Z" },
-    { value: "orderCount", label: "Most Ordered" },
+    { value: "createdAt", label: t("customer.menu.sort.newest") },
+    { value: "price", label: t("customer.menu.sort.priceLowHigh") },
+    { value: "price_desc", label: t("customer.menu.sort.priceHighLow") },
+    { value: "name", label: t("customer.menu.sort.nameAZ") },
+    { value: "orderCount", label: t("customer.menu.sort.mostOrdered") },
   ];
 
   const availabilityOptions = [
-    { value: "available", label: "Available Now" },
-    { value: "low_stock", label: "Low Stock" },
-    { value: "sold_out", label: "Sold Out" },
-    { value: "unavailable", label: "Unavailable" },
+    { value: "available", label: t("customer.menu.filters.availableNow") },
+    { value: "low_stock", label: t("customer.menu.item.lowStock") },
+    { value: "sold_out", label: t("customer.menu.item.soldOut") },
+    { value: "unavailable", label: t("customer.menu.item.unavailable") },
   ];
 
   if (!isOpen) return null;
@@ -47,7 +50,7 @@ const FilterPanel = ({
       <div className="fixed right-0 top-0 bottom-0 w-full md:w-96 bg-card shadow-warm-xl z-50 overflow-y-auto">
         <div className="sticky top-0 bg-card border-b border-border p-4 md:p-6 flex items-center justify-between">
           <h2 className="text-lg md:text-xl font-heading font-semibold text-foreground">
-            Filters
+            {t("customer.menu.filters.title")}
           </h2>
           <Button
             variant="ghost"
@@ -61,7 +64,7 @@ const FilterPanel = ({
         <div className="p-4 md:p-6 space-y-6">
           <div>
             <h3 className="text-base md:text-lg font-heading font-semibold text-foreground mb-3">
-              Sort By
+              {t("customer.menu.filters.sortBy")}
             </h3>
             <Select
               options={sortOptions}
@@ -73,16 +76,16 @@ const FilterPanel = ({
 
           <div>
             <h3 className="text-base md:text-lg font-heading font-semibold text-foreground mb-3">
-              Special Options
+              {t("customer.menu.filters.specialOptions")}
             </h3>
             <div className="space-y-2">
               <Checkbox
-                label="Popular Items Only"
+                label={t("customer.menu.filters.popularItems")}
                 checked={filters?.isPopular}
                 onChange={(e) => onFilterChange("isPopular", e.target.checked)}
               />
               <Checkbox
-                label="Chef Recommendations"
+                label={t("customer.menu.filters.chefRecommended")}
                 checked={filters?.isChefRecommended}
                 onChange={(e) =>
                   onFilterChange("isChefRecommended", e.target.checked)
@@ -93,7 +96,7 @@ const FilterPanel = ({
 
           <div>
             <h3 className="text-base md:text-lg font-heading font-semibold text-foreground mb-3">
-              Dietary Restrictions
+              {t("customer.menu.filters.dietary")}
             </h3>
             <div className="space-y-2">
               {dietaryOptions?.map((option) => (
@@ -114,7 +117,7 @@ const FilterPanel = ({
 
           <div>
             <h3 className="text-base md:text-lg font-heading font-semibold text-foreground mb-3">
-              Availability
+              {t("customer.menu.filters.availability")}
             </h3>
             <div className="space-y-2">
               {availabilityOptions?.map((option) => (
@@ -139,7 +142,7 @@ const FilterPanel = ({
               onClick={onResetFilters}
               className="flex-1"
             >
-              Reset
+              {t("customer.menu.filters.reset")}
             </Button>
             <Button
               variant="default"
@@ -149,7 +152,7 @@ const FilterPanel = ({
               }}
               className="flex-1"
             >
-              Apply Filters
+              {t("customer.menu.filters.apply")}
             </Button>
           </div>
         </div>

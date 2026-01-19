@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import Icon from "../../../components/AppIcon";
@@ -10,6 +11,7 @@ import QRPreviewContainer from "./components/QRPreviewContainer";
 import PrintPreviewModal from "../../../components/PrintPreviewModal";
 
 const TableManagement = () => {
+  const { t } = useTranslation();
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,19 +56,19 @@ const TableManagement = () => {
       setError(null);
       const userData = getUserData();
       if (userData.role === "CUSTOMER") {
-        setError("Customers do not have access to restaurant tables.");
+        setError(t('admin.tables.errors.customerAccess'));
         setTables([]);
         return;
       }
       const restaurantId = userData.restaurantId;
       if (!restaurantId) {
-        throw new Error("Restaurant ID not found. Please log in.");
+        throw new Error(t('admin.orders.messages.noRestaurant'));
       }
       const result = await tableAPI.getAllTables(restaurantId);
       setTables(result.data || []);
     } catch (err) {
       const message =
-        err.response?.data?.message || err.message || "Failed to fetch tables";
+        err.response?.data?.message || err.message || t('admin.tables.errors.fetchFailed');
       setError(message);
       console.error("Error fetching tables:", err);
     } finally {
@@ -109,7 +111,7 @@ const TableManagement = () => {
         )
       );
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to toggle table status");
+      setError(err.response?.data?.message || t('admin.tables.errors.toggleFailed'));
     }
   };
 
@@ -124,7 +126,7 @@ const TableManagement = () => {
       setShowQRPreview(true);
       await fetchTables(); // Refresh to update QR status
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to generate QR code");
+      setError(err.response?.data?.message || t('admin.tables.errors.generateFailed'));
     }
   };
 
@@ -135,7 +137,7 @@ const TableManagement = () => {
       setQrData(response.data);
       await fetchTables();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to regenerate QR code");
+      setError(err.response?.data?.message || t('admin.tables.errors.regenerateFailed'));
     }
   };
 
@@ -177,7 +179,7 @@ const TableManagement = () => {
       link.click();
       link.remove();
     } catch (err) {
-      setError("Download failed. Please try again.");
+      setError(t('admin.tables.errors.downloadFailed'));
       console.error("Download all failed:", err);
     } finally {
       setDownloadingAll(false);
@@ -210,7 +212,7 @@ const TableManagement = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-heading font-bold text-foreground">
-          Table Management
+          {t('admin.tables.title')}
         </h1>
         <div className="flex flex-wrap gap-3">
           {/* Regenerate All */}
@@ -220,7 +222,7 @@ const TableManagement = () => {
             title="Dangerous: Regenerate ALL QR codes"
           >
             <Icon name="RefreshCw" size={18} />
-            <span className="hidden sm:inline">Regen All</span>
+            <span className="hidden sm:inline">{t('admin.tables.actions.regenAll')}</span>
           </button>
 
           {/* Download ZIP */}
@@ -231,7 +233,7 @@ const TableManagement = () => {
             title="Download all QR codes as ZIP"
           >
             <Icon name="FileDown" size={18} />
-            <span className="hidden sm:inline">ZIP</span>
+            <span className="hidden sm:inline">{t('admin.tables.actions.zip')}</span>
           </button>
 
           {/* Download PDF */}
@@ -242,7 +244,7 @@ const TableManagement = () => {
             title="Download all QR codes as PDF"
           >
             <Icon name="FileText" size={18} />
-            <span className="hidden sm:inline">PDF</span>
+            <span className="hidden sm:inline">{t('admin.tables.actions.pdf')}</span>
           </button>
 
           {/* Print / Preview All */}
@@ -252,7 +254,7 @@ const TableManagement = () => {
             title="Preview and print all QR codes as PDF"
           >
             <Icon name="Printer" size={18} />
-            <span className="hidden sm:inline">Print / Preview</span>
+            <span className="hidden sm:inline">{t('admin.tables.actions.printPreview')}</span>
           </button>
 
           {/* Add Table */}
@@ -261,7 +263,7 @@ const TableManagement = () => {
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
           >
             <Icon name="Plus" size={18} />
-            Add Table
+            {t('admin.tables.actions.addTable')}
           </button>
         </div>
       </div>
@@ -275,7 +277,7 @@ const TableManagement = () => {
             size={20}
           />
           <div className="flex-1">
-            <p className="text-error font-medium">Error</p>
+            <p className="text-error font-medium">{t('common.messages.error')}</p>
             <p className="text-error/80 text-sm">{error}</p>
           </div>
           <button
@@ -296,11 +298,11 @@ const TableManagement = () => {
           }
           className="px-3 py-2 border border-border rounded-lg bg-background text-foreground"
         >
-          <option value="">All Status</option>
-          <option value="AVAILABLE">Available</option>
-          <option value="OCCUPIED">Occupied</option>
-          <option value="RESERVED">Reserved</option>
-          <option value="MAINTENANCE">Maintenance</option>
+          <option value="">{t('admin.tables.filters.allStatus')}</option>
+          <option value="AVAILABLE">{t('admin.tables.status.AVAILABLE')}</option>
+          <option value="OCCUPIED">{t('admin.tables.status.OCCUPIED')}</option>
+          <option value="RESERVED">{t('admin.tables.status.RESERVED')}</option>
+          <option value="MAINTENANCE">{t('admin.tables.status.MAINTENANCE')}</option>
         </select>
         <select
           value={filters.sortBy}
@@ -309,16 +311,16 @@ const TableManagement = () => {
           }
           className="px-3 py-2 border border-border rounded-lg bg-background text-foreground"
         >
-          <option value="tableNumber">Sort by Table Number</option>
-          <option value="capacity">Sort by Capacity</option>
-          <option value="createdAt">Sort by Created</option>
+          <option value="tableNumber">{t('admin.tables.filters.sortByTableNumber')}</option>
+          <option value="capacity">{t('admin.tables.filters.sortByCapacity')}</option>
+          <option value="createdAt">{t('admin.tables.filters.sortByCreated')}</option>
         </select>
         <button
           onClick={fetchTables}
           className="flex items-center gap-2 px-3 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80"
         >
           <Icon name="RefreshCw" size={18} />
-          Refresh
+          {t('admin.tables.actions.refresh')}
         </button>
       </div>
 
@@ -339,19 +341,19 @@ const TableManagement = () => {
             className="mx-auto mb-4 text-muted-foreground opacity-50"
           />
           <h3 className="text-lg font-semibold text-foreground mb-2">
-            No Tables Found
+            {t('admin.tables.empty.title')}
           </h3>
           <p className="text-muted-foreground mb-6">
             {filters.status
-              ? "Try adjusting your filters or create a new table."
-              : "Get started by creating your first table."}
+              ? t('admin.tables.empty.descFilter')
+              : t('admin.tables.empty.descEmpty')}
           </p>
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
           >
             <Icon name="Plus" size={18} className="inline mr-2" />
-            Create First Table
+            {t('admin.tables.empty.createFirst')}
           </button>
         </div>
       ) : (
@@ -369,7 +371,7 @@ const TableManagement = () => {
             ))}
           </div>
           <div className="text-center text-muted-foreground">
-            Showing {tables.length} table{tables.length !== 1 ? "s" : ""}
+            {t('admin.tables.empty.summaryPlural', { count: tables.length })}
           </div>
         </>
       )}
@@ -413,7 +415,7 @@ const TableManagement = () => {
                   <Icon name="AlertTriangle" size={24} />
                 </div>
                 <h3 className="text-lg font-bold text-error">
-                  Important Warning
+                  {t('admin.tables.warning.title')}
                 </h3>
                 <button
                   onClick={() => setShowRegenModal(false)}
@@ -426,20 +428,17 @@ const TableManagement = () => {
               {/* Content */}
               <div className="p-6">
                 <p className="text-foreground font-medium mb-2">
-                  Are you sure you want to regenerate QR codes for ALL tables?
+                  {t('admin.tables.warning.message')}
                 </p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 bg-muted p-3 rounded-lg">
                   <li>
-                    All existing QR codes will{" "}
-                    <strong>stop working immediately</strong>.
+                    {t('admin.tables.warning.list.stopWorking')}
                   </li>
                   <li>
-                    Customers using old QR codes will no longer be able to place
-                    orders.
+                    {t('admin.tables.warning.list.noOrders')}
                   </li>
                   <li>
-                    You will need to <strong>reprint and replace all</strong>{" "}
-                    new QR codes.
+                    {t('admin.tables.warning.list.reprint')}
                   </li>
                 </ul>
               </div>
@@ -451,7 +450,7 @@ const TableManagement = () => {
                   className="px-4 py-2 bg-card border border-border rounded-lg text-foreground hover:bg-muted font-medium"
                   disabled={isRegenerating}
                 >
-                  Cancel
+                  {t('admin.tables.actions.cancel')}
                 </button>
                 <button
                   onClick={handleRegenerateAllQRs}
@@ -465,10 +464,10 @@ const TableManagement = () => {
                         size={18}
                         className="animate-spin"
                       />
-                      Processing...
+                      {t('common.actions.processing')}
                     </>
                   ) : (
-                    "Confirm Regeneration"
+                    t('admin.tables.actions.confirmRegen')
                   )}
                 </button>
               </div>

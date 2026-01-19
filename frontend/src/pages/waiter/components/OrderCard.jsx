@@ -1,6 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) => {
+    const { t } = useTranslation();
+
     // Calculate time elapsed
     const calculateTimeElapsed = (timestamp) => {
         if (!timestamp) return "";
@@ -9,10 +12,10 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
         const diffMs = now - time;
         const diffMins = Math.floor(diffMs / 60000);
 
-        if (diffMins < 1) return "Just now";
-        if (diffMins < 60) return `${diffMins} min ago`;
+        if (diffMins < 1) return t("waiter.time.justNow");
+        if (diffMins < 60) return t("waiter.time.minAgo", { count: diffMins });
         const diffHours = Math.floor(diffMins / 60);
-        return `${diffHours}h ${diffMins % 60}m ago`;
+        return t("waiter.time.hoursAgo", { hours: diffHours, minutes: diffMins % 60 });
     };
 
     // Calculate total price
@@ -33,12 +36,12 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
     // Get status badge styling
     const getStatusBadge = () => {
         const statusConfig = {
-            SUBMITTED: { label: "Pending", className: "bg-warning/20 text-warning" },
-            RECEIVED: { label: "Accepted", className: "bg-success/20 text-success" },
-            PREPARING: { label: "In Kitchen", className: "bg-accent/20 text-accent" },
-            READY: { label: "Ready", className: "bg-success/30 text-success" },
-            SERVED: { label: "Served", className: "bg-muted text-muted-foreground" },
-            COMPLETED: { label: "Paid & Completed", className: "bg-primary/20 text-primary border border-primary/20" },
+            SUBMITTED: { label: t("waiter.status.SUBMITTED"), className: "bg-warning/20 text-warning" },
+            RECEIVED: { label: t("waiter.status.RECEIVED"), className: "bg-success/20 text-success" },
+            PREPARING: { label: t("waiter.status.PREPARING"), className: "bg-accent/20 text-accent" },
+            READY: { label: t("waiter.status.READY"), className: "bg-success/30 text-success" },
+            SERVED: { label: t("waiter.status.SERVED"), className: "bg-muted text-muted-foreground" },
+            COMPLETED: { label: t("waiter.status.COMPLETED"), className: "bg-primary/20 text-primary border border-primary/20" },
         };
 
         const config = statusConfig[order.status] || {
@@ -85,7 +88,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                             {order.orderNumber}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                            {order.orderItems?.length || 0} items
+                            {t("waiter.order.items", { count: order.orderItems?.length || 0 })}
                         </p>
                     </div>
                 </div>
@@ -142,7 +145,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                         )}
                                         {item.specialInstructions && (
                                             <p className="text-xs text-warning italic mt-1">
-                                                Note: {item.specialInstructions}
+                                                {t("waiter.order.note")}: {item.specialInstructions}
                                             </p>
                                         )}
                                         {/* Show status badge for item if cooking/ready */}
@@ -161,7 +164,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                             </div>
                         ));
                     } else {
-                        return <p className="text-sm text-muted-foreground text-center italic py-2">No active pending items.</p>;
+                        return <p className="text-sm text-muted-foreground text-center italic py-2">{t("waiter.order.noActiveItems")}</p>;
                     }
                 })()}
 
@@ -176,11 +179,11 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                     onClick={(e) => {
                                         const el = e.currentTarget.nextElementSibling;
                                         el.classList.toggle('hidden');
-                                        e.currentTarget.textContent = el.classList.contains('hidden') ? `Show History (${historyItems.length})` : 'Hide History';
+                                        e.currentTarget.textContent = el.classList.contains('hidden') ? t("waiter.order.showHistory", { count: historyItems.length }) : t("waiter.order.hideHistory");
                                     }}
                                     className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors w-full text-center flex items-center justify-center gap-1"
                                 >
-                                    Show History ({historyItems.length})
+                                    {t("waiter.order.showHistory", { count: historyItems.length })}
                                 </button>
                                 <div className="hidden space-y-3 mt-3 animate-in fade-in slide-in-from-top-2">
                                     {historyItems.map((item, index) => (
@@ -213,7 +216,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                 {/* Total */}
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                     <span className="font-semibold text-sm md:text-base text-foreground">
-                        Total
+                        {t("waiter.order.total")}
                     </span>
                     <span className="font-bold text-base md:text-lg text-foreground data-text">
                         {calculateTotal().toLocaleString('vi-VN')}₫
@@ -230,13 +233,13 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                                 onClick={() => onReject(order)}
                                 className="flex-1 px-3 md:px-4 py-2.5 md:py-3 border-2 border-error text-error bg-card hover:bg-error hover:text-error-foreground rounded-lg font-semibold text-sm transition-smooth touch-target"
                             >
-                                Reject
+                                {t("waiter.action.reject")}
                             </button>
                             <button
                                 onClick={() => onAccept(order)}
                                 className="flex-[2] px-3 md:px-4 py-2.5 md:py-3 bg-success text-success-foreground hover:bg-success/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
                             >
-                                Accept & Send to Kitchen
+                                {t("waiter.action.accept")}
                             </button>
                         </>
                     )}
@@ -245,7 +248,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                             onClick={() => onServe(order)}
                             className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-success text-success-foreground hover:bg-success/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
                         >
-                            Mark as Served
+                            {t("waiter.action.serve")}
                         </button>
                     )}
                     {(order.status === "RECEIVED" || order.status === "PREPARING") && (
@@ -253,7 +256,7 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                             className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
                             onClick={() => window.open("/kitchen/dashboard", "_blank")}
                         >
-                            View in Kitchen
+                            {t("waiter.action.viewKitchen")}
                         </button>
                     )}
                 </div>

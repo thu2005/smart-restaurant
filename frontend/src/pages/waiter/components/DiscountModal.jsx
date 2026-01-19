@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 
 const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [discountType, setDiscountType] = useState("percentage"); // "percentage" or "fixed"
     const [discountValue, setDiscountValue] = useState("");
     const [error, setError] = useState("");
@@ -75,18 +79,18 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
             {/* Modal */}
             <div className="relative bg-card rounded-lg shadow-warm-xl max-w-md w-full p-6 md:p-8">
                 <h2 className="text-xl md:text-2xl font-heading font-bold text-foreground mb-4">
-                    Apply Discount
+                    {t("waiter.discount.title")}
                 </h2>
 
                 <p className="text-sm text-muted-foreground mb-4">
-                    Order: <span className="font-semibold text-foreground">{order?.orderNumber}</span>
+                    {t("waiter.discount.order")}: <span className="font-semibold text-foreground">{order?.orderNumber}</span>
                 </p>
 
                 <form onSubmit={handleSubmit}>
                     {/* Discount Type */}
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-foreground mb-2">
-                            Discount Type
+                            {t("waiter.discount.type")}
                         </label>
                         <div className="flex gap-4">
                             <label className="flex items-center cursor-pointer">
@@ -97,7 +101,7 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
                                     onChange={(e) => setDiscountType(e.target.value)}
                                     className="mr-2"
                                 />
-                                <span className="text-sm text-foreground">Percentage (%)</span>
+                                <span className="text-sm text-foreground">{t("waiter.discount.percentage")}</span>
                             </label>
                             <label className="flex items-center cursor-pointer">
                                 <input
@@ -107,7 +111,7 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
                                     onChange={(e) => setDiscountType(e.target.value)}
                                     className="mr-2"
                                 />
-                                <span className="text-sm text-foreground">Fixed Amount ($)</span>
+                                <span className="text-sm text-foreground">{t("waiter.discount.fixed")}</span>
                             </label>
                         </div>
                     </div>
@@ -118,7 +122,7 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
                             htmlFor="discountValue"
                             className="block text-sm font-medium text-foreground mb-2"
                         >
-                            {discountType === "percentage" ? "Percentage" : "Amount"} <span className="text-error">*</span>
+                            {discountType === "percentage" ? t("waiter.discount.percentage") : t("waiter.discount.amount")} <span className="text-error">*</span>
                         </label>
                         <input
                             id="discountValue"
@@ -142,19 +146,19 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
                         <div className="mb-4 p-3 bg-muted/30 rounded-lg space-y-1 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Subtotal:</span>
-                                <span className="text-foreground">${calculateSubtotal().toFixed(2)}</span>
+                                <span className="text-foreground">{formatCurrency(calculateSubtotal())}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Tax (10%):</span>
-                                <span className="text-foreground">${(calculateSubtotal() * 0.1).toFixed(2)}</span>
+                                <span className="text-foreground">{formatCurrency(calculateSubtotal() * 0.1)}</span>
                             </div>
                             <div className="flex justify-between text-success">
-                                <span>Discount:</span>
-                                <span>-${calculateDiscountAmount().toFixed(2)}</span>
+                                <span>{t("waiter.bill.summary.discount")}:</span>
+                                <span>-{formatCurrency(calculateDiscountAmount())}</span>
                             </div>
                             <div className="flex justify-between font-bold pt-2 border-t border-border">
-                                <span className="text-foreground">New Total:</span>
-                                <span className="text-primary">${calculateTotal().toFixed(2)}</span>
+                                <span className="text-foreground">{t("waiter.discount.newTotal")}:</span>
+                                <span className="text-primary">{formatCurrency(calculateTotal())}</span>
                             </div>
                         </div>
                     )}
@@ -165,13 +169,13 @@ const DiscountModal = ({ isOpen, onClose, onConfirm, order, currentBill }) => {
                             onClick={onClose}
                             className="flex-1 px-4 py-2.5 md:py-3 border border-border text-foreground bg-card hover:bg-muted rounded-lg font-semibold text-sm transition-smooth"
                         >
-                            Cancel
+                            {t("waiter.action.cancel")}
                         </button>
                         <button
                             type="submit"
                             className="flex-1 px-4 py-2.5 md:py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-semibold text-sm transition-smooth"
                         >
-                            Apply Discount
+                            {t("waiter.bill.applyDiscount")}
                         </button>
                     </div>
                 </form>

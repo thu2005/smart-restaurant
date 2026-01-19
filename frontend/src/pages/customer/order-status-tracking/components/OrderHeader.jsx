@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const OrderHeader = ({
@@ -9,6 +10,8 @@ const OrderHeader = ({
   status,
   currentTime,
 }) => {
+  const { t } = useTranslation();
+
   const getElapsedTime = () => {
     const elapsed = Math.floor((currentTime - timestamp) / 1000);
     const mins = Math.floor(elapsed / 60);
@@ -20,49 +23,49 @@ const OrderHeader = ({
     switch (status) {
       case "submitted":
         return {
-          label: "Order Submitted",
+          label: t("customer.orderTracking.status.submitted", "Order Submitted"),
           color: "bg-muted text-muted-foreground",
           icon: "Send",
         };
       case "received":
         return {
-          label: "Order Received",
+          label: t("customer.orderTracking.status.received", "Order Received"),
           color: "bg-accent text-accent-foreground",
           icon: "Clock",
         };
       case "preparing":
         return {
-          label: "Preparing",
+          label: t("customer.orderTracking.status.preparing", "Preparing"),
           color: "bg-warning text-warning-foreground",
           icon: "ChefHat",
         };
       case "ready":
         return {
-          label: "Ready to Serve",
+          label: t("customer.orderTracking.status.ready", "Ready to Serve"),
           color: "bg-success text-success-foreground",
           icon: "CheckCircle",
         };
       case "served":
         return {
-          label: "Served",
+          label: t("customer.orderTracking.status.served", "Served"),
           color: "bg-primary text-primary-foreground shadow-sm",
           icon: "Utensils",
         };
       case "payment_pending":
         return {
-          label: "Processing Bill",
+          label: t("customer.orderTracking.status.payment_pending", "Processing Bill"),
           color: "bg-indigo-600 text-white",
           icon: "Receipt",
         };
       case "completed":
         return {
-          label: "Paid & Completed",
+          label: t("customer.orderTracking.status.completed", "Paid & Completed"),
           color: "bg-success text-success-foreground",
           icon: "Award",
         };
       default:
         return {
-          label: "Status Pending",
+          label: t("customer.orderTracking.status.unknown", "Status Pending"),
           color: "bg-muted text-muted-foreground",
           icon: "HelpCircle",
         };
@@ -88,15 +91,15 @@ const OrderHeader = ({
             <div className="hidden md:flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/30 rounded-full">
                 <Icon name="Grid3x3" size={16} />
-                <span>Table {tableNumber}</span>
+                <span>{t("customer.orderTracking.header.table", { number: tableNumber })}</span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/30 rounded-full">
                 <Icon name="Package" size={16} />
-                <span>{totalItems} items</span>
+                <span>{t("customer.orderTracking.header.items", { count: totalItems })}</span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 bg-muted/30 rounded-full">
                 <Icon name="Clock" size={16} />
-                <span>{getElapsedTime()} elapsed</span>
+                <span>{t("customer.orderTracking.header.elapsed", { time: getElapsedTime() })}</span>
               </div>
             </div>
           </div>
@@ -112,20 +115,20 @@ const OrderHeader = ({
 
         {/* Mobile Info Row (Compact, Full Words) */}
         <div className="flex md:hidden items-center justify-between w-full text-xs text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/50">
-           <div className="flex items-center gap-1.5">
-              <Icon name="Grid3x3" size={14} className="text-primary"/>
-              <span className="font-medium">Table {tableNumber}</span>
-           </div>
-           <div className="w-px h-3 bg-border"></div>
-           <div className="flex items-center gap-1.5">
-              <Icon name="Package" size={14} className="text-primary"/>
-              <span className="font-medium">{totalItems} items</span>
-           </div>
-           <div className="w-px h-3 bg-border"></div>
-           <div className="flex items-center gap-1.5">
-              <Icon name="Clock" size={14} className="text-primary"/>
-              <span className="font-medium">{getElapsedTime()}</span>
-           </div>
+          <div className="flex items-center gap-1.5">
+            <Icon name="Grid3x3" size={14} className="text-primary" />
+            <span className="font-medium">{t("customer.orderTracking.header.table", { number: tableNumber })}</span>
+          </div>
+          <div className="w-px h-3 bg-border"></div>
+          <div className="flex items-center gap-1.5">
+            <Icon name="Package" size={14} className="text-primary" />
+            <span className="font-medium">{t("customer.orderTracking.header.items", { count: totalItems })}</span>
+          </div>
+          <div className="w-px h-3 bg-border"></div>
+          <div className="flex items-center gap-1.5">
+            <Icon name="Clock" size={14} className="text-primary" />
+            <span className="font-medium">{getElapsedTime()}</span>
+          </div>
         </div>
       </div>
     </div>

@@ -47,6 +47,7 @@ import MetabaseDashboard from "./pages/admin/reports/MetabaseDashboard";
 import UserManagement from "./pages/admin/users/UserManagement";
 import CreateUser from "./pages/admin/users/CreateUser";
 import EditUser from "./pages/admin/users/EditUser";
+import Settings from "./pages/admin/settings";
 
 // Waiter Pages
 import WaiterDashboard from "./pages/waiter";
@@ -162,6 +163,7 @@ const Routes = () => {
             <Route path="users" element={<UserManagement />} />
             <Route path="users/create" element={<CreateUser />} />
             <Route path="users/:id/edit" element={<EditUser />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           {/* Legacy redirect */}
           <Route

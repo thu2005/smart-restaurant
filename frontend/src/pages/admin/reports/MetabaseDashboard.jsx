@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import reportApi from '../../../services/reportApi';
 
 const MetabaseDashboard = () => {
+    const { t } = useTranslation();
     const [iframeUrl, setIframeUrl] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,11 +15,11 @@ const MetabaseDashboard = () => {
                 if (response.success && response.data.iframeUrl) {
                     setIframeUrl(response.data.iframeUrl);
                 } else {
-                    setError('Failed to load dashboard configuration');
+                    setError(t('reports.metabase.configError'));
                 }
             } catch (err) {
                 console.error("Metabase Error:", err);
-                setError(err.response?.data?.message || 'Failed to connect to Analytics Server');
+                setError(err.response?.data?.message || t('reports.metabase.connectionError'));
             } finally {
                 setLoading(false);
             }
@@ -38,18 +40,18 @@ const MetabaseDashboard = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] p-6 text-center">
                 <div className="text-red-500 text-5xl mb-4">⚠️</div>
-                <h2 className="text-xl font-semibold mb-2">Analytics Dashboard Unavailable</h2>
+                <h2 className="text-xl font-semibold mb-2">{t('reports.metabase.unavailableTitle')}</h2>
                 <p className="text-muted-foreground mb-4 max-w-md">{error}</p>
                 <div className="bg-gray-100 p-4 rounded-md text-left text-sm font-mono text-gray-700">
-                    <p className="font-bold mb-2">Setup Required:</p>
+                    <p className="font-bold mb-2">{t('reports.metabase.unavailableSetupTitle')}</p>
                     <ul className="list-disc pl-5 space-y-1">
-                        <li>Go to Metabase Admin - Embedding</li>
-                        <li>Enable "Embedding in other applications"</li>
-                        <li>Add these to backend .env file:
+                        <li>{t('reports.metabase.unavailableSetupSteps.embedding')}</li>
+                        <li>{t('reports.metabase.unavailableSetupSteps.enableEmbedding')}</li>
+                        <li>{t('reports.metabase.unavailableSetupSteps.envInstructions')}
                             <div className="mt-2 p-2 bg-gray-200 rounded select-all">
-                                METABASE_SITE_URL=http://localhost:3000<br />
-                                METABASE_SECRET_KEY=your_secret_key<br />
-                                METABASE_DASHBOARD_ID=1
+                                {t('reports.metabase.unavailableSetupSteps.envSiteUrl')}<br />
+                                {t('reports.metabase.unavailableSetupSteps.envSecretKey')}<br />
+                                {t('reports.metabase.unavailableSetupSteps.envDashboardId')}
                             </div>
                         </li>
                     </ul>
@@ -61,14 +63,14 @@ const MetabaseDashboard = () => {
     return (
         <div className="w-full h-[calc(100vh-64px)] bg-gray-50 flex flex-col">
             <div className="px-6 py-4 bg-white border-b flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800">Operational Analytics</h1>
+                <h1 className="text-2xl font-bold text-gray-800">{t('reports.metabase.title')}</h1>
                 <a
                     href={iframeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-primary hover:underline"
                 >
-                    Open in Metabase ↗
+                    {t('reports.metabase.openInMetabase')}
                 </a>
             </div>
             <div className="flex-1 w-full bg-white relative">

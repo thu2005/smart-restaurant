@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
 import orderService from "../../../services/orderService";
@@ -6,6 +8,8 @@ import { toast } from "sonner";
 import OrderDetailsModal from "./components/OrderDetailsModal";
 
 const OrderList = () => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -39,7 +43,7 @@ const OrderList = () => {
                 // Staff/Admin: require restaurantId
                 const restaurantId = userData.restaurantId;
                 if (!restaurantId) {
-                    throw new Error("Restaurant ID not found. Please log in.");
+                    throw new Error(t('admin.orders.messages.noRestaurant'));
                 }
                 const params = { restaurantId };
                 if (statusFilter) {
@@ -49,7 +53,7 @@ const OrderList = () => {
                 setOrders(response.data || []);
             }
         } catch (err) {
-            const message = err.response?.data?.message || err.message || "Failed to load orders";
+            const message = err.response?.data?.message || err.message || t('admin.orders.messages.loadError');
             setError(message);
             console.error("Error fetching orders:", err);
             toast.error(message);
@@ -61,10 +65,10 @@ const OrderList = () => {
     const handleStatusUpdate = async (orderId, newStatus) => {
         try {
             await orderService.updateStatus(orderId, newStatus);
-            toast.success("Order status updated");
+            toast.success(t('admin.orders.messages.statusUpdated'));
             await fetchOrders();
         } catch (err) {
-            toast.error("Failed to update order status");
+            toast.error(t('admin.orders.messages.updateError'));
         }
     };
 
@@ -111,13 +115,6 @@ const OrderList = () => {
         }).format(date);
     };
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-        }).format(amount || 0);
-    };
-
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -131,9 +128,9 @@ const OrderList = () => {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-heading font-bold text-foreground">Orders</h1>
+                    <h1 className="text-2xl font-heading font-bold text-foreground">{t('admin.orders.title')}</h1>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Manage and track restaurant orders
+                        {t('admin.orders.subtitle')}
                     </p>
                 </div>
                 <Button
@@ -142,7 +139,7 @@ const OrderList = () => {
                     onClick={fetchOrders}
                     disabled={loading}
                 >
-                    Refresh
+                    {t('admin.orders.refresh')}
                 </Button>
             </div>
 
@@ -153,14 +150,14 @@ const OrderList = () => {
                     onChange={(e) => setStatusFilter(e.target.value)}
                     className="px-4 py-2 border border-border rounded-lg bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                    <option value="">All Statuses</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="RECEIVED">Received</option>
-                    <option value="PREPARING">Preparing</option>
-                    <option value="READY">Ready</option>
-                    <option value="SERVED">Served</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="CANCELLED">Cancelled</option>
+                    <option value="">{t('admin.orders.filters.allStatuses')}</option>
+                    <option value="PENDING">{t('admin.orders.status.pending')}</option>
+                    <option value="RECEIVED">{t('admin.orders.status.received')}</option>
+                    <option value="PREPARING">{t('admin.orders.status.preparing')}</option>
+                    <option value="READY">{t('admin.orders.status.ready')}</option>
+                    <option value="SERVED">{t('admin.orders.status.served')}</option>
+                    <option value="COMPLETED">{t('admin.orders.status.completed')}</option>
+                    <option value="CANCELLED">{t('admin.orders.status.cancelled')}</option>
                 </select>
             </div>
 
@@ -176,11 +173,11 @@ const OrderList = () => {
             {orders.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                     <Icon name="ShoppingBag" size={48} className="mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium">No orders found</p>
+                    <p className="text-lg font-medium">{t('admin.orders.empty')}</p>
                     <p className="text-sm mt-2">
                         {statusFilter
-                            ? `No orders with status: ${statusFilter}`
-                            : "Orders will appear here once customers place them"}
+                            ? t('admin.orders.emptyFilter', { status: statusFilter })
+                            : t('admin.orders.emptyDesc')}
                     </p>
                 </div>
             ) : (
@@ -202,14 +199,14 @@ const OrderList = () => {
                                             )}`}
                                         >
                                             <Icon name={getStatusIcon(order.status)} size={14} />
-                                            {order.status}
+                                            {t(`admin.orders.status.${order.status.toLowerCase()}`)}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-2">
                                             <Icon name="Grid3x3" size={16} />
                                             <span>
-                                                Table: {order.table?.tableNumber || "N/A"}
+                                                {t('admin.orders.card.table', { number: order.table?.tableNumber || "N/A" })}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -231,7 +228,7 @@ const OrderList = () => {
                                         iconName="Eye"
                                         onClick={() => handleViewDetails(order)}
                                     >
-                                        View
+                                        {t('admin.orders.actions.view')}
                                     </Button>
                                 </div>
                             </div>
@@ -239,7 +236,7 @@ const OrderList = () => {
                             {/* Order Items Summary */}
                             <div className="border-t border-border pt-3 mt-3">
                                 <p className="text-sm text-muted-foreground mb-2">
-                                    Items ({order.orderItems?.length || 0}):
+                                    {t('admin.orders.card.items')} ({order.orderItems?.length || 0}):
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     {order.orderItems?.slice(0, 3).map((item, idx) => (
@@ -252,7 +249,7 @@ const OrderList = () => {
                                     ))}
                                     {order.orderItems?.length > 3 && (
                                         <span className="px-2 py-1 bg-muted rounded text-xs">
-                                            +{order.orderItems.length - 3} more
+                                            {t('admin.orders.card.more', { count: order.orderItems.length - 3 })}
                                         </span>
                                     )}
                                 </div>
@@ -270,7 +267,7 @@ const OrderList = () => {
                                                     handleStatusUpdate(order.id, "RECEIVED")
                                                 }
                                             >
-                                                Mark Received
+                                                {t('admin.orders.actions.markReceived')}
                                             </Button>
                                         )}
                                         {order.status === "RECEIVED" && (
@@ -281,7 +278,7 @@ const OrderList = () => {
                                                     handleStatusUpdate(order.id, "PREPARING")
                                                 }
                                             >
-                                                Start Preparing
+                                                {t('admin.orders.actions.startPreparing')}
                                             </Button>
                                         )}
                                         {order.status === "PREPARING" && (
@@ -292,7 +289,7 @@ const OrderList = () => {
                                                     handleStatusUpdate(order.id, "READY")
                                                 }
                                             >
-                                                Mark Ready
+                                                {t('admin.orders.actions.markReady')}
                                             </Button>
                                         )}
                                         {order.status === "READY" && (
@@ -303,7 +300,7 @@ const OrderList = () => {
                                                     handleStatusUpdate(order.id, "SERVED")
                                                 }
                                             >
-                                                Mark Served
+                                                {t('admin.orders.actions.markServed')}
                                             </Button>
                                         )}
                                         {order.status === "SERVED" && (
@@ -314,7 +311,7 @@ const OrderList = () => {
                                                     handleStatusUpdate(order.id, "COMPLETED")
                                                 }
                                             >
-                                                Complete Order
+                                                {t('admin.orders.actions.completeOrder')}
                                             </Button>
                                         )}
                                     </div>

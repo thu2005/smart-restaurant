@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
@@ -8,6 +9,8 @@ const QuantitySelector = ({
   minQuantity = 1,
   maxQuantity = 99,
 }) => {
+  const { t } = useTranslation();
+
   const handleDecrease = () => {
     if (quantity > minQuantity) {
       onQuantityChange(quantity - 1);
@@ -23,7 +26,7 @@ const QuantitySelector = ({
   return (
     <div className="flex items-center gap-3 md:gap-4">
       <span className="text-sm md:text-base font-medium text-foreground">
-        Quantity:
+        {t("customer.itemDetail.quantity")}:
       </span>
       <div className="flex items-center gap-2 md:gap-3">
         <Button
@@ -32,7 +35,7 @@ const QuantitySelector = ({
           onClick={handleDecrease}
           disabled={quantity <= minQuantity}
           className="w-10 h-10 md:w-12 md:h-12"
-          aria-label="Decrease quantity"
+          aria-label={t("common.actions.decrease", "Decrease quantity")}
         >
           <Icon name="Minus" size={18} />
         </Button>
@@ -47,7 +50,7 @@ const QuantitySelector = ({
           onClick={handleIncrease}
           disabled={quantity >= maxQuantity}
           className="w-10 h-10 md:w-12 md:h-12"
-          aria-label="Increase quantity"
+          aria-label={t("common.actions.increase", "Increase quantity")}
         >
           <Icon name="Plus" size={18} />
         </Button>

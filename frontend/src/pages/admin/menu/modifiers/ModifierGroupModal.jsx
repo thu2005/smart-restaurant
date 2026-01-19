@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { useForm, useFieldArray } from "react-hook-form";
 import Button from "components/ui/Button";
 import Input from "components/ui/Input";
@@ -14,6 +15,7 @@ const ModifierGroupModal = ({
   initialData,
   title,
 }) => {
+  const { t } = useTranslation();
   const {
     register,
     control,
@@ -83,25 +85,25 @@ const ModifierGroupModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Group Name *
+                {t('admin.menu.items.modifiers.modal.labels.name')}
               </label>
               <Input
                 {...register("name", { required: "Name is required" })}
-                placeholder="e.g. Size, Toppings"
+                placeholder={t('admin.menu.items.modifiers.modal.placeholders.name')}
                 error={errors.name?.message}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Selection Type
+                {t('admin.menu.items.modifiers.modal.labels.selectionType')}
               </label>
               <select
                 {...register("selection_type")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
-                <option value="single">Single Select (Radio)</option>
-                <option value="multiple">Multi Select (Checkbox)</option>
+                <option value="single">{t('admin.menu.items.modifiers.modal.types.single')}</option>
+                <option value="multiple">{t('admin.menu.items.modifiers.modal.types.multiple')}</option>
               </select>
             </div>
 
@@ -116,7 +118,7 @@ const ModifierGroupModal = ({
                 htmlFor="is_required"
                 className="ml-2 block text-sm text-gray-900"
               >
-                Required Selection
+                {t('admin.menu.items.modifiers.modal.labels.required')}
               </label>
             </div>
 
@@ -124,7 +126,7 @@ const ModifierGroupModal = ({
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Min Selections
+                    {t('admin.menu.items.modifiers.modal.labels.min')}
                   </label>
                   <Input
                     type="number"
@@ -136,7 +138,7 @@ const ModifierGroupModal = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Max Selections
+                    {t('admin.menu.items.modifiers.modal.labels.max')}
                   </label>
                   <Input
                     type="number"
@@ -152,14 +154,14 @@ const ModifierGroupModal = ({
 
           <div className="border-t pt-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-md font-medium">Options</h3>
+              <h3 className="text-md font-medium">{t('admin.menu.items.modifiers.modal.options.title')}</h3>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => append({ name: "", price_adjustment: 0 })}
               >
-                <Icon name="Plus" className="w-4 h-4 mr-1" /> Add Option
+                <Icon name="Plus" className="w-4 h-4 mr-1" /> {t('admin.menu.items.modifiers.modal.options.add')}
               </Button>
             </div>
 
@@ -169,7 +171,7 @@ const ModifierGroupModal = ({
                   <div className="flex-1">
                     <Input
                       {...register(`options.${index}.name`, { required: true })}
-                      placeholder="Option Name"
+                      placeholder={t('admin.menu.items.modifiers.modal.placeholders.optionName')}
                       className="h-9"
                     />
                   </div>
@@ -180,7 +182,7 @@ const ModifierGroupModal = ({
                       {...register(`options.${index}.price_adjustment`, {
                         valueAsNumber: true,
                       })}
-                      placeholder="Price"
+                      placeholder={t('admin.menu.items.modifiers.modal.placeholders.price')}
                       className="h-9"
                     />
                   </div>
@@ -198,10 +200,10 @@ const ModifierGroupModal = ({
 
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button variant="outline" onClick={onClose} type="button">
-              Cancel
+              {t('common.actions.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Modifier Group"}
+              {isSubmitting ? t('admin.menu.items.modifiers.modal.buttons.saving') : t('admin.menu.items.modifiers.modal.buttons.save')}
             </Button>
           </div>
         </form>

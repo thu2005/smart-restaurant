@@ -1,7 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const CategoryFilter = ({ categories, activeCategory, onCategoryChange }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
       {categories?.map((category) => {
@@ -13,17 +16,16 @@ const CategoryFilter = ({ categories, activeCategory, onCategoryChange }) => {
             className={`
               flex items-center gap-2 px-4 py-2.5 rounded-lg whitespace-nowrap
               transition-smooth touch-target flex-shrink-0
-              ${
-                isActive
-                  ? "bg-primary text-primary-foreground shadow-warm"
-                  : "bg-card text-foreground hover:bg-muted border border-border"
+              ${isActive
+                ? "bg-primary text-primary-foreground shadow-warm"
+                : "bg-card text-foreground hover:bg-muted border border-border"
               }
             `}
             aria-label={`Filter by ${category?.label}`}
           >
             <Icon name={category?.icon} size={18} />
             <span className="font-medium text-sm md:text-base">
-              {category?.label}
+              {category?.value === 'all' ? t('customer.menu.categories.all') : category?.label}
             </span>
             {category?.count > 0 && (
               <span

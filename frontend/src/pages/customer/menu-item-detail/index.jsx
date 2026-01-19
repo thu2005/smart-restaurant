@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import menuService from "../../../services/menuService";
 import { useCart } from "../../../contexts/CartContext";
 import ImageGallery from "./components/ImageGallery";
@@ -28,74 +29,13 @@ const mockNutritionalData = [
   { label: "Cholesterol", value: "95mg" },
 ];
 
-const mockIngredients = [
-  "Atlantic Salmon",
-  "Butter",
-  "Fresh Herbs (Parsley, Dill, Thyme)",
-  "Garlic",
-  "Lemon",
-  "Olive Oil",
-  "Potatoes",
-  "Heavy Cream",
-  "Seasonal Vegetables",
-  "Salt",
-  "Black Pepper",
-  "Other",
-];
-
-const mockRatingDistribution = [
-  { stars: 5, count: 0 },
-  { stars: 4, count: 0 },
-  { stars: 3, count: 0 },
-  { stars: 2, count: 0 },
-  { stars: 1, count: 0 },
-];
-
-const mockRelatedItems = [
-  {
-    id: "item-002",
-    name: "Pan-Seared Sea Bass",
-    image: "https://images.unsplash.com/photo-1580959375944-0b7b9e7d6b3e",
-    rating: 4.6,
-    reviewCount: 89,
-    price: 270000,
-    isNew: false,
-  },
-  {
-    id: "item-003",
-    name: "Lobster Tail Dinner",
-    image: "https://images.unsplash.com/photo-1559339352-11d035aa65de",
-    rating: 4.9,
-    reviewCount: 124,
-    price: 350000,
-    isNew: true,
-  },
-  {
-    id: "item-004",
-    name: "Shrimp Scampi Pasta",
-    image: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9",
-    rating: 4.5,
-    reviewCount: 76,
-    price: 230000,
-    isNew: false,
-  },
-  {
-    id: "item-005",
-    name: "Grilled Tuna Steak",
-    image: "https://images.unsplash.com/photo-1614187973334-9e1d30848d3c",
-    rating: 4.7,
-    reviewCount: 92,
-    price: 290000,
-    isNew: false,
-  },
-];
-
 const MenuItemDetail = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { itemId } = useParams();
   const { addToCart, updateItem, getCartSummary } = useCart();
-  
+
   const editingItem = location.state?.editingItem;
 
   const [menuItem, setMenuItem] = useState(null);
@@ -128,25 +68,25 @@ const MenuItemDetail = () => {
           // EDIT MODE: Populate from existing cart item
           setQuantity(editingItem.quantity);
           setSpecialInstructions(editingItem.specialInstructions || "");
-          
+
           if (item?.modifier_groups) {
-             item.modifier_groups.forEach(group => {
-                const groupModifiers = editingItem.modifiers?.filter(m => m.groupName === group.name) || [];
-                
-                if (groupModifiers.length > 0) {
-                   if (group.selectionType === 'single') {
-                      initialModifiers[group.id] = groupModifiers[0].id;
-                   } else {
-                      // Multiple or Addon
-                      initialModifiers[group.id] = groupModifiers.map(m => ({
-                         id: m.id,
-                         quantity: m.quantity || 1
-                      }));
-                   }
-                } else if (group.selectionType === 'multiple') {
-                   initialModifiers[group.id] = [];
+            item.modifier_groups.forEach(group => {
+              const groupModifiers = editingItem.modifiers?.filter(m => m.groupName === group.name) || [];
+
+              if (groupModifiers.length > 0) {
+                if (group.selectionType === 'single') {
+                  initialModifiers[group.id] = groupModifiers[0].id;
+                } else {
+                  // Multiple or Addon
+                  initialModifiers[group.id] = groupModifiers.map(m => ({
+                    id: m.id,
+                    quantity: m.quantity || 1
+                  }));
                 }
-             });
+              } else if (group.selectionType === 'multiple') {
+                initialModifiers[group.id] = [];
+              }
+            });
           }
         } else {
           // NEW ITEM MODE: Default init
@@ -164,7 +104,7 @@ const MenuItemDetail = () => {
             });
           }
         }
-        
+
         setSelectedModifiers(initialModifiers);
 
       } catch (err) {
@@ -223,7 +163,7 @@ const MenuItemDetail = () => {
           selection.forEach((item) => {
             const optId = typeof item === 'object' ? item.id : item;
             const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
-            
+
             const opt = group.options?.find((o) => o.id === optId);
             if (opt) total += (opt.priceAdjustment || 0) * qty;
           });
@@ -248,8 +188,8 @@ const MenuItemDetail = () => {
             group.selectionType === "single" &&
             !selectedModifiers[group.id]
           ) {
-            toast.error(`Please select a ${group.name}`, {
-              description: "This option is required.",
+            toast.error(t('customer.itemDetail.customization.select', { count: group.name }), {
+              description: t('customer.itemDetail.customization.required'),
               duration: 3000
             });
             return;
@@ -271,7 +211,7 @@ const MenuItemDetail = () => {
             selection.forEach((item) => {
               const optId = typeof item === 'object' ? item.id : item;
               const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
-              
+
               const opt = group.options?.find((o) => o.id === optId);
               if (opt) {
                 itemPrice += (opt.priceAdjustment || 0) * qty;
@@ -304,32 +244,32 @@ const MenuItemDetail = () => {
       // Add to cart
       // Add to cart or Update cart
       if (editingItem) {
-         updateItem(editingItem.cartId, {
-            price: itemPrice,
-            quantity: quantity,
-            modifiers: modifiersList,
-            specialInstructions: specialInstructions,
-            prepTime: menuItem.prepTime || 15,
-         });
+        updateItem(editingItem.cartId, {
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       } else {
-         addToCart({
-           menuItemId: menuItem.id,
-           name: menuItem.name,
-           image: menuItem.image || menuItem.photos?.find(p => p.isPrimary)?.url || menuItem.photos?.[0]?.url,
-           price: itemPrice,
-           quantity: quantity,
-           modifiers: modifiersList,
-           specialInstructions: specialInstructions,
-           prepTime: menuItem.prepTime || 15,
-         });
+        addToCart({
+          menuItemId: menuItem.id,
+          name: menuItem.name,
+          image: menuItem.image || menuItem.photos?.find(p => p.isPrimary)?.url || menuItem.photos?.[0]?.url,
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       }
 
       // Navigate to cart
       navigate("/customer/shopping-cart");
     } catch (error) {
       console.error("Failed to add/update cart:", error);
-      toast.error("Failed to process request", {
-        description: "Please try again.",
+      toast.error(t('common.error.generic'), {
+        description: t('common.error.tryAgain'),
         duration: 3000
       });
     }
@@ -348,7 +288,7 @@ const MenuItemDetail = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading menu item...</p>
+          <p className="text-gray-600">{t("customer.itemDetail.loading")}</p>
         </div>
       </div>
     );
@@ -363,13 +303,13 @@ const MenuItemDetail = () => {
             <Icon name="AlertCircle" size={48} />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Item Not Found
+            {t("customer.itemDetail.notFound.title")}
           </h2>
           <p className="text-gray-600 mb-4">
-            {error || "The requested menu item could not be found."}
+            {error || t("customer.itemDetail.notFound.message")}
           </p>
           <Button onClick={() => navigate("/customer/menu-browse")}>
-            Back to Menu
+            {t("customer.itemDetail.backToMenu")}
           </Button>
         </div>
       </div>
@@ -386,7 +326,7 @@ const MenuItemDetail = () => {
           >
             <Icon name="ArrowLeft" size={20} />
             <span className="text-sm md:text-base font-medium">
-              Back to Menu
+              {t("customer.itemDetail.backToMenu")}
             </span>
           </button>
 
@@ -421,7 +361,7 @@ const MenuItemDetail = () => {
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        Total ({quantity} {quantity === 1 ? "item" : "items"})
+                        {t("customer.itemDetail.totalItems", { count: quantity })}
                       </p>
                       <p className="text-3xl font-heading font-bold text-primary data-text">
                         {new Intl.NumberFormat("vi-VN", {
@@ -440,9 +380,9 @@ const MenuItemDetail = () => {
                     disabled={!isAvailable}
                     fullWidth
                   >
-                    {isAvailable 
-                      ? (editingItem ? "Update Cart" : "Add to Cart") 
-                      : "Currently Unavailable"}
+                    {isAvailable
+                      ? (editingItem ? t("customer.itemDetail.updateCart") : t("customer.menu.item.addToCart"))
+                      : t("customer.itemDetail.unavailable")}
                   </Button>
                 </div>
               </div>
@@ -480,7 +420,7 @@ const MenuItemDetail = () => {
         quantity={quantity}
         onAddToCart={handleAddToCart}
         isAvailable={isAvailable}
-        buttonText={editingItem ? "Update Cart" : "Add to Cart"}
+        buttonText={editingItem ? t("customer.itemDetail.updateCart") : t("customer.menu.item.addToCart")}
       />
     </div>
   );

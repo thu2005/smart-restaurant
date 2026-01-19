@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
+import { useTranslation } from "react-i18next";
 import Icon from "../../components/AppIcon";
 
 const VerifyEmail = () => {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = searchParams.get("token");
     const [status, setStatus] = useState("verifying"); // verifying, success, error
-    const [message, setMessage] = useState("Verifying your email address...");
+    const [message, setMessage] = useState(t("auth.verifyEmail.verifying.message"));
     const initialized = useRef(false);
 
     useEffect(() => {
@@ -18,7 +20,7 @@ const VerifyEmail = () => {
         const verify = async () => {
             if (!token) {
                 setStatus("error");
-                setMessage("Invalid verification link. Token is missing.");
+                setMessage(t("auth.verifyEmail.error.messageNoToken"));
                 return;
             }
 
@@ -28,10 +30,10 @@ const VerifyEmail = () => {
 
                 await authService.verifyEmail(token);
                 setStatus("success");
-                setMessage("Your email has been successfully verified!");
+                setMessage(t("auth.verifyEmail.success.message"));
             } catch (error) {
                 setStatus("error");
-                setMessage(error.message || "Failed to verify email. The link may be invalid or expired.");
+                setMessage(error.message || t("auth.verifyEmail.error.messageDefault"));
             }
         };
 
@@ -66,9 +68,9 @@ const VerifyEmail = () => {
 
                 {/* Title */}
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                    {status === "verifying" && "Verifying Email"}
-                    {status === "success" && "Email Verified!"}
-                    {status === "error" && "Verification Failed"}
+                    {status === "verifying" && t("auth.verifyEmail.verifying.title")}
+                    {status === "success" && t("auth.verifyEmail.success.title")}
+                    {status === "error" && t("auth.verifyEmail.error.title")}
                 </h1>
 
                 {/* Message */}
@@ -84,7 +86,7 @@ const VerifyEmail = () => {
                             className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
                         >
                             <Icon name="LogIn" size={18} />
-                            Go to Login
+                            {t("auth.verifyEmail.success.button")}
                         </button>
                     )}
 
@@ -93,7 +95,7 @@ const VerifyEmail = () => {
                             onClick={handleLoginRedirect}
                             className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-all"
                         >
-                            Back to Login
+                            {t("auth.verifyEmail.error.button")}
                         </button>
                     )}
                 </div>
@@ -101,7 +103,7 @@ const VerifyEmail = () => {
 
             {/* Footer */}
             <div className="mt-8 text-center text-sm text-gray-500">
-                <p>&copy; {new Date().getFullYear()} Smart Restaurant. All rights reserved.</p>
+                <p>{t("auth.verifyEmail.footer", { year: new Date().getFullYear() })}</p>
             </div>
         </div>
     );

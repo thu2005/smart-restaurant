@@ -123,6 +123,36 @@ router.get('/active', orderController.getActiveOrderByTable);
 
 /**
  * @swagger
+ * /api/orders/bills:
+ *   get:
+ *     summary: Get bills for restaurant, filter by paid/unpaid
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PAID, UNPAID]
+ *     responses:
+ *       200:
+ *         description: List of bills
+ */
+router.get(
+    '/bills',
+    protect,
+    authorize('WAITER', 'ADMIN', 'SUPER_ADMIN'),
+    orderController.getBillsByStatus
+);
+
+/**
+ * @swagger
  * /api/orders/{id}:
  *   get:
  *     summary: Get order by ID
@@ -520,36 +550,6 @@ router.post(
         check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 })
     ],
     orderController.addItemsToOrder
-);
-
-/**
- * @swagger
- * /api/orders/bills:
- *   get:
- *     summary: Get bills for restaurant, filter by paid/unpaid
- *     tags: [Order]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: restaurantId
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [PAID, UNPAID]
- *     responses:
- *       200:
- *         description: List of bills
- */
-router.get(
-    '/bills',
-    protect,
-    authorize('WAITER', 'ADMIN', 'SUPER_ADMIN'),
-    orderController.getBillsByStatus
 );
 
 module.exports = router;

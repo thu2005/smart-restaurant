@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Icon from "../AppIcon";
+import { useTranslation } from 'react-i18next';
 
 const CARD_ELEMENT_OPTIONS = {
     style: {
@@ -24,6 +25,7 @@ const CARD_ELEMENT_OPTIONS = {
 const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
     const stripe = useStripe();
     const elements = useElements();
+    const { t } = useTranslation();
     const [isProcessing, setIsProcessing] = useState(false);
     const [cardholderName, setCardholderName] = useState('');
     const [saveCard, setSaveCard] = useState(false);
@@ -37,7 +39,7 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
         }
 
         if (!cardholderName.trim()) {
-            setCardError('Please enter cardholder name');
+            setCardError(t('payment.cardForm.errors.nameRequired'));
             return;
         }
 
@@ -63,7 +65,7 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
                 onSuccess(paymentIntent);
             }
         } catch (err) {
-            setCardError('Payment failed. Please try again.');
+            setCardError(t('payment.cardForm.errors.failed'));
             onError(err);
         } finally {
             setIsProcessing(false);
@@ -83,13 +85,13 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
             {/* Cardholder Name */}
             <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                    Cardholder Name
+                    {t('payment.cardForm.cardholderName')}
                 </label>
                 <input
                     type="text"
                     value={cardholderName}
                     onChange={(e) => setCardholderName(e.target.value)}
-                    placeholder="Mori"
+                    placeholder={t('payment.cardForm.cardholderNamePlaceholder')}
                     className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                     disabled={isProcessing}
                 />
@@ -98,7 +100,7 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
             {/* Card Details */}
             <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                    Card Details
+                    {t('payment.cardForm.cardDetails')}
                 </label>
                 <div className="px-4 py-3 border border-border rounded-lg focus-within:ring-2 focus-within:ring-primary/50">
                     <CardElement
@@ -127,7 +129,7 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
                     disabled={isProcessing}
                 />
                 <label htmlFor="save-card" className="text-sm text-muted-foreground">
-                    Save this card for future orders
+                    {t('payment.cardForm.saveCard')}
                 </label>
             </div>
 
@@ -135,7 +137,7 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
             <div className="flex items-start gap-2 p-3 bg-success/5 rounded-lg border border-success/10">
                 <Icon name="Shield" size={18} className="text-success flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground">
-                    Your payment information is encrypted and secure. We use Stripe for payment processing.
+                    {t('payment.cardForm.secureNote')}
                 </p>
             </div>
 
@@ -148,11 +150,11 @@ const StripeCardForm = ({ clientSecret, amount, onSuccess, onError }) => {
                 {isProcessing ? (
                     <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Processing Payment...
+                        {t('payment.cardForm.processing')}
                     </>
                 ) : (
                     <>
-                        Pay {amount.toLocaleString('vi-VN')}₫
+                        {t('payment.cardForm.pay')} {amount.toLocaleString('vi-VN')}₫
                         <Icon name="ArrowRight" size={18} />
                     </>
                 )}

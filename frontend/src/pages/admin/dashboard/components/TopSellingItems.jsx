@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 
 const TopSellingItems = ({ items }) => {
+  const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const [hoveredItem, setHoveredItem] = useState(null);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
 
@@ -26,10 +30,10 @@ const TopSellingItems = ({ items }) => {
       <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm h-full flex flex-col max-h-[600px] relative">
         <div className="flex items-center justify-between mb-4 md:mb-6 flex-shrink-0">
           <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground">
-            Top Selling Items
+            {t('admin.dashboard.sections.topSelling')}
           </h3>
           <button className="text-sm text-primary hover:text-primary/80 transition-smooth font-medium">
-            View Menu
+            {t('admin.dashboard.actions.viewMenu')}
           </button>
         </div>
         <div className="space-y-4 flex-1 overflow-y-auto w-full custom-scrollbar p-1">
@@ -50,7 +54,7 @@ const TopSellingItems = ({ items }) => {
                   {item?.image ? (
                     <Image
                       src={item.image}
-                      alt={item?.name || "Menu item"}
+                      alt={item?.name || t('admin.dashboard.orders.foodItem')}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -77,7 +81,7 @@ const TopSellingItems = ({ items }) => {
                           color="var(--color-muted-foreground)"
                         />
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {item?.orderCount || 0} orders
+                          {t('admin.dashboard.items.ordersCount', { count: item?.orderCount || 0 })}
                         </span>
                       </div>
                     </div>
@@ -87,12 +91,12 @@ const TopSellingItems = ({ items }) => {
                 {/* Stats */}
                 <div className="text-right flex-shrink-0 flex flex-col justify-center">
                   <p className="text-sm font-bold text-foreground data-text">
-                    {`${(item?.revenue || 0).toLocaleString('vi-VN')} ₫`}
+                    {formatCurrency(item?.revenue || 0)}
                   </p>
                   {item?.growth > 0 && (
                     <div className="flex items-center justify-end gap-1 text-success mt-0.5">
                       <Icon name="TrendingUp" size={12} />
-                      <span className="text-xs font-medium">{item?.growth}%</span>
+                      <span className="text-xs font-medium">{t('admin.dashboard.items.growth', { count: item?.growth })}</span>
                     </div>
                   )}
                 </div>
@@ -105,7 +109,7 @@ const TopSellingItems = ({ items }) => {
 
           {(!items || items.length === 0) && (
             <div className="text-center py-8 text-muted-foreground text-sm">
-              No data available
+              {t('common.messages.noData')}
             </div>
           )}
         </div>
@@ -124,7 +128,7 @@ const TopSellingItems = ({ items }) => {
             {hoveredItem?.image ? (
               <img
                 src={hoveredItem.image}
-                alt={hoveredItem?.name || "Menu item"}
+                alt={hoveredItem?.name || t('admin.dashboard.orders.foodItem')}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -133,7 +137,7 @@ const TopSellingItems = ({ items }) => {
               </div>
             )}
             <div className="absolute top-2 right-2 bg-background/90 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold shadow-sm border border-border/50 text-foreground">
-              Rank #{items.indexOf(hoveredItem) + 1}
+              {t('admin.dashboard.items.rank', { number: items.indexOf(hoveredItem) + 1 })}
             </div>
           </div>
 
@@ -143,23 +147,23 @@ const TopSellingItems = ({ items }) => {
 
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div key="revenue" className="bg-background/50 p-2.5 rounded-lg text-center border border-border/50">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-0.5">Revenue</p>
-              <p className="font-mono text-base font-bold text-primary">{(hoveredItem.revenue || 0).toLocaleString('vi-VN')} ₫</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-0.5">{t('admin.dashboard.items.revenueLabel')}</p>
+              <p className="font-mono text-base font-bold text-primary">{formatCurrency(hoveredItem.revenue || 0)}</p>
             </div>
             <div key="orders" className="bg-background/50 p-2.5 rounded-lg text-center border border-border/50">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-0.5">Orders</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-0.5">{t('admin.dashboard.items.ordersLabel')}</p>
               <p className="font-mono text-base font-bold text-foreground">{hoveredItem.orderCount || 0}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span key="category" className="bg-primary/10 text-primary px-2 py-1 rounded-md font-semibold border border-primary/20">
-              {hoveredItem?.category || 'Main Menu'}
+              {hoveredItem?.category || t('admin.dashboard.items.mainMenu')}
             </span>
             {hoveredItem.growth > 0 && (
               <span key="growth" className="flex items-center gap-1 text-success font-semibold px-2 py-1 bg-success/10 rounded-md border border-success/20">
                 <Icon name="TrendingUp" size={12} />
-                {hoveredItem.growth}% growth
+                {t('admin.dashboard.items.growth', { count: hoveredItem.growth })}
               </span>
             )}
           </div>

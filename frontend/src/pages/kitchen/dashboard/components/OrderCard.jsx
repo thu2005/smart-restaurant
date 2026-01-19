@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 import kitchenService from "../../../../services/kitchenService";
 
 const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
+  const { t } = useTranslation();
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isOverdue, setIsOverdue] = useState(false);
   const [loadingItems, setLoadingItems] = useState({});
@@ -33,17 +35,17 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
 
   const handleItemAction = async (itemId, action) => {
     try {
-        setLoadingItems(prev => ({ ...prev, [itemId]: true }));
-        let newStatus = 'queued';
-        if (action === 'start') newStatus = 'cooking';
-        if (action === 'done') newStatus = 'ready';
-        
-        await kitchenService.updateOrderItemStatus(order.id, itemId, newStatus);
-        if (onRefresh) onRefresh();
+      setLoadingItems(prev => ({ ...prev, [itemId]: true }));
+      let newStatus = 'queued';
+      if (action === 'start') newStatus = 'cooking';
+      if (action === 'done') newStatus = 'ready';
+
+      await kitchenService.updateOrderItemStatus(order.id, itemId, newStatus);
+      if (onRefresh) onRefresh();
     } catch (error) {
-        console.error("Item update failed", error);
+      console.error("Item update failed", error);
     } finally {
-        setLoadingItems(prev => ({ ...prev, [itemId]: false }));
+      setLoadingItems(prev => ({ ...prev, [itemId]: false }));
     }
   };
 
@@ -64,14 +66,13 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
   const getStatusLabel = () => {
     switch (order?.status) {
       case "new":
-      case "received":
-        return "Received";
+        return t('kitchen.orders.status.new');
       case "preparing":
-        return "Preparing";
+        return t('kitchen.orders.status.preparing');
       case "ready":
-        return "Ready";
+        return t('kitchen.orders.status.ready');
       default:
-        return "Unknown";
+        return t('kitchen.orders.status.unknown');
     }
   };
 
@@ -79,7 +80,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
   const getBorderColor = () => {
     if (order?.status === "ready") return "border-success shadow-warm-lg"; // Ready is always green
     if (isOverdue) return "border-error shadow-warm-lg";
-    
+
     switch (order?.status) {
       case "ready":
         return "border-success shadow-warm-lg";
@@ -109,15 +110,15 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
             {getStatusLabel()}
           </span>
         </div>
-        <span className="text-[10px] font-medium opacity-90">
-          Est: {order?.estimatedPrepTime} min
+        <span className="text-xs font-medium opacity-90">
+          {t('kitchen.orders.card.est', { time: order?.estimatedPrepTime })}
         </span>
       </div>
 
       <div className="p-3 md:p-3">
         {/* Order Header */}
         <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 min-w-0 mr-2"> 
+          <div className="flex-1 min-w-0 mr-2">
             <div className="flex items-center flex-wrap gap-2 mb-1">
               <h3 className="text-lg md:text-xl font-heading font-bold text-primary tracking-tight whitespace-nowrap">
                 #{order?.orderNumber}
@@ -128,8 +129,8 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                   size={14}
                   color="var(--color-muted-foreground)"
                 />
-                <span className="text-xs md:text-sm font-semibold text-foreground whitespace-nowrap">
-                  {order?.tableNumber}
+                <span className="text-xs md:text-sm font-semibold text-foreground">
+                  {t('kitchen.orders.card.table')} {order?.tableNumber}
                 </span>
               </div>
             </div>
@@ -145,8 +146,8 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
             >
               {formatTime(elapsedTime)}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase tracking-wide">
-              {isOverdue ? "OVERDUE" : "Elapsed"}
+            <div className="text-xs text-muted-foreground mt-1 font-medium">
+              {isOverdue ? t('kitchen.orders.card.overdue') : t('kitchen.orders.card.elapsed')}
             </div>
           </div>
         </div>
@@ -156,7 +157,7 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
           <div className="flex items-center gap-1.5 px-3 py-2 bg-error/10 border-l-2 border-error rounded-md mb-3">
             <Icon name="AlertCircle" size={16} color="var(--color-error)" />
             <span className="text-xs font-bold text-error uppercase tracking-wide">
-              Rush - Priority
+              {t('kitchen.orders.card.rush')}
             </span>
           </div>
         )}
@@ -165,32 +166,31 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
         <div className="space-y-2 mb-3">
           {/* Active items filter */}
           {(() => {
-              const activeItems = order?.items?.filter(item => !['served', 'rejected', 'completed'].includes(item.itemStatus || 'queued')) || [];
-              if (activeItems.length === 0) {
-                 return <p className="text-sm text-muted-foreground text-center italic py-2">No pending items to prepare.</p>;
-              }
-              
-              return activeItems.map((item, index) => {
-                const itemStatus = item.itemStatus || 'queued';
-                const isItemLoading = loadingItems[item.id];
-                
-                // Adjust styling based on item status
-                let statusClasses = "";
-                if (itemStatus === 'cooking') statusClasses = "border-warning bg-warning/5";
-                if (itemStatus === 'ready') statusClasses = "border-success bg-success/5 opacity-80";
+            const activeItems = order?.items?.filter(item => !['served', 'rejected', 'completed'].includes(item.itemStatus || 'queued')) || [];
+            if (activeItems.length === 0) {
+              return <p className="text-sm text-muted-foreground text-center italic py-2">{t('kitchen.orders.noPendingItems')}</p>;
+            }
 
-                return (
+            return activeItems.map((item, index) => {
+              const itemStatus = item.itemStatus || 'queued';
+              const isItemLoading = loadingItems[item.id];
+
+              // Adjust styling based on item status
+              let statusClasses = "";
+              if (itemStatus === 'cooking') statusClasses = "border-warning bg-warning/5";
+              if (itemStatus === 'ready') statusClasses = "border-success bg-success/5 opacity-80";
+
+              return (
                 <div
                   key={index}
                   className={`relative border border-border rounded-lg p-2 bg-gradient-to-br from-muted/30 to-muted/10 hover:shadow-sm transition-smooth ${statusClasses}`}
                 >
                   {/* Quantity Badge - Absolute Corner */}
                   <div className={`absolute top-0 left-0 px-2 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm z-10 
-                      ${
-                        itemStatus === 'cooking' ? 'bg-warning text-warning-foreground' :
-                        itemStatus === 'ready' ? 'bg-success text-success-foreground' :
+                      ${itemStatus === 'cooking' ? 'bg-warning text-warning-foreground' :
+                      itemStatus === 'ready' ? 'bg-success text-success-foreground' :
                         'bg-blue-600 text-white'
-                      }`}>
+                    }`}>
                     <span className="text-xs font-bold leading-none">
                       {item?.quantity}×
                     </span>
@@ -205,19 +205,24 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
 
                     {/* Modifiers */}
                     {item?.modifiers && item?.modifiers?.length > 0 && (
-                      <div className="flex flex-wrap justify-center gap-1.5 mb-2">
+                      <div className="flex flex-wrap justify-center gap-2 mb-4">
                         {item?.modifiers?.map((mod, modIndex) => {
                           // Handle both string format and object format
                           let modText = '';
-                          if (typeof mod === 'string') modText = mod;
-                          else if (typeof mod === 'object' && mod.name) {
+                          if (typeof mod === 'string') {
+                            modText = mod;
+                          } else if (typeof mod === 'object' && mod.name) {
                             modText = mod.quantity > 1 ? `${mod.quantity}x ${mod.name}` : mod.name;
                           }
+
                           if (!modText) return null;
-                          
+
                           return (
-                            <span key={modIndex} className="inline-flex items-center gap-1 px-2 py-0.5 bg-background border border-border rounded-full text-[10px] font-medium text-foreground shadow-sm">
-                              <Icon name="Plus" size={10} className="text-primary/70" />
+                            <span
+                              key={modIndex}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 bg-background border border-border rounded-full text-sm font-medium text-foreground shadow-sm"
+                            >
+                              <Icon name="Plus" size={12} className="text-primary/70" />
                               {modText}
                             </span>
                           );
@@ -235,76 +240,59 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                       </div>
                     )}
 
+                    {/* Allergens */}
+                    {item?.allergens && item?.allergens?.length > 0 && (
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-error/10 border border-error/20 rounded-full">
+                        <Icon
+                          name="AlertTriangle"
+                          size={16}
+                          color="var(--color-error)"
+                        />
+                        <span className="text-xs text-error font-bold uppercase tracking-wider">
+                          {t('kitchen.orders.card.allergens')}: {item?.allergens?.join(", ")}
+                        </span>
+                      </div>
+                    )}
+
                     {/* ITEM ACTIONS - Compact */}
                     {order.status !== 'ready' && (
-                        <div className="flex justify-center gap-2 mt-1">
-                            {/* Start Cooking Button */}
-                            {itemStatus === 'queued' && (
-                                <button 
-                                    onClick={() => handleItemAction(item.id, 'start')}
-                                    disabled={isItemLoading}
-                                    className="flex items-center gap-1 px-2 py-0.5 bg-warning/20 hover:bg-warning/30 text-warning text-[10px] font-bold uppercase rounded-full border border-warning/50 transition-colors disabled:opacity-50"
-                                >
-                                    <Icon name="Flame" size={12} className="text-warning" />
-                                    {isItemLoading ? '...' : 'Cook'}
-                                </button>
-                            )}
-                            
-                            {/* Done Button */}
-                            {(itemStatus === 'queued' || itemStatus === 'cooking') && (
-                                <button 
-                                    onClick={() => handleItemAction(item.id, 'done')}
-                                    disabled={isItemLoading}
-                                    className="flex items-center gap-1 px-2 py-0.5 bg-success/20 hover:bg-success/30 text-success text-[10px] font-bold uppercase rounded-full border border-success/50 transition-colors disabled:opacity-50"
-                                >
-                                    <Icon name="Check" size={12} className="text-success" />
-                                    {isItemLoading ? '...' : 'Done'}
-                                </button>
-                            )}
-                            
-                             {/* Done Badge */}
-                            {itemStatus === 'ready' && (
-                                 <span className="flex items-center gap-1 px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold uppercase rounded-full border border-success/20">
-                                    <Icon name="CheckCircle" size={12} /> Ready
-                                 </span>
-                            )}
-                        </div>
+                      <div className="flex justify-center gap-2 mt-1">
+                        {/* Start Cooking Button */}
+                        {itemStatus === 'queued' && (
+                          <button
+                            onClick={() => handleItemAction(item.id, 'start')}
+                            disabled={isItemLoading}
+                            className="flex items-center gap-1 px-2 py-0.5 bg-warning/20 hover:bg-warning/30 text-warning text-[10px] font-bold uppercase rounded-full border border-warning/50 transition-colors disabled:opacity-50"
+                          >
+                            <Icon name="Flame" size={12} className="text-warning" />
+                            {isItemLoading ? '...' : t('kitchen.orders.actions.cook')}
+                          </button>
+                        )}
+
+                        {/* Done Button */}
+                        {(itemStatus === 'queued' || itemStatus === 'cooking') && (
+                          <button
+                            onClick={() => handleItemAction(item.id, 'done')}
+                            disabled={isItemLoading}
+                            className="flex items-center gap-1 px-2 py-0.5 bg-success/20 hover:bg-success/30 text-success text-[10px] font-bold uppercase rounded-full border border-success/50 transition-colors disabled:opacity-50"
+                          >
+                            <Icon name="Check" size={12} className="text-success" />
+                            {isItemLoading ? '...' : t('kitchen.orders.actions.done')}
+                          </button>
+                        )}
+
+                        {/* Done Badge */}
+                        {itemStatus === 'ready' && (
+                          <span className="flex items-center gap-1 px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold uppercase rounded-full border border-success/20">
+                            <Icon name="CheckCircle" size={12} /> {t('kitchen.orders.actions.itemReady')}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
               );
             });
-          })()}
-
-          {/* Collapsible History Section */}
-          {(() => {
-              const historyItems = order?.items?.filter(item => ['served', 'rejected', 'completed'].includes(item.itemStatus)) || [];
-              if (historyItems.length > 0) {
-                  return (
-                    <div className="mt-4 pt-2 border-t border-border/50">
-                        <button 
-                            onClick={(e) => {
-                                const el = e.currentTarget.nextElementSibling;
-                                el.classList.toggle('hidden');
-                                e.currentTarget.textContent = el.classList.contains('hidden') ? `Show Completed Items (${historyItems.length})` : 'Hide Completed Items';
-                            }}
-                            className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors w-full text-center flex items-center justify-center gap-1 uppercase tracking-wide"
-                        >
-                           Show Completed Items ({historyItems.length})
-                        </button>
-                        <div className="hidden space-y-2 mt-2">
-                             {historyItems.map((item, idx) => (
-                                 <div key={`hist-k-${idx}`} className="flex items-center justify-between text-xs opacity-60 px-2">
-                                     <span className="font-bold">{item.quantity}x</span>
-                                     <span className="truncate flex-1 mx-2">{item.name}</span>
-                                     <span className="text-[9px] uppercase font-bold bg-muted px-1 rounded">{item.itemStatus}</span>
-                                 </div>
-                             ))}
-                        </div>
-                    </div>
-                  );
-              }
-              return null;
           })()}
         </div>
 
@@ -319,8 +307,8 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
                 className="flex-shrink-0 mt-0.5"
               />
               <div className="flex-1">
-                <p className="text-[10px] font-bold text-accent uppercase tracking-wide mb-0.5">
-                  Order Notes
+                <p className="text-xs font-bold text-accent uppercase tracking-wide mb-0.5">
+                  {t('kitchen.orders.card.notes')}
                 </p>
                 <p className="text-xs text-foreground leading-snug">{order?.orderNotes}</p>
               </div>
@@ -331,71 +319,71 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 pt-1">
           {order?.status === "received" ? (
-             <>
-               <Button
-                 variant="outline" 
-                 fullWidth
-                 iconName="Flame"
-                 iconPosition="left"
-                 size="sm"
-                 onClick={() => {
-                     // Start all items
-                     order.items.forEach(i => {
-                        if ((i.itemStatus || 'queued') === 'queued') {
-                            handleItemAction(i.id, 'start');
-                        }
-                     });
-                     onStatusChange(order.id, "preparing");
-                 }}
-                 className="text-xs font-bold py-2 h-9 border-warning/50 text-warning hover:bg-warning/10"
-               >
-                 START ALL
-               </Button>
-               <Button
-                 variant="default" 
-                 fullWidth
-                 iconName="CheckCircle"
-                 iconPosition="left"
-                 size="sm"
-                 onClick={() => {
-                     const unready = order.items.filter(i => !['ready', 'served', 'completed', 'rejected'].includes(i.itemStatus || 'queued'));
-                     if (unready.length > 0) {
-                         setPendingUnreadyItems(unready);
-                         setShowConfirmModal(true);
-                     } else {
-                         onStatusChange(order.id, "ready");
-                     }
-                 }}
-                 className="text-xs font-bold py-2 h-9"
-               >
-                 READY ALL
-               </Button>
-             </>
+            <>
+              <Button
+                variant="outline"
+                fullWidth
+                iconName="Flame"
+                iconPosition="left"
+                size="sm"
+                onClick={() => {
+                  // Start all items
+                  order.items.forEach(i => {
+                    if ((i.itemStatus || 'queued') === 'queued') {
+                      handleItemAction(i.id, 'start');
+                    }
+                  });
+                  onStatusChange(order.id, "preparing");
+                }}
+                className="text-xs font-bold py-2 h-9 border-warning/50 text-warning hover:bg-warning/10"
+              >
+                {t('kitchen.orders.actions.startAll')}
+              </Button>
+              <Button
+                variant="default"
+                fullWidth
+                iconName="CheckCircle"
+                iconPosition="left"
+                size="sm"
+                onClick={() => {
+                  const unready = order.items.filter(i => !['ready', 'served', 'completed', 'rejected'].includes(i.itemStatus || 'queued'));
+                  if (unready.length > 0) {
+                    setPendingUnreadyItems(unready);
+                    setShowConfirmModal(true);
+                  } else {
+                    onStatusChange(order.id, "ready");
+                  }
+                }}
+                className="text-xs font-bold py-2 h-9"
+              >
+                {t('kitchen.orders.actions.readyAll')}
+              </Button>
+            </>
           ) : order?.status === "preparing" ? (
-             <Button
-               variant="default" 
-               fullWidth
-               iconName="CheckCircle"
-               iconPosition="left"
-               size="sm"
-               onClick={() => {
-                   const unready = order.items.filter(i => !['ready', 'served', 'completed', 'rejected'].includes(i.itemStatus || 'queued'));
-                   if (unready.length > 0) {
-                       setPendingUnreadyItems(unready);
-                       setShowConfirmModal(true);
-                   } else {
-                       onStatusChange(order.id, "ready");
-                   }
-               }}
-               className="text-sm font-semibold py-2 h-9"
-             >
-               Mark All Ready
-             </Button>
+            <Button
+              variant="default"
+              fullWidth
+              iconName="CheckCircle"
+              iconPosition="left"
+              size="sm"
+              onClick={() => {
+                const unready = order.items.filter(i => !['ready', 'served', 'completed', 'rejected'].includes(i.itemStatus || 'queued'));
+                if (unready.length > 0) {
+                  setPendingUnreadyItems(unready);
+                  setShowConfirmModal(true);
+                } else {
+                  onStatusChange(order.id, "ready");
+                }
+              }}
+              className="text-sm font-semibold py-2 h-9"
+            >
+              {t('kitchen.orders.actions.markAllReady')}
+            </Button>
           ) : (
-             <div className="w-full p-2 text-center text-success font-bold bg-success/10 border border-success/20 rounded-md flex items-center justify-center gap-2 text-sm">
-                 <Icon name="CheckCircle" size={16} />
-                 Waiting for Waiter
-             </div>
+            <div className="w-full p-2 text-center text-success font-bold bg-success/10 border border-success/20 rounded-md flex items-center justify-center gap-2 text-sm">
+              <Icon name="CheckCircle" size={16} />
+              {t('kitchen.orders.waitingForWaiter')}
+            </div>
           )}
         </div>
       </div>
@@ -403,50 +391,50 @@ const OrderCard = ({ order, onStatusChange, onComplete, onRefresh }) => {
       {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-card w-full max-w-sm rounded-xl border border-border shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="p-4 bg-warning/10 border-b border-warning/20 flex items-center gap-3">
-                  <div className="p-2 bg-warning/20 rounded-full">
-                      <Icon name="AlertTriangle" size={20} className="text-warning" />
-                  </div>
-                  <div>
-                      <h3 className="font-bold text-lg leading-tight">Unfinished Items</h3>
-                      <p className="text-xs text-muted-foreground">Some items are not marked as Done</p>
-                  </div>
+          <div className="bg-card w-full max-w-sm rounded-xl border border-border shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-4 bg-warning/10 border-b border-warning/20 flex items-center gap-3">
+              <div className="p-2 bg-warning/20 rounded-full">
+                <Icon name="AlertTriangle" size={20} className="text-warning" />
               </div>
-              
-              <div className="p-4 max-h-[60vh] overflow-y-auto">
-                  <p className="text-sm text-foreground mb-3">Are you sure you want to mark this order as <strong>READY</strong>? The following items are still cooking/queued:</p>
-                  <ul className="space-y-2 mb-2">
-                      {pendingUnreadyItems.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm p-2 bg-muted/40 rounded-lg">
-                              <span className="font-bold text-primary whitespace-nowrap">{item.quantity}x</span>
-                              <span className="text-foreground">{item.name}</span>
-                          </li>
-                      ))}
-                  </ul>
+              <div>
+                <h3 className="font-bold text-lg leading-tight">{t('kitchen.orders.modal.unfinishedItemsTitle')}</h3>
+                <p className="text-xs text-muted-foreground">{t('kitchen.orders.modal.unfinishedItemsSubtitle')}</p>
               </div>
+            </div>
 
-              <div className="p-4 border-t border-border bg-muted/20 flex gap-3 justify-end">
-                  <button 
-                      onClick={() => setShowConfirmModal(false)}
-                      className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                      Cancel
-                  </button>
-                  <Button 
-                      onClick={() => {
-                          pendingUnreadyItems.forEach(i => handleItemAction(i.id, 'done'));
-                          onStatusChange(order.id, "ready");
-                          setShowConfirmModal(false);
-                      }}
-                      variant="default"
-                      size="sm"
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                      Mark All Ready
-                  </Button>
-              </div>
-           </div>
+            <div className="p-4 max-h-[60vh] overflow-y-auto">
+              <p className="text-sm text-foreground mb-3">{t('kitchen.orders.modal.confirmReadyMessage')}</p>
+              <ul className="space-y-2 mb-2">
+                {pendingUnreadyItems.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm p-2 bg-muted/40 rounded-lg">
+                    <span className="font-bold text-primary whitespace-nowrap">{item.quantity}x</span>
+                    <span className="text-foreground">{item.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-4 border-t border-border bg-muted/20 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t('common.actions.cancel')}
+              </button>
+              <Button
+                onClick={() => {
+                  pendingUnreadyItems.forEach(i => handleItemAction(i.id, 'done'));
+                  onStatusChange(order.id, "ready");
+                  setShowConfirmModal(false);
+                }}
+                variant="default"
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                {t('kitchen.orders.actions.markAllReady')}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

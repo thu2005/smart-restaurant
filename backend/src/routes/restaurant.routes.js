@@ -2,8 +2,39 @@ const express = require('express');
 const { check } = require('express-validator');
 const restaurantController = require('../controllers/restaurant.controller');
 const { protect, authorize } = require('../middlewares/auth.middleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
+
+// Ensure uploads directory exists
+const uploadDir = 'uploads/logos/';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for logo uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'logo-' + req.params.id + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not an image! Please upload an image.'), false);
+        }
+    }
+});
 
 /**
  * @swagger
@@ -115,5 +146,51 @@ router.put('/:id', protect, authorize('SUPER_ADMIN', 'ADMIN'), restaurantControl
  *         description: Restaurant deleted
  */
 router.delete('/:id', protect, authorize('SUPER_ADMIN'), restaurantController.deleteRestaurant);
+
+/**
+ * @swagger
+ * /api/restaurants/{id}/logo:
+ *   post:
+ *     summary: Upload restaurant logo
+ *     tags: [Restaurant]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Logo uploaded successfully
+ */
+router.post('/:id/logo', protect, authorize('SUPER_ADMIN', 'ADMIN'), upload.single('logo'), restaurantController.uploadLogo);
+
+/**
+ * @swagger
+ * /api/restaurants/{id}/logo:
+ *   delete:
+ *     summary: Delete restaurant logo
+ *     tags: [Restaurant]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Logo deleted successfully
+ */
+router.delete('/:id/logo', protect, authorize('SUPER_ADMIN', 'ADMIN'), restaurantController.deleteLogo);
 
 module.exports = router;
