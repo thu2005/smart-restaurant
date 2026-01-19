@@ -831,5 +831,5 @@ Opens at `http://localhost:5555`
 ## Additional Resources
 
 - **Prisma Schema**: `backend/prisma/schema.prisma`
-- **API Documentation**: See [API.md](./API.md)
-- **Setup Guide**: See [SETUP.md](./SETUP.md)
+- **API Documentation**: See [API.md](../02-api/APIs.md)
+- **Setup Guide**: See [SETUP.md](../04-dev/SETUP.md)

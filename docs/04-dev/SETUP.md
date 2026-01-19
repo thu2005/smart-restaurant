@@ -2087,8 +2087,8 @@ After successful setup:
 3. **Test Waiter Flow** - Accept orders → Update status → Generate bills
 4. **Test Kitchen Flow** - View orders → Update preparation status
 
-For detailed API documentation, see [API.md](./API.md)
+For detailed API documentation, see [APIs.md](../02-api/APIs.md)
 
-For database schema details, see [DATABASE.md](./DATABASE.md)
+For database schema details, see [DATABASE_STRUCTURE.md](../03-architecture/DATABASE_STRUCTURE.md)
 
-For system architecture, see [ARCHITECTURE.md](./ARCHITECTURE.md)
+For system architecture, see [ARCHITECTURE.md](../03-architecture/ARCHITECTURE.md)
