@@ -16,33 +16,6 @@ import StickyAddToCart from "./components/StickyAddToCart";
 import Button from "../../../components/ui/Button";
 import Icon from "../../../components/AppIcon";
 
-// Mock Data for missing backend features
-const mockNutritionalData = [
-  { label: "Calories", value: "520" },
-  { label: "Protein", value: "42g" },
-  { label: "Carbs", value: "28g" },
-  { label: "Fat", value: "26g" },
-  { label: "Fiber", value: "4g" },
-  { label: "Sodium", value: "680mg" },
-  { label: "Sugar", value: "3g" },
-  { label: "Cholesterol", value: "95mg" },
-];
-
-const mockIngredients = [
-  "Atlantic Salmon",
-  "Butter",
-  "Fresh Herbs (Parsley, Dill, Thyme)",
-  "Garlic",
-  "Lemon",
-  "Olive Oil",
-  "Potatoes",
-  "Heavy Cream",
-  "Seasonal Vegetables",
-  "Salt",
-  "Black Pepper",
-  "Other",
-];
-
 const mockRatingDistribution = [
   { stars: 5, count: 0 },
   { stars: 4, count: 0 },
@@ -95,13 +68,15 @@ const MenuItemDetail = () => {
   const location = useLocation();
   const { itemId } = useParams();
   const { addToCart, updateItem, getCartSummary } = useCart();
-  
+
   const editingItem = location.state?.editingItem;
 
   const [menuItem, setMenuItem] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [nutritionalData, setNutritionalData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [nutritionalLoading, setNutritionalLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [selectedModifiers, setSelectedModifiers] = useState({});
@@ -128,25 +103,28 @@ const MenuItemDetail = () => {
           // EDIT MODE: Populate from existing cart item
           setQuantity(editingItem.quantity);
           setSpecialInstructions(editingItem.specialInstructions || "");
-          
+
           if (item?.modifier_groups) {
-             item.modifier_groups.forEach(group => {
-                const groupModifiers = editingItem.modifiers?.filter(m => m.groupName === group.name) || [];
-                
-                if (groupModifiers.length > 0) {
-                   if (group.selectionType === 'single') {
-                      initialModifiers[group.id] = groupModifiers[0].id;
-                   } else {
-                      // Multiple or Addon
-                      initialModifiers[group.id] = groupModifiers.map(m => ({
-                         id: m.id,
-                         quantity: m.quantity || 1
-                      }));
-                   }
-                } else if (group.selectionType === 'multiple') {
-                   initialModifiers[group.id] = [];
+            item.modifier_groups.forEach((group) => {
+              const groupModifiers =
+                editingItem.modifiers?.filter(
+                  (m) => m.groupName === group.name,
+                ) || [];
+
+              if (groupModifiers.length > 0) {
+                if (group.selectionType === "single") {
+                  initialModifiers[group.id] = groupModifiers[0].id;
+                } else {
+                  // Multiple or Addon
+                  initialModifiers[group.id] = groupModifiers.map((m) => ({
+                    id: m.id,
+                    quantity: m.quantity || 1,
+                  }));
                 }
-             });
+              } else if (group.selectionType === "multiple") {
+                initialModifiers[group.id] = [];
+              }
+            });
           }
         } else {
           // NEW ITEM MODE: Default init
@@ -164,9 +142,8 @@ const MenuItemDetail = () => {
             });
           }
         }
-        
-        setSelectedModifiers(initialModifiers);
 
+        setSelectedModifiers(initialModifiers);
       } catch (err) {
         console.error("Failed to fetch menu item:", err);
         setError("Failed to load menu item details");
@@ -177,6 +154,53 @@ const MenuItemDetail = () => {
 
     fetchMenuItem();
   }, [itemId]);
+
+  // Fetch nutritional data
+  useEffect(() => {
+    const fetchNutritionalData = async () => {
+      if (!itemId || !menuItem) {
+        return;
+      }
+
+      try {
+        setNutritionalLoading(true);
+        const restaurantId =
+          menuItem.restaurantId || localStorage.getItem("restaurantId");
+
+        if (!restaurantId) {
+          console.warn("No restaurantId found, using fallback data");
+          // Use data from menuItem as fallback
+          setNutritionalData({
+            nutritionalInfo: menuItem.nutritionalInfo || {},
+            ingredients: menuItem.ingredients || [],
+            allergens: menuItem.allergens || [],
+          });
+          setNutritionalLoading(false);
+          return;
+        }
+
+        const nutritionalResponse = await menuService.getNutritionalInfo(
+          restaurantId,
+          itemId,
+        );
+        setNutritionalData(nutritionalResponse.data);
+      } catch (err) {
+        console.error("Failed to fetch nutritional data:", err);
+        // Use data from menuItem as fallback if available
+        if (menuItem) {
+          setNutritionalData({
+            nutritionalInfo: menuItem.nutritionalInfo || {},
+            ingredients: menuItem.ingredients || [],
+            allergens: menuItem.allergens || [],
+          });
+        }
+      } finally {
+        setNutritionalLoading(false);
+      }
+    };
+
+    fetchNutritionalData();
+  }, [itemId, menuItem]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -221,9 +245,9 @@ const MenuItemDetail = () => {
         if (Array.isArray(selection)) {
           // Multiple selection or Addons
           selection.forEach((item) => {
-            const optId = typeof item === 'object' ? item.id : item;
-            const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
-            
+            const optId = typeof item === "object" ? item.id : item;
+            const qty = typeof item === "object" ? item.quantity || 1 : 1;
+
             const opt = group.options?.find((o) => o.id === optId);
             if (opt) total += (opt.priceAdjustment || 0) * qty;
           });
@@ -250,7 +274,7 @@ const MenuItemDetail = () => {
           ) {
             toast.error(`Please select a ${group.name}`, {
               description: "This option is required.",
-              duration: 3000
+              duration: 3000,
             });
             return;
           }
@@ -269,9 +293,9 @@ const MenuItemDetail = () => {
           if (Array.isArray(selection)) {
             // Multiple selection or Addons
             selection.forEach((item) => {
-              const optId = typeof item === 'object' ? item.id : item;
-              const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
-              
+              const optId = typeof item === "object" ? item.id : item;
+              const qty = typeof item === "object" ? item.quantity || 1 : 1;
+
               const opt = group.options?.find((o) => o.id === optId);
               if (opt) {
                 itemPrice += (opt.priceAdjustment || 0) * qty;
@@ -304,24 +328,27 @@ const MenuItemDetail = () => {
       // Add to cart
       // Add to cart or Update cart
       if (editingItem) {
-         updateItem(editingItem.cartId, {
-            price: itemPrice,
-            quantity: quantity,
-            modifiers: modifiersList,
-            specialInstructions: specialInstructions,
-            prepTime: menuItem.prepTime || 15,
-         });
+        updateItem(editingItem.cartId, {
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       } else {
-         addToCart({
-           menuItemId: menuItem.id,
-           name: menuItem.name,
-           image: menuItem.image || menuItem.photos?.find(p => p.isPrimary)?.url || menuItem.photos?.[0]?.url,
-           price: itemPrice,
-           quantity: quantity,
-           modifiers: modifiersList,
-           specialInstructions: specialInstructions,
-           prepTime: menuItem.prepTime || 15,
-         });
+        addToCart({
+          menuItemId: menuItem.id,
+          name: menuItem.name,
+          image:
+            menuItem.image ||
+            menuItem.photos?.find((p) => p.isPrimary)?.url ||
+            menuItem.photos?.[0]?.url,
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       }
 
       // Navigate to cart
@@ -330,7 +357,7 @@ const MenuItemDetail = () => {
       console.error("Failed to add/update cart:", error);
       toast.error("Failed to process request", {
         description: "Please try again.",
-        duration: 3000
+        duration: 3000,
       });
     }
   };
@@ -440,8 +467,10 @@ const MenuItemDetail = () => {
                     disabled={!isAvailable}
                     fullWidth
                   >
-                    {isAvailable 
-                      ? (editingItem ? "Update Cart" : "Add to Cart") 
+                    {isAvailable
+                      ? editingItem
+                        ? "Update Cart"
+                        : "Add to Cart"
                       : "Currently Unavailable"}
                   </Button>
                 </div>
@@ -452,7 +481,10 @@ const MenuItemDetail = () => {
           <div className="space-y-8 md:space-y-12">
             {/* Nutritional Info */}
             <section>
-              <NutritionalInfo data={mockNutritionalData} />
+              <NutritionalInfo
+                data={nutritionalData}
+                loading={nutritionalLoading}
+              />
             </section>
 
             {/* Review Section */}
