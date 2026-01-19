@@ -883,62 +883,70 @@ class OrderService {
     async getCustomerOrderHistory(customerId, options = {}) {
         const { limit = 20, offset = 0 } = options;
 
-        const orders = await prisma.order.findMany({
-            where: {
-                customerId: customerId,
-                status: 'COMPLETED'
-            },
-            include: {
-                orderItems: {
-                    include: {
-                        menuItem: {
-                            include: {
-                                photos: {
-                                    where: { isPrimary: true },
-                                    take: 1
+        const [orders, total] = await Promise.all([
+            prisma.order.findMany({
+                where: {
+                    customerId: customerId,
+                    status: 'COMPLETED'
+                },
+                include: {
+                    orderItems: {
+                        include: {
+                            menuItem: {
+                                include: {
+                                    photos: {
+                                        where: { isPrimary: true },
+                                        take: 1
+                                    }
                                 }
                             }
                         }
+                    },
+                    table: {
+                        select: {
+                            tableNumber: true,
+                            location: true
+                        }
+                    },
+                    restaurant: {
+                        select: {
+                            name: true,
+                            address: true
+                        }
+                    },
+                    payment: {
+                        select: {
+                            total: true,
+                            method: true,
+                            status: true,
+                            paidAt: true
+                        }
+                    },
+                    bill: {
+                        select: {
+                            billNumber: true,
+                            subtotal: true,
+                            tax: true,
+                            discount: true,
+                            total: true
+                        }
                     }
                 },
-                table: {
-                    select: {
-                        tableNumber: true,
-                        location: true
-                    }
+                orderBy: {
+                    completedAt: 'desc'
                 },
-                restaurant: {
-                    select: {
-                        name: true,
-                        address: true
-                    }
-                },
-                payment: {
-                    select: {
-                        total: true,
-                        method: true,
-                        status: true,
-                        paidAt: true
-                    }
-                },
-                bill: {
-                    select: {
-                        billNumber: true,
-                        subtotal: true,
-                        tax: true,
-                        discount: true,
-                        total: true
-                    }
+                take: limit,
+                skip: offset
+            }),
+            prisma.order.count({
+                where: {
+                    customerId: customerId,
+                    status: 'COMPLETED'
                 }
-            },
-            orderBy: {
-                completedAt: 'desc'
-            },
-            take: limit,
-            skip: offset
-        });
+            })
+        ]);
 
-        return orders;
+        return { orders, total };
     }
 }
 

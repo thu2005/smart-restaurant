@@ -3,27 +3,44 @@ import menuService from "../../../../services/menuService";
 import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 import Button from "../../../../components/ui/Button";
+import Pagination from "../../../../components/ui/Pagination";
 
 const UserReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 5;
 
-  const fetchReviews = async () => {
+  useEffect(() => {
+    fetchReviews(currentPage);
+  }, [currentPage]);
+
+  const fetchReviews = async (page) => {
     try {
       setLoading(true);
-      const data = await menuService.getMyReviews();
-      setReviews(data);
+      const data = await menuService.getMyReviews({
+        page: page,
+        limit: limit
+      });
+      setReviews(data.reviews);
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+      }
     } catch (err) {
       console.error("Failed to fetch user reviews", err);
       setError("Failed to load your reviews.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) {
@@ -41,7 +58,7 @@ const UserReviews = () => {
         <Icon name="AlertCircle" size={32} className="mx-auto mb-2" />
         <p>{error}</p>
         <button
-          onClick={fetchReviews}
+          onClick={() => fetchReviews(currentPage)}
           className="mt-4 text-sm font-bold underline hover:no-underline"
         >
           Try Again
@@ -65,72 +82,81 @@ const UserReviews = () => {
   }
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {reviews.map((review) => (
-        <div
-          key={review.id}
-          className="bg-card border border-border rounded-xl p-4 md:p-6 hover:shadow-warm transition-smooth"
-        >
-          <div className="flex gap-4">
-            {/* Item Image */}
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/50">
-              {review.menuItem?.image ? (
-                <Image
-                  src={review.menuItem.image}
-                  alt={review.menuItem.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                  <Icon name="Utensils" size={24} />
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
-                <div className="min-w-0">
-                  <h4 className="font-heading font-bold text-foreground truncate text-sm md:text-base">
-                    {review.menuItem?.name || "Unknown Item"}
-                  </h4>
-                  <p className="text-[10px] md:text-xs text-muted-foreground">
-                    {review.restaurant?.name}
-                  </p>
-                </div>
-                <span className="text-[10px] md:text-xs text-muted-foreground shrink-0">
-                  {new Date(review.createdAt).toLocaleDateString("vi-VN", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center gap-1 mb-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Icon
-                    key={star}
-                    name="Star"
-                    size={14}
-                    className={
-                      star <= review.rating
-                        ? "text-[var(--color-warning)] fill-current"
-                        : "text-[var(--color-muted)]"
-                    }
+    <div className="space-y-6 animate-fade-in">
+      <div className="space-y-4">
+        {reviews.map((review) => (
+          <div
+            key={review.id}
+            className="bg-card border border-border rounded-xl p-4 md:p-6 hover:shadow-warm transition-smooth"
+          >
+            <div className="flex gap-4">
+              {/* Item Image */}
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/50">
+                {review.menuItem?.image ? (
+                  <Image
+                    src={review.menuItem.image}
+                    alt={review.menuItem.name}
+                    className="w-full h-full object-cover"
                   />
-                ))}
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    <Icon name="Utensils" size={24} />
+                  </div>
+                )}
               </div>
 
-              {/* Comment */}
-              <p className="text-sm text-foreground line-clamp-3">
-                "{review.comment}"
-              </p>
+              {/* Content */}
+              <div className="flex-1 min-w-0 text-left">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
+                  <div className="min-w-0">
+                    <h4 className="font-heading font-bold text-foreground truncate text-sm md:text-base">
+                      {review.menuItem?.name || "Unknown Item"}
+                    </h4>
+                    <p className="text-[10px] md:text-xs text-muted-foreground">
+                      {review.restaurant?.name}
+                    </p>
+                  </div>
+                  <span className="text-[10px] md:text-xs text-muted-foreground shrink-0">
+                    {new Date(review.createdAt).toLocaleDateString("vi-VN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+
+                {/* Rating */}
+                <div className="flex items-center gap-1 mb-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Icon
+                      key={star}
+                      name="Star"
+                      size={14}
+                      className={
+                        star <= review.rating
+                          ? "text-[var(--color-warning)] fill-current"
+                          : "text-[var(--color-muted)]"
+                      }
+                    />
+                  ))}
+                </div>
+
+                {/* Comment */}
+                <p className="text-sm text-foreground line-clamp-3">
+                  "{review.comment}"
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        isLoading={loading}
+      />
     </div>
   );
 };

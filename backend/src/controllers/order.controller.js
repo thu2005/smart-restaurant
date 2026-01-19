@@ -333,12 +333,21 @@ exports.getCustomerOrderHistory = async (req, res, next) => {
         const customerId = req.user.id; // From auth middleware
         const { limit = 20, offset = 0 } = req.query;
 
-        const orders = await orderService.getCustomerOrderHistory(customerId, {
+        const { orders, total } = await orderService.getCustomerOrderHistory(customerId, {
             limit: parseInt(limit),
             offset: parseInt(offset)
         });
 
-        res.status(200).json({ success: true, data: orders });
+        res.status(200).json({
+            success: true,
+            data: orders,
+            pagination: {
+                total,
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        });
     } catch (error) {
         next(error);
     }

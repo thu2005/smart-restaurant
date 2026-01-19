@@ -2,22 +2,36 @@ import React, { useEffect, useState } from "react";
 import OrderHistoryItem from "./OrderHistoryItem";
 import orderService from "../../../../services/orderService";
 import Icon from "../../../../components/AppIcon";
+import Pagination from "../../../../components/ui/Pagination";
 
 const OrderHistoryList = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 5;
 
   useEffect(() => {
-    fetchHistory();
-  }, []);
+    fetchHistory(currentPage);
+  }, [currentPage]);
 
-  const fetchHistory = async () => {
+  const fetchHistory = async (page) => {
     try {
       setLoading(true);
-      const response = await orderService.getCustomerOrderHistory({ limit: 50 });
+      const offset = (page - 1) * limit;
+      const response = await orderService.getCustomerOrderHistory({ 
+        limit: limit,
+        offset: offset
+      });
+      
       if (response.success) {
         setOrders(response.data);
+        if (response.pagination) {
+            setTotalPages(response.pagination.totalPages);
+        }
       }
     } catch (err) {
       console.error("Failed to fetch order history", err);
@@ -25,6 +39,11 @@ const OrderHistoryList = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) {
@@ -42,7 +61,7 @@ const OrderHistoryList = () => {
         <Icon name="AlertCircle" size={32} className="mx-auto mb-2" />
         <p>{error}</p>
         <button 
-           onClick={fetchHistory}
+           onClick={() => fetchHistory(currentPage)}
            className="mt-4 text-sm font-bold underline hover:no-underline"
         >
            Try Again
@@ -66,10 +85,19 @@ const OrderHistoryList = () => {
   }
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {orders.map((order) => (
-        <OrderHistoryItem key={order.id} order={order} />
-      ))}
+    <div className="space-y-6 animate-fade-in">
+      <div className="space-y-4">
+        {orders.map((order) => (
+          <OrderHistoryItem key={order.id} order={order} />
+        ))}
+      </div>
+
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        isLoading={loading}
+      />
     </div>
   );
 };

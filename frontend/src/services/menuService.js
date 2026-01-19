@@ -674,15 +674,16 @@ const menuService = {
     }
   },
 
-  getMyReviews: async () => {
+  getMyReviews: async (params = {}) => {
     try {
-      const response = await api.get("/reviews/me");
+      const response = await api.get("/reviews/me", { params });
       const rawReviews = response.data.reviews || response.data.data || [];
+      const pagination = response.data.pagination || null;
 
       const baseUrl = API_URL.replace("/api", "");
 
       // Transform data
-      return rawReviews.map((review) => {
+      const reviews = rawReviews.map((review) => {
         const item = review.menuItem;
         let imageUrl = item?.image || item?.photos?.[0]?.url || null;
 
@@ -705,6 +706,8 @@ const menuService = {
           restaurant: review.restaurant,
         };
       });
+
+      return { reviews, pagination };
     } catch (error) {
       console.error("Error getting my reviews:", error);
       throw error;
