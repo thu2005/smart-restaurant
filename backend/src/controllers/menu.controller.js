@@ -110,7 +110,7 @@ exports.getMenuItems = async (req, res, next) => {
     }
 
     const { page, limit, sortBy, search, categoryId, status, isChefRecommended, isPopular } = req.query;
-    const result = await menuService.getMenuItems(restaurantId, {
+    const result = await menuService.getMenuItemsWithRatings(restaurantId, {
       categoryId,
       search,
       status,
@@ -128,7 +128,7 @@ exports.getMenuItems = async (req, res, next) => {
 
 exports.getMenuItemById = async (req, res, next) => {
   try {
-    const item = await menuService.getMenuItemById(req.params.id);
+    const item = await menuService.getMenuItemByIdWithRatings(req.params.id);
     res.status(200).json({ success: true, data: item });
   } catch (error) {
     if (error.message === "Menu item not found") {

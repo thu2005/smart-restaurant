@@ -9,7 +9,7 @@ class MenuService {
       where: { menuItemId },
       select: { rating: true },
     });
-
+    
     if (reviews.length === 0) {
       return { averageRating: 0, reviewCount: 0 };
     }
@@ -292,14 +292,10 @@ class MenuService {
     });
     if (!item) throw new Error("Menu item not found");
 
-    // Calculate rating stats
-    const ratingStats = await this._calculateRatingStats(id);
-
     // Transform for frontend
     return {
       ...item,
       modifier_groups: item.modifierGroups.map((mg) => mg.modifierGroup),
-      ...ratingStats,
     };
   }
 

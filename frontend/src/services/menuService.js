@@ -197,6 +197,9 @@ const menuService = {
             prep_time_minutes: item.prepTime || 0,
             photos: item.photos || [],
             image: item.image,
+            averageRating: item.averageRating || 0,
+            reviewCount: item.reviewCount || 0,
+            rating: item.averageRating || 0, // alias
           })),
           pagination: result.pagination,
         };
@@ -224,6 +227,9 @@ const menuService = {
         prep_time_minutes: item.prepTime || 0,
         photos: item.photos || [],
         image: item.image,
+        averageRating: item.averageRating || 0,
+        reviewCount: item.reviewCount || 0,
+        rating: item.averageRating || 0, // alias
       }));
     } catch (error) {
       console.error("Failed to fetch items:", error);
@@ -297,9 +303,10 @@ const menuService = {
             isAvailable: option.isAvailable !== false,
           })),
         })),
-        // Mock data for features not yet in backend
-        rating: 4.5,
-        reviewCount: Math.floor(Math.random() * 100) + 10,
+        // Rating data from backend
+        averageRating: item.averageRating || 0,
+        reviewCount: item.reviewCount || 0,
+        rating: item.averageRating || 0, // alias for compatibility
         isSpicy: false,
       };
     } catch (error) {
