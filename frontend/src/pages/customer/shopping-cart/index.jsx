@@ -216,16 +216,34 @@ const ShoppingCart = () => {
       // If MoMo payment, redirect to payment URL
       if (
         paymentMethod.toLowerCase() === "momo" &&
-        response.data?.data?.gatewayResponse?.payUrl
+        response.data?.data?.gatewayResponse
       ) {
-        const payUrl = response.data.data.gatewayResponse.payUrl;
-        console.log("Redirecting to MoMo payment:", payUrl);
-        toast.info("Redirecting to MoMo payment...", { duration: 2000 });
+        const gatewayResponse = response.data.data.gatewayResponse;
+        
+        // Detect if user is on mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+        
+        // Choose appropriate URL based on device
+        let redirectUrl;
+        if (isMobile && gatewayResponse.deeplink) {
+          // On mobile, use deeplink to open MoMo app
+          redirectUrl = gatewayResponse.deeplink;
+          console.log("Redirecting to MoMo app (deeplink):", redirectUrl);
+          toast.info("Opening MoMo app...", { duration: 2000 });
+        } else if (gatewayResponse.payUrl) {
+          // On desktop or if deeplink not available, use web payment page
+          redirectUrl = gatewayResponse.payUrl;
+          console.log("Redirecting to MoMo web payment:", redirectUrl);
+          toast.info("Redirecting to MoMo payment...", { duration: 2000 });
+        } else {
+          throw new Error("No payment URL available from MoMo");
+        }
 
-
-        // Redirect to MoMo payment page
+        // Redirect to MoMo payment
         setTimeout(() => {
-          window.location.href = payUrl;
+          window.location.href = redirectUrl;
         }, 1000);
         return;
       }
