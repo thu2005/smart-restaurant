@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
 import orderService from "../../../services/orderService";
@@ -8,6 +9,7 @@ import OrderDetailsModal from "./components/OrderDetailsModal";
 
 const OrderList = () => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -111,13 +113,6 @@ const OrderList = () => {
             hour: "2-digit",
             minute: "2-digit",
         }).format(date);
-    };
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-        }).format(amount || 0);
     };
 
     if (loading) {

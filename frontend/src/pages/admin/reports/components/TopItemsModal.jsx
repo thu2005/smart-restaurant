@@ -106,7 +106,7 @@ const TopItemsModal = ({ items, onClose }) => {
                                             {item.orderCount || item.totalQuantity}
                                         </td>
                                         <td className="py-4 px-2 text-right font-semibold text-foreground data-text">
-                                            {formatCurrency((item.revenue || item.totalRevenue) / 100)}
+                                            {formatCurrency(item.revenue || item.totalRevenue)}
                                         </td>
                                         <td className="py-4 px-2 text-right">
                                             <span className={`inline-flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-success' : 'text-error'}`}>

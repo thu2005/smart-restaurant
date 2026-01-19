@@ -106,7 +106,7 @@ const Reports = () => {
             const newMetrics = [
                 {
                     title: t('reports.metrics.totalRevenue'),
-                    value: formatCurrency((comparison.totalRevenue.current / 100)),
+                    value: formatCurrency(comparison.totalRevenue.current),
                     change: `${comparison.totalRevenue.change >= 0 ? '+' : ''}${comparison.totalRevenue.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.totalRevenue.change >= 0 ? 'positive' : 'negative',
                     icon: 'DollarSign',
@@ -122,7 +122,7 @@ const Reports = () => {
                 },
                 {
                     title: t('reports.metrics.avgOrderValue'),
-                    value: formatCurrency((comparison.averageOrderValue.current / 100)),
+                    value: formatCurrency(comparison.averageOrderValue.current),
                     change: `${comparison.averageOrderValue.change >= 0 ? '+' : ''}${comparison.averageOrderValue.change.toFixed(1)}% ${t('reports.metrics.vsLastPeriod')}`,
                     changeType: comparison.averageOrderValue.change >= 0 ? 'positive' : 'negative',
                     icon: 'TrendingUp',

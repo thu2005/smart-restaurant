@@ -823,6 +823,9 @@ class OrderService {
 
         doc.pipe(res);
 
+        // Use Helvetica font for better Unicode support (including ₫)
+        doc.font('Helvetica');
+
         // Header
         doc.fontSize(20).text('RESTAURANT BILL', { align: 'center' });
         doc.moveDown();

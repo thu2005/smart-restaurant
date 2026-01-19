@@ -83,10 +83,10 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
         return null;
     };
 
-    // Transform data for chart (revenue in cents to dollars for display)
+    // Transform data for chart
     const chartData = (data || []).map(item => ({
         ...item,
-        revenueDisplay: (item.revenue || 0) / 100,
+        revenueDisplay: item.revenue || 0,
     }));
 
     return (
@@ -157,7 +157,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                                 stroke="#e74c3c"
                                 strokeWidth={3}
                                 fill="url(#colorRevenue)"
-                                name={t('reports.charts.revenueOverTime.revenue') + ' ($)'}
+                                name={t('reports.charts.revenueOverTime.revenue') + ` (${currencySymbol})`}
                             />
                         </AreaChart>
                     </ResponsiveContainer>

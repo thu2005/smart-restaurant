@@ -278,9 +278,17 @@ class ReportService {
      */
     async generateReportPDF(restaurantId, startDate, endDate, res) {
         const PDFDocument = require('pdfkit');
+        const { formatCurrency } = require('../utils/currency');
 
         const start = startDate ? new Date(startDate) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         const end = endDate ? new Date(endDate) : new Date();
+
+        // Fetch restaurant currency
+        const restaurant = await prisma.restaurant.findUnique({
+            where: { id: restaurantId },
+            select: { currency: true }
+        });
+        const currency = restaurant?.currency || 'VND';
 
         // Fetch report data
         const revenueData = await this.getRevenueReport(restaurantId, start.toISOString(), end.toISOString());
@@ -289,6 +297,9 @@ class ReportService {
         // Create PDF document
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
         doc.pipe(res);
+
+        // Use Helvetica font for better Unicode support
+        doc.font('Helvetica');
 
         // Header
         doc.fontSize(24).font('Helvetica-Bold').text('REPORTS & ANALYTICS', { align: 'center' });
@@ -309,9 +320,9 @@ class ReportService {
         doc.moveDown(0.5);
 
         const metrics = [
-            { label: 'Total Revenue', value: `$${(revenueData.totalRevenue / 100).toFixed(2)}` },
+            { label: 'Total Revenue', value: formatCurrency(revenueData.totalRevenue, currency) },
             { label: 'Total Orders', value: revenueData.totalOrders.toString() },
-            { label: 'Average Order Value', value: `$${(revenueData.averageOrderValue / 100).toFixed(2)}` },
+            { label: 'Average Order Value', value: formatCurrency(revenueData.averageOrderValue, currency) },
             { label: 'Total Items Sold', value: revenueData.totalItems.toString() }
         ];
 
@@ -410,7 +421,7 @@ class ReportService {
                 xPos += colWidths.orders;
 
                 // Revenue
-                doc.text(`$${((item.totalRevenue || 0) / 100).toFixed(2)}`, xPos + 5, rowY + 10, { width: colWidths.revenue });
+                doc.text(formatCurrency(item.totalRevenue || 0, currency), xPos + 5, rowY + 10, { width: colWidths.revenue });
 
                 doc.y = rowY + 30;
 

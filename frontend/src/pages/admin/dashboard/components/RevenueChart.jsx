@@ -16,7 +16,7 @@ import Select from "../../../../components/ui/Select";
 
 const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
   const { t } = useTranslation();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, currencySymbol } = useCurrency();
 
   const dateRangeOptions = [
     { value: "today", label: t('admin.dashboard.dateRanges.today') },
@@ -71,7 +71,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
         if (existingData) {
           fullSlots.push({
             ...existingData,
-            revenueDisplay: (existingData.revenue || 0) / 100
+            revenueDisplay: existingData.revenue || 0
           });
         } else {
           fullSlots.push({
@@ -111,7 +111,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
 
         const existingData = dataMap[key];
         if (existingData) {
-          fullSlots.push({ ...existingData, revenueDisplay: (existingData.revenue || 0) / 100 });
+          fullSlots.push({ ...existingData, revenueDisplay: existingData.revenue || 0 });
         } else {
           fullSlots.push({
             name: slotDate.toISOString(),
@@ -144,7 +144,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
         const existingData = dataMap[i];
 
         if (existingData) {
-          fullSlots.push({ ...existingData, revenueDisplay: (existingData.revenue || 0) / 100 });
+          fullSlots.push({ ...existingData, revenueDisplay: existingData.revenue || 0 });
         } else {
           fullSlots.push({
             name: slotDate.toISOString(),
@@ -174,7 +174,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
         const existingData = dataMap[i];
 
         if (existingData) {
-          fullSlots.push({ ...existingData, revenueDisplay: (existingData.revenue || 0) / 100 });
+          fullSlots.push({ ...existingData, revenueDisplay: existingData.revenue || 0 });
         } else {
           fullSlots.push({
             name: slotDate.toISOString(),
@@ -190,7 +190,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
     // Default behavior for other ranges or if no specific range matches
     return rawData.map(item => ({
       ...item,
-      revenueDisplay: (item.revenue || 0) / 100
+      revenueDisplay: item.revenue || 0
     }));
   };
 
@@ -280,7 +280,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
                 fontSize={12}
                 tickLine={{ stroke: '#1F2937', strokeWidth: 1 }}
                 axisLine={{ stroke: '#1F2937', strokeWidth: 1 }}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `${currencySymbol}${value}`}
               />
               <YAxis
                 yAxisId="right"
@@ -297,7 +297,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
                 dataKey="revenueDisplay"
                 fill="#2D5A27"
                 radius={[4, 4, 0, 0]}
-                name={t('admin.dashboard.revenue.series.revenue')}
+                name={`${t('admin.dashboard.revenue.series.revenue')} (${currencySymbol})`}
                 barSize={40}
               />
               <Bar
@@ -318,7 +318,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
             {t('admin.dashboard.revenue.totalRevenue')}
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            ${Math.round((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100)}
+            {formatCurrency(Math.round(data?.reduce((sum, item) => sum + item?.revenue, 0) || 0))}
           </p>
         </div>
         <div className="text-center">
@@ -334,12 +334,12 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
             {t('admin.dashboard.metrics.avgOrderValue')}
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            ${
+            {formatCurrency(
               Math.round(
-                ((data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) / 100) /
+                (data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) /
                 (data?.reduce((sum, item) => sum + item?.orders, 0) || 1)
               )
-            }
+            )}
           </p>
         </div>
         <div className="text-center">

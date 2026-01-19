@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import { createPortal } from "react-dom";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
 const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
     const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     const [isUpdating, setIsUpdating] = useState(false);
 
     const getStatusColor = (status) => {
@@ -46,12 +48,7 @@ const OrderDetailsModal = ({ order, onClose, onStatusUpdate, onRefresh }) => {
         }).format(date);
     };
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-        }).format(amount || 0);
-    };
+
 
     const handleStatusChange = async (newStatus) => {
         setIsUpdating(true);

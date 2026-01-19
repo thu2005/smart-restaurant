@@ -498,6 +498,7 @@
             },
             "status": {
                 "pending": "Chờ Xử Lý",
+                "submitted": "Đã Gửi",
                 "received": "Đã Nhận",
                 "preparing": "Đang Chuẩn Bị",
                 "ready": "Sẵn Sàng",
@@ -773,9 +774,13 @@
             "todayStats": "Thống Kê Hôm Nay",
             "metrics": {
                 "todayRevenue": "Doanh Thu Hôm Nay",
-                "currentOrders": "Đơn Hiện Tại",
-                "tableOccupancy": "Bàn Đang Dùng",
-                "avgOrderValue": "Giá Trị Đơn TB",
+                "currentOrders": "Đơn Hàng Hiện Tại",
+                "tableOccupancy": "Tỷ Lệ Lấp Đầy Bàn",
+                "avgOrderValue": "Giá Trị Đơn Trung Bình",
+                "series": {
+                    "revenue": "Doanh Thu",
+                    "orders": "Đơn Hàng"
+                },
                 "vsLastPeriod": "so với kỳ trước"
             },
             "sections": {
@@ -856,7 +861,7 @@
                 "totalRevenue": "Tổng Doanh Thu",
                 "totalOrders": "Tổng Đơn Hàng",
                 "series": {
-                    "revenue": "Doanh Thu ($)",
+                    "revenue": "Doanh Thu",
                     "orders": "Đơn Hàng"
                 }
             },

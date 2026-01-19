@@ -104,6 +104,10 @@
         "metrics": {
             "totalRevenue": "Total Revenue",
             "totalOrders": "Total Orders",
+            "series": {
+                "revenue": "Revenue",
+                "orders": "Orders"
+            },
             "avgOrderValue": "Average Order Value",
             "avgPrepTime": "Avg Prep Time",
             "vsLastPeriod": "vs last period",
@@ -499,6 +503,7 @@
             },
             "status": {
                 "pending": "Pending",
+                "submitted": "Submitted",
                 "received": "Received",
                 "preparing": "Preparing",
                 "ready": "Ready",
@@ -805,7 +810,7 @@
                 "totalRevenue": "Total Revenue",
                 "totalOrders": "Total Orders",
                 "series": {
-                    "revenue": "Revenue ($)",
+                    "revenue": "Revenue",
                     "orders": "Orders"
                 }
             },

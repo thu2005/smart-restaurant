@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 import { io } from "socket.io-client";
 import MetricCard from "./components/MetricCard";
 import ActiveOrderCard from "./components/ActiveOrderCard";
@@ -14,6 +15,7 @@ import dashboardApi from "../../../services/dashboardApi";
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState("today");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -70,7 +72,7 @@ const AdminDashboard = () => {
       const newMetrics = [
         {
           title: t('admin.dashboard.metrics.todayRevenue'),
-          value: `$${((data.revenue.totalRevenue || 0) / 100)}`,
+          value: formatCurrency(data.revenue.totalRevenue || 0),
           change: revChange,
           changeType: revChangeType,
           icon: "DollarSign",
@@ -97,7 +99,7 @@ const AdminDashboard = () => {
         },
         {
           title: t('admin.dashboard.metrics.avgOrderValue'),
-          value: `$${((data.revenue.averageOrderValue || 0) / 100)}`,
+          value: formatCurrency(data.revenue.averageOrderValue || 0),
           change: aovChange,
           changeType: aovChangeType,
           icon: "TrendingUp",
@@ -331,7 +333,7 @@ const AdminDashboard = () => {
           <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground">
-                Active Orders
+                {t('admin.dashboard.sections.activeOrders')}
               </h3>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success animate-pulse" />

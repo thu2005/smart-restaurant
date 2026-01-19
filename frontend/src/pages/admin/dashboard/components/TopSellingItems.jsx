@@ -91,7 +91,7 @@ const TopSellingItems = ({ items }) => {
                 {/* Stats */}
                 <div className="text-right flex-shrink-0 flex flex-col justify-center">
                   <p className="text-sm font-bold text-foreground data-text">
-                    {formatCurrency((item?.revenue || 0) / 100)}
+                    {formatCurrency(item?.revenue || 0)}
                   </p>
                   {item?.growth > 0 && (
                     <div className="flex items-center justify-end gap-1 text-success mt-0.5">
@@ -148,7 +148,7 @@ const TopSellingItems = ({ items }) => {
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div key="revenue" className="bg-background/50 p-2.5 rounded-lg text-center border border-border/50">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-0.5">{t('admin.dashboard.items.revenueLabel')}</p>
-              <p className="font-mono text-base font-bold text-primary">{formatCurrency((hoveredItem.revenue || 0) / 100)}</p>
+              <p className="font-mono text-base font-bold text-primary">{formatCurrency(hoveredItem.revenue || 0)}</p>
             </div>
             <div key="orders" className="bg-background/50 p-2.5 rounded-lg text-center border border-border/50">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-0.5">{t('admin.dashboard.items.ordersLabel')}</p>

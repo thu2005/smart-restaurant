@@ -33,9 +33,10 @@ function formatCurrency(amount, currency = 'VND') {
     const symbol = getCurrencySymbol(currency);
     const formatted = new Intl.NumberFormat('vi-VN').format(parseFloat(amount || 0));
 
-    // For VND, symbol goes after; for most others, before
+    // For VND, use 'd' instead of ₫ for better PDF compatibility
+    // PDFKit has issues rendering Vietnamese dong symbol even with Unicode escape
     if (currency === 'VND') {
-        return formatted + symbol;
+        return formatted + ' d';  // Use 'd' instead of ₫ for PDF compatibility
     }
     return symbol + formatted;
 }

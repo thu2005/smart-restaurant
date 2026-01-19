@@ -1,10 +1,12 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 
 const ActiveOrderCard = ({ order, onStatusUpdate }) => {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   // Calculate order total
   const getOrderTotal = () => {
     if (order?.bill?.total) return Number(order.bill.total).toFixed(2);
@@ -128,7 +130,7 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
           </span>
         </div>
         <p className="text-base font-semibold text-foreground">
-          ${getOrderTotal()}
+          {formatCurrency(getOrderTotal())}
         </p>
       </div>
     </div>
