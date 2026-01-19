@@ -324,6 +324,34 @@ router.get('/order-stats', protect, reportController.getOrderStatistics);
  *       500:
  *         description: Server error
  */
+/**
+ * @swagger
+ * /api/reports/metabase-dashboard:
+ *   get:
+ *     summary: Get signed URL for embedding Metabase dashboard
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Signed iframe URL
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     iframeUrl:
+ *                       type: string
+ *       500:
+ *         description: Server configuration error
+ */
+router.get('/metabase-dashboard', protect, reportController.getMetabaseDashboardUrl);
+
 router.get('/export-pdf', protect, reportController.exportReportPDF);
 
 module.exports = router;

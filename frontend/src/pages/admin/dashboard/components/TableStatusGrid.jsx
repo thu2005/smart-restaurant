@@ -72,12 +72,7 @@ const TableStatusGrid = ({ tables, onTableClick }) => {
                       : 'from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 border-emerald-500/50'}
                 `}
             >
-              {/* Active Orders Badge - Top Right */}
-              {activeOrders > 0 && (
-                <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center shadow-lg border-2 border-white z-50">
-                  {activeOrders}
-                </div>
-              )}
+              {/* Active Orders Badge removed as requested */}
 
               {/* Decorative Background Icon */}
               <div className="absolute -bottom-8 -right-8 opacity-10 transform rotate-12 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">

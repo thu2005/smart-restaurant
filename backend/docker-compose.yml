@@ -30,8 +30,49 @@ services:
     networks:
       - smart-restaurant-network
 
+  metabase:
+    image: metabase/metabase:v0.49.1
+    container_name: smart-restaurant-metabase
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    # environment:
+    #   MB_DB_FILE: /metabase-data/metabase.db
+    networks:
+      - smart-restaurant-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: smart-restaurant-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - smart-restaurant-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: smart-restaurant-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - smart-restaurant-network
+
 volumes:
   postgres_data:
+    driver: local
+  metabase_data:
     driver: local
 
 networks:

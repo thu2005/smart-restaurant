@@ -47,13 +47,19 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
 
   // Transform data and fill missing time slots
   const processChartData = () => {
-    // Basic null check
     const rawData = data || [];
     const fullSlots = [];
     const now = new Date();
 
+    // Helper to get consistent YYYY-MM-DD key using local time
+    const getDateKey = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     if (dateRange === "today") {
-      // Create a map for quick lookup: hour -> item
       const dataMap = {};
       rawData.forEach(item => {
         const d = new Date(item.name);
@@ -62,7 +68,6 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
         }
       });
 
-      // Generate slots from 8 AM (8) to 7 PM (19)
       for (let i = 8; i <= 19; i++) {
         const slotDate = new Date();
         slotDate.setHours(i, 0, 0, 0);
@@ -86,28 +91,24 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
     }
 
     if (dateRange === "week") {
-      // "This Week": Mon - Sun
-      const day = now.getDay(); // 0 (Sun) - 6 (Sat)
-      // Calculate Monday of this week. If today is Sunday, get Monday of the previous week.
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(now.setDate(diff));
+      const currentDay = now.getDay();
+      const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+      const monday = new Date(now); // Clone first
+      monday.setDate(diff); // Set to Monday
       monday.setHours(0, 0, 0, 0);
-      monday.setMinutes(0, 0, 0); // Ensure clean start of day
 
       const dataMap = {};
       rawData.forEach(item => {
         const d = new Date(item.name);
         if (!isNaN(d.getTime())) {
-          // Key by YYYY-MM-DD string for matching
-          const key = d.toISOString().split('T')[0];
-          dataMap[key] = item;
+          dataMap[getDateKey(d)] = item;
         }
       });
 
       for (let i = 0; i < 7; i++) {
         const slotDate = new Date(monday);
         slotDate.setDate(monday.getDate() + i);
-        const key = slotDate.toISOString().split('T')[0];
+        const key = getDateKey(slotDate);
 
         const existingData = dataMap[key];
         if (existingData) {
@@ -125,22 +126,20 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
     }
 
     if (dateRange === "month") {
-      // "This Month": 1st to End of Month
       const year = now.getFullYear();
       const month = now.getMonth();
-      const daysInMonth = new Date(year, month + 1, 0).getDate(); // Get last day of current month
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       const dataMap = {};
       rawData.forEach(item => {
         const d = new Date(item.name);
         if (!isNaN(d.getTime())) {
-          dataMap[d.getDate()] = item; // Key by day of month (1-31)
+          dataMap[d.getDate()] = item;
         }
       });
 
       for (let i = 1; i <= daysInMonth; i++) {
         const slotDate = new Date(year, month, i);
-        slotDate.setHours(0, 0, 0, 0); // Ensure clean start of day
         const existingData = dataMap[i];
 
         if (existingData) {
@@ -158,19 +157,17 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
     }
 
     if (dateRange === "year") {
-      // "This Year": Jan - Dec
       const year = now.getFullYear();
       const dataMap = {};
       rawData.forEach(item => {
         const d = new Date(item.name);
         if (!isNaN(d.getTime())) {
-          dataMap[d.getMonth()] = item; // Key by month index (0-11)
+          dataMap[d.getMonth()] = item;
         }
       });
 
       for (let i = 0; i < 12; i++) {
-        const slotDate = new Date(year, i, 1); // First day of each month
-        slotDate.setHours(0, 0, 0, 0); // Ensure clean start of day
+        const slotDate = new Date(year, i, 1);
         const existingData = dataMap[i];
 
         if (existingData) {
@@ -187,7 +184,6 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
       return fullSlots;
     }
 
-    // Default behavior for other ranges or if no specific range matches
     return rawData.map(item => ({
       ...item,
       revenueDisplay: item.revenue || 0

@@ -154,11 +154,55 @@ const dashboardApi = {
      * Get top selling items
      * Uses existing /api/reports/top-items endpoint
      */
-    getTopSellingItems: async (restaurantId, limit = 5) => {
+    /**
+     * Helper to calculate date range based on period
+     */
+    calculateDateRange: (period) => {
+        const today = new Date();
+        let startDate = new Date();
+        let endDate = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+        let backendPeriod = "daily";
+
+        switch (period) {
+            case "today":
+                startDate = new Date(new Date().setHours(0, 0, 0, 0));
+                backendPeriod = "hourly";
+                break;
+            case "week":
+                startDate = new Date();
+                const day = startDate.getDay(); // 0 is Sunday
+                const diff = startDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+                startDate.setDate(diff);
+                startDate.setHours(0, 0, 0, 0);
+                backendPeriod = "daily";
+                break;
+            case "month":
+                startDate = new Date();
+                startDate.setDate(1); // First day of month
+                startDate.setHours(0, 0, 0, 0);
+                backendPeriod = "daily";
+                break;
+            case "year":
+                startDate = new Date();
+                startDate.setMonth(0, 1); // Jan 1st
+                startDate.setHours(0, 0, 0, 0);
+                backendPeriod = "monthly";
+                break;
+            default:
+                startDate = new Date(new Date().setHours(0, 0, 0, 0));
+                backendPeriod = "daily";
+        }
+
+        return { startDate: startDate.toISOString(), endDate, backendPeriod };
+    },
+
+    /**
+     * Get top selling items
+     * Uses existing /api/reports/top-items endpoint
+     */
+    getTopSellingItems: async (restaurantId, period = "today", limit = 5) => {
         try {
-            const today = new Date();
-            const startDate = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-            const endDate = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+            const { startDate, endDate } = dashboardApi.calculateDateRange(period);
 
             const response = await api.get("/reports/top-items", {
                 params: { restaurantId, limit, startDate, endDate },
@@ -177,44 +221,13 @@ const dashboardApi = {
      */
     getRevenueChartData: async (restaurantId, period = "today") => {
         try {
-            const today = new Date();
-            let startDate = new Date();
-            let endDate = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-            let backendPeriod = "daily";
-
-            switch (period) {
-                case "today":
-                    startDate = new Date(new Date().setHours(0, 0, 0, 0));
-                    backendPeriod = "hourly";
-                    break;
-                case "week":
-                    startDate = new Date();
-                    startDate.setDate(startDate.getDate() - 7);
-                    startDate.setHours(0, 0, 0, 0);
-                    backendPeriod = "daily";
-                    break;
-                case "month":
-                    startDate = new Date();
-                    startDate.setDate(startDate.getDate() - 30);
-                    startDate.setHours(0, 0, 0, 0);
-                    backendPeriod = "daily";
-                    break;
-                case "year":
-                    startDate = new Date();
-                    startDate.setFullYear(startDate.getFullYear() - 1);
-                    startDate.setHours(0, 0, 0, 0);
-                    backendPeriod = "monthly";
-                    break;
-                default:
-                    startDate = new Date(new Date().setHours(0, 0, 0, 0));
-                    backendPeriod = "daily";
-            }
+            const { startDate, endDate, backendPeriod } = dashboardApi.calculateDateRange(period);
 
             const response = await api.get("/reports/chart", {
                 params: {
                     restaurantId,
                     period: backendPeriod,
-                    startDate: startDate.toISOString(),
+                    startDate,
                     endDate
                 },
             });
@@ -319,33 +332,64 @@ const dashboardApi = {
 
     /**
      * Get low stock alerts
-     * Uses /api/menu/items with stockStatus filter
+     * Fetches menu items from backend and filters by isAvailable and stockStatus
      */
     getLowStockAlerts: async (restaurantId) => {
         try {
-            // Try filtering by stockStatus
-            const response = await api.get("/menu/items", {
+            // Fetch all items from the correct endpoint
+            const response = await api.get(`/menu/${restaurantId}/items`, {
                 params: {
-                    restaurantId,
-                    stockStatus: "low-stock,out-of-stock",
+                    limit: 1000, // Get all items
                 },
             });
 
             const items = response.data.data || response.data;
 
+            // Filter relevant items based on isAvailable status and stockStatus
+            const relevantItems = items.filter(item => {
+                // Show alert if item is unavailable (isAvailable === false)
+                if (item.isAvailable === false) return true;
+                
+                // Show alert if stockStatus is low_stock, sold_out, or out-of-stock
+                const stockStatus = item.stockStatus?.toLowerCase().replace('_', '-');
+                return ['low-stock', 'out-of-stock', 'sold-out'].includes(stockStatus);
+            });
+
             // Transform to alert format
-            return items.map((item) => ({
-                id: item.id,
-                severity: item.stockStatus === "out-of-stock" ? "critical" : "warning",
-                title: `Low Stock Alert: ${item.name}`,
-                message: `${item.name} is ${item.stockStatus === "out-of-stock" ? "out of stock" : "running low"}. Please restock soon.`,
-                itemId: item.id,
-                itemName: item.name,
-                stockStatus: item.stockStatus,
-            }));
+            return relevantItems.map((item) => {
+                let severity = "warning";
+                let title = `Stock Alert: ${item.name}`;
+                let message = `${item.name} status is ${item.stockStatus}.`;
+                let stockStatus = item.stockStatus;
+
+                // Prioritize unavailable status
+                if (item.isAvailable === false) {
+                    severity = "critical";
+                    title = `Item Unavailable: ${item.name}`;
+                    message = `${item.name} is currently unavailable. Check availability status.`;
+                    stockStatus = "unavailable";
+                } else if (item.stockStatus === "sold_out" || item.stockStatus === "out-of-stock") {
+                    severity = "critical";
+                    title = `Out of Stock: ${item.name}`;
+                    message = `${item.name} is currently out of stock. Please restock immediately.`;
+                } else if (item.stockStatus === "low-stock" || item.stockStatus === "low_stock") {
+                    severity = "warning";
+                    title = `Low Stock: ${item.name}`;
+                    message = `${item.name} is running low. Please restock soon.`;
+                }
+
+                return {
+                    id: item.id,
+                    severity,
+                    title,
+                    message,
+                    itemId: item.id,
+                    itemName: item.name,
+                    stockStatus: stockStatus,
+                };
+            });
         } catch (error) {
             console.error("Failed to fetch low stock alerts:", error);
-            // Return empty array if endpoint doesn't support filtering
             return [];
         }
     },
@@ -426,7 +470,7 @@ const dashboardApi = {
                 dashboardApi.getActiveOrders(restaurantId),
                 dashboardApi.getTableOccupancy(restaurantId),
                 dashboardApi.getAveragePrepTime(restaurantId),
-                dashboardApi.getTopSellingItems(restaurantId, 5),
+                dashboardApi.getTopSellingItems(restaurantId, "today", 5),
                 dashboardApi.getRevenueChartData(restaurantId),
                 dashboardApi.getRecentActivity(restaurantId, 10),
                 dashboardApi.getLowStockAlerts(restaurantId),

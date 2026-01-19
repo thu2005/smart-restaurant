@@ -82,6 +82,7 @@ const AdminDashboardSidebar = ({
       section: t("nav.sections.reports"),
       items: [
         { path: "/admin/reports", label: t("nav.items.reports"), icon: "BarChart3" },
+        { path: "/admin/analytics", label: t("nav.items.BIreports"), icon: "Presentation" },
       ],
     },
     {

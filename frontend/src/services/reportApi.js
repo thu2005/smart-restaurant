@@ -258,6 +258,11 @@ export const exportToPDF = async (data, filename = 'report.pdf') => {
     }
 };
 
+export const getMetabaseDashboardUrl = async () => {
+    const response = await api.get('/reports/metabase-dashboard');
+    return response.data;
+};
+
 export default {
     getRevenueReport,
     getTopItems,
@@ -269,4 +274,5 @@ export default {
     calculatePreviousPeriod,
     exportToCSV,
     exportToPDF,
+    getMetabaseDashboardUrl,
 };

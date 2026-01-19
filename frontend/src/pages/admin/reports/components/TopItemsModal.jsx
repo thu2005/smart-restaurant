@@ -127,7 +127,7 @@ const TopItemsModal = ({ items, onClose }) => {
                         <span>Showing {items.length} items</span>
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium w-32"
                         >
                             {t('reports.topItems.modal.close')}
                         </button>
