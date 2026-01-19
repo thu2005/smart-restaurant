@@ -22,22 +22,16 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onCreateBill, bill, onPrint
         return `$${parseFloat(amount).toFixed(2)}`;
     };
 
-    // Calculate totals
-    const subtotal = bill
-        ? Number(bill.subtotal)
-        : (order.orderItems?.reduce((sum, item) => sum + (Number(item.unitPrice) * item.quantity), 0) || 0);
+    // Calculate totals - always recalculate based on current order items
+    const subtotal = order.orderItems?.reduce((sum, item) => sum + (Number(item.unitPrice) * item.quantity), 0) || 0;
 
     const discount = bill
         ? Number(bill.discount || 0)
         : (Number(order.discount) || 0);
 
-    const tax = bill
-        ? Number(bill.tax)
-        : ((subtotal - discount) * 0.1);
+    const tax = (subtotal - discount) * 0.1;
 
-    const total = bill
-        ? Number(bill.total)
-        : (subtotal - discount + tax);
+    const total = subtotal - discount + tax;
 
     return (
         <>
