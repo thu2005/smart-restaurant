@@ -102,13 +102,17 @@ const Onboarding = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={handleLogin} className="w-full">
+            <Button
+              variant="outline"
+              onClick={handleLogin}
+              className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
               {t("customer.onboarding.login")}
             </Button>
             <Button
               variant="outline"
               onClick={handleRegister}
-              className="w-full"
+              className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
               {t("customer.onboarding.register")}
             </Button>

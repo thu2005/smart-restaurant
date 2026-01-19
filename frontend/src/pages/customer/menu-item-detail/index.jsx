@@ -381,7 +381,7 @@ const MenuItemDetail = () => {
                     fullWidth
                   >
                     {isAvailable
-                      ? (editingItem ? t("customer.itemDetail.updateCart") : t("customer.item.addToCart"))
+                      ? (editingItem ? t("customer.itemDetail.updateCart") : t("customer.menu.item.addToCart"))
                       : t("customer.itemDetail.unavailable")}
                   </Button>
                 </div>
@@ -420,7 +420,7 @@ const MenuItemDetail = () => {
         quantity={quantity}
         onAddToCart={handleAddToCart}
         isAvailable={isAvailable}
-        buttonText={editingItem ? t("customer.itemDetail.updateCart") : t("customer.item.addToCart")}
+        buttonText={editingItem ? t("customer.itemDetail.updateCart") : t("customer.menu.item.addToCart")}
       />
     </div>
   );
