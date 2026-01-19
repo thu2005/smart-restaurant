@@ -470,8 +470,6 @@ const ShoppingCart = () => {
                   </div>
                   <BillPaymentSection
                     order={activeOrder}
-                  <BillPaymentSection
-                    order={activeOrder}
                     onPay={handlePayment}
                   />
                 </>
