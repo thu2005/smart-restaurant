@@ -4,7 +4,7 @@ import Image from "../../../../components/AppImage";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
-const MenuItemCard = ({ item, onQuickAdd }) => {
+const MenuItemCard = ({ item, onQuickAdd, onItemClick }) => {
   const navigate = useNavigate();
 
   const getAvailabilityConfig = (status) => {
@@ -34,7 +34,11 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
   const availabilityConfig = getAvailabilityConfig(item?.availability);
 
   const handleCardClick = () => {
-    navigate(`/customer/menu-item-detail/${item?.id}`);
+    if (onItemClick) {
+      onItemClick(item);
+    } else {
+      navigate(`/customer/menu-item-detail/${item?.id}`);
+    }
   };
 
   const handleQuickAdd = (e) => {

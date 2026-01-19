@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import menuService, { getRestaurantId } from "services/menuService";
 import { useCart } from "../../../contexts/CartContext";
 import { fuzzySearchMenuItems } from "../../../utils/fuzzySearch";
+import { useMenuBrowseState } from "../../../hooks/useMenuBrowseState";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import FilterPanel from "./components/FilterPanel";
@@ -17,17 +18,55 @@ const BASE_URL =
 
 const MenuBrowse = () => {
   const { restaurantId: paramRestaurantId, tableNumber } = useParams();
+  const navigate = useNavigate();
   const { addToCart, getCartSummary } = useCart();
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    saveMenuState,
+    restoreMenuState,
+    hasSavedState,
+    clearScrollPosition,
+  } = useMenuBrowseState();
+
+  // Initialize state with saved values if available
+  const initializeState = () => {
+    if (hasSavedState()) {
+      const savedState = restoreMenuState();
+      if (savedState) {
+        return {
+          activeCategory: savedState.activeCategory || "all",
+          searchQuery: savedState.searchQuery || "",
+          filters: savedState.filters || {
+            sortBy: "createdAt",
+            isChefRecommended: false,
+            isPopular: false,
+            dietary: [],
+            availability: ["available"],
+          },
+        };
+      }
+    }
+
+    return {
+      activeCategory: "all",
+      searchQuery: "",
+      filters: {
+        sortBy: "createdAt",
+        isChefRecommended: false,
+        isPopular: false,
+        dietary: [],
+        availability: ["available"],
+      },
+    };
+  };
+
+  const initialState = initializeState();
+
+  const [activeCategory, setActiveCategory] = useState(
+    initialState.activeCategory,
+  );
+  const [searchQuery, setSearchQuery] = useState(initialState.searchQuery);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    sortBy: "createdAt",
-    isChefRecommended: false,
-    isPopular: false,
-    dietary: [],
-    availability: ["available"],
-  });
+  const [filters, setFilters] = useState(initialState.filters);
 
   const [categories, setCategories] = useState([
     { value: "all", label: "All Items", icon: "UtensilsCrossed", count: 0 },
@@ -43,8 +82,9 @@ const MenuBrowse = () => {
         setLoading(true);
 
         // Get restaurantId from URL params, localStorage, or user data
-        let restaurantId = paramRestaurantId || localStorage.getItem("restaurantId");
-        
+        let restaurantId =
+          paramRestaurantId || localStorage.getItem("restaurantId");
+
         // If still no restaurantId, try to get from logged-in user
         if (!restaurantId) {
           try {
@@ -248,12 +288,55 @@ const MenuBrowse = () => {
     filters.sortBy,
   ]); // Re-fetch when criteria changes (except search)
 
+  // Save state whenever it changes
+  useEffect(() => {
+    saveMenuState({
+      activeCategory,
+      searchQuery,
+      filters,
+    });
+  }, [activeCategory, searchQuery, filters, saveMenuState]);
+
+  // Restore scroll position after data loads
+  useEffect(() => {
+    if (menuItems && menuItems.length > 0 && hasSavedState()) {
+      const savedState = restoreMenuState();
+      if (savedState && savedState.scrollPosition) {
+        const timer = setTimeout(() => {
+          window.scrollTo({
+            top: savedState.scrollPosition,
+            behavior: "auto",
+          });
+          // Clear scroll position after restoring to avoid repeated restores
+          clearScrollPosition();
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [menuItems, hasSavedState, restoreMenuState, clearScrollPosition]);
+
+  // Handle menu item click with state saving
+  const handleMenuItemClick = (menuItem) => {
+    const currentScrollPosition = window.scrollY;
+
+    // Save current state with scroll position
+    saveMenuState({
+      activeCategory,
+      searchQuery,
+      filters,
+      scrollPosition: currentScrollPosition,
+    });
+
+    // Navigate to item detail using the correct route format
+    navigate(`/customer/menu-item-detail/${menuItem.id}`);
+  };
+
   // Apply fuzzy search and filters locally
   const filteredItems = useMemo(() => {
     let items = [...allMenuItems];
 
     // 1. Apply fuzzy search first
-    if (searchQuery && searchQuery.trim() !== '') {
+    if (searchQuery && searchQuery.trim() !== "") {
       items = fuzzySearchMenuItems(items, searchQuery);
     }
 
@@ -264,8 +347,8 @@ const MenuBrowse = () => {
 
     // 3. Apply dietary filters
     if (filters.dietary.length > 0) {
-      items = items.filter((item) => 
-        filters.dietary.every((d) => item.dietary?.includes(d))
+      items = items.filter((item) =>
+        filters.dietary.every((d) => item.dietary?.includes(d)),
       );
     }
 
@@ -284,7 +367,7 @@ const MenuBrowse = () => {
       specialInstructions: "",
       prepTime: item.prepTime || 15,
     });
-    
+
     // Optional: Show toast notification
     console.log(`Added ${item.name} to cart`);
   };
@@ -367,7 +450,7 @@ const MenuBrowse = () => {
 
     // Sort filter
     const sortLabel = allSortOptions.find(
-      (opt) => opt.value === filters.sortBy
+      (opt) => opt.value === filters.sortBy,
     )?.label;
     if (sortLabel && filters.sortBy !== "createdAt") {
       tags.push({
@@ -502,6 +585,7 @@ const MenuBrowse = () => {
                   key={item?.id}
                   item={item}
                   onQuickAdd={handleQuickAdd}
+                  onItemClick={handleMenuItemClick}
                 />
               ))}
             </div>

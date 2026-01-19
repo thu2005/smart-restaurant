@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet";
 import { toast } from "sonner";
 import menuService from "../../../services/menuService";
 import { useCart } from "../../../contexts/CartContext";
+import { useMenuBrowseState } from "../../../hooks/useMenuBrowseState";
 import ImageGallery from "./components/ImageGallery";
 import ItemInfo from "./components/ItemInfo";
 import CustomizationPanel from "./components/CustomizationPanel";
@@ -60,6 +61,7 @@ const MenuItemDetail = () => {
   const location = useLocation();
   const { itemId } = useParams();
   const { addToCart, updateItem, getCartSummary } = useCart();
+  const { hasSavedState } = useMenuBrowseState();
 
   const editingItem = location.state?.editingItem;
 
@@ -382,7 +384,18 @@ const MenuItemDetail = () => {
   };
 
   const handleBackToMenu = () => {
-    navigate("/customer/menu-browse");
+    // Check if we have table parameters from localStorage or URL
+    const tableNumber = localStorage.getItem("tableNumber");
+    const restaurantId = localStorage.getItem("restaurantId");
+    
+    // Try to navigate to the appropriate route format based on available data
+    if (tableNumber && restaurantId) {
+      // Navigate to the parameterized route if we have the data
+      navigate(`/customer/menu-browse/${restaurantId}/${tableNumber}`);
+    } else {
+      // Fallback to simple route
+      navigate("/customer/menu-browse");
+    }
   };
 
   const isAvailable =
