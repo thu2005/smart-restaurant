@@ -330,6 +330,9 @@ const ShoppingCart = () => {
     );
   }
 
+  console.log('✅ Rendering FULL CART with items');
+
+
   return (
     <>
       <Helmet>

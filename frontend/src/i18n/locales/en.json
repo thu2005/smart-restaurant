@@ -65,6 +65,19 @@
             "saveError": "Failed to save",
             "requiredFields": "Please fill in all required fields"
         },
+        "status": {
+            "processing": "Processing...",
+            "active": "Active",
+            "inactive": "Inactive",
+            "available": "Available",
+            "unavailable": "Unavailable",
+            "pending": "Pending",
+            "completed": "Completed",
+            "lowStock": "Low Stock",
+            "soldOut": "Sold Out",
+            "na": "N/A",
+            "notAvailable": "Not Available"
+        },
         "pagination": {
             "showingPage": "Showing page",
             "showing": "Showing {{count}} of {{total}} items",
@@ -1405,6 +1418,36 @@
             "specialInstructions": {
                 "title": "Order Notes (Optional)",
                 "placeholder": "Add any special requests for your order"
+            },
+            "modals": {
+                "empty": {
+                    "title": "Empty Cart",
+                    "message": "Your cart is empty. Please add items from the menu."
+                },
+                "paymentRequired": {
+                    "title": "Payment Required",
+                    "message": "Please select a payment method before proceeding."
+                },
+                "missingInfo": {
+                    "title": "Missing Information",
+                    "message": "Missing table information. Please scan the QR code again."
+                },
+                "orderInProgress": {
+                    "title": "Order In Progress",
+                    "message": "You have an order in progress ({{status}}). Please wait for all items to be served before placing a new order."
+                },
+                "addToCurrent": {
+                    "title": "Add to Current Order",
+                    "message": "Would you like to add these items to your current order?"
+                },
+                "success": {
+                    "title": "Order Placed!",
+                    "message": "Your order #{{orderNumber}} has been placed successfully."
+                },
+                "failed": {
+                    "title": "Order Failed",
+                    "message": "Failed to place order. Please try again."
+                }
             },
             "payment": {
                 "title": "Payment Method",

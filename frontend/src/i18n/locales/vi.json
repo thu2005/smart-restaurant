@@ -44,6 +44,7 @@
             "completed": "Hoàn Thành",
             "lowStock": "Sắp Hết",
             "soldOut": "Hết Hàng",
+            "processing": "Đang Xử Lý...",
             "na": "N/A",
             "notAvailable": "Không khả dụng"
         },
@@ -64,6 +65,10 @@
             "saveSuccess": "Lưu thành công",
             "saveError": "Không thể lưu",
             "requiredFields": "Vui lòng điền vào tất cả các trường bắt buộc"
+        },
+        "status": {
+            "processing": "Đang xử lý...",
+            "na": "K/C"
         },
         "pagination": {
             "showingPage": "Đang hiển thị trang",
@@ -1487,6 +1492,36 @@
             "specialInstructions": {
                 "title": "Ghi chú cho đơn hàng (Tùy chọn)",
                 "placeholder": "Thêm yêu cầu đặc biệt cho đơn hàng của bạn"
+            },
+            "modals": {
+                "empty": {
+                    "title": "Giỏ hàng trống",
+                    "message": "Giỏ hàng của bạn đang trống. Vui lòng thêm món từ thực đơn."
+                },
+                "paymentRequired": {
+                    "title": "Yêu cầu thanh toán",
+                    "message": "Vui lòng chọn phương thức thanh toán trước khi tiếp tục."
+                },
+                "missingInfo": {
+                    "title": "Thiếu thông tin",
+                    "message": "Thiếu thông tin bàn. Vui lòng quét lại mã QR."
+                },
+                "orderInProgress": {
+                    "title": "Đơn hàng đang xử lý",
+                    "message": "Bạn đang có đơn hàng đang xử lý ({{status}}). Vui lòng đợi món được phục vụ hết trước khi đặt đơn mới."
+                },
+                "addToCurrent": {
+                    "title": "Thêm vào đơn hiện tại",
+                    "message": "Bạn có muốn thêm các món này vào đơn hàng hiện tại không?"
+                },
+                "success": {
+                    "title": "Đặt hàng thành công!",
+                    "message": "Đơn hàng #{{orderNumber}} của bạn đã được đặt thành công."
+                },
+                "failed": {
+                    "title": "Đặt hàng thất bại",
+                    "message": "Không thể đặt hàng. Vui lòng thử lại."
+                }
             },
             "payment": {
                 "title": "Phương thức thanh toán",
