@@ -1,14 +1,18 @@
+require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
-const cloudinary = require("../src/config/cloudinary").cloudinary;
+const { cloudinary } = require("./src/config/cloudinary");
 const fs = require("fs");
 const path = require("path");
 
 const prisma = new PrismaClient();
 
+// Get current environment
+const env = process.env.NODE_ENV === "production" ? "prod" : "dev";
+
 async function uploadImageToCloudinary(localPath, folder, publicId = null) {
   try {
     const options = {
-      folder: folder,
+      folder: `smart-restaurant/${env}/${folder}`,
       resource_type: "image",
     };
 
@@ -30,7 +34,7 @@ async function migrateAvatars() {
   try {
     const users = await prisma.user.findMany({
       where: {
-        avatar_url: {
+        avatar: {
           startsWith: "/uploads/avatars/",
         },
       },
@@ -39,7 +43,7 @@ async function migrateAvatars() {
     console.log(`Found ${users.length} users with local avatars`);
 
     for (const user of users) {
-      const localPath = path.join(__dirname, "..", user.avatar_url);
+      const localPath = path.join(__dirname, "..", user.avatar);
 
       if (fs.existsSync(localPath)) {
         console.log(`Uploading avatar for user ${user.id}...`);
@@ -53,7 +57,7 @@ async function migrateAvatars() {
         if (cloudinaryUrl) {
           await prisma.user.update({
             where: { id: user.id },
-            data: { avatar_url: cloudinaryUrl },
+            data: { avatar: cloudinaryUrl },
           });
           console.log(`✅ Updated user ${user.id} avatar`);
         } else {
@@ -112,56 +116,10 @@ async function migrateMenuItemPhotos() {
   }
 }
 
-async function migrateRestaurantLogos() {
-  console.log("🔄 Starting restaurant logos migration...");
-
-  try {
-    const restaurants = await prisma.restaurant.findMany({
-      where: {
-        logo_url: {
-          startsWith: "/uploads/logos/",
-        },
-      },
-    });
-
-    console.log(`Found ${restaurants.length} restaurants with local logos`);
-
-    for (const restaurant of restaurants) {
-      const localPath = path.join(__dirname, "..", restaurant.logo_url);
-
-      if (fs.existsSync(localPath)) {
-        console.log(`Uploading logo for restaurant ${restaurant.id}...`);
-
-        const cloudinaryUrl = await uploadImageToCloudinary(
-          localPath,
-          "smart-restaurant/logos",
-          `logo-${restaurant.id}-${Date.now()}`,
-        );
-
-        if (cloudinaryUrl) {
-          await prisma.restaurant.update({
-            where: { id: restaurant.id },
-            data: { logo_url: cloudinaryUrl },
-          });
-          console.log(`✅ Updated restaurant ${restaurant.id} logo`);
-        } else {
-          console.log(
-            `❌ Failed to upload logo for restaurant ${restaurant.id}`,
-          );
-        }
-      } else {
-        console.log(
-          `⚠️ File not found for restaurant ${restaurant.id}: ${localPath}`,
-        );
-      }
-    }
-  } catch (error) {
-    console.error("Error migrating restaurant logos:", error);
-  }
-}
+// Restaurant logos are hosted on ImageKit - skip this migration
 
 async function main() {
-  console.log("🚀 Starting Cloudinary migration...");
+  console.log(`🚀 Starting Cloudinary migration for ${env} environment...`);
 
   // Check if Cloudinary is configured
   if (
@@ -178,9 +136,11 @@ async function main() {
   try {
     await migrateAvatars();
     await migrateMenuItemPhotos();
-    await migrateRestaurantLogos();
 
     console.log("✅ Migration completed successfully!");
+    console.log(
+      "📝 Note: Restaurant logos are hosted on ImageKit and don't need migration.",
+    );
     console.log(
       "📝 You can now safely delete the local uploads folder if all images were migrated successfully.",
     );
@@ -199,5 +159,4 @@ module.exports = {
   main,
   migrateAvatars,
   migrateMenuItemPhotos,
-  migrateRestaurantLogos,
 };
