@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import Icon from "../AppIcon";
+import { useTranslation } from "react-i18next";
 
 /**
  * Customer Login/Register Modal
  * Shows a tabbed interface for login and registration
  */
 const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState("login");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -48,7 +50,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
             }
             onClose();
         } catch (err) {
-            setError(err.message || "An error occurred. Please try again.");
+            setError(err.message || t("auth.errors.general"));
         } finally {
             setIsLoading(false);
         }
@@ -65,7 +67,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                     <h2 className="text-xl font-heading font-semibold text-foreground">
-                        {activeTab === "login" ? "Welcome Back" : "Create Account"}
+                        {activeTab === "login" ? t("auth.login.title") : t("auth.register.title")}
                     </h2>
                     <button
                         onClick={onClose}
@@ -84,7 +86,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                             : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
-                        Sign In
+                        {t("auth.login.tab")}
                     </button>
                     <button
                         onClick={() => switchTab("register")}
@@ -93,7 +95,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                             : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
-                        Register
+                        {t("auth.register.tab")}
                     </button>
                 </div>
 
@@ -109,7 +111,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                         <>
                             <div>
                                 <label className="block text-sm font-medium text-foreground mb-1">
-                                    Full Name
+                                    {t("auth.form.fullName")}
                                 </label>
                                 <input
                                     type="text"
@@ -118,12 +120,12 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                                     onChange={handleInputChange}
                                     required
                                     className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    placeholder="Enter your full name"
+                                    placeholder={t("auth.form.fullNamePlaceholder")}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-foreground mb-1">
-                                    Phone (Optional)
+                                    {t("auth.form.phone")}
                                 </label>
                                 <input
                                     type="tel"
@@ -131,7 +133,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                                     value={formData.phone}
                                     onChange={handleInputChange}
                                     className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    placeholder="Enter your phone number"
+                                    placeholder={t("auth.form.phonePlaceholder")}
                                 />
                             </div>
                         </>
@@ -139,7 +141,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Email
+                            {t("auth.form.email")}
                         </label>
                         <input
                             type="email"
@@ -148,13 +150,13 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                             onChange={handleInputChange}
                             required
                             className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder="Enter your email"
+                            placeholder={t("auth.form.emailPlaceholder")}
                         />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Password
+                            {t("auth.form.password")}
                         </label>
                         <input
                             type="password"
@@ -164,7 +166,7 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                             required
                             minLength={6}
                             className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder={activeTab === "register" ? "Create a password (min 6 chars)" : "Enter your password"}
+                            placeholder={activeTab === "register" ? t("auth.form.passwordPlaceholderCtx") : t("auth.form.passwordPlaceholder")}
                         />
                     </div>
 
@@ -176,34 +178,34 @@ const CustomerLoginModal = ({ isOpen, onClose, onSuccess }) => {
                         {isLoading ? (
                             <>
                                 <Icon name="Loader2" size={20} className="animate-spin" />
-                                {activeTab === "login" ? "Signing in..." : "Creating account..."}
+                                {activeTab === "login" ? t("auth.login.submitting") : t("auth.register.submitting")}
                             </>
                         ) : (
-                            activeTab === "login" ? "Sign In" : "Create Account"
+                            activeTab === "login" ? t("auth.login.submit") : t("auth.register.submit")
                         )}
                     </button>
 
                     <p className="text-center text-sm text-muted-foreground">
                         {activeTab === "login" ? (
                             <>
-                                Don't have an account?{" "}
+                                {t("auth.login.noAccount")}{" "}
                                 <button
                                     type="button"
                                     onClick={() => switchTab("register")}
                                     className="text-primary hover:underline font-medium"
                                 >
-                                    Register
+                                    {t("auth.login.registerLink")}
                                 </button>
                             </>
                         ) : (
                             <>
-                                Already have an account?{" "}
+                                {t("auth.register.hasAccount")}{" "}
                                 <button
                                     type="button"
                                     onClick={() => switchTab("login")}
                                     className="text-primary hover:underline font-medium"
                                 >
-                                    Sign In
+                                    {t("auth.register.loginLink")}
                                 </button>
                             </>
                         )}

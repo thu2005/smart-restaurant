@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import menuService, { getRestaurantId } from "services/menuService";
 import { useCart } from "../../../contexts/CartContext";
+import { fuzzySearchMenuItems } from "../../../utils/fuzzySearch";
+import { useMenuBrowseState } from "../../../hooks/useMenuBrowseState";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import FilterPanel from "./components/FilterPanel";
@@ -15,22 +18,62 @@ const BASE_URL =
   import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const MenuBrowse = () => {
+  const { t } = useTranslation();
   const { restaurantId: paramRestaurantId, tableNumber } = useParams();
+  const navigate = useNavigate();
   const { addToCart, getCartSummary } = useCart();
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    saveMenuState,
+    restoreMenuState,
+    hasSavedState,
+    clearScrollPosition,
+  } = useMenuBrowseState();
+
+  // Initialize state with saved values if available
+  const initializeState = () => {
+    if (hasSavedState()) {
+      const savedState = restoreMenuState();
+      if (savedState) {
+        return {
+          activeCategory: savedState.activeCategory || "all",
+          searchQuery: savedState.searchQuery || "",
+          filters: savedState.filters || {
+            sortBy: "createdAt",
+            isChefRecommended: false,
+            isPopular: false,
+            dietary: [],
+            availability: ["available"],
+          },
+        };
+      }
+    }
+
+    return {
+      activeCategory: "all",
+      searchQuery: "",
+      filters: {
+        sortBy: "createdAt",
+        isChefRecommended: false,
+        isPopular: false,
+        dietary: [],
+        availability: ["available"],
+      },
+    };
+  };
+
+  const initialState = initializeState();
+
+  const [activeCategory, setActiveCategory] = useState(
+    initialState.activeCategory,
+  );
+  const [searchQuery, setSearchQuery] = useState(initialState.searchQuery);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    sortBy: "createdAt",
-    isChefRecommended: false,
-    isPopular: false,
-    dietary: [],
-    availability: ["available"],
-  });
+  const [filters, setFilters] = useState(initialState.filters);
 
   const [categories, setCategories] = useState([
     { value: "all", label: "All Items", icon: "UtensilsCrossed", count: 0 },
   ]);
+  const [allMenuItems, setAllMenuItems] = useState([]); // Store all items for fuzzy search
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,8 +84,9 @@ const MenuBrowse = () => {
         setLoading(true);
 
         // Get restaurantId from URL params, localStorage, or user data
-        let restaurantId = paramRestaurantId || localStorage.getItem("restaurantId");
-        
+        let restaurantId =
+          paramRestaurantId || localStorage.getItem("restaurantId");
+
         // If still no restaurantId, try to get from logged-in user
         if (!restaurantId) {
           try {
@@ -67,8 +111,8 @@ const MenuBrowse = () => {
           }),
           menuService.getItems({
             restaurantId,
-            categoryId: activeCategory === "all" ? undefined : activeCategory,
-            search: searchQuery || undefined,
+            // Don't send search query - we'll do fuzzy search locally
+            // Don't filter by category - we'll filter locally
             status:
               filters.availability?.length === 1
                 ? filters.availability[0]
@@ -217,6 +261,7 @@ const MenuBrowse = () => {
             })
           : [];
 
+        setAllMenuItems(formattedItems); // Store all items for filtering
         setMenuItems(formattedItems);
       } catch (error) {
         console.error("Failed to load menu:", error);
@@ -237,28 +282,80 @@ const MenuBrowse = () => {
 
     fetchData();
   }, [
+    // Remove searchQuery from dependencies since we'll filter locally
     activeCategory,
-    searchQuery,
     filters.isChefRecommended,
     filters.isPopular,
     filters.availability,
     filters.sortBy,
-  ]); // Re-fetch when criteria changes
+  ]); // Re-fetch when criteria changes (except search)
 
-  // Filter logic (client-side for now for other filters)
-  const filteredItems = menuItems.filter((item) => {
-    // Category, Search, ChefRecommended, and Sort are handled by API
+  // Save state whenever it changes
+  useEffect(() => {
+    saveMenuState({
+      activeCategory,
+      searchQuery,
+      filters,
+    });
+  }, [activeCategory, searchQuery, filters, saveMenuState]);
 
-    // Dietary
-    if (
-      filters.dietary.length > 0 &&
-      !filters.dietary.every((d) => item.dietary?.includes(d))
-    ) {
-      return false;
+  // Restore scroll position after data loads
+  useEffect(() => {
+    if (menuItems && menuItems.length > 0 && hasSavedState()) {
+      const savedState = restoreMenuState();
+      if (savedState && savedState.scrollPosition) {
+        const timer = setTimeout(() => {
+          window.scrollTo({
+            top: savedState.scrollPosition,
+            behavior: "auto",
+          });
+          // Clear scroll position after restoring to avoid repeated restores
+          clearScrollPosition();
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [menuItems, hasSavedState, restoreMenuState, clearScrollPosition]);
+
+  // Handle menu item click with state saving
+  const handleMenuItemClick = (menuItem) => {
+    const currentScrollPosition = window.scrollY;
+
+    // Save current state with scroll position
+    saveMenuState({
+      activeCategory,
+      searchQuery,
+      filters,
+      scrollPosition: currentScrollPosition,
+    });
+
+    // Navigate to item detail using the correct route format
+    navigate(`/customer/menu-item-detail/${menuItem.id}`);
+  };
+
+  // Apply fuzzy search and filters locally
+  const filteredItems = useMemo(() => {
+    let items = [...allMenuItems];
+
+    // 1. Apply fuzzy search first
+    if (searchQuery && searchQuery.trim() !== "") {
+      items = fuzzySearchMenuItems(items, searchQuery);
     }
 
-    return true;
-  });
+    // 2. Filter by category
+    if (activeCategory !== "all") {
+      items = items.filter((item) => item.category === activeCategory);
+    }
+
+    // 3. Apply dietary filters
+    if (filters.dietary.length > 0) {
+      items = items.filter((item) =>
+        filters.dietary.every((d) => item.dietary?.includes(d)),
+      );
+    }
+
+    return items;
+  }, [allMenuItems, searchQuery, activeCategory, filters.dietary]);
 
   const handleQuickAdd = (item) => {
     // Add item to cart with quantity 1 (no modifiers for quick add)
@@ -272,7 +369,7 @@ const MenuBrowse = () => {
       specialInstructions: "",
       prepTime: item.prepTime || 15,
     });
-    
+
     // Optional: Show toast notification
     console.log(`Added ${item.name} to cart`);
   };
@@ -296,18 +393,18 @@ const MenuBrowse = () => {
   const getActiveFilterTags = () => {
     const tags = [];
     const allSortOptions = [
-      { value: "createdAt", label: "Newest Items" },
-      { value: "price", label: "Price: Low to High" },
-      { value: "price_desc", label: "Price: High to Low" },
-      { value: "name", label: "Name: A to Z" },
-      { value: "orderCount", label: "Most Ordered" },
+      { value: "createdAt", label: t("customer.menu.sort.newest") },
+      { value: "price", label: t("customer.menu.sort.priceLowHigh") },
+      { value: "price_desc", label: t("customer.menu.sort.priceHighLow") },
+      { value: "name", label: t("customer.menu.sort.nameAZ") },
+      { value: "orderCount", label: t("customer.menu.sort.mostOrdered") },
     ];
 
     // Special filters
     if (filters.isPopular) {
       tags.push({
         id: "isPopular",
-        label: "Popular",
+        label: t("customer.menu.categories.popular"),
         color: "blue",
         onRemove: () => handleFilterChange("isPopular", false),
       });
@@ -315,7 +412,7 @@ const MenuBrowse = () => {
     if (filters.isChefRecommended) {
       tags.push({
         id: "isChefRecommended",
-        label: "Chef Recommended",
+        label: t("customer.menu.filters.chefRecommended"),
         color: "purple",
         onRemove: () => handleFilterChange("isChefRecommended", false),
       });
@@ -326,7 +423,10 @@ const MenuBrowse = () => {
       filters.dietary.forEach((diet) => {
         tags.push({
           id: `dietary-${diet}`,
-          label: diet.charAt(0).toUpperCase() + diet.slice(1),
+          label: t(
+            `customer.menu.dietary.${diet}`,
+            diet.charAt(0).toUpperCase() + diet.slice(1),
+          ),
           color: "green",
           onRemove: () => {
             const newDietary = filters.dietary.filter((d) => d !== diet);
@@ -339,9 +439,9 @@ const MenuBrowse = () => {
     // Availability filter
     if (filters.availability?.[0] && filters.availability[0] !== "available") {
       const availabilityLabels = {
-        low_stock: "Low Stock",
-        sold_out: "Sold Out",
-        unavailable: "Unavailable",
+        low_stock: t("customer.menu.item.lowStock"),
+        sold_out: t("customer.menu.item.soldOut"),
+        unavailable: t("customer.menu.item.unavailable"),
       };
       tags.push({
         id: "availability",
@@ -355,12 +455,12 @@ const MenuBrowse = () => {
 
     // Sort filter
     const sortLabel = allSortOptions.find(
-      (opt) => opt.value === filters.sortBy
+      (opt) => opt.value === filters.sortBy,
     )?.label;
     if (sortLabel && filters.sortBy !== "createdAt") {
       tags.push({
         id: "sortBy",
-        label: `Sort: ${sortLabel}`,
+        label: `${t("customer.menu.sort.label")}: ${sortLabel}`,
         color: "gray",
         onRemove: () => handleFilterChange("sortBy", "createdAt"),
       });
@@ -385,10 +485,10 @@ const MenuBrowse = () => {
       <main className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 pb-24 lg:pb-12">
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-            Browse Our Menu
+            {t("customer.menu.title")}
           </h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Discover delicious dishes crafted with fresh ingredients
+            {t("customer.menu.subtitle")}
           </p>
         </div>
 
@@ -412,7 +512,7 @@ const MenuBrowse = () => {
           <div className="flex-1">
             <SearchBar
               onSearch={setSearchQuery}
-              placeholder="Search for dishes, ingredients..."
+              placeholder={t("customer.menu.search.placeholder")}
             />
           </div>
           <Button
@@ -422,7 +522,7 @@ const MenuBrowse = () => {
             onClick={() => setIsFilterOpen(true)}
             className="w-full md:w-auto"
           >
-            Filters
+            {t("customer.menu.filters.title")}
             {activeFiltersCount > 0 && (
               <span className="ml-2 px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold rounded-full">
                 {activeFiltersCount}
@@ -434,7 +534,7 @@ const MenuBrowse = () => {
         {activeFilterTags.length > 0 && (
           <div className="mb-4 flex items-center gap-2 flex-wrap">
             <p className="text-sm font-medium text-muted-foreground">
-              Active Filters:
+              {t("customer.menu.activeFilters")}
             </p>
             {activeFilterTags.map((tag) => {
               const colorClasses = {
@@ -467,7 +567,7 @@ const MenuBrowse = () => {
               className="text-xs h-auto py-1"
               onClick={handleResetFilters}
             >
-              Clear all
+              {t("customer.menu.filters.reset", "Clear all")}
             </Button>
           </div>
         )}
@@ -476,11 +576,9 @@ const MenuBrowse = () => {
           <>
             <div className="mb-4">
               <p className="text-sm md:text-base text-muted-foreground">
-                Showing{" "}
-                <span className="font-semibold text-foreground">
-                  {filteredItems?.length}
-                </span>{" "}
-                items
+                {t("customer.menu.showingItems", {
+                  count: filteredItems?.length,
+                })}
               </p>
             </div>
 
@@ -490,6 +588,7 @@ const MenuBrowse = () => {
                   key={item?.id}
                   item={item}
                   onQuickAdd={handleQuickAdd}
+                  onItemClick={handleMenuItemClick}
                 />
               ))}
             </div>

@@ -23,6 +23,9 @@ exports.createReview = async (req, res, next) => {
         if (error.message === 'Menu item not found') {
             return res.status(404).json({ success: false, message: error.message });
         }
+        if (error.message.includes('You can only review items that you have ordered')) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
         next(error);
     }
 };
@@ -33,6 +36,21 @@ exports.getReviews = async (req, res, next) => {
         const { page, limit } = req.query;
 
         const result = await reviewService.getReviews(menuItemId, {
+            page: page ? parseInt(page) : 1,
+            limit: limit ? parseInt(limit) : 10
+        });
+
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getMyReviews = async (req, res, next) => {
+    try {
+        const { page, limit } = req.query;
+
+        const result = await reviewService.getReviewsByUserId(req.user.id, {
             page: page ? parseInt(page) : 1,
             limit: limit ? parseInt(limit) : 10
         });

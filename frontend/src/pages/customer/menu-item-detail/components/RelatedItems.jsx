@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 import Button from "../../../../components/ui/Button";
 
 const RelatedItems = ({ items }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleItemClick = (itemId) => {
     navigate("/customer/menu-item-detail", { state: { itemId } });
@@ -15,7 +17,7 @@ const RelatedItems = ({ items }) => {
   return (
     <div className="space-y-3 md:space-y-4">
       <h2 className="text-xl md:text-2xl lg:text-3xl font-heading font-bold text-foreground">
-        You May Also Like
+        {t("customer.itemDetail.relatedItems.title", "You May Also Like")}
       </h2>
       <div className="overflow-x-auto pb-4 -mx-4 px-4 md:-mx-6 md:px-6 lg:mx-0 lg:px-0">
         <div className="flex gap-3 md:gap-4 lg:grid lg:grid-cols-4">
@@ -33,7 +35,7 @@ const RelatedItems = ({ items }) => {
                 />
                 {item?.isNew && (
                   <div className="absolute top-2 left-2 px-2 py-1 bg-accent text-accent-foreground text-xs font-medium rounded-md">
-                    New
+                    {t("customer.itemDetail.relatedItems.new", "New")}
                   </div>
                 )}
               </div>
@@ -70,7 +72,7 @@ const RelatedItems = ({ items }) => {
                       handleItemClick(item?.id);
                     }}
                   >
-                    Add
+                    {t("customer.itemDetail.relatedItems.add", "Add")}
                   </Button>
                 </div>
               </div>

@@ -1,10 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Image from "../../../../components/AppImage";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
-const MenuItemCard = ({ item, onQuickAdd }) => {
+const MenuItemCard = ({ item, onQuickAdd, onItemClick }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const getAvailabilityConfig = (status) => {
@@ -12,19 +14,19 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
       available: {
         color: "text-success",
         bg: "bg-success/10",
-        label: "Available",
+        label: t("customer.menu.item.availableNow", "Available"),
         icon: "CheckCircle2",
       },
       "low-stock": {
         color: "text-warning",
         bg: "bg-warning/10",
-        label: "Low Stock",
+        label: t("customer.menu.item.lowStock", "Low Stock"),
         icon: "AlertCircle",
       },
       "sold-out": {
         color: "text-error",
         bg: "bg-error/10",
-        label: "Sold Out",
+        label: t("customer.menu.item.soldOut", "Sold Out"),
         icon: "XCircle",
       },
     };
@@ -34,7 +36,11 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
   const availabilityConfig = getAvailabilityConfig(item?.availability);
 
   const handleCardClick = () => {
-    navigate(`/customer/menu-item-detail/${item?.id}`);
+    if (onItemClick) {
+      onItemClick(item);
+    } else {
+      navigate(`/customer/menu-item-detail/${item?.id}`);
+    }
   };
 
   const handleQuickAdd = (e) => {
@@ -67,13 +73,13 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
             {item?.isPopular && (
               <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-sm">
                 <Icon name="TrendingUp" size={14} />
-                <span>Popular</span>
+                <span>{t("customer.menu.categories.popular")}</span>
               </div>
             )}
             {item?.isChefRecommended && (
               <div
                 className="bg-primary text-primary-foreground p-1.5 rounded-md shadow-sm"
-                title="Chef Recommended"
+                title={t("customer.menu.filters.chefRecommended")}
               >
                 <Icon name="ChefHat" size={16} />
               </div>
@@ -108,7 +114,9 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
           </div>
           <div className="flex items-center gap-1">
             <Icon name="Clock" size={16} />
-            <span>{item?.prepTime} min</span>
+            <span>
+              {t("customer.menu.item.prepTime", { time: item?.prepTime })}
+            </span>
           </div>
         </div>
 
@@ -121,7 +129,7 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
             onClick={handleCardClick}
             className="flex-1"
           >
-            View Details
+            {t("customer.menu.item.viewDetails")}
           </Button>
           <Button
             variant="default"
@@ -129,7 +137,7 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
             iconName="Plus"
             onClick={handleQuickAdd}
             disabled={item?.availability === "sold-out"}
-            aria-label={`Add ${item?.name} to cart`}
+            aria-label={t("customer.menu.item.addToCart") + ` ${item?.name}`}
           />
         </div>
       </div>

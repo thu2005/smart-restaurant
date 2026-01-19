@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 import { Checkbox } from "../../../../components/ui/Checkbox";
@@ -8,6 +9,7 @@ const CustomizationPanel = ({
   selectedModifiers,
   onModifierChange,
 }) => {
+  const { t } = useTranslation();
   // Track quantities for ADDON type modifiers
   // Format: { groupId: { optionId: quantity } }
   const [addonQuantities, setAddonQuantities] = useState({});
@@ -39,7 +41,7 @@ const CustomizationPanel = ({
         (item) => (typeof item === 'object' ? item.id : item) !== optionId
       );
       onModifierChange(groupId, newSelected);
-      
+
       // Clear quantity
       setAddonQuantities((prev) => ({
         ...prev,
@@ -49,7 +51,7 @@ const CustomizationPanel = ({
       // Add addon with quantity 1
       const newSelected = [...currentSelected, { id: optionId, quantity: 1 }];
       onModifierChange(groupId, newSelected);
-      
+
       setAddonQuantities((prev) => ({
         ...prev,
         [groupId]: { ...prev[groupId], [optionId]: 1 },
@@ -110,10 +112,10 @@ const CustomizationPanel = ({
           <div key={group.id} className="space-y-3">
             <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground">
               {group.name}
-              {group.isRequired && <span className="text-error text-sm ml-2">*Required</span>}
-              {isAddonType && <span className="text-muted-foreground text-sm ml-2">(Add-ons)</span>}
+              {group.isRequired && <span className="text-error text-sm ml-2">*{t("customer.itemDetail.customization.required")}</span>}
+              {isAddonType && <span className="text-muted-foreground text-sm ml-2">{t("customer.itemDetail.customization.addons")}</span>}
             </h3>
-            
+
             <div className="grid grid-cols-1 gap-2 md:gap-3">
               {/* CHOICE - Single Selection */}
               {!isAddonType && group.selectionType === "single" && (
@@ -124,10 +126,9 @@ const CustomizationPanel = ({
                       onClick={() => handleSingleSelect(group.id, option.id)}
                       className={`
                         w-full p-3 md:p-4 rounded-lg md:rounded-xl border-2 transition-smooth touch-target text-left
-                        ${
-                          selectedModifiers[group.id] === option.id
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50 bg-card"
+                        ${selectedModifiers[group.id] === option.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50 bg-card"
                         }
                       `}
                     >
@@ -151,11 +152,10 @@ const CustomizationPanel = ({
                           <div
                             className={`
                             w-5 h-5 rounded-full border-2 flex items-center justify-center transition-smooth
-                            ${
-                              selectedModifiers[group.id] === option.id
+                            ${selectedModifiers[group.id] === option.id
                                 ? "border-primary bg-primary"
                                 : "border-muted-foreground"
-                            }
+                              }
                           `}
                           >
                             {selectedModifiers[group.id] === option.id && (
@@ -173,7 +173,7 @@ const CustomizationPanel = ({
               {(!isAddonType && group.selectionType === "multiple") || isAddonType ? (
                 <div className="space-y-2">
                   {group.options?.map((option) => {
-                    const selected = isAddonType 
+                    const selected = isAddonType
                       ? isAddonSelected(group.id, option.id)
                       : (selectedModifiers[group.id] || []).includes(option.id);
                     const quantity = isAddonType ? getAddonQuantity(group.id, option.id) : 1;
@@ -186,7 +186,7 @@ const CustomizationPanel = ({
                         <div className="flex items-center justify-between gap-3">
                           <Checkbox
                             checked={selected}
-                            onChange={() => isAddonType 
+                            onChange={() => isAddonType
                               ? handleAddonToggle(group.id, option.id)
                               : handleMultiSelect(group.id, option.id)
                             }
@@ -203,7 +203,7 @@ const CustomizationPanel = ({
                               </div>
                             }
                           />
-                          
+
                           <div className="flex items-center gap-3 flex-shrink-0">
                             {/* Quantity Selector for ADDON */}
                             {isAddonType && selected && (
@@ -214,7 +214,7 @@ const CustomizationPanel = ({
                                   iconName="Minus"
                                   onClick={() => handleAddonQuantityChange(group.id, option.id, quantity - 1)}
                                   className="h-7 w-7"
-                                  aria-label="Decrease quantity"
+                                  aria-label={t("common.actions.decrease", "Decrease quantity")}
                                 />
                                 <span className="text-sm font-semibold text-foreground min-w-[2rem] text-center">
                                   {quantity}
@@ -225,11 +225,11 @@ const CustomizationPanel = ({
                                   iconName="Plus"
                                   onClick={() => handleAddonQuantityChange(group.id, option.id, quantity + 1)}
                                   className="h-7 w-7"
-                                  aria-label="Increase quantity"
+                                  aria-label={t("common.actions.increase", "Increase quantity")}
                                 />
                               </div>
                             )}
-                            
+
                             {/* Price */}
                             {option.priceAdjustment > 0 && (
                               <span className="text-sm md:text-base font-medium text-primary data-text">

@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const RecentActivityFeed = ({ activities }) => {
+  const { t } = useTranslation();
   const getActivityStyles = (type) => {
     // Returns { bg, border, icon, text } classes
     switch (type) {
@@ -94,10 +96,10 @@ const RecentActivityFeed = ({ activities }) => {
     const diffMs = now - activityTime;
     const diffMins = Math.floor(diffMs / 60000);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffMins < 1) return t('admin.dashboard.time.justNow');
+    if (diffMins < 60) return t('admin.dashboard.time.minutesAgo', { count: diffMins });
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffHours < 24) return t('admin.dashboard.time.hoursAgo', { count: diffHours });
     return activityTime.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
@@ -109,12 +111,12 @@ const RecentActivityFeed = ({ activities }) => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground">
-            Recent Activity
+            {t('admin.dashboard.sections.recentActivity')}
           </h3>
-          <p className="text-sm text-muted-foreground">Latest updates from your restaurant</p>
+          <p className="text-sm text-muted-foreground">{t('admin.dashboard.sections.recentActivityDesc')}</p>
         </div>
         <button className="text-sm text-primary hover:text-primary/80 transition-colors font-medium hover:underline underline-offset-4">
-          View All
+          {t('common.actions.viewAll')}
         </button>
       </div>
 
@@ -124,7 +126,7 @@ const RecentActivityFeed = ({ activities }) => {
             <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-3">
               <Icon name="Activity" size={24} className="opacity-50" />
             </div>
-            <p className="text-sm">No recent activity</p>
+            <p className="text-sm">{t('admin.dashboard.activity.noActivity')}</p>
           </div>
         ) : (
           <div className="relative text-sm"> {/* Spacing handled by padding inside items */}

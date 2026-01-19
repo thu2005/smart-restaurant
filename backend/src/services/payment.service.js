@@ -27,7 +27,8 @@ class PaymentService {
                 payment: true,
                 orderItems: {
                     include: { menuItem: true }
-                }
+                },
+                bill: true // Include bill to get discount information
             }
         });
 
@@ -42,13 +43,22 @@ class PaymentService {
             // Use unitPrice which includes modifiers now
             expectedTotal += (Number(item.unitPrice) * item.quantity);
         }
+        
+        // Apply discount if exists in bill
+        const discount = order.bill?.discount ? parseFloat(order.bill.discount) : 0;
+        expectedTotal = expectedTotal - discount;
+        
         // Add tip and tax if provided
         const totalPaid = parseFloat(amount);
         const expectedWithExtras = expectedTotal + (parseFloat(tax) || 0) + (parseFloat(tip) || 0);
 
-        // Validate payment amount matches order total (within small margin for floating point)
-        if (totalPaid < expectedWithExtras) {
-            throw new Error(`Payment amount (${totalPaid}) does not match order total (${expectedWithExtras})`);
+        // Validate payment amount matches order total 
+        const tolerance = 100; // Allow 100 VND difference for rounding errors
+        if (Math.abs(totalPaid - expectedWithExtras) > tolerance) {
+            console.warn(`Payment amount mismatch: paid=${totalPaid}, expected=${expectedWithExtras}, difference=${Math.abs(totalPaid - expectedWithExtras)}, discount=${discount}`);
+            if (totalPaid < expectedWithExtras - tolerance) {
+                throw new Error(`Payment amount (${totalPaid}) does not match order total (${expectedWithExtras}). Please verify the bill.`);
+            }
         }
 
         // Check if a pending payment already exists, update it instead of creating new
@@ -153,7 +163,10 @@ class PaymentService {
             if (status === 'COMPLETED') {
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' }
+                    data: { 
+                        status: 'COMPLETED',
+                        completedAt: new Date()
+                    }
                 });
             }
         }
@@ -192,7 +205,10 @@ class PaymentService {
                     // 2. Update Order Status
                     await prisma.order.update({
                         where: { id: orderId },
-                        data: { status: 'COMPLETED' }
+                        data: { 
+                            status: 'COMPLETED',
+                            completedAt: new Date()
+                        }
                     });
 
                     console.log('Database Updated Successfully');
@@ -337,7 +353,10 @@ class PaymentService {
                 // Update order status
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' }
+                    data: { 
+                        status: 'COMPLETED',
+                        completedAt: new Date()
+                    }
                 });
 
                 return {
@@ -495,7 +514,10 @@ class PaymentService {
                 // Update order status
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' }
+                    data: { 
+                        status: 'COMPLETED',
+                        completedAt: new Date()
+                    }
                 });
 
                 console.log('Momo payment completed:', paymentId);

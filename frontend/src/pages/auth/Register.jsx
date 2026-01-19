@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import authService from "../../services/authService";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
 const Register = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,7 +40,7 @@ const Register = () => {
       if (response.token) {
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.user));
-        toast.success("Registration successful! Welcome!");
+        toast.success(t("auth.register.success"));
 
         // Check if user came from QR scan
         const restaurantId = localStorage.getItem('restaurantId');
@@ -49,20 +51,20 @@ const Register = () => {
         navigate((restaurantId && tableId) ? `/customer/menu-browse/${restaurantId}/${tableId}` : "/");
       } else {
         // Email verification required
-        toast.success("Registration successful! Please check your email to verify.");
+        toast.success(t("auth.register.successVerify"));
         navigate("/login");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(error.message || "Failed to register. Please try again.");
+      toast.error(error.message || t("auth.register.failed"));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-card p-8 rounded-lg shadow-md border border-border">
         <div className="text-center">
           <div className="mx-auto h-40 w-40 bg-primary-50 rounded-full flex items-center justify-center mb-4 shadow-inner">
             <img
@@ -71,11 +73,11 @@ const Register = () => {
               className="h-30 w-30 object-contain"
             />
           </div>
-          <h2 className="mt-[-20px] text-3xl font-extrabold text-gray-900">
-            Create an account
+          <h2 className="mt-[-20px] text-3xl font-extrabold text-foreground">
+            {t("auth.register.title")}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join Smart Restaurant today
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t("auth.register.subtitle")}
           </p>
         </div>
 
@@ -83,36 +85,36 @@ const Register = () => {
           <div className="space-y-4">
             <Input
               id="fullName"
-              label="Full Name"
+              label={t("auth.register.fullName")}
               type="text"
               autoComplete="name"
               required
               error={errors.fullName?.message}
               {...register("fullName", {
-                required: "Full name is required",
+                required: t("auth.register.errors.nameRequired"),
                 minLength: {
                   value: 2,
-                  message: "Name must be at least 2 characters",
+                  message: t("auth.register.errors.nameMin"),
                 },
                 pattern: {
                   value: /^[A-Za-z\s]+$/,
-                  message: "Name must only contain letters and spaces",
+                  message: t("auth.register.errors.namePattern"),
                 },
               })}
             />
 
             <Input
               id="email"
-              label="Email Address"
+              label={t("auth.register.email")}
               type="email"
               autoComplete="email"
               required
               error={errors.email?.message}
               {...register("email", {
-                required: "Email is required",
+                required: t("auth.register.errors.emailRequired"),
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
+                  message: t("auth.register.errors.emailInvalid"),
                 },
               })}
             />
@@ -120,58 +122,58 @@ const Register = () => {
             <div>
               <Input
                 id="password"
-                label="Password"
+                label={t("auth.register.password")}
                 type="password"
                 autoComplete="new-password"
                 required
                 error={errors.password?.message}
                 {...register("password", {
-                  required: "Password is required",
+                  required: t("auth.register.errors.passwordRequired"),
                   minLength: {
                     value: 8,
-                    message: "Password must be at least 8 characters",
+                    message: t("auth.register.errors.passwordMin"),
                   },
                   pattern: {
                     value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/,
-                    message: "Password must include uppercase, lowercase, number, and special character",
+                    message: t("auth.register.errors.passwordPattern"),
                   },
                 })}
               />
               {!errors.password && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Must be 8+ characters with uppercase, lowercase, number, and special character
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t("auth.register.passwordHint")}
                 </p>
               )}
             </div>
 
             <Input
               id="confirmPassword"
-              label="Confirm Password"
+              label={t("auth.register.confirmPassword")}
               type="password"
               autoComplete="new-password"
               required
               error={errors.confirmPassword?.message}
               {...register("confirmPassword", {
-                required: "Please confirm your password",
+                required: t("auth.register.errors.confirmRequired"),
                 validate: (value) =>
-                  value === password || "Passwords do not match",
+                  value === password || t("auth.register.errors.passwordMismatch"),
               })}
             />
           </div>
 
           <div>
             <Button type="submit" className="w-full" isLoading={isLoading}>
-              Sign up
+              {t("auth.register.submit")}
             </Button>
           </div>
 
           <div className="text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
+            <span className="text-muted-foreground">{t("auth.register.hasAccount")} </span>
             <Link
               to="/login"
               className="font-medium text-primary hover:text-primary-600"
             >
-              Sign in
+              {t("auth.register.signInLink")}
             </Link>
           </div>
         </form>

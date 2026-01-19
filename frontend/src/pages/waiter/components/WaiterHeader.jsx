@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import authService from "../../../services/authService";
 
 const WaiterHeader = () => {
+    const { t, i18n } = useTranslation();
+    const { changeLanguage } = useLanguage();
     const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
     const [user, setUser] = useState(null);
@@ -67,18 +71,40 @@ const WaiterHeader = () => {
                 {/* Center: Title */}
                 <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
                     <h1 className="text-lg font-heading font-bold text-foreground">
-                        Waiter Dashboard
+                        {t("waiter.header.title")}
                     </h1>
                 </div>
 
-                {/* Right: User Info & Logout */}
+                {/* Right: Language Toggle + User Info & Logout */}
                 <div className="flex items-center gap-2" ref={dropdownRef}>
+                    {/* Language Toggle - Desktop */}
+                    <div className="hidden md:flex items-center gap-1 bg-muted rounded-lg p-1 mr-2">
+                        <button
+                            onClick={() => changeLanguage('en')}
+                            className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${i18n.language === 'en'
+                                    ? 'bg-card text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            EN
+                        </button>
+                        <button
+                            onClick={() => changeLanguage('vi')}
+                            className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${i18n.language === 'vi'
+                                    ? 'bg-card text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            VI
+                        </button>
+                    </div>
+
                     <div className="hidden md:flex flex-col items-end mr-2">
                         <span className="text-sm font-medium text-gray-700 leading-none">
-                            {user?.fullName || "Waiter"}
+                            {user?.fullName || t("waiter.header.role")}
                         </span>
                         <span className="text-xs text-gray-500 leading-none mt-1">
-                            Waiter
+                            {t("waiter.header.role")}
                         </span>
                     </div>
                     <button
@@ -91,7 +117,7 @@ const WaiterHeader = () => {
                     <button
                         onClick={handleLogout}
                         className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                        title="Logout"
+                        title={t("waiter.header.logout")}
                     >
                         <svg
                             className="w-5 h-5"
@@ -113,12 +139,44 @@ const WaiterHeader = () => {
                         <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-lg shadow-warm-lg overflow-hidden z-50">
                             <div className="px-4 py-3 border-b border-border">
                                 <p className="text-sm font-medium text-foreground">
-                                    {user?.fullName || "Waiter"}
+                                    {user?.fullName || t("waiter.header.role")}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
                                     {user?.email}
                                 </p>
                             </div>
+
+                            {/* Language Toggle - Mobile (in dropdown) */}
+                            <div className="md:hidden px-4 py-3 border-b border-border">
+                                <p className="text-xs text-muted-foreground mb-2">{t("nav.language.title", "Language")}</p>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => {
+                                            changeLanguage('en');
+                                            setShowDropdown(false);
+                                        }}
+                                        className={`flex-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${i18n.language === 'en'
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'bg-muted text-foreground hover:bg-muted/70'
+                                            }`}
+                                    >
+                                        🇬🇧 EN
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            changeLanguage('vi');
+                                            setShowDropdown(false);
+                                        }}
+                                        className={`flex-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${i18n.language === 'vi'
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'bg-muted text-foreground hover:bg-muted/70'
+                                            }`}
+                                    >
+                                        🇻🇳 VI
+                                    </button>
+                                </div>
+                            </div>
+
                             <button
                                 onClick={handleLogout}
                                 className="w-full px-4 py-3 text-left text-sm text-foreground hover:bg-muted transition-smooth flex items-center gap-2"
@@ -136,7 +194,7 @@ const WaiterHeader = () => {
                                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                                     />
                                 </svg>
-                                Logout
+                                {t("waiter.header.logout")}
                             </button>
                         </div>
                     )}

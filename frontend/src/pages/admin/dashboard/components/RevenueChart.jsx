@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import {
   BarChart,
   Bar,
@@ -13,11 +15,14 @@ import {
 import Select from "../../../../components/ui/Select";
 
 const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
+  const { t } = useTranslation();
+  const { formatCurrency, currencySymbol } = useCurrency();
+
   const dateRangeOptions = [
-    { value: "today", label: "Today" },
-    { value: "week", label: "This Week" },
-    { value: "month", label: "This Month" },
-    { value: "year", label: "This Year" },
+    { value: "today", label: t('admin.dashboard.dateRanges.today') },
+    { value: "week", label: t('admin.dashboard.dateRanges.week') },
+    { value: "month", label: t('admin.dashboard.dateRanges.month') },
+    { value: "year", label: t('admin.dashboard.dateRanges.year') },
   ];
 
   const formatXAxis = (value) => {
@@ -201,15 +206,15 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-primary" />
-              <span className="text-xs text-muted-foreground">Revenue:</span>
+              <span className="text-xs text-muted-foreground">{t('admin.dashboard.revenue.series.revenue')}:</span>
               <span className="text-sm font-semibold text-foreground data-text">
-                {(payload?.[0]?.value || 0).toLocaleString('vi-VN') + ' ₫'}
+                {formatCurrency(payload?.[0]?.value || 0)}
               </span>
             </div>
             {payload?.[1] && (
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-accent" />
-                <span className="text-xs text-muted-foreground">Orders:</span>
+                <span className="text-xs text-muted-foreground">{t('admin.dashboard.revenue.series.orders')}:</span>
                 <span className="text-sm font-semibold text-foreground data-text">
                   {payload?.[1]?.value}
                 </span>
@@ -227,10 +232,10 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4 mb-4 md:mb-6">
         <div>
           <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-1">
-            Revenue Analytics
+            {t('admin.dashboard.revenue.title')}
           </h3>
           <p className="text-xs md:text-sm text-muted-foreground">
-            Sales performance and order trends
+            {t('admin.dashboard.revenue.subtitle')}
           </p>
         </div>
         <Select
@@ -246,7 +251,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
       >
         {(!chartData || chartData.length === 0) ? (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-            No data available for the selected period
+            {t('admin.dashboard.revenue.noData')}
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
@@ -271,7 +276,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
                 fontSize={12}
                 tickLine={{ stroke: '#1F2937', strokeWidth: 1 }}
                 axisLine={{ stroke: '#1F2937', strokeWidth: 1 }}
-                tickFormatter={(value) => `${value.toLocaleString('vi-VN')} ₫`}
+                tickFormatter={(value) => `${currencySymbol}${value}`}
               />
               <YAxis
                 yAxisId="right"
@@ -288,7 +293,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
                 dataKey="revenueDisplay"
                 fill="#2D5A27"
                 radius={[4, 4, 0, 0]}
-                name="Revenue (₫)"
+                name={`${t('admin.dashboard.revenue.series.revenue')} (${currencySymbol})`}
                 barSize={40}
               />
               <Bar
@@ -296,7 +301,7 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
                 dataKey="orders"
                 fill="#1E40AF"
                 radius={[4, 4, 0, 0]}
-                name="Orders"
+                name={t('admin.dashboard.revenue.series.orders')}
                 barSize={40}
               />
             </BarChart>
@@ -306,15 +311,15 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-4 md:mt-6 pt-4 border-t border-border">
         <div className="text-center">
           <p className="text-xs md:text-sm text-muted-foreground mb-1">
-            Total Revenue
+            {t('admin.dashboard.revenue.totalRevenue')}
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            {(data?.reduce((sum, item) => sum + item?.revenue, 0) || 0).toLocaleString('vi-VN') + ' ₫'}
+            {formatCurrency(Math.round(data?.reduce((sum, item) => sum + item?.revenue, 0) || 0))}
           </p>
         </div>
         <div className="text-center">
           <p className="text-xs md:text-sm text-muted-foreground mb-1">
-            Total Orders
+            {t('admin.dashboard.revenue.totalOrders')}
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
             {data?.reduce((sum, item) => sum + item?.orders, 0)}
@@ -322,24 +327,23 @@ const RevenueChart = ({ data, dateRange, onDateRangeChange }) => {
         </div>
         <div className="text-center">
           <p className="text-xs md:text-sm text-muted-foreground mb-1">
-            Avg Order Value
+            {t('admin.dashboard.metrics.avgOrderValue')}
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground data-text">
-            {
-              (() => {
-                const totalRevenue = data?.reduce((sum, item) => sum + item?.revenue, 0) || 0;
-                const totalOrders = data?.reduce((sum, item) => sum + item?.orders, 0) || 1;
-                return (totalRevenue / totalOrders).toLocaleString('vi-VN') + ' ₫';
-              })()
-            }
+            {formatCurrency(
+              Math.round(
+                (data?.reduce((sum, item) => sum + item?.revenue, 0) || 0) /
+                (data?.reduce((sum, item) => sum + item?.orders, 0) || 1)
+              )
+            )}
           </p>
         </div>
         <div className="text-center">
           <p className="text-xs md:text-sm text-muted-foreground mb-1">
-            {dateRange === 'today' && 'Peak Hour'}
-            {dateRange === 'week' && 'Peak Date'}
-            {dateRange === 'month' && 'Peak Date'}
-            {dateRange === 'year' && 'Peak Month'}
+            {dateRange === 'today' && t('admin.dashboard.chart.peakHour')}
+            {dateRange === 'week' && t('admin.dashboard.chart.peakDate')}
+            {dateRange === 'month' && t('admin.dashboard.chart.peakDate')}
+            {dateRange === 'year' && t('admin.dashboard.chart.peakMonth')}
           </p>
           <p className="text-lg md:text-xl font-heading font-bold text-foreground">
             {(() => {

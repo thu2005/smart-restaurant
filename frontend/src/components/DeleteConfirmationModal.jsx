@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "./AppIcon";
 
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, loading }) => {
+    const { t } = useTranslation();
     if (!isOpen) return null;
 
     return (
@@ -35,12 +37,12 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, l
                         {loading ? (
                             <>
                                 <Icon name="Loader2" size={20} className="animate-spin" />
-                                Deleting...
+                                {t('common.actions.deleting')}
                             </>
                         ) : (
                             <>
                                 <Icon name="Trash2" size={20} />
-                                Delete
+                                {t('common.actions.delete')}
                             </>
                         )}
                     </button>
@@ -50,7 +52,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, l
                         disabled={loading}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
                     >
-                        Cancel
+                        {t('common.actions.cancel')}
                     </button>
                 </div>
             </div>

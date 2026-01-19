@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import menuService from "../../../services/menuService";
 import { useCart } from "../../../contexts/CartContext";
+import { useMenuBrowseState } from "../../../hooks/useMenuBrowseState";
 import ImageGallery from "./components/ImageGallery";
 import ItemInfo from "./components/ItemInfo";
 import CustomizationPanel from "./components/CustomizationPanel";
@@ -15,41 +17,6 @@ import NutritionalInfo from "./components/NutritionalInfo";
 import StickyAddToCart from "./components/StickyAddToCart";
 import Button from "../../../components/ui/Button";
 import Icon from "../../../components/AppIcon";
-
-// Mock Data for missing backend features
-const mockNutritionalData = [
-  { label: "Calories", value: "520" },
-  { label: "Protein", value: "42g" },
-  { label: "Carbs", value: "28g" },
-  { label: "Fat", value: "26g" },
-  { label: "Fiber", value: "4g" },
-  { label: "Sodium", value: "680mg" },
-  { label: "Sugar", value: "3g" },
-  { label: "Cholesterol", value: "95mg" },
-];
-
-const mockIngredients = [
-  "Atlantic Salmon",
-  "Butter",
-  "Fresh Herbs (Parsley, Dill, Thyme)",
-  "Garlic",
-  "Lemon",
-  "Olive Oil",
-  "Potatoes",
-  "Heavy Cream",
-  "Seasonal Vegetables",
-  "Salt",
-  "Black Pepper",
-  "Other",
-];
-
-const mockRatingDistribution = [
-  { stars: 5, count: 0 },
-  { stars: 4, count: 0 },
-  { stars: 3, count: 0 },
-  { stars: 2, count: 0 },
-  { stars: 1, count: 0 },
-];
 
 const mockRelatedItems = [
   {
@@ -91,22 +58,33 @@ const mockRelatedItems = [
 ];
 
 const MenuItemDetail = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { itemId } = useParams();
   const { addToCart, updateItem, getCartSummary } = useCart();
-  
+  const { hasSavedState } = useMenuBrowseState();
+
   const editingItem = location.state?.editingItem;
 
   const [menuItem, setMenuItem] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [nutritionalData, setNutritionalData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [nutritionalLoading, setNutritionalLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [selectedModifiers, setSelectedModifiers] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [ratingDistribution, setRatingDistribution] = useState([
+    { stars: 5, count: 0 },
+    { stars: 4, count: 0 },
+    { stars: 3, count: 0 },
+    { stars: 2, count: 0 },
+    { stars: 1, count: 0 },
+  ]);
 
   useEffect(() => {
     const fetchMenuItem = async () => {
@@ -128,25 +106,28 @@ const MenuItemDetail = () => {
           // EDIT MODE: Populate from existing cart item
           setQuantity(editingItem.quantity);
           setSpecialInstructions(editingItem.specialInstructions || "");
-          
+
           if (item?.modifier_groups) {
-             item.modifier_groups.forEach(group => {
-                const groupModifiers = editingItem.modifiers?.filter(m => m.groupName === group.name) || [];
-                
-                if (groupModifiers.length > 0) {
-                   if (group.selectionType === 'single') {
-                      initialModifiers[group.id] = groupModifiers[0].id;
-                   } else {
-                      // Multiple or Addon
-                      initialModifiers[group.id] = groupModifiers.map(m => ({
-                         id: m.id,
-                         quantity: m.quantity || 1
-                      }));
-                   }
-                } else if (group.selectionType === 'multiple') {
-                   initialModifiers[group.id] = [];
+            item.modifier_groups.forEach((group) => {
+              const groupModifiers =
+                editingItem.modifiers?.filter(
+                  (m) => m.groupName === group.name,
+                ) || [];
+
+              if (groupModifiers.length > 0) {
+                if (group.selectionType === "single") {
+                  initialModifiers[group.id] = groupModifiers[0].id;
+                } else {
+                  // Multiple or Addon
+                  initialModifiers[group.id] = groupModifiers.map((m) => ({
+                    id: m.id,
+                    quantity: m.quantity || 1,
+                  }));
                 }
-             });
+              } else if (group.selectionType === "multiple") {
+                initialModifiers[group.id] = [];
+              }
+            });
           }
         } else {
           // NEW ITEM MODE: Default init
@@ -164,9 +145,8 @@ const MenuItemDetail = () => {
             });
           }
         }
-        
-        setSelectedModifiers(initialModifiers);
 
+        setSelectedModifiers(initialModifiers);
       } catch (err) {
         console.error("Failed to fetch menu item:", err);
         setError("Failed to load menu item details");
@@ -178,22 +158,89 @@ const MenuItemDetail = () => {
     fetchMenuItem();
   }, [itemId]);
 
+  // Fetch nutritional data
   useEffect(() => {
-    const fetchReviews = async () => {
-      if (!itemId) return;
+    const fetchNutritionalData = async () => {
+      if (!itemId || !menuItem) {
+        return;
+      }
 
       try {
-        setReviewsLoading(true);
-        const reviewsData = await menuService.getReviews(itemId);
-        setReviews(reviewsData);
+        setNutritionalLoading(true);
+        const restaurantId =
+          menuItem.restaurantId || localStorage.getItem("restaurantId");
+
+        if (!restaurantId) {
+          console.warn("No restaurantId found, using fallback data");
+          // Use data from menuItem as fallback
+          setNutritionalData({
+            nutritionalInfo: menuItem.nutritionalInfo || {},
+            ingredients: menuItem.ingredients || [],
+            allergens: menuItem.allergens || [],
+          });
+          setNutritionalLoading(false);
+          return;
+        }
+
+        const nutritionalResponse = await menuService.getNutritionalInfo(
+          restaurantId,
+          itemId,
+        );
+        setNutritionalData(nutritionalResponse.data);
       } catch (err) {
-        console.error("Failed to fetch reviews:", err);
-        setReviews([]);
+        console.error("Failed to fetch nutritional data:", err);
+        // Use data from menuItem as fallback if available
+        if (menuItem) {
+          setNutritionalData({
+            nutritionalInfo: menuItem.nutritionalInfo || {},
+            ingredients: menuItem.ingredients || [],
+            allergens: menuItem.allergens || [],
+          });
+        }
       } finally {
-        setReviewsLoading(false);
+        setNutritionalLoading(false);
       }
     };
 
+    fetchNutritionalData();
+  }, [itemId, menuItem]);
+
+  const fetchReviews = async () => {
+    if (!itemId) return;
+
+    try {
+      setReviewsLoading(true);
+      const reviewsData = await menuService.getReviews(itemId);
+      setReviews(reviewsData);
+
+      // Calculate rating distribution from reviews
+      const distribution = [
+        { stars: 5, count: 0 },
+        { stars: 4, count: 0 },
+        { stars: 3, count: 0 },
+        { stars: 2, count: 0 },
+        { stars: 1, count: 0 },
+      ];
+
+      reviewsData.forEach((review) => {
+        const starIndex = distribution.findIndex(
+          (d) => d.stars === review.rating,
+        );
+        if (starIndex !== -1) {
+          distribution[starIndex].count++;
+        }
+      });
+
+      setRatingDistribution(distribution);
+    } catch (err) {
+      console.error("Failed to fetch reviews:", err);
+      setReviews([]);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchReviews();
   }, [itemId]);
 
@@ -221,9 +268,9 @@ const MenuItemDetail = () => {
         if (Array.isArray(selection)) {
           // Multiple selection or Addons
           selection.forEach((item) => {
-            const optId = typeof item === 'object' ? item.id : item;
-            const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
-            
+            const optId = typeof item === "object" ? item.id : item;
+            const qty = typeof item === "object" ? item.quantity || 1 : 1;
+
             const opt = group.options?.find((o) => o.id === optId);
             if (opt) total += (opt.priceAdjustment || 0) * qty;
           });
@@ -250,7 +297,7 @@ const MenuItemDetail = () => {
           ) {
             toast.error(`Please select a ${group.name}`, {
               description: "This option is required.",
-              duration: 3000
+              duration: 3000,
             });
             return;
           }
@@ -269,9 +316,9 @@ const MenuItemDetail = () => {
           if (Array.isArray(selection)) {
             // Multiple selection or Addons
             selection.forEach((item) => {
-              const optId = typeof item === 'object' ? item.id : item;
-              const qty = typeof item === 'object' ? (item.quantity || 1) : 1;
-              
+              const optId = typeof item === "object" ? item.id : item;
+              const qty = typeof item === "object" ? item.quantity || 1 : 1;
+
               const opt = group.options?.find((o) => o.id === optId);
               if (opt) {
                 itemPrice += (opt.priceAdjustment || 0) * qty;
@@ -304,24 +351,34 @@ const MenuItemDetail = () => {
       // Add to cart
       // Add to cart or Update cart
       if (editingItem) {
-         updateItem(editingItem.cartId, {
-            price: itemPrice,
-            quantity: quantity,
-            modifiers: modifiersList,
-            specialInstructions: specialInstructions,
-            prepTime: menuItem.prepTime || 15,
-         });
+        updateItem(editingItem.cartId, {
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
+        updateItem(editingItem.cartId, {
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       } else {
-         addToCart({
-           menuItemId: menuItem.id,
-           name: menuItem.name,
-           image: menuItem.image || menuItem.photos?.find(p => p.isPrimary)?.url || menuItem.photos?.[0]?.url,
-           price: itemPrice,
-           quantity: quantity,
-           modifiers: modifiersList,
-           specialInstructions: specialInstructions,
-           prepTime: menuItem.prepTime || 15,
-         });
+        addToCart({
+          menuItemId: menuItem.id,
+          name: menuItem.name,
+          image:
+            menuItem.image ||
+            menuItem.photos?.find((p) => p.isPrimary)?.url ||
+            menuItem.photos?.[0]?.url,
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       }
 
       // Navigate to cart
@@ -330,13 +387,24 @@ const MenuItemDetail = () => {
       console.error("Failed to add/update cart:", error);
       toast.error("Failed to process request", {
         description: "Please try again.",
-        duration: 3000
+        duration: 3000,
       });
     }
   };
 
   const handleBackToMenu = () => {
-    navigate("/customer/menu-browse");
+    // Check if we have table parameters from localStorage or URL
+    const tableNumber = localStorage.getItem("tableNumber");
+    const restaurantId = localStorage.getItem("restaurantId");
+
+    // Try to navigate to the appropriate route format based on available data
+    if (tableNumber && restaurantId) {
+      // Navigate to the parameterized route if we have the data
+      navigate(`/customer/menu-browse/${restaurantId}/${tableNumber}`);
+    } else {
+      // Fallback to simple route
+      navigate("/customer/menu-browse");
+    }
   };
 
   const isAvailable =
@@ -348,7 +416,7 @@ const MenuItemDetail = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading menu item...</p>
+          <p className="text-gray-600">{t("customer.itemDetail.loading")}</p>
         </div>
       </div>
     );
@@ -363,13 +431,13 @@ const MenuItemDetail = () => {
             <Icon name="AlertCircle" size={48} />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Item Not Found
+            {t("customer.itemDetail.notFound.title")}
           </h2>
           <p className="text-gray-600 mb-4">
-            {error || "The requested menu item could not be found."}
+            {error || t("customer.itemDetail.notFound.message")}
           </p>
           <Button onClick={() => navigate("/customer/menu-browse")}>
-            Back to Menu
+            {t("customer.itemDetail.backToMenu")}
           </Button>
         </div>
       </div>
@@ -386,7 +454,7 @@ const MenuItemDetail = () => {
           >
             <Icon name="ArrowLeft" size={20} />
             <span className="text-sm md:text-base font-medium">
-              Back to Menu
+              {t("customer.itemDetail.backToMenu")}
             </span>
           </button>
 
@@ -421,7 +489,9 @@ const MenuItemDetail = () => {
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        Total ({quantity} {quantity === 1 ? "item" : "items"})
+                        {t("customer.itemDetail.totalItems", {
+                          count: quantity,
+                        })}
                       </p>
                       <p className="text-3xl font-heading font-bold text-primary data-text">
                         {new Intl.NumberFormat("vi-VN", {
@@ -440,8 +510,10 @@ const MenuItemDetail = () => {
                     disabled={!isAvailable}
                     fullWidth
                   >
-                    {isAvailable 
-                      ? (editingItem ? "Update Cart" : "Add to Cart") 
+                    {isAvailable
+                      ? editingItem
+                        ? "Update Cart"
+                        : "Add to Cart"
                       : "Currently Unavailable"}
                   </Button>
                 </div>
@@ -452,15 +524,21 @@ const MenuItemDetail = () => {
           <div className="space-y-8 md:space-y-12">
             {/* Nutritional Info */}
             <section>
-              <NutritionalInfo data={mockNutritionalData} />
+              <NutritionalInfo
+                data={nutritionalData}
+                loading={nutritionalLoading}
+              />
             </section>
 
             {/* Review Section */}
             <section id="reviews">
               <ReviewSection
                 reviews={reviews}
-                avgRating={menuItem.averageRating}
-                totalReviews={menuItem.totalReviews}
+                itemId={menuItem.id}
+                restaurantId={menuItem.restaurantId}
+                onReviewAdded={fetchReviews}
+                overallRating={menuItem.averageRating || 0}
+                ratingDistribution={ratingDistribution}
                 loading={reviewsLoading}
               />
             </section>
@@ -480,7 +558,11 @@ const MenuItemDetail = () => {
         quantity={quantity}
         onAddToCart={handleAddToCart}
         isAvailable={isAvailable}
-        buttonText={editingItem ? "Update Cart" : "Add to Cart"}
+        buttonText={
+          editingItem
+            ? t("customer.itemDetail.updateCart")
+            : t("customer.menu.item.addToCart")
+        }
       />
     </div>
   );

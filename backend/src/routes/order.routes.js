@@ -1,7 +1,7 @@
-const express = require('express');
-const { check } = require('express-validator');
-const orderController = require('../controllers/order.controller');
-const { protect, authorize } = require('../middlewares/auth.middleware');
+const express = require("express");
+const { check } = require("express-validator");
+const orderController = require("../controllers/order.controller");
+const { protect, authorize } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
@@ -59,18 +59,20 @@ const router = express.Router();
  *         description: Order created
  */
 router.post(
-    '/',
-    [
-        check('restaurantId', 'Restaurant ID is required').not().isEmpty(),
-        check('tableId', 'Table ID is required').not().isEmpty(),
-        check('items', 'Items must be an array').isArray(),
-        check('items.*.menuItemId', 'Menu Item ID is required').not().isEmpty(),
-        check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 }),
-        check('customerName').optional().isString().isLength({ max: 100 }),
-        check('customerPhone').optional().isString().isLength({ max: 20 }),
-        check('specialInstructions').optional().isString().isLength({ max: 500 })
-    ],
-    orderController.createOrder
+  "/",
+  [
+    check("restaurantId", "Restaurant ID is required").not().isEmpty(),
+    check("tableId", "Table ID is required").not().isEmpty(),
+    check("items", "Items must be an array").isArray(),
+    check("items.*.menuItemId", "Menu Item ID is required").not().isEmpty(),
+    check("items.*.quantity", "Quantity must be greater than 0").isInt({
+      min: 1,
+    }),
+    check("customerName").optional().isString().isLength({ max: 100 }),
+    check("customerPhone").optional().isString().isLength({ max: 20 }),
+    check("specialInstructions").optional().isString().isLength({ max: 500 }),
+  ],
+  orderController.createOrder,
 );
 
 /**
@@ -92,10 +94,10 @@ router.post(
  *         description: List of orders
  */
 router.get(
-    '/',
-    protect,
-    authorize('ADMIN', 'WAITER', 'KITCHEN', 'SUPER_ADMIN'),
-    orderController.getOrders
+  "/",
+  protect,
+  authorize("ADMIN", "WAITER", "KITCHEN", "SUPER_ADMIN"),
+  orderController.getOrders,
 );
 
 /**
@@ -119,7 +121,37 @@ router.get(
  *       200:
  *         description: Active order found (or null if none)
  */
-router.get('/active', orderController.getActiveOrderByTable);
+router.get("/active", orderController.getActiveOrderByTable);
+
+/**
+ * @swagger
+ * /api/orders/bills:
+ *   get:
+ *     summary: Get bills for restaurant, filter by paid/unpaid
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PAID, UNPAID]
+ *     responses:
+ *       200:
+ *         description: List of bills
+ */
+router.get(
+  "/bills",
+  protect,
+  authorize("WAITER", "ADMIN", "SUPER_ADMIN"),
+  orderController.getBillsByStatus,
+);
 
 /**
  * @swagger
@@ -142,11 +174,7 @@ router.get('/active', orderController.getActiveOrderByTable);
  *       404:
  *         description: Order not found
  */
-router.get(
-    '/:id',
-    protect,
-    orderController.getOrderById
-);
+router.get("/:id", protect, orderController.getOrderById);
 
 /**
  * @swagger
@@ -171,10 +199,10 @@ router.get(
  *         description: Order status updated
  */
 router.patch(
-    '/:id/status',
-    protect,
-    authorize('ADMIN', 'WAITER', 'KITCHEN'),
-    orderController.updateOrderStatus
+  "/:id/status",
+  protect,
+  authorize("ADMIN", "WAITER", "KITCHEN"),
+  orderController.updateOrderStatus,
 );
 
 /**
@@ -212,10 +240,10 @@ router.patch(
  *                           type: number
  */
 router.post(
-    '/:id/bill',
-    protect,
-    authorize('ADMIN', 'WAITER'),
-    orderController.createBill
+  "/:id/bill",
+  protect,
+  authorize("ADMIN", "WAITER"),
+  orderController.createBill,
 );
 
 /**
@@ -238,11 +266,7 @@ router.post(
  *       404:
  *         description: Order not found
  */
-router.post(
-    '/:id/request-bill',
-    protect,
-    orderController.createBill
-);
+router.post("/:id/request-bill", protect, orderController.createBill);
 
 /**
  * @swagger
@@ -284,7 +308,7 @@ router.post(
  *                         total:
  *                           type: number
  */
-router.get('/:id/bill', orderController.getBill);
+router.get("/:id/bill", orderController.getBill);
 
 /**
  * @swagger
@@ -318,11 +342,11 @@ router.get('/:id/bill', orderController.getBill);
  *         description: Invalid discount amount
  */
 router.post(
-    '/:id/discount',
-    [check('amount', 'Amount must be positive').isFloat({ min: 0 })],
-    protect,
-    authorize('SUPER_ADMIN', 'ADMIN', 'WAITER'),
-    orderController.applyDiscount
+  "/:id/discount",
+  [check("amount", "Amount must be positive").isFloat({ min: 0 })],
+  protect,
+  authorize("SUPER_ADMIN", "ADMIN", "WAITER"),
+  orderController.applyDiscount,
 );
 
 /**
@@ -346,7 +370,7 @@ router.post(
  *               type: string
  *               format: binary
  */
-router.get('/:id/bill/pdf', orderController.printBill);
+router.get("/:id/bill/pdf", orderController.printBill);
 
 /**
  * @swagger
@@ -387,7 +411,7 @@ router.get('/:id/bill/pdf', orderController.printBill);
  *                     total:
  *                       type: number
  */
-router.get('/bill/:billId', orderController.getBillByBillId);
+router.get("/bill/:billId", orderController.getBillByBillId);
 
 /**
  * @swagger
@@ -423,10 +447,10 @@ router.get('/bill/:billId', orderController.getBillByBillId);
  *         description: Order item status updated
  */
 router.patch(
-    '/:orderId/items/:itemId/status',
-    protect,
-    authorize('ADMIN', 'WAITER', 'KITCHEN'),
-    orderController.updateOrderItemStatus
+  "/:orderId/items/:itemId/status",
+  protect,
+  authorize("ADMIN", "WAITER", "KITCHEN"),
+  orderController.updateOrderItemStatus,
 );
 
 /**
@@ -442,10 +466,10 @@ router.patch(
  *         description: List of tables assigned to waiter
  */
 router.get(
-    '/waiter/my-tables',
-    protect,
-    authorize('WAITER'),
-    orderController.getWaiterTables
+  "/waiter/my-tables",
+  protect,
+  authorize("WAITER"),
+  orderController.getWaiterTables,
 );
 
 /**
@@ -466,10 +490,10 @@ router.get(
  *         description: List of orders accepted by waiter
  */
 router.get(
-    '/waiter/my-orders',
-    protect,
-    authorize('WAITER'),
-    orderController.getWaiterOrders
+  "/waiter/my-orders",
+  protect,
+  authorize("WAITER"),
+  orderController.getWaiterOrders,
 );
 
 /**
@@ -513,13 +537,15 @@ router.get(
  *         description: Items added to order successfully
  */
 router.post(
-    '/:orderId/items',
-    [
-        check('items', 'Items must be an array').isArray(),
-        check('items.*.menuItemId', 'Menu Item ID is required').not().isEmpty(),
-        check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 })
-    ],
-    orderController.addItemsToOrder
+  "/:orderId/items",
+  [
+    check("items", "Items must be an array").isArray(),
+    check("items.*.menuItemId", "Menu Item ID is required").not().isEmpty(),
+    check("items.*.quantity", "Quantity must be greater than 0").isInt({
+      min: 1,
+    }),
+  ],
+  orderController.addItemsToOrder,
 );
 
 /**
@@ -546,10 +572,40 @@ router.post(
  *         description: List of bills
  */
 router.get(
-    '/bills',
-    protect,
-    authorize('WAITER', 'ADMIN', 'SUPER_ADMIN'),
-    orderController.getBillsByStatus
+  "/bills",
+  protect,
+  authorize("WAITER", "ADMIN", "SUPER_ADMIN"),
+  orderController.getBillsByStatus,
+);
+
+/**
+ * @swagger
+ * /api/orders/customer/history:
+ *   get:
+ *     summary: Get customer order history (completed orders only)
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: List of completed orders
+ */
+router.get(
+  "/customer/history",
+  protect,
+  authorize("CUSTOMER"),
+  orderController.getCustomerOrderHistory,
 );
 
 module.exports = router;

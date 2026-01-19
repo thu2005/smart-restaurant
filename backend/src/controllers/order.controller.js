@@ -273,7 +273,7 @@ exports.addItemsToOrder = async (req, res, next) => {
         }
 
         const { orderId } = req.params;
-        const { items } = req.body; // Array of { menuItemId, quantity, modifiers, specialInstructions }
+        const { items, customerId } = req.body; // Array of { menuItemId, quantity, modifiers, specialInstructions } + optional customerId
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({
@@ -282,7 +282,7 @@ exports.addItemsToOrder = async (req, res, next) => {
             });
         }
 
-        const updatedOrder = await orderService.addItemsToOrder(orderId, items);
+        const updatedOrder = await orderService.addItemsToOrder(orderId, items, customerId);
 
         // Emit socket event for new items
         const io = req.app.get('io');
@@ -319,6 +319,35 @@ exports.getBillsByStatus = async (req, res, next) => {
         }
         const bills = await orderService.getBillsByStatus(restaurantId, status);
         res.status(200).json({ success: true, data: bills });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Get customer order history (completed orders only)
+ * Requires authentication
+ */
+exports.getCustomerOrderHistory = async (req, res, next) => {
+    try {
+        const customerId = req.user.id; // From auth middleware
+        const { limit = 20, offset = 0 } = req.query;
+
+        const { orders, total } = await orderService.getCustomerOrderHistory(customerId, {
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
+
+        res.status(200).json({
+            success: true,
+            data: orders,
+            pagination: {
+                total,
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        });
     } catch (error) {
         next(error);
     }

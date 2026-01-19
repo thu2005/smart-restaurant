@@ -2,8 +2,10 @@ import { X, Printer, Grid, FileText, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { tableAPI } from "../services/tableService";
+import { useTranslation } from "react-i18next";
 
 const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
+  const { t } = useTranslation();
   const [layout, setLayout] = useState("single"); // 'single' | 'grid'
   const [pdfUrl, setPdfUrl] = useState(null);
   const [currentBlob, setCurrentBlob] = useState(null);
@@ -89,8 +91,8 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Printer size={24} />
             {tableId
-              ? "Print Preview (Single Table)"
-              : "Print Preview (All Tables)"}
+              ? t('admin.tables.printPreview.titleSingle')
+              : t('admin.tables.printPreview.titleAll')}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
             <X size={24} />
@@ -104,7 +106,7 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
             {!tableId && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">
-                  Layout Options
+                  {t('admin.tables.printPreview.layout.title')}
                 </label>
                 <div className="flex flex-col gap-3">
                   <button
@@ -116,8 +118,8 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
                   >
                     <FileText size={20} />
                     <div className="text-left">
-                      <div className="font-medium">Single Page</div>
-                      <div className="text-xs opacity-75">1 QR per page</div>
+                      <div className="font-medium">{t('admin.tables.printPreview.layout.single')}</div>
+                      <div className="text-xs opacity-75">{t('admin.tables.printPreview.layout.singleDesc')}</div>
                     </div>
                   </button>
 
@@ -130,8 +132,8 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
                   >
                     <Grid size={20} />
                     <div className="text-left">
-                      <div className="font-medium">Grid Layout</div>
-                      <div className="text-xs opacity-75">6 QRs per page</div>
+                      <div className="font-medium">{t('admin.tables.printPreview.layout.grid')}</div>
+                      <div className="text-xs opacity-75">{t('admin.tables.printPreview.layout.gridDesc')}</div>
                     </div>
                   </button>
                 </div>
@@ -140,13 +142,13 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
 
             {/* Actions Buttons */}
             <div className="mt-auto flex flex-col gap-3">
-              <p className="text-xs text-gray-500 text-center">Actions</p>
+              <p className="text-xs text-gray-500 text-center">{t('admin.tables.printPreview.actions.title')}</p>
               <button
                 onClick={handlePrint}
                 disabled={loading}
                 className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg"
               >
-                <Printer size={20} /> Print Now
+                <Printer size={20} /> {t('admin.tables.printPreview.actions.print')}
               </button>
 
               <button
@@ -154,7 +156,7 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
                 disabled={loading}
                 className="w-full py-3 bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-bold flex items-center justify-center gap-2"
               >
-                <Download size={20} /> Download PDF
+                <Download size={20} /> {t('admin.tables.printPreview.actions.download')}
               </button>
             </div>
           </div>
@@ -176,7 +178,7 @@ const PrintPreviewModal = ({ isOpen, onClose, tableId = null }) => {
               />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
-                Failed to load preview
+                {t('admin.tables.printPreview.failed')}
               </div>
             )}
           </div>

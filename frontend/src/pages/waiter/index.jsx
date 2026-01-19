@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import WaiterHeader from "./components/WaiterHeader";
 import OrderTabs from "./components/OrderTabs";
 import OrderCard from "./components/OrderCard";
@@ -14,6 +15,7 @@ import waiterService from "../../services/waiterService";
 import authService from "../../services/authService";
 
 const WaiterDashboard = () => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState("pending");
     const [orders, setOrders] = useState([]);
     const [tables, setTables] = useState([]);
@@ -276,7 +278,7 @@ const WaiterDashboard = () => {
             });
         } catch (err) {
             console.error("Error fetching orders:", err);
-            setError("Failed to load orders. Please try again.");
+            setError(t("waiter.error"));
         } finally {
             setLoading(false);
         }
@@ -300,7 +302,7 @@ const WaiterDashboard = () => {
             await updateCounts();
         } catch (err) {
             console.error("Error fetching tables:", err);
-            setError("Failed to load tables. Please try again.");
+            setError(t("waiter.error"));
         } finally {
             setLoading(false);
         }
@@ -318,8 +320,8 @@ const WaiterDashboard = () => {
             fetchOrders();
         } catch (err) {
             console.error("Error accepting order:", err);
-            toast.error("Failed to accept order", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.acceptFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -338,8 +340,8 @@ const WaiterDashboard = () => {
             fetchOrders();
         } catch (err) {
             console.error("Error rejecting order:", err);
-            toast.error("Failed to reject order", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.rejectFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -351,8 +353,8 @@ const WaiterDashboard = () => {
             fetchOrders();
         } catch (err) {
             console.error("Error marking order as served:", err);
-            toast.error("Failed to mark order as served", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.serveFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -370,8 +372,8 @@ const WaiterDashboard = () => {
             setBills(prev => ({ ...prev, [order.id]: billData }));
         } catch (err) {
             console.error("Error creating bill:", err);
-            toast.error("Failed to create bill", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.billFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -386,8 +388,8 @@ const WaiterDashboard = () => {
             setBillRequestNotification(null); // Clear toast when modal opens
         } catch (err) {
             console.error("Error fetching order details:", err);
-            toast.error("Failed to load order details", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.orderDetailsFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -401,8 +403,8 @@ const WaiterDashboard = () => {
             setBills(prev => ({ ...prev, [order.id]: billData }));
 
             // Show success notification
-            toast.success("Bill created successfully!", {
-                description: "The customer can now proceed with payment.",
+            toast.success(t("waiter.bill.created"), {
+                description: t("waiter.bill.createdDesc"),
                 duration: 4000
             });
 
@@ -415,8 +417,8 @@ const WaiterDashboard = () => {
             }
         } catch (err) {
             console.error("Error creating bill:", err);
-            toast.error("Failed to create bill", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.billFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
             throw err;
@@ -439,8 +441,8 @@ const WaiterDashboard = () => {
             setBills(prev => ({ ...prev, [selectedOrderForBill.id]: billData }));
         } catch (err) {
             console.error("Error applying discount:", err);
-            toast.error("Failed to apply discount", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.discountFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -451,8 +453,8 @@ const WaiterDashboard = () => {
             await waiterService.printBill(order.id);
         } catch (err) {
             console.error("Error printing bill:", err);
-            toast.error("Failed to print bill", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.printFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -485,14 +487,14 @@ const WaiterDashboard = () => {
             });
 
             fetchTables();
-            toast.success("Payment processed successfully!", {
-                description: "The order has been marked as paid.",
+            toast.success(t("waiter.bill.paymentSuccess"), {
+                description: t("waiter.bill.paymentDesc"),
                 duration: 4000
             });
         } catch (err) {
             console.error("Error processing payment:", err);
-            toast.error("Failed to process payment", {
-                description: "Please try again.",
+            toast.error(t("waiter.toasts.paymentFailed"), {
+                description: t("waiter.toasts.tryAgain"),
                 duration: 3000
             });
         }
@@ -511,7 +513,7 @@ const WaiterDashboard = () => {
                 {loading && (
                     <div className="text-center py-12">
                         <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                        <p className="text-muted-foreground mt-4">Loading...</p>
+                        <p className="text-muted-foreground mt-4">{t("waiter.loading")}</p>
                     </div>
                 )}
 
@@ -525,7 +527,7 @@ const WaiterDashboard = () => {
                     <>
                         {orders.length === 0 ? (
                             <div className="text-center py-12">
-                                <p className="text-muted-foreground">No orders found</p>
+                                <p className="text-muted-foreground">{t("waiter.noOrders")}</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
@@ -547,7 +549,7 @@ const WaiterDashboard = () => {
                     <>
                         {tables.length === 0 ? (
                             <div className="text-center py-12">
-                                <p className="text-muted-foreground">No assigned tables</p>
+                                <p className="text-muted-foreground">{t("waiter.noTables")}</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
@@ -566,12 +568,12 @@ const WaiterDashboard = () => {
                                                         {tableData.table.location || "No location"}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground">
-                                                        Capacity: {tableData.table.capacity}
+                                                        {t("waiter.table.capacity", { count: tableData.table.capacity })}
                                                     </p>
                                                 </div>
                                             </div>
                                             <span className="text-sm font-semibold text-foreground">
-                                                {tableData.orders.length} active order(s)
+                                                {t("waiter.table.activeOrders", { count: tableData.orders.length })}
                                             </span>
                                         </div>
                                         {tableData.orders.map((order) => (
@@ -590,7 +592,7 @@ const WaiterDashboard = () => {
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-2 h-2 bg-warning rounded-full animate-pulse" />
                                                                     <p className="text-sm font-semibold text-warning">
-                                                                        Customer Requested Bill
+                                                                        {t("waiter.bill.requested")}
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -601,7 +603,7 @@ const WaiterDashboard = () => {
                                                                 onClick={() => handleCreateBill(order)}
                                                                 className="w-full px-4 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-semibold text-sm transition-smooth"
                                                             >
-                                                                Create Bill
+                                                                {t("waiter.bill.create")}
                                                             </button>
                                                         ) : (
                                                             <>
@@ -611,20 +613,20 @@ const WaiterDashboard = () => {
                                                                         onClick={() => handleApplyDiscount(order)}
                                                                         className="px-3 py-2 border border-border text-foreground bg-card hover:bg-muted rounded-lg font-semibold text-sm transition-smooth"
                                                                     >
-                                                                        Apply Discount
+                                                                        {t("waiter.bill.applyDiscount")}
                                                                     </button>
                                                                     <button
                                                                         onClick={() => handlePrintBill(order)}
                                                                         className="px-3 py-2 border border-border text-foreground bg-card hover:bg-muted rounded-lg font-semibold text-sm transition-smooth"
                                                                     >
-                                                                        Print Bill
+                                                                        {t("waiter.bill.print")}
                                                                     </button>
                                                                 </div>
                                                                 <button
                                                                     onClick={() => handleProcessPayment(order)}
                                                                     className="w-full px-4 py-3 bg-success text-success-foreground hover:bg-success/90 rounded-lg font-semibold text-sm transition-smooth"
                                                                 >
-                                                                    Process Payment
+                                                                    {t("waiter.bill.processPayment")}
                                                                 </button>
                                                             </>
                                                         )}

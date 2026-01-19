@@ -1,7 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../../../contexts/CurrencyContext';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 
 const TopItemsModal = ({ items, onClose }) => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     if (!items || items.length === 0) return null;
 
     const getRankBadgeClass = (rank) => {
@@ -18,7 +22,7 @@ const TopItemsModal = ({ items, onClose }) => {
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <div>
                         <h2 className="text-2xl font-heading font-bold text-foreground">
-                            All Top Selling Items
+                            {t('reports.topItems.modal.title')}
                         </h2>
                         <p className="text-sm text-muted-foreground mt-1">
                             Complete list of menu items ranked by revenue
@@ -39,22 +43,22 @@ const TopItemsModal = ({ items, onClose }) => {
                         <thead className="sticky top-0 bg-card z-10">
                             <tr className="border-b border-border">
                                 <th className="text-left py-3 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Rank
+                                    {t('reports.topItems.rank')}
                                 </th>
                                 <th className="text-left py-3 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Item
+                                    {t('reports.topItems.item')}
                                 </th>
                                 <th className="text-left py-3 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Category
+                                    {t('reports.topItems.category')}
                                 </th>
                                 <th className="text-right py-3 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Orders
+                                    {t('reports.topItems.orders')}
                                 </th>
                                 <th className="text-right py-3 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Revenue
+                                    {t('reports.topItems.revenue')}
                                 </th>
                                 <th className="text-right py-3 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    Trend
+                                    {t('reports.topItems.trend')}
                                 </th>
                             </tr>
                         </thead>
@@ -102,7 +106,7 @@ const TopItemsModal = ({ items, onClose }) => {
                                             {item.orderCount || item.totalQuantity}
                                         </td>
                                         <td className="py-4 px-2 text-right font-semibold text-foreground data-text">
-                                            {(item.revenue || item.totalRevenue).toLocaleString('vi-VN') + ' ₫'}
+                                            {formatCurrency(item.revenue || item.totalRevenue)}
                                         </td>
                                         <td className="py-4 px-2 text-right">
                                             <span className={`inline-flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-success' : 'text-error'}`}>
@@ -125,7 +129,7 @@ const TopItemsModal = ({ items, onClose }) => {
                             onClick={onClose}
                             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium w-32"
                         >
-                            Close
+                            {t('reports.topItems.modal.close')}
                         </button>
                     </div>
                 </div>

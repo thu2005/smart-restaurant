@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import Button from "components/ui/Button";
@@ -7,6 +8,7 @@ import Select from "components/ui/Select";
 import Icon from "components/AppIcon";
 
 const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -45,8 +47,8 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
   if (!isOpen) return null;
 
   const statusOptions = [
-    { value: "active", label: "Active" },
-    { value: "inactive", label: "Inactive" },
+    { value: "active", label: t('common.status.active') },
+    { value: "inactive", label: t('common.status.inactive') },
   ];
 
   return createPortal(
@@ -65,39 +67,39 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name *
+              {t('admin.menu.categories.modal.nameLabel')}
             </label>
             <Input
               {...register("name", {
-                required: "Name is required",
+                required: t('admin.menu.categories.modal.validation.nameRequired'),
                 minLength: {
                   value: 2,
-                  message: "Name must be at least 2 characters",
+                  message: t('admin.menu.categories.modal.validation.nameMin'),
                 },
                 maxLength: {
                   value: 50,
-                  message: "Name must be less than 50 characters",
+                  message: t('admin.menu.categories.modal.validation.nameMax'),
                 },
               })}
-              placeholder="Category Name"
+              placeholder={t('admin.menu.categories.modal.namePlaceholder')}
               error={errors.name?.message}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
+              {t('admin.menu.categories.modal.descriptionLabel')}
             </label>
             <textarea
               {...register("description", {
                 maxLength: {
                   value: 500,
-                  message: "Description must not exceed 500 characters"
+                  message: t('admin.menu.categories.modal.validation.descMax')
                 }
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
               rows="3"
-              placeholder="Optional description"
+              placeholder={t('admin.menu.categories.modal.descriptionPlaceholder')}
             />
             {errors.description && (
               <p className="text-sm text-red-500 mt-1">
@@ -109,39 +111,39 @@ const CategoryModal = ({ isOpen, onClose, onSubmit, initialData, title }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Display Order
+                {t('admin.menu.categories.modal.orderLabel')}
               </label>
               <Input
                 type="number"
                 {...register("display_order", {
-                  min: { value: 0, message: "Order must be non-negative" },
+                  min: { value: 0, message: t('admin.menu.categories.modal.validation.orderMin') },
                   valueAsNumber: true,
                 })}
-                placeholder="0"
+                placeholder={t('admin.menu.categories.modal.orderPlaceholder')}
                 error={errors.display_order?.message}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
+                {t('admin.menu.categories.modal.statusLabel')}
               </label>
               <select
                 {...register("status")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">{t('common.status.active')}</option>
+                <option value="inactive">{t('common.status.inactive')}</option>
               </select>
             </div>
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
             <Button variant="outline" onClick={onClose} type="button">
-              Cancel
+              {t('common.actions.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Category"}
+              {isSubmitting ? t('admin.menu.categories.modal.savingBtn') : t('admin.menu.categories.modal.saveBtn')}
             </Button>
           </div>
         </form>

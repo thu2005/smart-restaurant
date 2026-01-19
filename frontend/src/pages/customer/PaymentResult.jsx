@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/AppIcon";
 
 const PaymentResult = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ const PaymentResult = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Processing your payment...</p>
+          <p className="text-muted-foreground">{t("customer.payment.result.pending.message", "Processing your payment...")}</p>
         </div>
       </div>
     );
@@ -46,7 +48,7 @@ const PaymentResult = () => {
   return (
     <>
       <Helmet>
-        <title>Payment Result - Smart Restaurant</title>
+        <title>{isSuccess ? t("customer.payment.result.success.title") : t("customer.payment.result.failed.title")} - Smart Restaurant</title>
       </Helmet>
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="max-w-md w-full">
@@ -57,16 +59,15 @@ const PaymentResult = () => {
                   <Icon name="CheckCircle" size={48} className="text-success" />
                 </div>
                 <h1 className="text-2xl font-heading font-bold text-foreground mb-2">
-                  Payment Successful!
+                  {t("customer.payment.result.success.title", "Payment Successful!")}
                 </h1>
                 <p className="text-muted-foreground mb-6">
-                  Your payment has been processed successfully. Thank you for
-                  your order!
+                  {t("customer.payment.result.success.message", "Your payment has been processed successfully. Thank you for your order!")}
                 </p>
                 {orderId && (
                   <div className="bg-muted/30 rounded-lg p-4 mb-6">
                     <p className="text-sm text-muted-foreground mb-1">
-                      Order ID
+                      {t("customer.payment.result.orderId", "Order ID")}
                     </p>
                     <p className="text-foreground font-mono font-semibold">
                       {orderId}
@@ -80,10 +81,10 @@ const PaymentResult = () => {
                   <Icon name="XCircle" size={48} className="text-error" />
                 </div>
                 <h1 className="text-2xl font-heading font-bold text-foreground mb-2">
-                  Payment Failed
+                  {t("customer.payment.result.failed.title", "Payment Failed")}
                 </h1>
                 <p className="text-muted-foreground mb-6">
-                  {message || "Something went wrong with your payment. Please try again."}
+                  {message || t("customer.payment.result.failed.message", "Something went wrong with your payment. Please try again.")}
                 </p>
               </>
             )}
@@ -94,7 +95,7 @@ const PaymentResult = () => {
               onClick={handleContinue}
               className="mb-3"
             >
-              {isSuccess ? "View Order Status" : "Try Again"}
+              {isSuccess ? t("customer.payment.result.actions.viewOrder", "View Order Status") : t("customer.payment.result.failed.tryAgain", "Try Again")}
             </Button>
 
             <Button
@@ -102,7 +103,7 @@ const PaymentResult = () => {
               fullWidth
               onClick={() => navigate("/customer/menu-browse")}
             >
-              Back to Menu
+              {t("customer.payment.result.actions.backToMenu", "Back to Menu")}
             </Button>
           </div>
         </div>

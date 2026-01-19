@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import Icon from "../../../../components/AppIcon";
 import { LOCATIONS, STATUS_OPTIONS, validateTableData } from "../../../../utils/tableConstants";
 
 const TableForm = ({ table, onSubmit, onClose }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         tableNumber: "",
         capacity: "",
@@ -48,7 +50,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
         });
 
         if (!finalLocation || finalLocation.trim() === "") {
-            validationErrors.location = "Location is required";
+            validationErrors.location = t('admin.tables.form.validation.locationRequired');
         }
 
         if (Object.keys(validationErrors).length > 0) {
@@ -65,7 +67,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
             });
             onClose();
         } catch (error) {
-            setErrors({ submit: error.message || "Failed to save table" });
+            setErrors({ submit: error.message || t('admin.tables.errors.saveFailed') });
         } finally {
             setIsSubmitting(false);
         }
@@ -76,7 +78,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
             <div className="bg-card rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                 <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-foreground">
-                        {table ? "Edit Table" : "Create New Table"}
+                        {table ? t('admin.tables.form.titleEdit') : t('admin.tables.form.titleNew')}
                     </h2>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
                         <Icon name="X" size={24} />
@@ -92,7 +94,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Table Number <span className="text-error">*</span>
+                            {t('admin.tables.form.labels.tableNumber')} <span className="text-error">*</span>
                         </label>
                         <input
                             type="text"
@@ -100,14 +102,14 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                             value={formData.tableNumber}
                             onChange={handleChange}
                             className={`w-full px-4 py-3 rounded-lg border ${errors.tableNumber ? "border-error" : "border-border"} bg-background text-foreground`}
-                            placeholder="e.g., A1, T-01, Table 1"
+                            placeholder={t('admin.tables.form.placeholders.tableNumber')}
                         />
                         {errors.tableNumber && <p className="text-error text-sm mt-1">{errors.tableNumber}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Capacity (1-20) <span className="text-error">*</span>
+                            {t('admin.tables.form.labels.capacity')} <span className="text-error">*</span>
                         </label>
                         <input
                             type="number"
@@ -117,14 +119,14 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                             min="1"
                             max="20"
                             className={`w-full px-4 py-3 rounded-lg border ${errors.capacity ? "border-error" : "border-border"} bg-background text-foreground`}
-                            placeholder="Number of persons"
+                            placeholder={t('admin.tables.form.placeholders.capacity')}
                         />
                         {errors.capacity && <p className="text-error text-sm mt-1">{errors.capacity}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Location/Zone <span className="text-error">*</span>
+                            {t('admin.tables.form.labels.location')} <span className="text-error">*</span>
                         </label>
                         <select
                             name="location"
@@ -132,11 +134,11 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                             onChange={handleChange}
                             className={`w-full px-4 py-3 rounded-lg border ${errors.location ? "border-error" : "border-border"} bg-background text-foreground`}
                         >
-                            <option value="">Select a location</option>
+                            <option value="">{t('admin.tables.form.placeholders.selectLocation')}</option>
                             {LOCATIONS.map((loc) => (
-                                <option key={loc} value={loc}>{loc}</option>
+                                <option key={loc} value={loc}>{t(`admin.tables.locations.${loc}`) || loc}</option>
                             ))}
-                            <option value="custom">Other (Custom)</option>
+                            <option value="custom">{t('admin.tables.form.labels.customLocation')}</option>
                         </select>
                         {formData.location === "custom" && (
                             <input
@@ -145,7 +147,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                                 value={formData.customLocation}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 mt-2 rounded-lg border border-border bg-background text-foreground"
-                                placeholder="Enter custom location"
+                                placeholder={t('admin.tables.form.placeholders.customLocation')}
                             />
                         )}
                         {errors.location && <p className="text-error text-sm mt-1">{errors.location}</p>}
@@ -153,7 +155,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
 
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            Status <span className="text-error">*</span>
+                            {t('admin.tables.form.labels.status')} <span className="text-error">*</span>
                         </label>
                         <select
                             name="status"
@@ -162,7 +164,7 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                             className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground"
                         >
                             {STATUS_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                <option key={opt.value} value={opt.value}>{t(`admin.tables.status.${opt.value}`)}</option>
                             ))}
                         </select>
                     </div>
@@ -173,14 +175,14 @@ const TableForm = ({ table, onSubmit, onClose }) => {
                             disabled={isSubmitting}
                             className="flex-1 px-4 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
                         >
-                            {isSubmitting ? "Saving..." : table ? "Update Table" : "Create Table"}
+                            {isSubmitting ? t('admin.tables.form.submit.saving') : table ? t('admin.tables.form.submit.update') : t('admin.tables.form.submit.create')}
                         </button>
                         <button
                             type="button"
                             onClick={onClose}
                             className="flex-1 px-4 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-muted/80"
                         >
-                            Cancel
+                            {t('admin.tables.actions.cancel')}
                         </button>
                     </div>
                 </form>

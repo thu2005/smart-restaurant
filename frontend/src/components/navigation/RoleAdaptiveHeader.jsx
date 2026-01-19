@@ -3,16 +3,21 @@ import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
+import Avatar from "../ui/Avatar";
 import authService from "../../services/authService";
 import { useCart } from "../../contexts/CartContext";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+  const { changeLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(authService.getCurrentUser());
   const [tableNumber, setTableNumber] = useState(
-    localStorage.getItem("tableNumber")
+    localStorage.getItem("tableNumber"),
   );
   const { getCartSummary } = useCart();
   const { itemCount: cartItemCount } = getCartSummary();
@@ -22,13 +27,39 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
     setUser(authService.getCurrentUser());
     const storedTableNumber = localStorage.getItem("tableNumber");
     setTableNumber(storedTableNumber);
+
+    // Listen for storage changes (when user data is updated in other components)
+    const handleStorageChange = (e) => {
+      if (e.key === "user") {
+        setUser(authService.getCurrentUser());
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Function to refresh user data from API
+  const refreshUserData = async () => {
+    try {
+      const updatedUser = await authService.getMe();
+      setUser(updatedUser);
+    } catch (error) {
+      console.log("Could not refresh user data:", error);
+    }
+  };
+
+  // Refresh user data periodically or when needed
+  useEffect(() => {
+    const interval = setInterval(refreshUserData, 5 * 60 * 1000); // Every 5 minutes
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
-    const isCustomer = !user?.role || user.role === 'CUSTOMER';
+    const isCustomer = !user?.role || user.role === "CUSTOMER";
     authService.logout();
     setUser(null);
-    
+
     if (isCustomer) {
       navigate("/customer-onboarding");
     } else {
@@ -38,33 +69,52 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
 
   /* Nav Items Configuration */
   const baseCustomerNavItems = [
-    { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
+    {
+      path: "/customer/menu-browse",
+      label: t("nav.items.menu"),
+      icon: "UtensilsCrossed",
+    },
     {
       path: "/customer/shopping-cart",
-      label: "Cart",
+      label: t("nav.items.cart"),
       icon: "ShoppingCart",
       badge: cartItemCount,
     },
     {
       path: "/customer/order-status-tracking",
-      label: "Order Status",
+      label: t("nav.items.orderStatus"),
       icon: "ClipboardList",
     },
   ];
 
   // Add Profile for logged-in users
-  const customerNavItems = user 
-    ? [...baseCustomerNavItems, { path: "/customer/profile", label: "Profile", icon: "User" }]
+  const customerNavItems = user
+    ? [
+        ...baseCustomerNavItems,
+        {
+          path: "/customer/profile",
+          label: t("nav.items.profile"),
+          icon: "User",
+        },
+      ]
     : baseCustomerNavItems;
 
   const adminNavItems = [
-    { path: "/admin/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+    {
+      path: "/admin/dashboard",
+      label: t("nav.items.dashboard"),
+      icon: "LayoutDashboard",
+    },
     {
       path: "/admin/kitchen/dashboard",
-      label: "Kitchen Display",
+      label: t("nav.items.kitchen"),
       icon: "ChefHat",
     },
-    { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
+    {
+      path: "/customer/menu-browse",
+      label: t("nav.items.menu"),
+      icon: "UtensilsCrossed",
+    },
   ];
 
   const navItems = userRole === "admin" ? adminNavItems : customerNavItems;
@@ -76,9 +126,12 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
 
   const isActivePath = (targetPath) => {
     if (!location?.pathname) return false;
-    
+
     // Fix: Keep Menu active when viewing item detail
-    if (targetPath === "/customer/menu-browse" && location.pathname.includes("/customer/menu-item-detail")) {
+    if (
+      targetPath === "/customer/menu-browse" &&
+      location.pathname.includes("/customer/menu-item-detail")
+    ) {
       return true;
     }
 
@@ -110,7 +163,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
         <div className="fixed inset-y-0 right-0 w-[280px] bg-background shadow-2xl flex flex-col p-6 animate-in slide-in-from-right duration-300">
           <div className="flex items-center justify-between mb-8 border-b pb-4">
             <span className="font-heading font-bold text-xl text-primary">
-              Menu
+              {t("nav.items.menu")}
             </span>
             <button
               onClick={() => setMobileMenuOpen(false)}
@@ -158,15 +211,15 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
             {user ? (
               <>
                 <div className="flex items-center gap-3 p-2 mb-2">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar user={user} size="md" />
                   <div className="flex flex-col overflow-hidden">
                     <span className="font-semibold text-foreground truncate">
-                      {(user.fullName || user.name || "Customer").split(" ").pop()}
+                      {(user.fullName || user.name || "Customer")
+                        .split(" ")
+                        .pop()}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Member
+                      {t("nav.user.member")}
                     </span>
                   </div>
                 </div>
@@ -175,7 +228,8 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                   variant="outline"
                   className="w-full justify-start text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200"
                 >
-                  <Icon name="LogOut" className="mr-3" size={18} /> Logout
+                  <Icon name="LogOut" className="mr-3" size={18} />{" "}
+                  {t("nav.user.logout")}
                 </Button>
               </>
             ) : (
@@ -184,13 +238,13 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                 className="w-full"
                 variant="primary"
               >
-                Login / Register
+                {t("nav.user.loginRegister")}
               </Button>
             )}
           </div>
         </div>
       </div>,
-      document.body
+      document.body,
     );
   };
 
@@ -205,7 +259,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
               handleNavigation(
                 userRole === "admin"
                   ? "/admin/dashboard"
-                  : "/customer/menu-browse"
+                  : "/customer/menu-browse",
               )
             }
           >
@@ -254,7 +308,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
             {tableNumber && (
               <div className="flex items-center px-3 py-1.5 border border-primary/20 rounded-full bg-primary/5">
                 <span className="text-xs md:text-sm font-bold text-primary whitespace-nowrap">
-                  Table {tableNumber}
+                  {t("nav.items.tables")} {tableNumber}
                 </span>
               </div>
             )}
@@ -264,19 +318,24 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
               <div className="flex items-center gap-2">
                 <div className="hidden md:flex flex-col items-end mr-2">
                   <span className="text-sm font-medium text-gray-700 leading-none">
-                    {(user.fullName || user.name || "Customer").split(" ").pop()}
+                    {(user.fullName || user.name || "Customer")
+                      .split(" ")
+                      .pop()}
                   </span>
                   <span className="text-xs text-gray-500 leading-none mt-1">
-                    Member
+                    {t("nav.user.member")}
                   </span>
                 </div>
-                <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-primary-200">
-                  {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
-                </div>
+                <Avatar
+                  user={user}
+                  size="sm"
+                  className="md:h-9 md:w-9"
+                  showBorder={true}
+                />
                 <button
                   onClick={handleLogout}
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                  title="Logout"
+                  title={t("nav.user.logout")}
                 >
                   <Icon name="LogOut" size={20} />
                 </button>
@@ -289,7 +348,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                   onClick={() => navigate("/login")}
                   className="text-xs h-8 px-3"
                 >
-                  Login
+                  {t("auth.login.submit")}
                 </Button>
               </div>
             )}

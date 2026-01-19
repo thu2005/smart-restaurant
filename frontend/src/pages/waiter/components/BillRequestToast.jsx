@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../contexts/CurrencyContext";
 
 const BillRequestToast = ({ notification, onClose, onViewOrder }) => {
+    const { t } = useTranslation();
+    const { formatCurrency } = useCurrency();
     useEffect(() => {
         if (notification) {
             // Auto-dismiss after 8 seconds
@@ -26,8 +30,8 @@ const BillRequestToast = ({ notification, onClose, onViewOrder }) => {
                             <span className="text-2xl">💰</span>
                         </div>
                         <div>
-                            <h3 className="font-bold text-gray-900 text-lg">Bill Requested</h3>
-                            <p className="text-xs text-gray-500 mt-0.5">New customer request</p>
+                            <h3 className="font-bold text-gray-900 text-lg">{t("waiter.bill.requestedTitle")}</h3>
+                            <p className="text-xs text-gray-500 mt-0.5">{t("waiter.bill.newRequest")}</p>
                         </div>
                     </div>
                     <button
@@ -44,13 +48,13 @@ const BillRequestToast = ({ notification, onClose, onViewOrder }) => {
                 {/* Content */}
                 <div className="ml-13 space-y-1 mb-3">
                     <p className="text-sm text-gray-700">
-                        <span className="font-semibold">Table {tableNumber}</span> ({orderNumber})
+                        <span className="font-semibold">{t("waiter.bill.tableNumber", { number: tableNumber })}</span> ({orderNumber})
                     </p>
                     <p className="text-sm text-gray-600">
-                        has requested the bill
+                        {t("waiter.bill.hasRequested")}
                     </p>
                     <p className="text-lg font-bold text-amber-600 mt-2">
-                        Total: ${parseFloat(total).toFixed(2)}
+                        {t("waiter.bill.summary.total")}: {formatCurrency(parseFloat(total))}
                     </p>
                 </div>
 
@@ -64,7 +68,7 @@ const BillRequestToast = ({ notification, onClose, onViewOrder }) => {
                             }}
                             className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
                         >
-                            View Order Details
+                            {t("waiter.bill.viewDetails")}
                         </button>
                     </div>
                 )}

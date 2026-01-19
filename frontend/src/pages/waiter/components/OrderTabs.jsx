@@ -1,34 +1,36 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const OrderTabs = ({ activeTab, onTabChange, counts = {} }) => {
+    const { t } = useTranslation();
     const tabs = [
         {
             id: "pending",
-            label: "Pending",
+            label: t("waiter.tabs.pending"),
             count: counts.pending || 0,
             showBadge: true,
         },
         {
             id: "accepted",
-            label: "Accepted",
+            label: t("waiter.tabs.accepted"),
             count: counts.accepted || 0,
             showBadge: true,
         },
         {
             id: "ready",
-            label: "Ready to Serve",
+            label: t("waiter.tabs.ready"),
             count: counts.ready || 0,
             showBadge: true,
         },
         {
             id: "tables",
-            label: "My Tables",
+            label: t("waiter.tabs.tables"),
             count: counts.tables || 0,
             showBadge: true,
         },
         {
             id: "completed",
-            label: "Completed",
+            label: t("waiter.tabs.completed"),
             count: counts.completed || 0,
             showBadge: true, // Enable badge for completed
         },

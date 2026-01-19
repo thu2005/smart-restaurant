@@ -1,13 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Image from "../../../../components/AppImage";
 import Icon from "../../../../components/AppIcon";
 
 const OrderItemStatus = ({ item, currentTime }) => {
+  const { t } = useTranslation();
+
   const getStatusConfig = () => {
     switch (item?.status) {
       case "queued":
         return {
-          label: "In Queue",
+          label: t("customer.orderTracking.itemStatus.queued", "In Queue"),
           color: "bg-slate-400",
           textColor: "text-slate-500",
           bgColor: "bg-slate-50",
@@ -16,7 +19,7 @@ const OrderItemStatus = ({ item, currentTime }) => {
         };
       case "cooking":
         return {
-          label: "Cooking",
+          label: t("customer.orderTracking.itemStatus.cooking", "Cooking"),
           color: "bg-warning",
           textColor: "text-warning",
           bgColor: "bg-warning/10",
@@ -25,7 +28,7 @@ const OrderItemStatus = ({ item, currentTime }) => {
         };
       case "ready":
         return {
-          label: "Ready",
+          label: t("customer.orderTracking.itemStatus.ready", "Ready"),
           color: "bg-success",
           textColor: "text-success",
           bgColor: "bg-success/10",
@@ -35,7 +38,9 @@ const OrderItemStatus = ({ item, currentTime }) => {
       case "served":
       case "completed":
         return {
-          label: item?.status === "completed" ? "Completed" : "Served",
+          label: item?.status === "completed"
+            ? t("customer.orderTracking.itemStatus.completed", "Completed")
+            : t("customer.orderTracking.itemStatus.served", "Served"),
           color: "bg-muted",
           textColor: "text-muted-foreground",
           bgColor: "bg-muted/10",
@@ -44,7 +49,7 @@ const OrderItemStatus = ({ item, currentTime }) => {
         };
       case "rejected":
         return {
-          label: "Rejected",
+          label: t("customer.orderTracking.itemStatus.rejected", "Rejected"),
           color: "bg-error",
           textColor: "text-error",
           bgColor: "bg-error/10",
@@ -53,7 +58,7 @@ const OrderItemStatus = ({ item, currentTime }) => {
         };
       default:
         return {
-          label: "Unknown",
+          label: t("customer.orderTracking.itemStatus.unknown", "Unknown"),
           color: "bg-muted",
           textColor: "text-muted-foreground",
           bgColor: "bg-muted/10",
@@ -65,8 +70,8 @@ const OrderItemStatus = ({ item, currentTime }) => {
 
   const getTimeDisplay = () => {
     const diff = Math.floor((item?.estimatedTime - currentTime) / 1000);
-    if (diff <= 0 && item?.status === "ready") return "Ready now!";
-    if (diff <= 0) return "In progress";
+    if (diff <= 0 && item?.status === "ready") return t("customer.orderTracking.itemStatus.readyNow", "Ready now!");
+    if (diff <= 0) return t("customer.orderTracking.itemStatus.inProgress", "In progress");
     const mins = Math.floor(diff / 60);
     const secs = diff % 60;
     return `~${mins}:${secs?.toString()?.padStart(2, "0")}`;
@@ -94,16 +99,15 @@ const OrderItemStatus = ({ item, currentTime }) => {
                 {item?.name}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Quantity: {item?.quantity}
+                {t("customer.itemDetail.quantity", "Quantity")}: {item?.quantity}
               </p>
             </div>
             <div
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium ${statusConfig?.bgColor} ${statusConfig?.textColor}`}
             >
               <div
-                className={`w-1.5 h-1.5 rounded-full ${statusConfig?.color} ${
-                  item?.status === "cooking" ? "animate-pulse" : ""
-                }`}
+                className={`w-1.5 h-1.5 rounded-full ${statusConfig?.color} ${item?.status === "cooking" ? "animate-pulse" : ""
+                  }`}
               />
               {statusConfig?.label}
             </div>
@@ -140,7 +144,7 @@ const OrderItemStatus = ({ item, currentTime }) => {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">
-                Prepared by: {item?.preparedBy}
+                {t("customer.orderTracking.itemStatus.preparedBy", { name: item?.preparedBy })}
               </span>
               <span className={`font-medium ${statusConfig?.textColor}`}>
                 {getTimeDisplay()}
