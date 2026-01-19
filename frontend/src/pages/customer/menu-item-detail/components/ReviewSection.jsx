@@ -15,6 +15,7 @@ const ReviewSection = ({
   restaurantId,
   onReviewAdded,
 }) => {
+  const { t } = useTranslation();
   const { isAuthenticated } = useCustomerAuth();
   const [isAddingReview, setIsAddingReview] = useState(false);
   const [rating, setRating] = useState(5);
