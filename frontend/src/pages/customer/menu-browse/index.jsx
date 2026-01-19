@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import menuService, { getRestaurantId } from "services/menuService";
 import { useCart } from "../../../contexts/CartContext";
+import { fuzzySearchMenuItems } from "../../../utils/fuzzySearch";
 import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import FilterPanel from "./components/FilterPanel";
@@ -31,6 +32,7 @@ const MenuBrowse = () => {
   const [categories, setCategories] = useState([
     { value: "all", label: "All Items", icon: "UtensilsCrossed", count: 0 },
   ]);
+  const [allMenuItems, setAllMenuItems] = useState([]); // Store all items for fuzzy search
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,8 +69,8 @@ const MenuBrowse = () => {
           }),
           menuService.getItems({
             restaurantId,
-            categoryId: activeCategory === "all" ? undefined : activeCategory,
-            search: searchQuery || undefined,
+            // Don't send search query - we'll do fuzzy search locally
+            // Don't filter by category - we'll filter locally
             status:
               filters.availability?.length === 1
                 ? filters.availability[0]
@@ -217,6 +219,7 @@ const MenuBrowse = () => {
             })
           : [];
 
+        setAllMenuItems(formattedItems); // Store all items for filtering
         setMenuItems(formattedItems);
       } catch (error) {
         console.error("Failed to load menu:", error);
@@ -237,28 +240,37 @@ const MenuBrowse = () => {
 
     fetchData();
   }, [
+    // Remove searchQuery from dependencies since we'll filter locally
     activeCategory,
-    searchQuery,
     filters.isChefRecommended,
     filters.isPopular,
     filters.availability,
     filters.sortBy,
-  ]); // Re-fetch when criteria changes
+  ]); // Re-fetch when criteria changes (except search)
 
-  // Filter logic (client-side for now for other filters)
-  const filteredItems = menuItems.filter((item) => {
-    // Category, Search, ChefRecommended, and Sort are handled by API
+  // Apply fuzzy search and filters locally
+  const filteredItems = useMemo(() => {
+    let items = [...allMenuItems];
 
-    // Dietary
-    if (
-      filters.dietary.length > 0 &&
-      !filters.dietary.every((d) => item.dietary?.includes(d))
-    ) {
-      return false;
+    // 1. Apply fuzzy search first
+    if (searchQuery && searchQuery.trim() !== '') {
+      items = fuzzySearchMenuItems(items, searchQuery);
     }
 
-    return true;
-  });
+    // 2. Filter by category
+    if (activeCategory !== "all") {
+      items = items.filter((item) => item.category === activeCategory);
+    }
+
+    // 3. Apply dietary filters
+    if (filters.dietary.length > 0) {
+      items = items.filter((item) => 
+        filters.dietary.every((d) => item.dietary?.includes(d))
+      );
+    }
+
+    return items;
+  }, [allMenuItems, searchQuery, activeCategory, filters.dietary]);
 
   const handleQuickAdd = (item) => {
     // Add item to cart with quantity 1 (no modifiers for quick add)
