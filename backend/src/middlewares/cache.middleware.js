@@ -68,7 +68,7 @@ const cacheMiddleware = (options = {}) => {
 const menuCacheMiddleware = cacheMiddleware({
     ttl: 1800, // 30 minutes for menu data
     keyGenerator: (req) => {
-        const { restaurantId, itemId } = req.params;
+        const { restaurantId, id: itemId } = req.params; // Fix: id instead of itemId
         const filters = req.query;
         
         if (itemId) {
