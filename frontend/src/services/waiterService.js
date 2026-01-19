@@ -210,6 +210,19 @@ const waiterService = {
         });
         return response.data;
     },
+
+    /**
+     * Get bills for restaurant with optional filter by paid/unpaid
+     * @param {string} restaurantId - Restaurant ID
+     * @param {string} status - Optional: 'PAID', 'UNPAID', or undefined for all
+     * @returns {Promise} List of bills with payment status
+     */
+    getBills: async (restaurantId, status = null) => {
+        const params = { restaurantId };
+        if (status) params.status = status;
+        const response = await api.get("/orders/bills", { params });
+        return response.data;
+    },
 };
 
 export default waiterService;

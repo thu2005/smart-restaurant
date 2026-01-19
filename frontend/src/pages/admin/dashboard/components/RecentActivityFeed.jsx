@@ -118,7 +118,7 @@ const RecentActivityFeed = ({ activities }) => {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar max-h-[500px]">
+      <div className="flex-1 overflow-y-auto pr-2 max-h-[500px] scrollbar-hide">
         {(!activities || activities.length === 0) ? (
           <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
             <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-3">

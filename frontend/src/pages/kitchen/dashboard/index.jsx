@@ -40,7 +40,7 @@ const KitchenDisplaySystem = () => {
     if (!restaurantId) return;
 
     // Socket.IO connects to base server URL (not /api)
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5002/api";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     const socketUrl = apiUrl.replace('/api', ''); // Remove /api suffix for socket connection
     const newSocket = io(socketUrl);
 

@@ -23,6 +23,7 @@ import MenuBrowse from "./pages/customer/menu-browse";
 import MenuItemDetail from "./pages/customer/menu-item-detail";
 import OrderStatusTracking from "./pages/customer/order-status-tracking";
 import Profile from "./pages/customer/profile";
+import PaymentResult from "./pages/customer/payment/result";
 
 import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
@@ -40,6 +41,7 @@ import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
 import Reports from "./pages/admin/reports";
+import MetabaseDashboard from "./pages/admin/reports/MetabaseDashboard";
 
 // User Management Pages
 import UserManagement from "./pages/admin/users/UserManagement";
@@ -121,6 +123,7 @@ const Routes = () => {
               element={<OrderStatusTracking />}
             />
             <Route path="profile" element={<Profile />} />
+            <Route path="payment/result" element={<PaymentResult />} />
           </Route>
 
           {/* Admin Routes - Protected */}
@@ -142,7 +145,7 @@ const Routes = () => {
               }
             />
             <Route path="dashboard" element={<AdminDashboard />} />
-            
+
             {/* Kitchen Display for Admin - with sidebar */}
             <Route path="kitchen/dashboard" element={<KitchenDashboard />} />
 
@@ -153,7 +156,8 @@ const Routes = () => {
             <Route path="tables" element={<TableManagement />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="reports" element={<Reports />} />
-            
+            <Route path="analytics" element={<MetabaseDashboard />} />
+
             {/* User Management Routes */}
             <Route path="users" element={<UserManagement />} />
             <Route path="users/create" element={<CreateUser />} />

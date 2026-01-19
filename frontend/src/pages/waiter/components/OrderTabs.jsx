@@ -26,6 +26,12 @@ const OrderTabs = ({ activeTab, onTabChange, counts = {} }) => {
             count: counts.tables || 0,
             showBadge: true,
         },
+        {
+            id: "completed",
+            label: "Completed",
+            count: counts.completed || 0,
+            showBadge: true, // Enable badge for completed
+        },
     ];
 
     return (

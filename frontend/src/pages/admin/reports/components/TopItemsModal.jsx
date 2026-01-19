@@ -102,7 +102,7 @@ const TopItemsModal = ({ items, onClose }) => {
                                             {item.orderCount || item.totalQuantity}
                                         </td>
                                         <td className="py-4 px-2 text-right font-semibold text-foreground data-text">
-                                            ${((item.revenue || item.totalRevenue) / 100).toFixed(2)}
+                                            {(item.revenue || item.totalRevenue).toLocaleString('vi-VN') + ' ₫'}
                                         </td>
                                         <td className="py-4 px-2 text-right">
                                             <span className={`inline-flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-success' : 'text-error'}`}>
@@ -123,7 +123,7 @@ const TopItemsModal = ({ items, onClose }) => {
                         <span>Showing {items.length} items</span>
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium w-32"
                         >
                             Close
                         </button>

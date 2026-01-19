@@ -36,11 +36,19 @@ const orderService = {
       const payload = {
         restaurantId: orderData.restaurantId || getRestaurantId(),
         tableId: orderData.tableId || getTableId(),
-        items: orderData.items.map((item) => ({
-          menuItemId: item.menuItemId || item.id,
-          quantity: item.quantity,
-          modifiers: Array.isArray(item.modifiers)
-            ? item.modifiers.map((m) => {
+        items: orderData.items.map((item) => {
+          // Ensure we have a valid menuItemId
+          const menuItemId = item.menuItemId;
+          if (!menuItemId) {
+            console.error('Invalid cart item - missing menuItemId:', item);
+            throw new Error('Cart item is missing menuItemId. Please clear your cart and try again.');
+          }
+
+          return {
+            menuItemId: menuItemId,
+            quantity: item.quantity,
+            modifiers: Array.isArray(item.modifiers)
+              ? item.modifiers.map((m) => {
                 if (typeof m === 'object') {
                   return {
                     id: m.id,
@@ -49,9 +57,10 @@ const orderService = {
                 }
                 return { id: m, quantity: 1 };
               })
-            : [],
-          specialInstructions: item.specialInstructions || item.notes || "",
-        })),
+              : [],
+            specialInstructions: item.specialInstructions || item.notes || "",
+          };
+        }),
         customerName: orderData.customerName || "",
         customerPhone: orderData.customerPhone || "",
         specialInstructions:
@@ -100,6 +109,17 @@ const orderService = {
       return response.data;
     } catch (error) {
       console.error("Error creating bill:", error);
+      throw error;
+    }
+  },
+
+  // Customer requests bill 
+  requestBill: async (orderId) => {
+    try {
+      const response = await api.post(`/orders/${orderId}/request-bill`);
+      return response.data;
+    } catch (error) {
+      console.error("Error requesting bill:", error);
       throw error;
     }
   },
@@ -205,11 +225,19 @@ const orderService = {
   addItemsToOrder: async (orderId, items) => {
     try {
       const payload = {
-        items: items.map((item) => ({
-          menuItemId: item.menuItemId || item.id,
-          quantity: item.quantity,
-          modifiers: Array.isArray(item.modifiers)
-            ? item.modifiers.map((m) => {
+        items: items.map((item) => {
+          // Ensure we have a valid menuItemId
+          const menuItemId = item.menuItemId;
+          if (!menuItemId) {
+            console.error('Invalid cart item - missing menuItemId:', item);
+            throw new Error('Cart item is missing menuItemId. Please clear your cart and try again.');
+          }
+
+          return {
+            menuItemId: menuItemId,
+            quantity: item.quantity,
+            modifiers: Array.isArray(item.modifiers)
+              ? item.modifiers.map((m) => {
                 if (typeof m === 'object') {
                   return {
                     id: m.id,
@@ -218,9 +246,10 @@ const orderService = {
                 }
                 return { id: m, quantity: 1 };
               })
-            : [],
-          specialInstructions: item.specialInstructions || item.notes || "",
-        })),
+              : [],
+            specialInstructions: item.specialInstructions || item.notes || "",
+          };
+        }),
       };
 
       const response = await api.post(`/orders/${orderId}/items`, payload);
