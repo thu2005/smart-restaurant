@@ -309,9 +309,9 @@ class ReportService {
         doc.moveDown(0.5);
 
         const metrics = [
-            { label: 'Total Revenue', value: `$${(revenueData.totalRevenue / 100).toFixed(2)}` },
+            { label: 'Total Revenue', value: `${revenueData.totalRevenue.toLocaleString()} VND` },
             { label: 'Total Orders', value: revenueData.totalOrders.toString() },
-            { label: 'Average Order Value', value: `$${(revenueData.averageOrderValue / 100).toFixed(2)}` },
+            { label: 'Average Order Value', value: `${revenueData.averageOrderValue.toLocaleString()} VND` },
             { label: 'Total Items Sold', value: revenueData.totalItems.toString() }
         ];
 
@@ -410,7 +410,7 @@ class ReportService {
                 xPos += colWidths.orders;
 
                 // Revenue
-                doc.text(`$${((item.totalRevenue || 0) / 100).toFixed(2)}`, xPos + 5, rowY + 10, { width: colWidths.revenue });
+                doc.text(`${(item.totalRevenue || 0).toLocaleString()} VND`, xPos + 5, rowY + 10, { width: colWidths.revenue });
 
                 doc.y = rowY + 30;
 
