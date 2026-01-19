@@ -101,6 +101,22 @@
             "title": "Failed to Load Reports",
             "retry": "Retry"
         },
+        "metabase": {
+            "title": "Operational Analytics",
+            "openInMetabase": "Open in Metabase ↗",
+            "unavailableTitle": "Analytics Dashboard Unavailable",
+            "unavailableSetupTitle": "Setup Required:",
+            "unavailableSetupSteps": {
+                "embedding": "Go to Metabase Admin - Embedding",
+                "enableEmbedding": "Enable \"Embedding in other applications\"",
+                "envInstructions": "Add these to backend .env file:",
+                "envSiteUrl": "METABASE_SITE_URL=http://localhost:3000",
+                "envSecretKey": "METABASE_SECRET_KEY=your_secret_key",
+                "envDashboardId": "METABASE_DASHBOARD_ID=1"
+            },
+            "connectionError": "Failed to connect to Analytics Server",
+            "configError": "Failed to load dashboard configuration"
+        },
         "dateRange": {
             "last7days": "Last 7 Days",
             "last30days": "Last 30 Days",
@@ -1034,6 +1050,7 @@
             "orders": "Orders",
             "tables": "Tables",
             "reports": "Reports & Analytics",
+            "BIreports": "BI Reports",
             "staff": "Staff Management",
             "settings": "Settings",
             "help": "Help",

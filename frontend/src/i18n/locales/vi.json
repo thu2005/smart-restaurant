@@ -93,6 +93,22 @@
             "title": "Tải Báo Cáo Thất Bại",
             "retry": "Thử Lại"
         },
+        "metabase": {
+            "title": "Phân Tích Vận Hành",
+            "openInMetabase": "Mở trong Metabase ↗",
+            "unavailableTitle": "Bảng điều khiển phân tích không khả dụng",
+            "unavailableSetupTitle": "Cần thiết lập:",
+            "unavailableSetupSteps": {
+                "embedding": "Vào Metabase Admin - Embedding",
+                "enableEmbedding": "Bật \"Embedding in other applications\"",
+                "envInstructions": "Thêm các biến sau vào file .env của backend:",
+                "envSiteUrl": "METABASE_SITE_URL=http://localhost:3000",
+                "envSecretKey": "METABASE_SECRET_KEY=your_secret_key",
+                "envDashboardId": "METABASE_DASHBOARD_ID=1"
+            },
+            "connectionError": "Không thể kết nối tới Máy chủ Phân tích",
+            "configError": "Không thể tải cấu hình bảng điều khiển"
+        },
         "dateRange": {
             "last7days": "7 Ngày Qua",
             "last30days": "30 Ngày Qua",
@@ -1099,6 +1115,7 @@
             "orders": "Đơn hàng",
             "tables": "Bàn",
             "reports": "Báo cáo & Phân tích",
+            "BIreports": "Báo cáo BI",
             "staff": "Quản lý nhân viên",
             "settings": "Cài đặt",
             "help": "Trợ giúp",
