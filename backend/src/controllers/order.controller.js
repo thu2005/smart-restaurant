@@ -273,7 +273,7 @@ exports.addItemsToOrder = async (req, res, next) => {
         }
 
         const { orderId } = req.params;
-        const { items } = req.body; // Array of { menuItemId, quantity, modifiers, specialInstructions }
+        const { items, customerId } = req.body; // Array of { menuItemId, quantity, modifiers, specialInstructions } + optional customerId
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({
@@ -282,7 +282,7 @@ exports.addItemsToOrder = async (req, res, next) => {
             });
         }
 
-        const updatedOrder = await orderService.addItemsToOrder(orderId, items);
+        const updatedOrder = await orderService.addItemsToOrder(orderId, items, customerId);
 
         // Emit socket event for new items
         const io = req.app.get('io');
