@@ -655,29 +655,30 @@ class OrderService {
             include: { menuItem: true }
         });
 
-        // After updating an item to 'ready', check if all items are now ready
-        if (itemStatus === 'ready') {
-            // Re-fetch all order items to get latest state
-            const allItems = await prisma.orderItem.findMany({
-                where: { orderId: orderId }
+        // After updating ANY item status, check if order should be auto-updated to READY
+        // This handles cases where all items are ready but order is still PREPARING
+        // Re-fetch all order items to get latest state
+        const allItems = await prisma.orderItem.findMany({
+            where: { orderId: orderId }
+        });
+
+        // Check if there are any items that are NOT in a final/ready state
+        // We ignore items that are already 'ready', 'served', 'completed', or 'rejected'
+        const pendingItems = allItems.filter(item =>
+            !['ready', 'served', 'completed', 'rejected'].includes(item.itemStatus)
+        );
+
+        // If no pending items AND order is not already READY/SERVED/PAYMENT_PENDING/COMPLETED
+        // then auto-update order to READY
+        if (pendingItems.length === 0 && !['READY', 'SERVED', 'PAYMENT_PENDING', 'COMPLETED', 'CANCELLED'].includes(order.status)) {
+            await prisma.order.update({
+                where: { id: orderId },
+                data: {
+                    status: 'READY',
+                    readyAt: new Date()
+                }
             });
-
-            // Check if there are any items that are NOT ready and still need prep
-            // We ignore items that are already 'served', 'completed', or 'rejected'
-            const pendingItems = allItems.filter(item =>
-                !['ready', 'served', 'completed', 'rejected'].includes(item.itemStatus)
-            );
-
-            if (pendingItems.length === 0) {
-                // All items that needed prep are now done!
-                await prisma.order.update({
-                    where: { id: orderId },
-                    data: {
-                        status: 'READY',
-                        readyAt: new Date()
-                    }
-                });
-            }
+            console.log(`✅ Order ${orderId} auto-updated to READY - all items are ready/served/completed/rejected`);
         }
 
         return updatedItem;
