@@ -153,7 +153,10 @@ class PaymentService {
             if (status === 'COMPLETED') {
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' }
+                    data: { 
+                        status: 'COMPLETED',
+                        completedAt: new Date()
+                    }
                 });
             }
         }
@@ -192,7 +195,10 @@ class PaymentService {
                     // 2. Update Order Status
                     await prisma.order.update({
                         where: { id: orderId },
-                        data: { status: 'COMPLETED' }
+                        data: { 
+                            status: 'COMPLETED',
+                            completedAt: new Date()
+                        }
                     });
 
                     console.log('Database Updated Successfully');
@@ -337,7 +343,10 @@ class PaymentService {
                 // Update order status
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' }
+                    data: { 
+                        status: 'COMPLETED',
+                        completedAt: new Date()
+                    }
                 });
 
                 return {
@@ -495,7 +504,10 @@ class PaymentService {
                 // Update order status
                 await prisma.order.update({
                     where: { id: orderId },
-                    data: { status: 'COMPLETED' }
+                    data: { 
+                        status: 'COMPLETED',
+                        completedAt: new Date()
+                    }
                 });
 
                 console.log('Momo payment completed:', paymentId);
