@@ -155,6 +155,36 @@ router.get(
 
 /**
  * @swagger
+ * /api/orders/customer/history:
+ *   get:
+ *     summary: Get customer order history (completed orders only)
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: List of completed orders
+ */
+router.get(
+  "/customer/history",
+  protect,
+  authorize("CUSTOMER"),
+  orderController.getCustomerOrderHistory,
+);
+
+/**
+ * @swagger
  * /api/orders/{id}:
  *   get:
  *     summary: Get order by ID
@@ -578,34 +608,5 @@ router.get(
   orderController.getBillsByStatus,
 );
 
-/**
- * @swagger
- * /api/orders/customer/history:
- *   get:
- *     summary: Get customer order history (completed orders only)
- *     tags: [Order]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 20
- *       - in: query
- *         name: offset
- *         schema:
- *           type: integer
- *           default: 0
- *     responses:
- *       200:
- *         description: List of completed orders
- */
-router.get(
-  "/customer/history",
-  protect,
-  authorize("CUSTOMER"),
-  orderController.getCustomerOrderHistory,
-);
 
 module.exports = router;
