@@ -166,7 +166,7 @@ const BillPaymentSection = ({ order, onPay }) => {
                                         </div>
                                     </div>
                                     <span className="font-semibold text-foreground ml-4">
-                                        ${lineTotal.toFixed(2)}
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(lineTotal)}
                                     </span>
                                 </div>
                             );
@@ -178,21 +178,21 @@ const BillPaymentSection = ({ order, onPay }) => {
                 <div className="space-y-2 pt-4 border-t-2 border-dashed border-gray-300">
                     <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Subtotal</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                         <div className="flex justify-between text-sm text-success">
                             <span>Discount</span>
-                            <span>-${discount.toFixed(2)}</span>
+                            <span>-{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(discount)}</span>
                         </div>
                     )}
                     <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Tax (10%)</span>
-                        <span>${tax.toFixed(2)}</span>
+                        <span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tax)}</span>
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                         <span className="text-lg font-bold text-foreground">Total</span>
-                        <span className="text-2xl font-bold text-primary">${total.toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-primary">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}</span>
                     </div>
                 </div>
             </div>

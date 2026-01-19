@@ -23,10 +23,13 @@ const FloatingCartButton = ({ itemCount, totalAmount }) => {
               {itemCount}
             </span>
           </div>
-          <div className="hidden md:flex flex-col items-start">
+          <div className="flex flex-col items-start">
             <span className="text-xs opacity-90">View Cart</span>
             <span className="text-base font-bold data-text">
-              ${totalAmount?.toFixed(2)}
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(totalAmount || 0)}
             </span>
           </div>
         </div>

@@ -79,7 +79,9 @@ const OrderHistoryPage = () => {
 
                                 <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
                                     <div className="text-right">
-                                        <p className="font-bold text-lg">${Number(total).toFixed(2)}</p>
+                                        <p className="font-bold text-lg">
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
+                                        </p>
                                         <p className="text-xs text-muted-foreground">{itemsCount} items</p>
                                     </div>
                                     <button className="p-2 hover:bg-muted rounded-full text-primary">
