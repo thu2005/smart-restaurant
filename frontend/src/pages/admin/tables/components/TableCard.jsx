@@ -1,15 +1,17 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => {
+    const { t } = useTranslation();
     const isActive = table.isActive;
 
     const getStatusBadge = () => {
         const statusMap = {
-            AVAILABLE: { bg: "bg-success/20", text: "text-success", label: "Available" },
-            OCCUPIED: { bg: "bg-warning/20", text: "text-warning", label: "Occupied" },
-            RESERVED: { bg: "bg-primary/20", text: "text-primary", label: "Reserved" },
-            MAINTENANCE: { bg: "bg-error/20", text: "text-error", label: "Maintenance" },
+            AVAILABLE: { bg: "bg-success/20", text: "text-success", label: t('admin.tables.status.AVAILABLE') },
+            OCCUPIED: { bg: "bg-warning/20", text: "text-warning", label: t('admin.tables.status.OCCUPIED') },
+            RESERVED: { bg: "bg-primary/20", text: "text-primary", label: t('admin.tables.status.RESERVED') },
+            MAINTENANCE: { bg: "bg-error/20", text: "text-error", label: t('admin.tables.status.MAINTENANCE') },
         };
         const status = statusMap[table.status] || statusMap.AVAILABLE;
         return (
@@ -24,7 +26,7 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="text-xl font-bold text-foreground mb-1">
-                        Table {table.tableNumber}
+                        {t('admin.orders.card.table', { number: table.tableNumber })}
                     </h3>
                     {getStatusBadge()}
                 </div>
@@ -32,7 +34,7 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
                     {table.qrCode && (
                         <span className="inline-flex items-center gap-1 text-primary text-sm">
                             <Icon name="QrCode" size={16} />
-                            <span className="font-medium">QR Ready</span>
+                            <span className="font-medium">{t('admin.tables.card.qrReady')}</span>
                         </span>
                     )}
                 </div>
@@ -41,19 +43,19 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
             <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <Icon name="Users" size={18} />
-                    <span>Capacity: <strong className="text-foreground">{table.capacity}</strong> persons</span>
+                    <span>{t('admin.tables.card.capacityLabel')}: <strong className="text-foreground">{table.capacity}</strong> {t('admin.tables.card.capacityUnit')}</span>
                 </div>
 
                 {table.location && (
                     <div className="flex items-center gap-2 text-muted-foreground">
                         <Icon name="MapPin" size={18} />
-                        <span>{table.location}</span>
+                        <span>{t(`admin.tables.locations.${table.location}`, { defaultValue: table.location })}</span>
                     </div>
                 )}
 
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Icon name="Calendar" size={16} />
-                    <span>Created: {new Date(table.createdAt).toLocaleDateString()}</span>
+                    <span>{t('admin.tables.card.created', { date: new Date(table.createdAt).toLocaleDateString() })}</span>
                 </div>
             </div>
 
@@ -63,7 +65,7 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
                     className="flex items-center gap-1 px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90"
                 >
                     <Icon name="QrCode" size={16} />
-                    {table.qrCode ? 'View QR' : 'Generate QR'}
+                    {table.qrCode ? t('admin.tables.actions.viewQR') : t('admin.tables.actions.generateQR')}
                 </button>
 
                 <button
@@ -71,7 +73,7 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
                     className="flex items-center gap-1 px-3 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80"
                 >
                     <Icon name="Printer" size={16} />
-                    Print
+                    {t('admin.tables.actions.print')}
                 </button>
 
                 <button
@@ -79,7 +81,7 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
                     className="flex items-center gap-1 px-3 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80"
                 >
                     <Icon name="Edit" size={16} />
-                    Edit
+                    {t('admin.tables.actions.edit')}
                 </button>
 
                 <button
@@ -89,7 +91,7 @@ const TableCard = ({ table, onEdit, onToggleStatus, onGenerateQR, onPrint }) => 
                         : "bg-success/20 text-success hover:bg-success/30"
                         }`}
                 >
-                    {isActive ? "Deactivate" : "Activate"}
+                    {isActive ? t('admin.tables.actions.deactivate') : t('admin.tables.actions.activate')}
                 </button>
             </div>
         </div>

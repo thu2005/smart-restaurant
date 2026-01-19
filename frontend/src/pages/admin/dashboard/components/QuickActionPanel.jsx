@@ -1,42 +1,44 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
 
 const QuickActionPanel = ({ onAction }) => {
+  const { t } = useTranslation();
   const actions = [
     {
       id: "menu",
-      label: "Manage Menu",
+      label: t('admin.dashboard.quickActions.manageMenu'),
       icon: "UtensilsCrossed",
       variant: "default",
-      description: "Add or edit menu items",
+      description: t('admin.dashboard.quickActions.manageMenuDesc'),
     },
     {
       id: "kitchen",
-      label: "Kitchen Display",
+      label: t('admin.dashboard.quickActions.kitchenDisplay'),
       icon: "ChefHat",
       variant: "secondary",
-      description: "View live orders",
+      description: t('admin.dashboard.quickActions.kitchenDisplayDesc'),
     },
     {
       id: "tables",
-      label: "Table Setup",
+      label: t('admin.dashboard.quickActions.tableSetup'),
       icon: "Grid3x3",
       variant: "outline",
-      description: "Configure tables",
+      description: t('admin.dashboard.quickActions.tableSetupDesc'),
     },
     {
       id: "reports",
-      label: "View Reports",
+      label: t('admin.dashboard.quickActions.viewReports'),
       icon: "BarChart3",
       variant: "outline",
-      description: "Analytics & insights",
+      description: t('admin.dashboard.quickActions.viewReportsDesc'),
     },
   ];
 
   return (
     <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
       <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-4 md:mb-6">
-        Quick Actions
+        {t('admin.dashboard.sections.quickActions')}
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {actions?.map((action) => (
@@ -45,10 +47,10 @@ const QuickActionPanel = ({ onAction }) => {
             onClick={() => onAction(action?.id)}
             className="flex flex-col items-center justify-center gap-4 p-6 rounded-xl border border-border/60 bg-gradient-to-br from-card to-muted/40 shadow-sm hover:shadow-warm-md hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
           >
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-inner-sm ${action.variant === 'default' ? 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/30' :
+            <div className={`w - 14 h - 14 rounded - 2xl flex items - center justify - center transition - all duration - 300 shadow - inner - sm ${action.variant === 'default' ? 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/30' :
                 action.variant === 'secondary' ? 'bg-secondary/10 text-secondary-foreground/80 group-hover:bg-secondary group-hover:text-secondary-foreground' :
                   'bg-muted text-muted-foreground/80 group-hover:bg-foreground group-hover:text-background'
-              }`}>
+              } `}>
               <Button
                 variant="ghost"
                 size="icon"

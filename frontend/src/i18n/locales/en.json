@@ -1,0 +1,1954 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "actions": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "delete": "Delete",
+            "edit": "Edit",
+            "add": "Add",
+            "create": "Create",
+            "update": "Update",
+            "search": "Search",
+            "filter": "Filter",
+            "export": "Export",
+            "import": "Import",
+            "upload": "Upload",
+            "download": "Download",
+            "submit": "Submit",
+            "confirm": "Confirm",
+            "back": "Back",
+            "next": "Next",
+            "previous": "Previous",
+            "close": "Close",
+            "viewAll": "View All",
+            "refresh": "Refresh",
+            "reset": "Reset",
+            "apply": "Apply",
+            "clear": "Clear",
+            "viewDetails": "View Details",
+            "dismiss": "Dismiss",
+            "showLess": "Show Less",
+            "processing": "Processing...",
+            "deleting": "Deleting...",
+            "activate": "Activate",
+            "deactivate": "Deactivate"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "available": "Available",
+            "unavailable": "Unavailable",
+            "pending": "Pending",
+            "completed": "Completed",
+            "lowStock": "Low Stock",
+            "soldOut": "Sold Out",
+            "na": "N/A",
+            "notAvailable": "Not Available"
+        },
+        "messages": {
+            "loading": "Loading...",
+            "noData": "No data available",
+            "error": "An error occurred",
+            "success": "Success",
+            "confirmDelete": "Are you sure you want to delete this?",
+            "deleteConfirm": "Are you sure you want to delete {{item}}?",
+            "cannotUndo": "This action cannot be undone",
+            "deleteSuccess": "Deleted successfully",
+            "deleteError": "Failed to delete",
+            "updateSuccess": "Updated successfully",
+            "updateError": "Failed to update",
+            "createSuccess": "Created successfully",
+            "createError": "Failed to create",
+            "saveSuccess": "Saved successfully",
+            "saveError": "Failed to save",
+            "requiredFields": "Please fill in all required fields"
+        },
+        "status": {
+            "processing": "Processing...",
+            "active": "Active",
+            "inactive": "Inactive",
+            "available": "Available",
+            "unavailable": "Unavailable",
+            "pending": "Pending",
+            "completed": "Completed",
+            "lowStock": "Low Stock",
+            "soldOut": "Sold Out",
+            "na": "N/A",
+            "notAvailable": "Not Available"
+        },
+        "pagination": {
+            "showingPage": "Showing page",
+            "showing": "Showing {{count}} of {{total}} items",
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "time": {
+            "min": "min"
+        },
+        "errorBoundary": {
+            "title": "Something went wrong",
+            "message": "We encountered an unexpected error while processing your request.",
+            "back": "Back"
+        }
+    },
+    "reports": {
+        "title": "Reports & Analytics",
+        "subtitle": "Track your restaurant's performance and insights",
+        "loading": "Loading reports...",
+        "error": {
+            "title": "Failed to Load Reports",
+            "retry": "Retry"
+        },
+        "metabase": {
+            "title": "Operational Analytics",
+            "openInMetabase": "Open in Metabase ↗",
+            "unavailableTitle": "Analytics Dashboard Unavailable",
+            "unavailableSetupTitle": "Setup Required:",
+            "unavailableSetupSteps": {
+                "embedding": "Go to Metabase Admin - Embedding",
+                "enableEmbedding": "Enable \"Embedding in other applications\"",
+                "envInstructions": "Add these to backend .env file:",
+                "envSiteUrl": "METABASE_SITE_URL=http://localhost:3000",
+                "envSecretKey": "METABASE_SECRET_KEY=your_secret_key",
+                "envDashboardId": "METABASE_DASHBOARD_ID=1"
+            },
+            "connectionError": "Failed to connect to Analytics Server",
+            "configError": "Failed to load dashboard configuration"
+        },
+        "dateRange": {
+            "last7days": "Last 7 Days",
+            "last30days": "Last 30 Days",
+            "thisMonth": "This Month",
+            "lastMonth": "Last Month",
+            "custom": "Custom Range"
+        },
+        "export": {
+            "pdf": "Export PDF",
+            "csv": "Export CSV",
+            "pdfTitle": "Export as PDF",
+            "csvTitle": "Export as CSV"
+        },
+        "metrics": {
+            "totalRevenue": "Total Revenue",
+            "totalOrders": "Total Orders",
+            "series": {
+                "revenue": "Revenue",
+                "orders": "Orders"
+            },
+            "avgOrderValue": "Average Order Value",
+            "avgPrepTime": "Avg Prep Time",
+            "vsLastPeriod": "vs last period",
+            "currentPeriod": "Current period"
+        },
+        "charts": {
+            "revenueOverTime": {
+                "title": "Revenue Over Time",
+                "subtitle": "Track revenue trends across different time periods",
+                "noData": "No data available for the selected period",
+                "revenue": "Revenue",
+                "orders": "Orders",
+                "daily": "Daily",
+                "weekly": "Weekly",
+                "monthly": "Monthly"
+            },
+            "peakHours": {
+                "title": "Peak Hours",
+                "subtitle": "Busiest hours based on order volume",
+                "noData": "No peak hours data available",
+                "orders": "Orders"
+            }
+        },
+        "topItems": {
+            "title": "Top Selling Items",
+            "subtitle": "Best performing menu items by revenue",
+            "viewAll": "View All",
+            "noData": "No sales data available",
+            "rank": "Rank",
+            "item": "Item",
+            "category": "Category",
+            "orders": "Orders",
+            "revenue": "Revenue",
+            "trend": "Trend",
+            "modal": {
+                "title": "Top Selling Items - Full List",
+                "close": "Close"
+            }
+        }
+    },
+    "admin": {
+        "management": {
+            "title": "Staff Management",
+            "subtitle": "Manage restaurant staff accounts",
+            "adminTitle": "Admin Management",
+            "adminSubtitle": "Manage Admin accounts",
+            "addStaff": "Add Staff",
+            "addAdmin": "Add Admin",
+            "filters": {
+                "role": "Filter by Role",
+                "status": "Filter by Status",
+                "allRoles": "All Roles",
+                "allStatus": "All Status"
+            },
+            "table": {
+                "user": "User",
+                "role": "Role",
+                "restaurant": "Restaurant",
+                "status": "Status",
+                "created": "Created",
+                "actions": "Actions",
+                "noUsers": "No users found"
+            },
+            "create": {
+                "title": "Add New Staff",
+                "subtitle": "Create a new staff account",
+                "adminTitle": "Add New Admin",
+                "adminSubtitle": "Create a new admin account",
+                "form": {
+                    "fullName": "Full Name",
+                    "fullNamePlaceholder": "Enter full name",
+                    "email": "Email Address",
+                    "emailPlaceholder": "Enter email address",
+                    "password": "Password",
+                    "passwordPlaceholder": "Enter password",
+                    "phone": "Phone Number",
+                    "phonePlaceholder": "Enter phone number (optional)",
+                    "role": "Role",
+                    "rolePlaceholder": "Select role",
+                    "restaurant": "Restaurant",
+                    "restaurantPlaceholder": "Select restaurant",
+                    "restaurantId": "Restaurant",
+                    "restaurantIdHelp": "Select the restaurant for this user",
+                    "submit": "Create Account",
+                    "cancel": "Cancel"
+                },
+                "validation": {
+                    "nameRequired": "Full name is required (minimum 2 characters)",
+                    "emailRequired": "Email is required",
+                    "emailInvalid": "Please enter a valid email address",
+                    "passwordRequired": "Password is required (minimum 8 characters)",
+                    "roleRequired": "Please select a role",
+                    "restaurantRequired": "Please select a restaurant"
+                },
+                "buttons": {
+                    "submit": "Create Account",
+                    "cancel": "Cancel",
+                    "creating": "Creating..."
+                }
+            },
+            "edit": {
+                "title": "Edit Staff Member",
+                "subtitle": "Update staff account information",
+                "adminTitle": "Edit Admin",
+                "adminSubtitle": "Update admin account information",
+                "form": {
+                    "fullName": "Full Name",
+                    "fullNamePlaceholder": "Enter full name",
+                    "email": "Email Address",
+                    "emailPlaceholder": "Enter email address",
+                    "phone": "Phone Number",
+                    "phonePlaceholder": "Enter phone number (optional)",
+                    "password": "Password",
+                    "passwordPlaceholder": "Leave blank to keep current password",
+                    "passwordHelp": "Leave blank to keep the current password",
+                    "role": "Role",
+                    "rolePlaceholder": "Select role",
+                    "roleHelp": "User role cannot be changed after creation",
+                    "restaurant": "Restaurant",
+                    "restaurantPlaceholder": "Select restaurant",
+                    "status": "Account Status",
+                    "submit": "Update User",
+                    "submitting": "Updating...",
+                    "cancel": "Cancel"
+                },
+                "validation": {
+                    "nameRequired": "Full name is required (minimum 2 characters)",
+                    "emailRequired": "Email is required",
+                    "emailInvalid": "Please enter a valid email address",
+                    "roleRequired": "Please select a role",
+                    "restaurantRequired": "Please select a restaurant"
+                },
+                "buttons": {
+                    "submit": "Update Account",
+                    "cancel": "Cancel",
+                    "updating": "Updating..."
+                },
+                "notFound": "User not found"
+            }
+        },
+        "roles": {
+            "admin": "Admin",
+            "super_admin": "Super Admin",
+            "waiter": "Waiter",
+            "kitchen": "Kitchen",
+            "manager": "Manager"
+        },
+        "toast": {
+            "userCreated": "User created successfully",
+            "userUpdated": "User updated successfully",
+            "userDeleted": "User deleted successfully",
+            "statusUpdated": "Status updated successfully",
+            "updateStatusError": "Failed to update status",
+            "deleteError": "Failed to delete user",
+            "error": "An error occurred. Please try again."
+        },
+        "menu": {
+            "items": {
+                "title": "Menu Items",
+                "subtitle": "Manage your restaurant's menu items",
+                "addItem": "Add Item",
+                "editItem": "Edit Item",
+                "searchPlaceholder": "Search items...",
+                "filters": {
+                    "allCategories": "All Categories",
+                    "allStatuses": "All Statuses",
+                    "sortBy": "Sort by",
+                    "newest": "Newest First",
+                    "oldest": "Oldest First",
+                    "priceHighLow": "Price: High to Low",
+                    "priceLowHigh": "Price: Low to High",
+                    "popularity": "Most Popular"
+                },
+                "table": {
+                    "name": "Name",
+                    "category": "Category",
+                    "price": "Price",
+                    "createdDate": "Created Date",
+                    "status": "Status",
+                    "tags": "Tags",
+                    "actions": "Actions"
+                },
+                "status": {
+                    "available": "Available",
+                    "lowStock": "Low Stock",
+                    "soldOut": "Sold Out",
+                    "unavailable": "Unavailable"
+                },
+                "deleteConfirm": "Delete menu item?",
+                "deleteMessage": "Are you sure you want to delete this menu item? This action cannot be undone.",
+                "sort": {
+                    "nameAz": "Name (A-Z)"
+                },
+                "messages": {
+                    "createSuccess": "Item created successfully",
+                    "createSuccessWithPhotos": "Item created! You can now add photos and modifiers.",
+                    "updateSuccess": "Item updated successfully",
+                    "deleteSuccess": "Item deleted",
+                    "saveError": "Failed to save item",
+                    "deleteError": "Failed to delete item",
+                    "loadError": "Failed to load menu items",
+                    "loadDataError": "Failed to load data",
+                    "noRestaurant": "No restaurant assigned to your account"
+                },
+                "empty": {
+                    "noItems": "No items found.",
+                    "noRestaurantTitle": "No Restaurant Assigned",
+                    "noRestaurantDesc": "Your account doesn't have a restaurant assigned yet. Please contact the administrator to set up your restaurant."
+                },
+                "badges": {
+                    "chefChoice": "Chef's Choice"
+                },
+                "form": {
+                    "titleNew": "New Menu Item",
+                    "titleEdit": "Edit Menu Item",
+                    "titleCreate": "Create Menu Item",
+                    "titleEditName": "Editing {{name}}",
+                    "subtitleNew": "Add a new item to your menu",
+                    "tabs": {
+                        "details": "Details",
+                        "photos": "Photos",
+                        "modifiers": "Modifiers"
+                    },
+                    "infoBox": "First, save the basic item details. You can add photos and modifiers after the item is created.",
+                    "labels": {
+                        "name": "Item Name *",
+                        "category": "Category *",
+                        "price": "Price ($) *",
+                        "prepTime": "Prep Time (mins)",
+                        "description": "Description",
+                        "status": "Status",
+                        "chefRecommended": "Chef Recommended"
+                    },
+                    "placeholders": {
+                        "selectCategory": "Select Category",
+                        "name": "Item Name"
+                    },
+                    "validation": {
+                        "nameRequired": "Name is required",
+                        "nameMin": "Name must be at least 2 characters",
+                        "nameMax": "Name must not exceed 80 characters",
+                        "categoryRequired": "Category is required",
+                        "priceRequired": "Price is required",
+                        "pricePositive": "Price must be at least $0.01",
+                        "priceMax": "Price must not exceed $999,999",
+                        "prepTimeNegative": "Prep time cannot be negative",
+                        "prepTimeMax": "Prep time must not exceed 240 minutes",
+                        "descMax": "Description must not exceed 500 characters"
+                    },
+                    "buttons": {
+                        "create": "Create Item",
+                        "saveChanges": "Save Changes",
+                        "update": "Update Item",
+                        "saving": "Saving...",
+                        "done": "Done"
+                    }
+                },
+                "photos": {
+                    "title": "Item Photos",
+                    "uploadBtn": "Upload Photos",
+                    "uploadingBtn": "Uploading...",
+                    "primaryBadge": "Primary",
+                    "setPrimary": "Set as Primary",
+                    "deleteConfirm": "Delete this photo?",
+                    "deleteMessage": "Are you sure you want to delete this photo? This action cannot be undone.",
+                    "empty": "No photos uploaded yet.",
+                    "messages": {
+                        "uploadSuccess": "Photos uploaded successfully",
+                        "uploadError": "Failed to upload photos",
+                        "deleteSuccess": "Photo deleted",
+                        "deleteError": "Failed to delete photo",
+                        "primarySuccess": "Primary photo updated",
+                        "primaryError": "Failed to set primary photo"
+                    }
+                },
+                "modifiers": {
+                    "title": "Attached Modifier Groups",
+                    "titleList": "Modifier Groups",
+                    "subtitleList": "Manage customization options for your menu items.",
+                    "addGroup": "Add Group",
+                    "instruction": "Click on a modifier group to attach or detach it from this item.",
+                    "empty": "No modifier groups available. Create them in the Modifiers section.",
+                    "optionsCount": "{{count}} options",
+                    "select": "Select",
+                    "card": {
+                        "required": "Required",
+                        "options": "Options",
+                        "free": "Free"
+                    },
+                    "modal": {
+                        "titleNew": "New Modifier Group",
+                        "titleEdit": "Edit Modifier Group",
+                        "labels": {
+                            "name": "Group Name *",
+                            "selectionType": "Selection Type",
+                            "required": "Required Selection",
+                            "min": "Min Selections",
+                            "max": "Max Selections"
+                        },
+                        "placeholders": {
+                            "name": "e.g. Size, Toppings",
+                            "optionName": "Option Name",
+                            "price": "Price"
+                        },
+                        "types": {
+                            "single": "Single Select (Radio)",
+                            "multiple": "Multi Select (Checkbox)"
+                        },
+                        "options": {
+                            "title": "Options",
+                            "add": "Add Option"
+                        },
+                        "buttons": {
+                            "save": "Save Modifier Group",
+                            "saving": "Saving..."
+                        }
+                    },
+                    "delete": {
+                        "title": "Delete modifier group?",
+                        "message": "Are you sure you want to delete this modifier group? This will also remove it from all menu items. This action cannot be undone."
+                    },
+                    "messages": {
+                        "loadError": "Failed to load modifier groups",
+                        "updateSuccess": "Modifiers updated",
+                        "updateError": "Failed to update modifiers",
+                        "createSuccess": "Modifier group created",
+                        "saveSuccess": "Modifier group updated",
+                        "saveError": "Failed to save modifier group",
+                        "deleteSuccess": "Modifier group deleted",
+                        "deleteError": "Failed to delete modifier group"
+                    }
+                }
+            },
+            "categories": {
+                "title": "Menu Categories",
+                "subtitle": "Manage your menu categories and their display order",
+                "addCategory": "Add Category",
+                "editCategory": "Edit Category",
+                "table": {
+                    "order": "Order",
+                    "name": "Name",
+                    "description": "Description",
+                    "createdDate": "Created Date",
+                    "status": "Status",
+                    "items": "Items",
+                    "actions": "Actions"
+                },
+                "deleteConfirm": "Delete category?",
+                "deleteMessage": "Are you sure you want to delete this category? This will deactivate the category. This action cannot be undone.",
+                "sort": {
+                    "displayOrder": "Display Order",
+                    "name": "Name",
+                    "createdDate": "Creation Date"
+                },
+                "messages": {
+                    "createSuccess": "Category created successfully",
+                    "updateSuccess": "Category updated successfully",
+                    "deleteSuccess": "Category deactivated",
+                    "createError": "Failed to create category",
+                    "updateError": "Failed to save category",
+                    "deleteError": "Failed to delete category",
+                    "loadError": "Failed to load categories"
+                },
+                "modal": {
+                    "newTitle": "New Category",
+                    "editTitle": "Edit Category",
+                    "nameLabel": "Name *",
+                    "namePlaceholder": "Category Name",
+                    "descriptionLabel": "Description",
+                    "descriptionPlaceholder": "Optional description",
+                    "orderLabel": "Display Order",
+                    "orderPlaceholder": "0",
+                    "statusLabel": "Status",
+                    "saveBtn": "Save Category",
+                    "savingBtn": "Saving...",
+                    "validation": {
+                        "nameRequired": "Name is required",
+                        "nameMin": "Name must be at least 2 characters",
+                        "nameMax": "Name must be less than 50 characters",
+                        "descMax": "Description must not exceed 500 characters",
+                        "orderMin": "Order must be non-negative"
+                    }
+                },
+                "empty": "No categories found."
+            }
+        },
+        "orders": {
+            "title": "Orders",
+            "subtitle": "Manage and track restaurant orders",
+            "refresh": "Refresh",
+            "filters": {
+                "allStatuses": "All Statuses"
+            },
+            "status": {
+                "pending": "Pending",
+                "submitted": "Submitted",
+                "received": "Received",
+                "preparing": "Preparing",
+                "ready": "Ready",
+                "served": "Served",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "empty": "No orders found",
+            "emptyFilter": "No orders with status: {{status}}",
+            "emptyDesc": "Orders will appear here once customers place them",
+            "card": {
+                "orderId": "Order #{{id}}",
+                "table": "Table: {{number}}",
+                "items": "Items",
+                "more": "+{{count}} more"
+            },
+            "actions": {
+                "view": "View",
+                "markReceived": "Mark Received",
+                "startPreparing": "Start Preparing",
+                "markReady": "Mark Ready",
+                "markServed": "Mark Served",
+                "completeOrder": "Complete Order",
+                "cancelOrder": "Cancel Order",
+                "markAs": "Mark as {{status}}"
+            },
+            "details": {
+                "title": "Order Details",
+                "subtitle": "Order #{{id}}",
+                "status": "Status",
+                "tableNumber": "Table Number",
+                "orderDate": "Order Date",
+                "customerName": "Customer Name",
+                "customerPhone": "Customer Phone",
+                "specialInstructions": "Special Instructions",
+                "orderItems": "Order Items",
+                "modifiers": "Modifiers:",
+                "subtotal": "Subtotal",
+                "tax": "Tax",
+                "discount": "Discount",
+                "total": "Total",
+                "updateStatus": "Update Status",
+                "close": "Close"
+            },
+            "messages": {
+                "statusUpdated": "Order status updated",
+                "updateError": "Failed to update order status",
+                "loadError": "Failed to load orders",
+                "noRestaurant": "Restaurant ID not found. Please log in."
+            }
+        },
+        "tables": {
+            "title": "Table Management",
+            "actions": {
+                "regenAll": "Regen All",
+                "zip": "ZIP",
+                "pdf": "PDF",
+                "printPreview": "Print / Preview",
+                "addTable": "Add Table",
+                "refresh": "Refresh",
+                "downloadPNG": "Download PNG",
+                "downloadPDF": "Download PDF",
+                "generateQR": "Generate QR",
+                "viewQR": "View QR",
+                "print": "Print",
+                "edit": "Edit",
+                "activate": "Activate",
+                "deactivate": "Deactivate",
+                "confirmRegen": "Confirm Regeneration",
+                "cancel": "Cancel"
+            },
+            "filters": {
+                "allStatus": "All Status",
+                "sortByTableNumber": "Sort by Table Number",
+                "sortByCapacity": "Sort by Capacity",
+                "sortByCreated": "Sort by Created"
+            },
+            "empty": {
+                "title": "No Tables Found",
+                "descFilter": "Try adjusting your filters or create a new table.",
+                "descEmpty": "Get started by creating your first table.",
+                "createFirst": "Create First Table",
+                "summary": "Showing {{count}} table",
+                "summaryPlural": "Showing {{count}} tables"
+            },
+            "card": {
+                "qrReady": "QR Ready",
+                "capacityLabel": "Capacity",
+                "capacityUnit": "persons",
+                "created": "Created: {{date}}"
+            },
+            "form": {
+                "titleNew": "Create New Table",
+                "titleEdit": "Edit Table",
+                "labels": {
+                    "tableNumber": "Table Number",
+                    "capacity": "Capacity (1-20)",
+                    "location": "Location/Zone",
+                    "status": "Status",
+                    "customLocation": "Other (Custom)"
+                },
+                "placeholders": {
+                    "tableNumber": "e.g., A1, T-01, Table 1",
+                    "capacity": "Number of persons",
+                    "customLocation": "Enter custom location",
+                    "selectLocation": "Select a location"
+                },
+                "validation": {
+                    "tableNumberRequired": "Table number is required",
+                    "capacityRequired": "Capacity is required",
+                    "capacityRange": "Capacity must be between 1 and 20",
+                    "locationRequired": "Location is required"
+                },
+                "submit": {
+                    "create": "Create Table",
+                    "update": "Update Table",
+                    "saving": "Saving..."
+                }
+            },
+            "qr": {
+                "noQRTitle": "No QR Code Generated Yet",
+                "noQRDesc": "Generate a unique QR code for Table {{number}}",
+                "generateBtn": "Generate QR Code",
+                "previewTitle": "QR Code Preview - Table {{number}}",
+                "infoTitle": "Table Information",
+                "tableName": "Table Name:",
+                "capacity": "Capacity:",
+                "seats": "{{count}} seats",
+                "location": "Location:",
+                "qrCreated": "QR Created:",
+                "regenerate": "Regenerate"
+            },
+            "warning": {
+                "title": "Important Warning",
+                "message": "Are you sure you want to regenerate QR codes for ALL tables?",
+                "list": {
+                    "stopWorking": "All existing QR codes will stop working immediately.",
+                    "noOrders": "Customers using old QR codes will no longer be able to place orders.",
+                    "reprint": "You will need to reprint and replace all new QR codes."
+                }
+            },
+            "locations": {
+                "Ground Floor": "Ground Floor",
+                "Main Hall": "Main Hall",
+                "VIP Section": "VIP Section",
+                "Outdoor Terrace": "Outdoor Terrace",
+                "Bar Area": "Bar Area",
+                "Private Room": "Private Room",
+                "Garden": "Garden"
+            },
+            "status": {
+                "AVAILABLE": "Available",
+                "OCCUPIED": "Occupied",
+                "RESERVED": "Reserved",
+                "MAINTENANCE": "Maintenance"
+            },
+            "errors": {
+                "customerAccess": "Customers do not have access to restaurant tables.",
+                "fetchFailed": "Failed to fetch tables",
+                "toggleFailed": "Failed to toggle table status",
+                "generateFailed": "Failed to generate QR code",
+                "regenerateFailed": "Failed to regenerate QR code",
+                "downloadFailed": "Download failed. Please try again.",
+                "saveFailed": "Failed to save table"
+            },
+            "printPreview": {
+                "titleSingle": "Print Preview (Single Table)",
+                "titleAll": "Print Preview (All Tables)",
+                "layout": "Layout Options",
+                "singlePage": "Single Page",
+                "singlePageDesc": "1 QR per page",
+                "grid": "Grid Layout",
+                "gridDesc": "6 QRs per page",
+                "actions": "Actions",
+                "printNow": "Print Now",
+                "downloadPdf": "Download PDF",
+                "failed": "Failed to load preview"
+            }
+        },
+        "users": {
+            "title": "Staff Management",
+            "titleAdmin": "Admin Management",
+            "subtitle": "Manage restaurant staff accounts",
+            "subtitleAdmin": "Manage Admin accounts",
+            "addStaff": "Add Staff",
+            "addAdmin": "Add Admin",
+            "editStaff": "Edit Staff",
+            "filters": {
+                "filterByRole": "Filter by Role",
+                "filterByStatus": "Filter by Status",
+                "allRoles": "All Roles"
+            },
+            "roles": {
+                "super_admin": "Super Admin",
+                "admin": "Admin",
+                "waiter": "Waiter",
+                "kitchen": "Kitchen Staff"
+            },
+            "actions": {
+                "activate": "Activate",
+                "deactivate": "Deactivate"
+            },
+            "empty": "No users found",
+            "summary": "Showing {{count}} user",
+            "summaryPlural": "Showing {{count}} users",
+            "delete": {
+                "title": "Delete User",
+                "message": "Are you sure you want to permanently delete {{email}}? This action cannot be undone."
+            },
+            "status": {
+                "activateTitle": "Activate User?",
+                "deactivateTitle": "Deactivate User?",
+                "activateMessage": "Are you sure you want to activate {{name}}? They will be able to log in.",
+                "deactivateMessage": "Are you sure you want to deactivate {{name}}? They will not be able to log in."
+            }
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Welcome back",
+            "overview": "Overview",
+            "todayStats": "Today's Statistics",
+            "metrics": {
+                "todayRevenue": "Today's Revenue",
+                "currentOrders": "Current Orders",
+                "tableOccupancy": "Table Occupancy",
+                "avgOrderValue": "Avg Order Value",
+                "vsLastPeriod": "vs last period"
+            },
+            "sections": {
+                "activeOrders": "Active Orders",
+                "tableStatus": "Table Status",
+                "tableStatusDesc": "Real-time overview of the dining floor",
+                "liveUpdates": "Live Updates",
+                "recentActivity": "Recent Activity",
+                "recentActivityDesc": "Latest updates from your restaurant",
+                "revenueChart": "Revenue Over Time",
+                "topSelling": "Top Selling Items",
+                "quickActions": "Quick Actions",
+                "alerts": "Alerts"
+            },
+            "quickActions": {
+                "manageMenu": "Manage Menu",
+                "manageMenuDesc": "Add or edit menu items",
+                "kitchenDisplay": "Kitchen Display",
+                "kitchenDisplayDesc": "View live orders",
+                "tableSetup": "Table Setup",
+                "tableSetupDesc": "Configure tables",
+                "viewReports": "View Reports",
+                "viewReportsDesc": "Analytics & insights"
+            },
+            "orderStatus": {
+                "pending": "Pending",
+                "preparing": "Preparing",
+                "ready": "Ready",
+                "served": "Served",
+                "completed": "Completed",
+                "overdue": "Overdue",
+                "cancelled": "Cancelled",
+                "rejected": "Rejected"
+            },
+            "tableStatus": {
+                "available": "Available",
+                "occupied": "Occupied",
+                "reserved": "Reserved",
+                "cleaning": "Cleaning"
+            },
+            "dateRanges": {
+                "today": "Today",
+                "yesterday": "Yesterday",
+                "week": "This Week",
+                "month": "This Month",
+                "year": "This Year"
+            },
+            "time": {
+                "justNow": "Just now",
+                "minutesAgo": "{{count}}m ago",
+                "hoursAgo": "{{count}}h ago",
+                "daysAgo": "{{count}}d ago"
+            },
+            "chart": {
+                "peakHour": "Peak Hour",
+                "peakDate": "Peak Date",
+                "peakMonth": "Peak Month",
+                "orders": "Orders"
+            },
+            "alerts": {
+                "moreAlerts": "See {{count}} More Alerts"
+            },
+            "orders": {
+                "unknownItem": "Unknown Item",
+                "foodItem": "Food item",
+                "qty": "Qty:",
+                "details": "Order #{number}"
+            },
+            "tables": {
+                "tableNumber": "Table {{number}}",
+                "seats": "{{count}} Seats",
+                "noTables": "No tables found. Add tables to see them here."
+            },
+            "revenue": {
+                "title": "Revenue Analytics",
+                "subtitle": "Sales performance and order trends",
+                "noData": "No data available for the selected period",
+                "totalRevenue": "Total Revenue",
+                "totalOrders": "Total Orders",
+                "series": {
+                    "revenue": "Revenue",
+                    "orders": "Orders"
+                }
+            },
+            "activity": {
+                "noActivity": "No recent activity"
+            },
+            "items": {
+                "ordersCount": "{{count}} orders",
+                "growth": "{{count}}% growth",
+                "rank": "Rank #{{number}}",
+                "revenueLabel": "Revenue",
+                "ordersLabel": "Orders",
+                "mainMenu": "Main Menu"
+            },
+            "actions": {
+                "viewMenu": "View Menu"
+            }
+        },
+        "reports": {
+            "title": "Reports",
+            "subtitle": "View sales and performance reports",
+            "dateRange": "Date Range",
+            "topSellingItems": "Top Selling Items",
+            "revenueOverTime": "Revenue Over Time",
+            "peakHours": "Peak Hours",
+            "export": "Export Report"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "subtitle": "Manage your account and restaurant preferences",
+        "general": {
+            "title": "General",
+            "theme": {
+                "label": "Theme",
+                "description": "Choose your preferred theme",
+                "light": "Light",
+                "dark": "Dark"
+            },
+            "language": {
+                "label": "Language",
+                "description": "Select your preferred language",
+                "english": "English",
+                "vietnamese": "Vietnamese"
+            }
+        },
+        "account": {
+            "title": "Account Profile",
+            "fullName": "Full Name",
+            "email": "Email Address",
+            "phone": "Phone Number",
+            "avatar": "Profile Picture",
+            "changePassword": "Change Password",
+            "updateProfile": "Update Profile",
+            "uploadAvatar": "Upload Avatar",
+            "removeAvatar": "Remove Avatar"
+        },
+        "restaurant": {
+            "title": "Restaurant Profile",
+            "adminOnly": "Admin Only",
+            "name": "Restaurant Name",
+            "description": "Description",
+            "logo": "Restaurant Logo",
+            "phone": "Phone",
+            "email": "Email",
+            "address": "Address",
+            "timezone": "Timezone",
+            "currency": "Currency",
+            "businessHours": "Business Hours",
+            "updateRestaurant": "Update Restaurant",
+            "uploadLogo": "Upload Logo"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "comingSoon": "Coming Soon"
+        },
+        "advanced": {
+            "title": "Advanced",
+            "comingSoon": "Coming Soon"
+        },
+        "actions": {
+            "save": "Save Changes",
+            "cancel": "Cancel",
+            "update": "Update",
+            "delete": "Delete",
+            "upload": "Upload"
+        },
+        "messages": {
+            "updateSuccess": "Settings updated successfully",
+            "updateError": "Failed to update settings",
+            "uploadSuccess": "File uploaded successfully",
+            "uploadError": "Failed to upload file"
+        }
+    },
+    "password": {
+        "change": "Change Password",
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm New Password",
+        "requirements": "Password must be at least 8 characters",
+        "mismatch": "Passwords do not match",
+        "success": "Password changed successfully",
+        "error": "Failed to change password"
+    },
+    "kitchen": {
+        "dashboard": {
+            "title": "Kitchen Display System",
+            "subtitle": "Real-time order management and preparation tracking",
+            "liveUpdates": "Live Updates"
+        },
+        "columns": {
+            "received": "Received",
+            "preparing": "Preparing",
+            "ready": "Ready",
+            "noNewOrders": "No new orders",
+            "kitchenClear": "Kitchen is clear",
+            "noOrdersReady": "No orders ready"
+        },
+        "stats": {
+            "new": "New Orders",
+            "preparing": "Preparing",
+            "ready": "Ready",
+            "avgTime": "Avg Prep Time"
+        },
+        "filters": {
+            "labels": {
+                "status": "Status",
+                "priority": "Priority",
+                "sort": "Sort By"
+            },
+            "status": {
+                "all": "All Orders",
+                "new": "New Orders",
+                "preparing": "Preparing",
+                "ready": "Ready to Serve"
+            },
+            "priority": {
+                "all": "All Priorities",
+                "rush": "Rush Orders",
+                "normal": "Normal Orders"
+            },
+            "sort": {
+                "oldest": "Oldest First",
+                "newest": "Newest First",
+                "table": "Table Number (Low to High)",
+                "priority": "Priority First"
+            },
+            "actions": {
+                "refresh": "Refresh"
+            }
+        },
+        "orders": {
+            "status": {
+                "new": "New Order",
+                "preparing": "Preparing",
+                "ready": "Ready to Serve",
+                "unknown": "Unknown"
+            },
+            "card": {
+                "table": "TABLE",
+                "est": "Est: {{time}} min",
+                "elapsed": "Elapsed",
+                "overdue": "OVERDUE",
+                "rush": "Rush Order - Priority Service",
+                "allergens": "Allergens:",
+                "notes": "Order Notes"
+            },
+            "actions": {
+                "start": "Start Preparing",
+                "ready": "Mark as Ready",
+                "complete": "Complete Order",
+                "startAll": "START ALL",
+                "readyAll": "READY ALL",
+                "markAllReady": "Mark All Ready",
+                "cook": "Cook",
+                "done": "Done",
+                "itemReady": "Ready"
+            },
+            "noPendingItems": "No pending items to prepare.",
+            "waitingForWaiter": "Waiting for Waiter",
+            "modal": {
+                "unfinishedItemsTitle": "Unfinished Items",
+                "unfinishedItemsSubtitle": "Some items are not marked as Done",
+                "confirmReadyMessage": "Are you sure you want to mark this order as READY? The following items are still cooking/queued:"
+            }
+        },
+        "empty": {
+            "title": "No Active Orders",
+            "description": "All orders have been completed. The kitchen is ready for new orders.",
+            "action": "Refresh Orders"
+        }
+    },
+    "nav": {
+        "sections": {
+            "userManagement": "User Management",
+            "main": "Main",
+            "management": "Management",
+            "reports": "Reports",
+            "account": "Account"
+        },
+        "items": {
+            "manageAdmins": "Manage Admins",
+            "dashboard": "Dashboard",
+            "kitchen": "Kitchen Display",
+            "menu": "Menu Items",
+            "categories": "Categories",
+            "modifiers": "Modifiers",
+            "orders": "Orders",
+            "tables": "Tables",
+            "reports": "Reports & Analytics",
+            "BIreports": "BI Reports",
+            "staff": "Staff Management",
+            "settings": "Settings",
+            "help": "Help",
+            "menuBrowse": "Menu",
+            "cart": "Cart",
+            "orderStatus": "Order Status",
+            "profile": "Profile"
+        },
+        "user": {
+            "member": "Member",
+            "loginRegister": "Login / Register",
+            "logout": "Logout"
+        },
+        "language": {
+            "title": "Language",
+            "english": "English",
+            "vietnamese": "Vietnamese"
+        },
+        "kitchen": {
+            "title": "Kitchen Display",
+            "live": "Live",
+            "filter": "Filter orders",
+            "filters": {
+                "all": "All Orders",
+                "pending": "Pending",
+                "preparing": "Preparing",
+                "ready": "Ready"
+            }
+        }
+    },
+    "payment": {
+        "cardForm": {
+            "cardholderName": "Cardholder Name",
+            "cardholderNamePlaceholder": "Mori",
+            "cardDetails": "Card Details",
+            "saveCard": "Save this card for future orders",
+            "secureNote": "Your payment information is encrypted and secure. We use Stripe for payment processing.",
+            "pay": "Pay",
+            "processing": "Processing Payment...",
+            "errors": {
+                "nameRequired": "Please enter cardholder name",
+                "failed": "Payment failed. Please try again."
+            },
+            "loading": "Loading payment form..."
+        }
+    },
+    "restaurant": {
+        "create": {
+            "title": "Create Restaurant",
+            "subtitle": "Create a restaurant for admin:",
+            "form": {
+                "name": "Restaurant Name",
+                "description": "Description",
+                "phone": "Phone Number",
+                "email": "Email",
+                "address": "Address",
+                "timezone": "Timezone",
+                "currency": "Currency",
+                "placeholders": {
+                    "name": "e.g., Café Poirot",
+                    "description": "Brief description of your restaurant",
+                    "phone": "+84 123 456 789",
+                    "email": "restaurant@example.com",
+                    "address": "123 Street Name, City"
+                }
+            },
+            "info": {
+                "title": "Multi-Tenant System",
+                "content": "This restaurant will be exclusively assigned to the admin account. The admin will have full control over this restaurant's menu, tables, orders, and staff."
+            },
+            "buttons": {
+                "create": "Create Restaurant",
+                "creating": "Creating...",
+                "skip": "Skip for Now"
+            }
+        }
+    },
+    "customer": {
+        "onboarding": {
+            "title": "Smart Restaurant",
+            "subtitle": "Experience the future of dining",
+            "startMeal": "Start your meal",
+            "dineAsGuest": "Dine as Guest",
+            "orJoinUs": "Or join us",
+            "login": "Login",
+            "register": "Register",
+            "terms": "By continuing, you agree to our Terms of Service and Privacy Policy.",
+            "errors": {
+                "scanQR": "Please scan the QR code at your table to start ordering.",
+                "qrRequired": "A valid QR code is required."
+            }
+        },
+        "menu": {
+            "title": "Browse Our Menu",
+            "subtitle": "Discover delicious dishes crafted with fresh ingredients",
+            "search": {
+                "placeholder": "Search menu items...",
+                "noResults": "No items found",
+                "noResultsWithQuery": "We couldn't find any items matching \"{{query}}\". Try adjusting your search or filters.",
+                "noResultsFilters": "No items match your current filters. Try adjusting your selection.",
+                "tryAgain": "Try adjusting your search or filters"
+            },
+            "sort": {
+                "label": "Sort By",
+                "newest": "Newest Items",
+                "priceLowHigh": "Price: Low to High",
+                "priceHighLow": "Price: High to Low",
+                "nameAZ": "Name: A to Z",
+                "mostOrdered": "Most Ordered"
+            },
+            "showingItems": "Showing {{count}} items",
+            "activeFilters": "Active Filters:",
+            "categories": {
+                "all": "All Items",
+                "popular": "Popular"
+            },
+            "filters": {
+                "title": "Filters",
+                "dietary": "Dietary",
+                "price": "Price Range",
+                "availability": "Availability",
+                "sort": "Sort",
+                "sortBy": "Sort By",
+                "specialOptions": "Special Options",
+                "popularItems": "Popular Items Only",
+                "chefRecommended": "Chef Recommended",
+                "availableNow": "Available Now",
+                "reset": "Reset All",
+                "apply": "Apply Filters",
+                "active": "{{count}} filter active",
+                "active_plural": "{{count}} filters active"
+            },
+            "dietary": {
+                "vegetarian": "Vegetarian",
+                "vegan": "Vegan",
+                "glutenFree": "Gluten-Free",
+                "dairyFree": "Dairy-Free",
+                "nutFree": "Nut-Free",
+                "halal": "Halal"
+            },
+            "item": {
+                "addToCart": "Add to Cart",
+                "quickAdd": "Quick Add",
+                "customize": "Customize",
+                "viewDetails": "View Details",
+                "unavailable": "Currently Unavailable",
+                "availableNow": "Available Now",
+                "soldOut": "Sold Out",
+                "lowStock": "Low Stock",
+                "popular": "Popular",
+                "chefChoice": "Chef's Choice",
+                "prepTime": "{{time}} min"
+            },
+            "cart": {
+                "title": "My Order",
+                "subtitle": "Review your order and proceed to checkout",
+                "items": "{{count}} item in cart",
+                "items_plural": "{{count}} items in cart",
+                "yourItems": "Your Items ({{count}})",
+                "viewCart": "View Cart",
+                "addMore": "Add More",
+                "placeOrder": "Place Order",
+                "continueShopping": "Continue Shopping",
+                "billReady": "Bill Ready - Please review and proceed with payment below",
+                "features": {
+                    "tableService": {
+                        "title": "Table Service",
+                        "desc": "Your order will be delivered to your table"
+                    },
+                    "multipleOrders": {
+                        "title": "Multiple Orders",
+                        "desc": "You can place additional orders during your meal"
+                    },
+                    "securePayment": {
+                        "title": "Secure Payment",
+                        "desc": "All transactions are encrypted and secure"
+                    }
+                },
+                "modals": {
+                    "empty": {
+                        "title": "Empty Cart",
+                        "message": "Your cart is empty. Please add items from the menu."
+                    },
+                    "paymentRequired": {
+                        "title": "Payment Required",
+                        "message": "Please select a payment method before proceeding."
+                    },
+                    "missingInfo": {
+                        "title": "Missing Information",
+                        "message": "Missing table information. Please scan the QR code again."
+                    },
+                    "orderInProgress": {
+                        "title": "Order In Progress",
+                        "message": "You have an order in progress ({{status}}). Please wait for all items to be served before placing a new order."
+                    },
+                    "addToCurrent": {
+                        "title": "Add to Current Order",
+                        "message": "Would you like to add these items to your current order?"
+                    },
+                    "success": {
+                        "title": "Order Placed!",
+                        "message": "Your order #{{orderNumber}} has been placed successfully."
+                    },
+                    "failed": {
+                        "title": "Order Failed",
+                        "message": "Failed to place order. Please try again."
+                    }
+                },
+                "summary": {
+                    "title": "Order Summary",
+                    "items": "Items ({{count}})",
+                    "total": "Total",
+                    "estimatedTime": "Estimated Prep Time",
+                    "timeRange": "Your order will be ready in approximately {{min}}-{{max}} minutes"
+                },
+                "emptyState": {
+                    "title": "Your Cart is Empty",
+                    "description": "Looks like you haven't added any items to your cart yet. Browse our delicious menu and start ordering!",
+                    "browseMenu": "Browse Menu",
+                    "quickService": {
+                        "title": "Quick Service",
+                        "desc": "Orders ready in 20-25 minutes"
+                    },
+                    "freshIngredients": {
+                        "title": "Fresh Ingredients",
+                        "desc": "Made with quality ingredients"
+                    },
+                    "securePayment": {
+                        "title": "Secure Payment",
+                        "desc": "Safe and encrypted transactions"
+                    }
+                },
+                "specialInstructions": {
+                    "title": "Special Instructions",
+                    "description": "Add any dietary requirements, allergies, or special requests for the kitchen",
+                    "placeholder": "E.g., No onions, extra spicy, gluten-free preparation...",
+                    "optional": "Optional - Help us serve you better"
+                },
+                "paymentMethod": {
+                    "title": "Payment Method",
+                    "card": "Credit/Debit Card",
+                    "momo": "Momo Wallet",
+                    "cash": "Pay at Counter",
+                    "secure": "Secure",
+                    "fastSecure": "Fast & Secure",
+                    "savedCards": "Saved Cards",
+                    "addNewCard": "Add New Card",
+                    "cardNumber": "Card Number",
+                    "cardholderName": "Cardholder Name",
+                    "expiryDate": "Expiry Date",
+                    "cvv": "CVV",
+                    "saveCard": "Save this card for future orders",
+                    "encrypted": "Your payment information is encrypted and secure. We use Stripe for payment processing."
+                },
+                "tableInfo": {
+                    "title": "Table Information",
+                    "table": "Table {{number}}",
+                    "guests": "Up to {{count}} guests",
+                    "available": "Available",
+                    "occupied": "Occupied",
+                    "note": "Your order will be prepared and delivered directly to this table. Please ensure you stay at Table {{number}} to receive your items promptly."
+                },
+                "item": {
+                    "edit": "(Click to edit)",
+                    "note": "Note:",
+                    "each": "each"
+                }
+            },
+            "empty": {
+                "title": "No menu items found",
+                "description": "Try adjusting your filters or search criteria",
+                "action": "Clear Filters"
+            }
+        },
+        "itemDetail": {
+            "customization": {
+                "title": "Customize Your Order",
+                "required": "Required",
+                "optional": "Optional",
+                "addons": "(Add-ons)",
+                "select": "Select {{count}}",
+                "selectUpTo": "Select up to {{count}}",
+                "requiredError": "Please select a {{name}}",
+                "requiredDescription": "This option is required."
+            },
+            "quantity": "Quantity",
+            "addToCart": "Add to Cart - {{price}}",
+            "updateCart": "Update Cart",
+            "totalItems": "Total ({{count}} item)",
+            "totalItems_plural": "Total ({{count}} items)",
+            "unavailable": "Unavailable",
+            "reviewCount": "({{count}} reviews)",
+            "caloriesValue": "{{value}} cal",
+            "spicy": "Spicy",
+            "allergenInfo": "Allergen Information",
+            "contains": "Contains: {{allergens}}",
+            "loading": "Loading menu item...",
+            "notFound": {
+                "title": "Item Not Found",
+                "message": "The requested menu item could not be found."
+            },
+            "backToMenu": "Back to Menu",
+            "reviews": {
+                "title": "Customer Reviews",
+                "rating": "{{rating}} out of 5",
+                "viewAll": "View All Reviews",
+                "basedOn": "Based on {{count}} reviews"
+            },
+            "relatedItems": {
+                "title": "You May Also Like",
+                "viewAll": "View All",
+                "add": "Add",
+                "new": "New"
+            },
+            "nutritionalInfo": "Nutritional Information & Ingredients",
+            "nutritionFacts": "Nutrition Facts",
+            "ingredients": "Ingredients",
+            "nutrition": {
+                "calories": "Calories",
+                "protein": "Protein",
+                "carbs": "Carbs",
+                "fat": "Fat",
+                "fiber": "Fiber",
+                "sodium": "Sodium",
+                "sugar": "Sugar",
+                "cholesterol": "Cholesterol"
+            },
+            "specialInstructions": {
+                "title": "Special Instructions",
+                "placeholder": "e.g., No onions, extra sauce, well done...",
+                "description": "Let us know if you have any special requests for this item"
+            },
+            "gallery": {
+                "previous": "Previous image",
+                "next": "Next image",
+                "viewImage": "View image {{index}}"
+            }
+        },
+        "cart": {
+            "title": "Your Cart",
+            "subtitle": "Review your items and place your order",
+            "empty": {
+                "title": "Your cart is empty",
+                "description": "Add items from the menu to get started",
+                "action": "Browse Menu"
+            },
+            "item": {
+                "modifiers": "Customizations",
+                "instructions": "Special Instructions",
+                "edit": "Edit",
+                "remove": "Remove"
+            },
+            "orderSummary": {
+                "title": "Order Summary",
+                "subtotal": "Subtotal",
+                "tax": "Tax",
+                "discount": "Discount",
+                "total": "Total"
+            },
+            "yourItems": "Your Items ({{count}})",
+            "addMore": "Add More Items",
+            "table": {
+                "title": "Table Information",
+                "number": "Table {{number}}",
+                "verify": "Verify Table"
+            },
+            "tableInfo": {
+                "title": "Table Information",
+                "table": "Table {{number}}",
+                "guests": "{{count}} Guests",
+                "available": "Available",
+                "occupied": "Occupied",
+                "note": "You are ordering for {{number}}"
+            },
+            "summary": {
+                "title": "Order Summary",
+                "items": "{{count}} items",
+                "total": "Total",
+                "estimatedTime": "Estimated Prep Time",
+                "timeRange": "{{min}}-{{max}} minutes"
+            },
+            "specialInstructions": {
+                "title": "Order Notes (Optional)",
+                "placeholder": "Add any special requests for your order"
+            },
+            "modals": {
+                "empty": {
+                    "title": "Empty Cart",
+                    "message": "Your cart is empty. Please add items from the menu."
+                },
+                "paymentRequired": {
+                    "title": "Payment Required",
+                    "message": "Please select a payment method before proceeding."
+                },
+                "missingInfo": {
+                    "title": "Missing Information",
+                    "message": "Missing table information. Please scan the QR code again."
+                },
+                "orderInProgress": {
+                    "title": "Order In Progress",
+                    "message": "You have an order in progress ({{status}}). Please wait for all items to be served before placing a new order."
+                },
+                "addToCurrent": {
+                    "title": "Add to Current Order",
+                    "message": "Would you like to add these items to your current order?"
+                },
+                "success": {
+                    "title": "Order Placed!",
+                    "message": "Your order #{{orderNumber}} has been placed successfully."
+                },
+                "failed": {
+                    "title": "Order Failed",
+                    "message": "Failed to place order. Please try again."
+                }
+            },
+            "payment": {
+                "title": "Payment Method",
+                "selectMethod": "Select payment method",
+                "cash": "Cash",
+                "card": "Credit/Debit Card",
+                "momo": "MoMo Wallet",
+                "payNow": "Pay Now",
+                "payLater": "Pay Later"
+            },
+            "placeOrder": "Place Order",
+            "checkout": "Proceed to Checkout",
+            "continueShopping": "Continue Shopping",
+            "viewCart": "View Cart",
+            "billReady": "Your bill is ready for payment",
+            "features": {
+                "tableService": {
+                    "title": "Table Service",
+                    "desc": "Order delivery directly to your table"
+                },
+                "multipleOrders": {
+                    "title": "Multiple Orders",
+                    "desc": "Add items throughout your meal"
+                },
+                "securePayment": {
+                    "title": "Secure Payment",
+                    "desc": "Pay safely with multiple options"
+                }
+            }
+        },
+        "orderStatus": {
+            "title": "Order Status",
+            "orderNumber": "Order #{{number}}",
+            "table": "Table {{number}}",
+            "placedAt": "Placed at {{time}}",
+            "status": {
+                "pending": "Order Received",
+                "accepted": "Accepted",
+                "preparing": "Being Prepared",
+                "ready": "Ready to Serve",
+                "served": "Served",
+                "completed": "Completed"
+            },
+            "timeline": {
+                "title": "Order Timeline",
+                "pending": "Order placed",
+                "accepted": "Kitchen confirmed",
+                "preparing": "Food is being prepared",
+                "ready": "Order is ready",
+                "served": "Order served at table"
+            },
+            "items": {
+                "title": "Order Items",
+                "status": {
+                    "queued": "Queued",
+                    "cooking": "Cooking",
+                    "ready": "Ready"
+                }
+            },
+            "kitchenNotes": {
+                "title": "Kitchen Notes",
+                "estimatedTime": "Estimated time: {{time}} min"
+            },
+            "bill": {
+                "title": "Bill Summary",
+                "requestBill": "Request Bill",
+                "billRequested": "Bill Requested",
+                "payNow": "Pay Now",
+                "viewDetails": "View Details"
+            },
+            "actions": {
+                "backToMenu": "Back to Menu",
+                "orderMore": "Order More Items",
+                "notifications": "Enable Notifications"
+            },
+            "progress": "{{percent}}% Complete"
+        },
+        "orderHistory": {
+            "title": "Order History",
+            "empty": {
+                "title": "No orders yet",
+                "description": "Your past orders will appear here",
+                "action": "Start Ordering"
+            },
+            "filters": {
+                "all": "All Orders",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            },
+            "order": {
+                "date": "{{date}}",
+                "items": "{{count}} item",
+                "items_plural": "{{count}} items",
+                "total": "Total: {{amount}}",
+                "reorder": "Reorder",
+                "viewDetails": "View Details"
+            }
+        },
+        "profile": {
+            "title": "Profile",
+            "personalInfo": {
+                "title": "Personal Information",
+                "name": "Full Name",
+                "email": "Email",
+                "phone": "Phone Number",
+                "save": "Save Changes"
+            },
+            "preferences": {
+                "title": "Preferences",
+                "language": "Language",
+                "notifications": "Notifications",
+                "dietary": "Dietary Restrictions"
+            },
+            "orderHistory": {
+                "title": "Order History",
+                "viewAll": "View All Orders",
+                "empty": "You haven't placed any orders yet.",
+                "signInRequired": {
+                    "title": "Sign In Required",
+                    "message": "Please sign in to view your order history."
+                },
+                "itemCount": "{{count}} items",
+                "total": "Total",
+                "reorder": "Reorder",
+                "viewReceipt": "View Receipt"
+            },
+            "profile": {
+                "title": "Profile",
+                "guest": "Guest Customer",
+                "role": "Member",
+                "edit": "Edit Profile",
+                "tabs": {
+                    "history": "Order History",
+                    "settings": "Settings"
+                },
+                "settings": {
+                    "comingSoon": "Account settings are coming soon!"
+                },
+                "items": "Items: "
+            },
+            "logout": "Logout"
+        },
+        "orderTracking": {
+            "title": "Order Status",
+            "subtitle": "Track your order preparation in real-time",
+            "noOrder": {
+                "title": "No Active Order",
+                "message": "You don't have any active orders at the moment.",
+                "browseMenu": "Browse Menu"
+            },
+            "backToMenu": "Back to Menu",
+            "itemStatusTitle": "Item Status",
+            "notifications": {
+                "on": "Notifications On",
+                "off": "Notifications Off",
+                "billReady": "Your bill is ready! Total: {{total}}",
+                "proceedPayment": "You can now proceed with payment.",
+                "paymentSuccess": "Payment received! Thank you for your visit!",
+                "orderCompleted": "Your order has been completed successfully.",
+                "billRequested": "Bill requested successfully!",
+                "billRequestDesc": "The waiter will bring your bill shortly.",
+                "billRequestFail": "Failed to request bill",
+                "contactStaff": "Please try again or contact staff."
+            },
+            "status": {
+                "submitted": "Order Submitted",
+                "received": "Order Received",
+                "preparing": "Preparing",
+                "ready": "Ready to Serve",
+                "served": "Served",
+                "payment_pending": "Processing Bill",
+                "completed": "Paid & Completed",
+                "cancelled": "Cancelled",
+                "rejected": "Rejected",
+                "unknown": "Status Pending"
+            },
+            "timeline": {
+                "title": "Order Progress",
+                "estimatedTime": "Estimated ready time",
+                "overallProgress": "Overall Progress",
+                "timeRemaining": {
+                    "enjoy": "Enjoy your meal!",
+                    "ready": "Ready now"
+                },
+                "steps": {
+                    "submitted": "Order Submitted",
+                    "accepted": "Order Accepted",
+                    "preparing": "Preparing",
+                    "ready": "Ready to Serve",
+                    "served": "Served"
+                }
+            },
+            "header": {
+                "table": "Table {{number}}",
+                "items": "{{count}} items",
+                "elapsed": "{{time}} elapsed"
+            },
+            "itemStatus": {
+                "queued": "In Queue",
+                "cooking": "Cooking",
+                "ready": "Ready",
+                "served": "Served",
+                "completed": "Completed",
+                "rejected": "Rejected",
+                "unknown": "Unknown",
+                "preparedBy": "Prepared by: {{name}}",
+                "readyNow": "Ready now!",
+                "inProgress": "In progress"
+            },
+            "actions": {
+                "readyToPay": "Ready to Pay?",
+                "requestBill": "Request Bill",
+                "requestBillDesc": "Request your bill when you're ready to complete your order.",
+                "needHelp": "Need Help?",
+                "contactStaff": "Contact Staff",
+                "helpDesc": "If you have questions about your order, our staff is here to assist you."
+            },
+            "info": {
+                "realTimeUpdates": "Real-time Updates",
+                "updatesDesc": "This page automatically updates as your order progresses through preparation."
+            },
+            "bill": {
+                "restaurantName": "Smart Restaurant",
+                "tableDate": "Table {{table}} | {{date}}",
+                "orderNumber": "Order #{{number}}",
+                "subtotal": "Subtotal",
+                "tax": "Tax (10%)",
+                "discount": "Discount",
+                "total": "Total",
+                "payButton": "Pay {{amount}}",
+                "continueMomo": "Continue to MoMo",
+                "processing": "Processing Payment...",
+                "securePayment": "Secure payment processing by Smart Restaurant"
+            }
+        },
+        "payment": {
+            "result": {
+                "success": {
+                    "title": "Payment Successful!",
+                    "message": "Your payment has been processed",
+                    "orderNumber": "Order #{{number}}"
+                },
+                "failed": {
+                    "title": "Payment Failed",
+                    "message": "Your payment could not be processed",
+                    "tryAgain": "Try Again"
+                },
+                "pending": {
+                    "title": "Payment Pending",
+                    "helmet": "Processing Payment - Smart Restaurant",
+                    "message": "Your payment is being processed"
+                },
+                "actions": {
+                    "viewOrder": "View Order Status",
+                    "backToMenu": "Back to Menu",
+                    "backToCart": "Back to Cart"
+                },
+                "orderId": "Order ID",
+                "footer": "Need help? Contact our staff for assistance."
+            }
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Sign in to your account",
+            "subtitle": "Smart Restaurant Management System",
+            "email": "Email Address",
+            "password": "Password",
+            "submit": "Sign in",
+            "noAccount": "Don't have an account?",
+            "signUpLink": "Sign up here",
+            "testCredentials": {
+                "title": "Test Credentials:",
+                "email": "Email: admin@cafepoirot.com",
+                "password": "Password: password123"
+            },
+            "errors": {
+                "emailRequired": "Email is required",
+                "emailInvalid": "Invalid email address",
+                "passwordRequired": "Password is required"
+            },
+            "success": "Login successful!",
+            "failed": "Failed to login. Please check your credentials."
+        },
+        "register": {
+            "title": "Create an account",
+            "subtitle": "Join Smart Restaurant today",
+            "fullName": "Full Name",
+            "email": "Email Address",
+            "password": "Password",
+            "confirmPassword": "Confirm Password",
+            "submit": "Sign up",
+            "hasAccount": "Already have an account?",
+            "signInLink": "Sign in",
+            "passwordHint": "Must be 8+ characters with uppercase, lowercase, number, and special character",
+            "errors": {
+                "nameRequired": "Full name is required",
+                "nameMin": "Name must be at least 2 characters",
+                "namePattern": "Name must only contain letters and spaces",
+                "emailRequired": "Email is required",
+                "emailInvalid": "Invalid email address",
+                "passwordRequired": "Password is required",
+                "passwordMin": "Password must be at least 8 characters",
+                "passwordPattern": "Password must include uppercase, lowercase, number, and special character",
+                "confirmRequired": "Please confirm your password",
+                "passwordMismatch": "Passwords do not match"
+            },
+            "success": "Registration successful! Welcome!",
+            "successVerify": "Registration successful! Please check your email to verify.",
+            "failed": "Failed to register. Please try again."
+        },
+        "verifyEmail": {
+            "verifying": {
+                "title": "Verifying Email",
+                "message": "Verifying your email address..."
+            },
+            "success": {
+                "title": "Email Verified!",
+                "message": "Your email has been successfully verified!",
+                "button": "Go to Login"
+            },
+            "error": {
+                "title": "Verification Failed",
+                "messageDefault": "Failed to verify email. The link may be invalid or expired.",
+                "messageNoToken": "Invalid verification link. Token is missing.",
+                "button": "Back to Login"
+            },
+            "footer": "© {{year}} Smart Restaurant. All rights reserved."
+        }
+    },
+    "notFound": {
+        "title": "Page Not Found",
+        "message": "The page you're looking for doesn't exist. Let's get you back!",
+        "goBack": "Go Back",
+        "backToHome": "Back to Home"
+    },
+    "waiter": {
+        "header": {
+            "title": "Waiter Dashboard",
+            "role": "Waiter",
+            "logout": "Logout"
+        },
+        "tabs": {
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "ready": "Ready to Serve",
+            "tables": "My Tables",
+            "completed": "Completed"
+        },
+        "loading": "Loading...",
+        "error": "Failed to load orders. Please try again.",
+        "noOrders": "No orders found",
+        "noTables": "No assigned tables",
+        "processing": "processing...",
+        "time": {
+            "justNow": "Just now",
+            "minAgo": "{{count}} min ago",
+            "hoursAgo": "{{hours}}h {{minutes}}m ago"
+        },
+        "status": {
+            "SUBMITTED": "Pending",
+            "RECEIVED": "Accepted",
+            "PREPARING": "In Kitchen",
+            "READY": "Ready",
+            "SERVED": "Served",
+            "COMPLETED": "Paid & Completed"
+        },
+        "order": {
+            "number": "Order #{{number}}",
+            "table": "Table {{number}}",
+            "placedAt": "Placed at {{time}}",
+            "items": "{{count}} items",
+            "note": "Note",
+            "total": "Total",
+            "noActiveItems": "No active pending items.",
+            "showHistory": "Show History ({{count}})",
+            "hideHistory": "Hide History"
+        },
+        "action": {
+            "reject": "Reject",
+            "accept": "Accept & Send to Kitchen",
+            "serve": "Mark as Served",
+            "viewKitchen": "View in Kitchen",
+            "cancel": "Cancel"
+        },
+        "table": {
+            "location": "No location",
+            "capacity": "Capacity: {{count}}",
+            "activeOrders": "{{count}} active order(s)"
+        },
+        "bill": {
+            "title": "Bill Summary",
+            "requested": "Customer Requested Bill",
+            "requestedTitle": "Bill Requested",
+            "newRequest": "New customer request",
+            "tableNumber": "Table {{number}}",
+            "hasRequested": "has requested the bill",
+            "viewDetails": "View Order Details",
+            "summary": {
+                "title": "Bill Summary",
+                "subtotal": "Subtotal",
+                "tax": "Tax (10%)",
+                "discount": "Discount",
+                "total": "Total"
+            },
+            "number": "Bill #{{number}}",
+            "create": "Create Bill",
+            "print": "Print Bill",
+            "applyDiscount": "Apply Discount",
+            "processPayment": "Process Payment",
+            "created": "Bill created successfully!",
+            "createdDesc": "The customer can now proceed with payment.",
+            "paymentSuccess": "Payment processed successfully!",
+            "paymentDesc": "The order has been marked as paid."
+        },
+        "reject": {
+            "title": "Reject Order",
+            "reason": "Rejection Reason",
+            "reasonPlaceholder": "e.g., Out of stock, Kitchen overloaded...",
+            "error": "Please provide a rejection reason",
+            "cancel": "Cancel",
+            "confirm": "Confirm Reject"
+        },
+        "discount": {
+            "title": "Apply Discount",
+            "order": "Order",
+            "type": "Discount Type",
+            "percentage": "Percentage (%)",
+            "fixed": "Fixed Amount ($)",
+            "amount": "Amount",
+            "value": "Discount Value",
+            "valuePlaceholder": "Enter amount",
+            "current": "Current Total",
+            "newTotal": "New Total",
+            "cancel": "Cancel",
+            "apply": "Apply Discount",
+            "errors": {
+                "valueRequired": "Discount value is required",
+                "valueMin": "Discount must be greater than 0"
+            }
+        },
+        "payment": {
+            "title": "Process Payment",
+            "method": "Payment Method",
+            "methods": {
+                "cash": "Cash",
+                "card": "Card"
+            },
+            "cash": "Cash",
+            "card": "Card",
+            "momo": "MoMo",
+            "total": "Total Amount",
+            "cancel": "Cancel",
+            "confirm": "Confirm Payment"
+        },
+        "orderDetails": {
+            "title": "Order Details",
+            "table": "Table {{number}}",
+            "customerInfo": "Customer Information",
+            "name": "Name",
+            "phone": "Phone",
+            "orderInfo": "Order Information",
+            "items": "Order Items",
+            "quantity": "Quantity: {{count}}",
+            "billInfo": "Bill Information",
+            "close": "Close"
+        },
+        "notifications": {
+            "billRequested": "Bill Requested",
+            "billDesc": "Table {{table}} - {{order}} has requested the bill ({{total}})",
+            "paymentReceived": "Payment Received",
+            "paymentDesc": "Payment received successfully!",
+            "viewOrder": "View Order"
+        },
+        "toasts": {
+            "acceptFailed": "Failed to accept order",
+            "rejectFailed": "Failed to reject order",
+            "serveFailed": "Failed to mark order as served",
+            "billFailed": "Failed to create bill",
+            "discountFailed": "Failed to apply discount",
+            "printFailed": "Failed to print bill",
+            "paymentFailed": "Failed to process payment",
+            "orderDetailsFailed": "Failed to load order details",
+            "tryAgain": "Please try again."
+        }
+    }
+}

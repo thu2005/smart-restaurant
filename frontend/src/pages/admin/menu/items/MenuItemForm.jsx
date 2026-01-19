@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import menuService from "services/menuService";
 import Button from "components/ui/Button";
@@ -10,6 +11,7 @@ import PhotoManager from "./components/PhotoManager";
 import ModifierSelector from "./components/ModifierSelector";
 
 const MenuItemForm = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = !!id;
@@ -57,7 +59,7 @@ const MenuItemForm = () => {
         }
       } catch (error) {
         console.error(error);
-        toast.error("Failed to load data");
+        toast.error(t('admin.menu.items.messages.loadDataError'));
         if (isEditMode) navigate("/admin/menu/items");
       } finally {
         setLoading(false);
@@ -71,17 +73,17 @@ const MenuItemForm = () => {
       let savedItem;
       if (isEditMode) {
         savedItem = await menuService.updateItem(id, data);
-        toast.success("Item updated successfully");
+        toast.success(t('admin.menu.items.messages.updateSuccess'));
         setItemData(savedItem); // Update local state
       } else {
         savedItem = await menuService.createItem(data);
-        toast.success("Item created successfully");
+        toast.success(t('admin.menu.items.messages.createSuccess'));
         // Redirect to edit mode to allow adding photos/modifiers
         navigate(`/admin/menu/items/${savedItem.id}`, { replace: true });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to save item");
+      toast.error(t('admin.menu.items.messages.saveError'));
     }
   };
 
@@ -95,7 +97,7 @@ const MenuItemForm = () => {
     }
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <div className="p-6">{t('common.messages.loading')}</div>;
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -109,12 +111,12 @@ const MenuItemForm = () => {
         </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            {isEditMode ? "Edit Menu Item" : "Create Menu Item"}
+            {isEditMode ? t('admin.menu.items.form.titleEdit') : t('admin.menu.items.form.titleCreate')}
           </h1>
           <p className="text-muted-foreground">
             {isEditMode
-              ? `Editing ${itemData?.name}`
-              : "Add a new item to your menu"}
+              ? t('admin.menu.items.form.titleEditName', { name: itemData?.name })
+              : t('admin.menu.items.form.subtitleNew')}
           </p>
         </div>
       </div>
@@ -129,19 +131,19 @@ const MenuItemForm = () => {
               disabled={!isEditMode && tab !== "details"}
               className={`
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                ${
-                  activeTab === tab
-                    ? "border-primary text-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ${activeTab === tab
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }
-                ${
-                  !isEditMode && tab !== "details"
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
+                ${!isEditMode && tab !== "details"
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
                 }
               `}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === "details" && t('admin.menu.items.form.tabs.details')}
+              {tab === "photos" && t('admin.menu.items.form.tabs.photos')}
+              {tab === "modifiers" && t('admin.menu.items.form.tabs.modifiers')}
             </button>
           ))}
         </nav>
@@ -156,25 +158,25 @@ const MenuItemForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Item Name *
+                  {t('admin.menu.items.form.labels.name')}
                 </label>
                 <Input
-                  {...register("name", { required: "Name is required" })}
+                  {...register("name", { required: t('admin.menu.items.form.validation.nameRequired') })}
                   error={errors.name?.message}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category *
+                  {t('admin.menu.items.form.labels.category')}
                 </label>
                 <select
                   {...register("category_id", {
-                    required: "Category is required",
+                    required: t('admin.menu.items.form.validation.categoryRequired'),
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
-                  <option value="">Select Category</option>
+                  <option value="">{t('admin.menu.items.form.placeholders.selectCategory')}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -190,14 +192,14 @@ const MenuItemForm = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price *
+                  {t('admin.menu.items.form.labels.price')}
                 </label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register("price", {
-                    required: "Price is required",
-                    min: { value: 0.01, message: "Price must be positive" },
+                    required: t('admin.menu.items.form.validation.priceRequired'),
+                    min: { value: 0.01, message: t('admin.menu.items.form.validation.pricePositive') },
                   })}
                   error={errors.price?.message}
                 />
@@ -205,7 +207,7 @@ const MenuItemForm = () => {
 
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {t('admin.menu.items.form.labels.description')}
                 </label>
                 <textarea
                   {...register("description")}
@@ -216,7 +218,7 @@ const MenuItemForm = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Prep Time (mins)
+                  {t('admin.menu.items.form.labels.prepTime')}
                 </label>
                 <Input
                   type="number"
@@ -226,15 +228,15 @@ const MenuItemForm = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  {t('admin.menu.items.form.labels.status')}
                 </label>
                 <select
                   {...register("status")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
-                  <option value="available">Available</option>
-                  <option value="unavailable">Unavailable</option>
-                  <option value="sold_out">Sold Out</option>
+                  <option value="available">{t('admin.menu.items.status.available')}</option>
+                  <option value="unavailable">{t('admin.menu.items.status.unavailable')}</option>
+                  <option value="sold_out">{t('admin.menu.items.status.soldOut')}</option>
                 </select>
               </div>
 
@@ -249,7 +251,7 @@ const MenuItemForm = () => {
                   htmlFor="is_chef_recommended"
                   className="ml-2 block text-sm text-gray-900"
                 >
-                  Chef Recommended
+                  {t('admin.menu.items.form.labels.chefRecommended')}
                 </label>
               </div>
             </div>
@@ -257,10 +259,10 @@ const MenuItemForm = () => {
             <div className="flex justify-end pt-4 border-t">
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting
-                  ? "Saving..."
+                  ? t('admin.menu.items.form.buttons.saving')
                   : isEditMode
-                  ? "Update Item"
-                  : "Create Item"}
+                    ? t('admin.menu.items.form.buttons.update')
+                    : t('admin.menu.items.form.buttons.create')}
               </Button>
             </div>
           </form>

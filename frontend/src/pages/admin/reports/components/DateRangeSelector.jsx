@@ -1,12 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const DateRangeSelector = ({ value, onChange }) => {
+    const { t } = useTranslation();
+
     const presetRanges = [
-        { value: 'last7days', label: 'Last 7 Days' },
-        { value: 'last30days', label: 'Last 30 Days' },
-        { value: 'thisMonth', label: 'This Month' },
-        { value: 'lastMonth', label: 'Last Month' },
-        { value: 'custom', label: 'Custom Range' },
+        { value: 'last7days', label: t('reports.dateRange.last7days') },
+        { value: 'last30days', label: t('reports.dateRange.last30days') },
+        { value: 'thisMonth', label: t('reports.dateRange.thisMonth') },
+        { value: 'lastMonth', label: t('reports.dateRange.lastMonth') },
+        { value: 'custom', label: t('reports.dateRange.custom') },
     ];
 
     return (

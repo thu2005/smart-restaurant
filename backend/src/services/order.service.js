@@ -859,11 +859,23 @@ class OrderService {
 
   async generateBillPDF(orderId, res) {
     const PDFDocument = require("pdfkit");
+    const { formatCurrency } = require("../utils/currency");
     const billData = await this.getBillDetails(orderId);
+
+    // Fetch restaurant currency
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: billData.order.restaurantId },
+      select: { currency: true },
+    });
+
+    const currency = restaurant?.currency || "VND";
 
     const doc = new PDFDocument({ margin: 50 });
 
     doc.pipe(res);
+
+    // Use Helvetica font for better Unicode support (including ₫)
+    doc.font("Helvetica");
 
     // Header
     doc.fontSize(20).text("RESTAURANT BILL", { align: "center" });
@@ -888,8 +900,8 @@ class OrderService {
       const y = doc.y;
       doc.text(item.name, 50, y, { width: 190 });
       doc.text(item.quantity.toString(), 250, y);
-      doc.text("$" + item.unitPrice.toFixed(2), 350, y);
-      doc.text("$" + item.total.toFixed(2), 450, y);
+      doc.text(formatCurrency(item.unitPrice, currency), 350, y);
+      doc.text(formatCurrency(item.total, currency), 450, y);
 
       if (item.modifiers && item.modifiers.length > 0) {
         doc
@@ -909,7 +921,7 @@ class OrderService {
     const rightColX = 350;
     doc.text("Subtotal:", rightColX);
     doc.text(
-      "$" + billData.bill.subtotal.toFixed(2),
+      formatCurrency(billData.bill.subtotal, currency),
       450,
       doc.y - doc.currentLineHeight(),
     );
@@ -917,7 +929,7 @@ class OrderService {
     if (billData.bill.discount > 0) {
       doc.text("Discount:", rightColX);
       doc.text(
-        "-$" + billData.bill.discount.toFixed(2),
+        "-" + formatCurrency(billData.bill.discount, currency),
         450,
         doc.y - doc.currentLineHeight(),
       );
@@ -925,14 +937,14 @@ class OrderService {
 
     doc.text("Tax (10%):", rightColX);
     doc.text(
-      "$" + billData.bill.tax.toFixed(2),
+      formatCurrency(billData.bill.tax, currency),
       450,
       doc.y - doc.currentLineHeight(),
     );
 
     doc.font("Helvetica-Bold").text("TOTAL:", rightColX, doc.y + 10);
     doc.text(
-      "$" + billData.bill.total.toFixed(2),
+      formatCurrency(billData.bill.total, currency),
       450,
       doc.y - doc.currentLineHeight(),
     );

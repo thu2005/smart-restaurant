@@ -1,0 +1,2028 @@
+{
+    "common": {
+        "loading": "Đang tải...",
+        "error": "Đã xảy ra lỗi",
+        "actions": {
+            "save": "Lưu",
+            "cancel": "Hủy",
+            "delete": "Xóa",
+            "edit": "Sửa",
+            "add": "Thêm",
+            "create": "Tạo",
+            "update": "Cập Nhật",
+            "search": "Tìm Kiếm",
+            "filter": "Lọc",
+            "export": "Xuất",
+            "import": "Nhập",
+            "upload": "Tải Lên",
+            "download": "Tải Xuống",
+            "submit": "Gửi",
+            "confirm": "Xác Nhận",
+            "back": "Quay Lại",
+            "next": "Tiếp Theo",
+            "previous": "Trước",
+            "close": "Đóng",
+            "viewAll": "Xem Tất Cả",
+            "refresh": "Làm Mới",
+            "reset": "Đặt Lại",
+            "apply": "Áp Dụng",
+            "clear": "Xóa",
+            "viewDetails": "Xem Chi Tiết",
+            "dismiss": "Bỏ Qua",
+            "showLess": "Thu Gọn",
+            "processing": "Đang Xử Lý...",
+            "deleting": "Đang Xóa...",
+            "activate": "Kích hoạt",
+            "deactivate": "Vô hiệu hóa"
+        },
+        "status": {
+            "active": "Hoạt Động",
+            "inactive": "Không Hoạt Động",
+            "available": "Có Sẵn",
+            "unavailable": "Không Có Sẵn",
+            "pending": "Đang Chờ",
+            "completed": "Hoàn Thành",
+            "lowStock": "Sắp Hết",
+            "soldOut": "Hết Hàng",
+            "processing": "Đang Xử Lý...",
+            "na": "N/A",
+            "notAvailable": "Không khả dụng"
+        },
+        "messages": {
+            "loading": "Đang tải...",
+            "noData": "Không có dữ liệu",
+            "error": "Đã xảy ra lỗi",
+            "success": "Thành công",
+            "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+            "deleteConfirm": "Bạn có chắc chắn muốn xóa {{item}}?",
+            "cannotUndo": "Hành động này không thể hoàn tác",
+            "deleteSuccess": "Xóa thành công",
+            "deleteError": "Không thể xóa",
+            "updateSuccess": "Cập nhật thành công",
+            "updateError": "Không thể cập nhật",
+            "createSuccess": "Tạo thành công",
+            "createError": "Không thể tạo",
+            "saveSuccess": "Lưu thành công",
+            "saveError": "Không thể lưu",
+            "requiredFields": "Vui lòng điền vào tất cả các trường bắt buộc"
+        },
+        "status": {
+            "processing": "Đang xử lý...",
+            "na": "K/C"
+        },
+        "pagination": {
+            "showingPage": "Đang hiển thị trang",
+            "showing": "Hiển thị {{count}} trong {{total}} mục",
+            "previous": "Trước",
+            "next": "Tiếp"
+        },
+        "time": {
+            "min": "phút"
+        },
+        "errorBoundary": {
+            "title": "Đã xảy ra lỗi",
+            "message": "Chúng tôi gặp lỗi không mong muốn khi xử lý yêu cầu của bạn.",
+            "back": "Quay lại"
+        }
+    },
+    "reports": {
+        "title": "Báo Cáo & Phân Tích",
+        "subtitle": "Theo dõi hiệu suất và thông tin chi tiết của nhà hàng",
+        "loading": "Đang tải báo cáo...",
+        "error": {
+            "title": "Tải Báo Cáo Thất Bại",
+            "retry": "Thử Lại"
+        },
+        "metabase": {
+            "title": "Phân Tích Vận Hành",
+            "openInMetabase": "Mở trong Metabase ↗",
+            "unavailableTitle": "Bảng điều khiển phân tích không khả dụng",
+            "unavailableSetupTitle": "Cần thiết lập:",
+            "unavailableSetupSteps": {
+                "embedding": "Vào Metabase Admin - Embedding",
+                "enableEmbedding": "Bật \"Embedding in other applications\"",
+                "envInstructions": "Thêm các biến sau vào file .env của backend:",
+                "envSiteUrl": "METABASE_SITE_URL=http://localhost:3000",
+                "envSecretKey": "METABASE_SECRET_KEY=your_secret_key",
+                "envDashboardId": "METABASE_DASHBOARD_ID=1"
+            },
+            "connectionError": "Không thể kết nối tới Máy chủ Phân tích",
+            "configError": "Không thể tải cấu hình bảng điều khiển"
+        },
+        "dateRange": {
+            "last7days": "7 Ngày Qua",
+            "last30days": "30 Ngày Qua",
+            "thisMonth": "Tháng Này",
+            "lastMonth": "Tháng Trước",
+            "custom": "Tùy Chỉnh"
+        },
+        "export": {
+            "pdf": "Xuất PDF",
+            "csv": "Xuất CSV",
+            "pdfTitle": "Xuất dưới dạng PDF",
+            "csvTitle": "Xuất dưới dạng CSV"
+        },
+        "metrics": {
+            "totalRevenue": "Tổng Doanh Thu",
+            "totalOrders": "Tổng Đơn Hàng",
+            "avgOrderValue": "Giá Trị Đơn Trung Bình",
+            "avgPrepTime": "Thời Gian Chuẩn Bị TB",
+            "vsLastPeriod": "so với kỳ trước",
+            "currentPeriod": "Kỳ hiện tại"
+        },
+        "charts": {
+            "revenueOverTime": {
+                "title": "Doanh Thu Theo Thời Gian",
+                "subtitle": "Theo dõi xu hướng doanh thu qua các khoảng thời gian khác nhau",
+                "noData": "Không có dữ liệu cho khoảng thời gian đã chọn",
+                "revenue": "Doanh Thu",
+                "orders": "Đơn Hàng",
+                "daily": "Theo Ngày",
+                "weekly": "Theo Tuần",
+                "monthly": "Theo Tháng"
+            },
+            "peakHours": {
+                "title": "Giờ Cao Điểm",
+                "subtitle": "Giờ bận rộn nhất dựa trên số lượng đơn hàng",
+                "noData": "Không có dữ liệu giờ cao điểm",
+                "orders": "Đơn Hàng"
+            }
+        },
+        "topItems": {
+            "title": "Món Bán Chạy Nhất",
+            "subtitle": "Món ăn hoạt động tốt nhất theo doanh thu",
+            "viewAll": "Xem Tất Cả",
+            "noData": "Không có dữ liệu bán hàng",
+            "rank": "Hạng",
+            "item": "Món Ăn",
+            "category": "Danh Mục",
+            "orders": "Đơn Hàng",
+            "revenue": "Doanh Thu",
+            "trend": "Xu Hướng",
+            "modal": {
+                "title": "Món Bán Chạy Nhất - Danh Sách Đầy Đủ",
+                "close": "Đóng"
+            }
+        }
+    },
+    "admin": {
+        "management": {
+            "title": "Quản Lý Nhân Viên",
+            "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+            "adminTitle": "Quản Lý Quản Trị Viên",
+            "adminSubtitle": "Quản lý tài khoản Quản trị viên",
+            "addStaff": "Thêm Nhân Viên",
+            "addAdmin": "Thêm Quản Trị Viên",
+            "filters": {
+                "role": "Lọc theo Vai Trò",
+                "status": "Lọc theo Trạng Thái",
+                "allRoles": "Tất Cả Vai Trò",
+                "allStatus": "Tất Cả Trạng Thái"
+            },
+            "table": {
+                "user": "Người Dùng",
+                "role": "Vai Trò",
+                "restaurant": "Nhà Hàng",
+                "status": "Trạng Thái",
+                "created": "Ngày Tạo",
+                "actions": "Thao Tác",
+                "noUsers": "Không tìm thấy người dùng"
+            },
+            "create": {
+                "title": "Thêm Nhân Viên Mới",
+                "subtitle": "Tạo tài khoản nhân viên mới",
+                "adminTitle": "Thêm Quản Trị Viên Mới",
+                "adminSubtitle": "Tạo tài khoản quản trị viên mới",
+                "form": {
+                    "fullName": "Họ và Tên",
+                    "fullNamePlaceholder": "Nhập họ và tên",
+                    "email": "Địa Chỉ Email",
+                    "emailPlaceholder": "Nhập địa chỉ email",
+                    "password": "Mật Khẩu",
+                    "passwordPlaceholder": "Nhập mật khẩu",
+                    "phone": "Số Điện Thoại",
+                    "phonePlaceholder": "Nhập số điện thoại (tùy chọn)",
+                    "role": "Vai Trò",
+                    "rolePlaceholder": "Chọn vai trò",
+                    "restaurant": "Nhà Hàng",
+                    "restaurantPlaceholder": "Chọn nhà hàng",
+                    "restaurantId": "Nhà Hàng",
+                    "restaurantIdHelp": "Chọn nhà hàng cho người dùng này",
+                    "submit": "Tạo Tài Khoản",
+                    "cancel": "Hủy"
+                },
+                "validation": {
+                    "nameRequired": "Họ và tên là bắt buộc (tối thiểu 2 ký tự)",
+                    "emailRequired": "Email là bắt buộc",
+                    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+                    "passwordRequired": "Mật khẩu là bắt buộc (tối thiểu 8 ký tự)",
+                    "roleRequired": "Vui lòng chọn vai trò",
+                    "restaurantRequired": "Vui lòng chọn nhà hàng"
+                },
+                "buttons": {
+                    "submit": "Tạo Tài Khoản",
+                    "cancel": "Hủy",
+                    "creating": "Đang tạo..."
+                }
+            },
+            "edit": {
+                "title": "Sửa Thông Tin Nhân Viên",
+                "subtitle": "Cập nhật thông tin tài khoản nhân viên",
+                "adminTitle": "Sửa Quản Trị Viên",
+                "adminSubtitle": "Cập nhật thông tin tài khoản quản trị viên",
+                "form": {
+                    "fullName": "Họ và Tên",
+                    "fullNamePlaceholder": "Nhập họ và tên",
+                    "email": "Địa Chỉ Email",
+                    "emailPlaceholder": "Nhập địa chỉ email",
+                    "phone": "Số Điện Thoại",
+                    "phonePlaceholder": "Nhập số điện thoại (tùy chọn)",
+                    "password": "Mật Khẩu",
+                    "passwordPlaceholder": "Để trống để giữ mật khẩu hiện tại",
+                    "passwordHelp": "Để trống để giữ mật khẩu hiện tại",
+                    "role": "Vai Trò",
+                    "rolePlaceholder": "Chọn vai trò",
+                    "roleHelp": "Vai trò người dùng không thể thay đổi sau khi tạo",
+                    "restaurant": "Nhà Hàng",
+                    "restaurantPlaceholder": "Chọn nhà hàng",
+                    "status": "Trạng Thái Tài Khoản",
+                    "submit": "Cập Nhật Người Dùng",
+                    "submitting": "Đang cập nhật..."
+                },
+                "validation": {
+                    "nameRequired": "Họ và tên là bắt buộc (tối thiểu 2 ký tự)",
+                    "emailRequired": "Email là bắt buộc",
+                    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+                    "roleRequired": "Vui lòng chọn vai trò",
+                    "restaurantRequired": "Vui lòng chọn nhà hàng"
+                },
+                "buttons": {
+                    "submit": "Cập Nhật Tài Khoản",
+                    "cancel": "Hủy",
+                    "updating": "Đang cập nhật..."
+                },
+                "notFound": "Không tìm thấy người dùng"
+            }
+        },
+        "roles": {
+            "admin": "Quản Trị Viên",
+            "super_admin": "Quản Trị Viên Cấp Cao",
+            "waiter": "Phục Vụ",
+            "kitchen": "Bếp",
+            "manager": "Quản Lý"
+        },
+        "toast": {
+            "userCreated": "Tạo người dùng thành công",
+            "userUpdated": "Cập nhật người dùng thành công",
+            "userDeleted": "Xóa người dùng thành công",
+            "statusUpdated": "Cập nhật trạng thái thành công",
+            "updateStatusError": "Không thể cập nhật trạng thái",
+            "deleteError": "Không thể xóa người dùng",
+            "error": "Đã xảy ra lỗi. Vui lòng thử lại."
+        },
+        "menu": {
+            "items": {
+                "title": "Món Ăn",
+                "subtitle": "Quản lý thực đơn nhà hàng",
+                "addItem": "Thêm Món",
+                "editItem": "Sửa Món",
+                "searchPlaceholder": "Tìm kiếm món ăn...",
+                "filters": {
+                    "allCategories": "Tất Cả Danh Mục",
+                    "allStatuses": "Tất Cả Trạng Thái",
+                    "sortBy": "Sắp xếp theo",
+                    "newest": "Mới Nhất",
+                    "oldest": "Cũ Nhất",
+                    "priceHighLow": "Giá: Cao đến Thấp",
+                    "priceLowHigh": "Giá: Thấp đến Cao",
+                    "popularity": "Phổ Biến Nhất"
+                },
+                "table": {
+                    "name": "Tên",
+                    "category": "Danh Mục",
+                    "price": "Giá",
+                    "createdDate": "Ngày Tạo",
+                    "status": "Trạng Thái",
+                    "tags": "Thẻ",
+                    "actions": "Thao Tác"
+                },
+                "status": {
+                    "available": "Có Sẵn",
+                    "lowStock": "Sắp Hết",
+                    "soldOut": "Hết Hàng",
+                    "unavailable": "Không Có Sẵn"
+                },
+                "deleteConfirm": "Xóa món ăn?",
+                "deleteMessage": "Bạn có chắc chắn muốn xóa món ăn này? Hành động này không thể hoàn tác.",
+                "sort": {
+                    "nameAz": "Tên (A-Z)"
+                },
+                "messages": {
+                    "createSuccess": "Tạo món ăn thành công",
+                    "createSuccessWithPhotos": "Đã tạo món ăn! Bạn có thể thêm ảnh và tùy chọn bổ sung ngay.",
+                    "updateSuccess": "Cập nhật món ăn thành công",
+                    "deleteSuccess": "Đã xóa món ăn",
+                    "saveError": "Không thể lưu món ăn",
+                    "deleteError": "Không thể xóa món ăn",
+                    "loadError": "Không thể tải menu",
+                    "loadDataError": "Không thể tải dữ liệu",
+                    "noRestaurant": "Tài khoản của bạn chưa được gán nhà hàng"
+                },
+                "empty": {
+                    "noItems": "Không tìm thấy món ăn nào.",
+                    "noRestaurantTitle": "Chưa Gán Nhà Hàng",
+                    "noRestaurantDesc": "Tài khoản của bạn chưa được gán nhà hàng nào. Vui lòng liên hệ quản trị viên để thiết lập."
+                },
+                "badges": {
+                    "chefChoice": "Bếp Trưởng Khuyên Dùng"
+                },
+                "form": {
+                    "titleNew": "Món Ăn Mới",
+                    "titleEdit": "Sửa Món Ăn",
+                    "titleCreate": "Tạo Món Ăn",
+                    "titleEditName": "Đang sửa {{name}}",
+                    "subtitleNew": "Thêm món ăn mới vào thực đơn",
+                    "tabs": {
+                        "details": "Chi Tiết",
+                        "photos": "Hình Ảnh",
+                        "modifiers": "Tùy Chọn"
+                    },
+                    "infoBox": "Trước tiên, hãy lưu thông tin cơ bản. Bạn có thể thêm ảnh và tùy chọn bổ sung sau khi món ăn được tạo.",
+                    "labels": {
+                        "name": "Tên Món *",
+                        "category": "Danh Mục *",
+                        "price": "Giá ($) *",
+                        "prepTime": "Thời Gian Chuẩn Bị (phút)",
+                        "description": "Mô Tả",
+                        "status": "Trạng Thái",
+                        "chefRecommended": "Bếp Trưởng Khuyên Dùng"
+                    },
+                    "placeholders": {
+                        "selectCategory": "Chọn Danh Mục",
+                        "name": "Tên Món Ăn"
+                    },
+                    "validation": {
+                        "nameRequired": "Tên là bắt buộc",
+                        "nameMin": "Tên phải có ít nhất 2 ký tự",
+                        "nameMax": "Tên không được vượt quá 80 ký tự",
+                        "categoryRequired": "Danh mục là bắt buộc",
+                        "priceRequired": "Giá là bắt buộc",
+                        "pricePositive": "Giá phải ít nhất là $0.01",
+                        "priceMax": "Giá không được vượt quá $999,999",
+                        "prepTimeNegative": "Thời gian chuẩn bị không được âm",
+                        "prepTimeMax": "Thời gian chuẩn bị không được quá 240 phút",
+                        "descMax": "Mô tả không được vượt quá 500 ký tự"
+                    },
+                    "buttons": {
+                        "create": "Tạo Món Ăn",
+                        "saveChanges": "Lưu Thay Đổi",
+                        "update": "Cập nhật Món Ăn",
+                        "saving": "Đang Lưu...",
+                        "done": "Hoàn Tất"
+                    }
+                },
+                "photos": {
+                    "title": "Hình Ảnh Món Ăn",
+                    "uploadBtn": "Tải Ảnh Lên",
+                    "uploadingBtn": "Đang Tải...",
+                    "primaryBadge": "Ảnh Chính",
+                    "setPrimary": "Đặt Làm Ảnh Chính",
+                    "deleteConfirm": "Xóa ảnh này?",
+                    "deleteMessage": "Bạn có chắc chắn muốn xóa ảnh này? Hành động này không thể hoàn tác.",
+                    "empty": "Chưa có ảnh nào được tải lên.",
+                    "messages": {
+                        "uploadSuccess": "Tải ảnh lên thành công",
+                        "uploadError": "Không thể tải ảnh lên",
+                        "deleteSuccess": "Đã xóa ảnh",
+                        "deleteError": "Không thể xóa ảnh",
+                        "primarySuccess": "Đã cập nhật ảnh chính",
+                        "primaryError": "Không thể đặt ảnh chính"
+                    }
+                },
+                "modifiers": {
+                    "title": "Nhóm Tùy Chọn Đã Gán",
+                    "titleList": "Nhóm Tùy Chọn",
+                    "subtitleList": "Quản lý các tùy chọn tùy chỉnh cho món ăn của bạn.",
+                    "addGroup": "Thêm Nhóm",
+                    "instruction": "Nhấp vào nhóm tùy chọn để gán hoặc bỏ gán khỏi món ăn này.",
+                    "empty": "Không có nhóm tùy chọn nào. Hãy tạo chúng trong phần Tùy Chọn.",
+                    "optionsCount": "{{count}} tùy chọn",
+                    "select": "Chọn",
+                    "card": {
+                        "required": "Bắt Buộc",
+                        "options": "Các Tùy Chọn",
+                        "free": "Miễn Phí"
+                    },
+                    "modal": {
+                        "titleNew": "Nhóm Tùy Chọn Mới",
+                        "titleEdit": "Sửa Nhóm Tùy Chọn",
+                        "labels": {
+                            "name": "Tên Nhóm *",
+                            "selectionType": "Loại Chọn",
+                            "required": "Bắt Buộc Chọn",
+                            "min": "Chọn Tối Thiểu",
+                            "max": "Chọn Tối Đa"
+                        },
+                        "placeholders": {
+                            "name": "ví dụ: Kích Cỡ, Topping",
+                            "optionName": "Tên Tùy Chọn",
+                            "price": "Giá"
+                        },
+                        "types": {
+                            "single": "Chọn Đơn (Radio)",
+                            "multiple": "Chọn Nhiều (Checkbox)"
+                        },
+                        "options": {
+                            "title": "Danh Sách Tùy Chọn",
+                            "add": "Thêm Tùy Chọn"
+                        },
+                        "buttons": {
+                            "save": "Lưu Nhóm Tùy Chọn",
+                            "saving": "Đang Lưu..."
+                        }
+                    },
+                    "delete": {
+                        "title": "Xóa nhóm tùy chọn?",
+                        "message": "Bạn có chắc chắn muốn xóa nhóm tùy chọn này? Hành động này sẽ xóa nó khỏi tất cả món ăn. Không thể hoàn tác."
+                    },
+                    "messages": {
+                        "loadError": "Không thể tải nhóm tùy chọn",
+                        "updateSuccess": "Đã cập nhật tùy chọn",
+                        "updateError": "Không thể cập nhật tùy chọn",
+                        "createSuccess": "Đã tạo nhóm tùy chọn",
+                        "saveSuccess": "Đã cập nhật nhóm tùy chọn",
+                        "saveError": "Không thể lưu nhóm tùy chọn",
+                        "deleteSuccess": "Đã xóa nhóm tùy chọn",
+                        "deleteError": "Không thể xóa nhóm tùy chọn"
+                    }
+                }
+            },
+            "categories": {
+                "title": "Danh Mục Món Ăn",
+                "subtitle": "Quản lý danh mục và thứ tự hiển thị",
+                "addCategory": "Thêm Danh Mục",
+                "editCategory": "Sửa Danh Mục",
+                "table": {
+                    "order": "Thứ Tự",
+                    "name": "Tên",
+                    "description": "Mô Tả",
+                    "createdDate": "Ngày Tạo",
+                    "status": "Trạng Thái",
+                    "items": "Số Món",
+                    "actions": "Thao Tác"
+                },
+                "deleteConfirm": "Xóa danh mục?",
+                "deleteMessage": "Bạn có chắc chắn muốn xóa danh mục này? Danh mục sẽ bị vô hiệu hóa. Hành động này không thể hoàn tác.",
+                "sort": {
+                    "displayOrder": "Thứ Tự Hiển Thị",
+                    "name": "Tên",
+                    "createdDate": "Ngày Tạo"
+                },
+                "messages": {
+                    "createSuccess": "Tạo danh mục thành công",
+                    "updateSuccess": "Cập nhật danh mục thành công",
+                    "deleteSuccess": "Đã vô hiệu hóa danh mục",
+                    "createError": "Không thể tạo danh mục",
+                    "updateError": "Không thể lưu danh mục",
+                    "deleteError": "Không thể xóa danh mục",
+                    "loadError": "Không thể tải danh mục"
+                },
+                "modal": {
+                    "newTitle": "Danh Mục Mới",
+                    "editTitle": "Sửa Danh Mục",
+                    "nameLabel": "Tên *",
+                    "namePlaceholder": "Tên Danh Mục",
+                    "descriptionLabel": "Mô Tả",
+                    "descriptionPlaceholder": "Mô tả tùy chọn",
+                    "orderLabel": "Thứ Tự Hiển Thị",
+                    "orderPlaceholder": "0",
+                    "statusLabel": "Trạng Thái",
+                    "saveBtn": "Lưu Danh Mục",
+                    "savingBtn": "Đang Lưu...",
+                    "validation": {
+                        "nameRequired": "Tên là bắt buộc",
+                        "nameMin": "Tên phải có ít nhất 2 ký tự",
+                        "nameMax": "Tên phải ít hơn 50 ký tự",
+                        "descMax": "Mô tả không được vượt quá 500 ký tự",
+                        "orderMin": "Thứ tự không được âm"
+                    }
+                },
+                "empty": "Không tìm thấy danh mục nào."
+            }
+        },
+        "orders": {
+            "title": "Đơn Hàng",
+            "subtitle": "Quản lý và theo dõi đơn hàng nhà hàng",
+            "refresh": "Làm Mới",
+            "filters": {
+                "allStatuses": "Tất Cả Trạng Thái"
+            },
+            "status": {
+                "pending": "Chờ Xử Lý",
+                "submitted": "Đã Gửi",
+                "received": "Đã Nhận",
+                "preparing": "Đang Chuẩn Bị",
+                "ready": "Sẵn Sàng",
+                "served": "Đã Phục Vụ",
+                "completed": "Hoàn Thành",
+                "cancelled": "Đã Hủy"
+            },
+            "empty": "Không có đơn hàng nào",
+            "emptyFilter": "Không có đơn hàng với trạng thái: {{status}}",
+            "emptyDesc": "Đơn hàng sẽ xuất hiện ở đây khi khách hàng đặt món",
+            "card": {
+                "orderId": "Đơn #{{id}}",
+                "table": "Bàn: {{number}}",
+                "items": "Món",
+                "more": "+{{count}} thêm"
+            },
+            "actions": {
+                "view": "Xem",
+                "markReceived": "Đã Nhận Đơn",
+                "startPreparing": "Bắt Đầu Nấu",
+                "markReady": "Báo Sẵn Sàng",
+                "markServed": "Đã Phục Vụ",
+                "completeOrder": "Hoàn Thành Đơn",
+                "cancelOrder": "Hủy Đơn",
+                "markAs": "Đánh dấu là {{status}}"
+            },
+            "details": {
+                "title": "Chi Tiết Đơn Hàng",
+                "subtitle": "Đơn #{{id}}",
+                "status": "Trạng Thái",
+                "tableNumber": "Số Bàn",
+                "orderDate": "Ngày Đặt",
+                "customerName": "Tên Khách Hàng",
+                "customerPhone": "SĐT Khách Hàng",
+                "specialInstructions": "Ghi Chú Đặc Biệt",
+                "orderItems": "Món Đã Đặt",
+                "modifiers": "Tùy chọn:",
+                "subtotal": "Tạm Tính",
+                "tax": "Thuế",
+                "discount": "Giảm Giá",
+                "total": "Tổng Cộng",
+                "updateStatus": "Cập Nhật Trạng Thái",
+                "close": "Đóng"
+            },
+            "messages": {
+                "statusUpdated": "Cập nhật trạng thái đơn hàng thành công",
+                "updateError": "Không thể cập nhật trạng thái đơn hàng",
+                "loadError": "Không thể tải danh sách đơn hàng",
+                "noRestaurant": "Không tìm thấy ID nhà hàng. Vui lòng đăng nhập."
+            }
+        },
+        "tables": {
+            "title": "Quản Lý Bàn",
+            "actions": {
+                "regenAll": "Tạo Lại Tất Cả",
+                "zip": "ZIP",
+                "pdf": "PDF",
+                "printPreview": "In / Xem Trước",
+                "addTable": "Thêm Bàn",
+                "refresh": "Làm Mới",
+                "downloadPNG": "Tải PNG",
+                "downloadPDF": "Tải PDF",
+                "generateQR": "Tạo QR",
+                "viewQR": "Xem QR",
+                "print": "In",
+                "edit": "Sửa",
+                "activate": "Kích Hoạt",
+                "deactivate": "Vô Hiệu Hóa",
+                "confirmRegen": "Xác Nhận Tạo Lại",
+                "cancel": "Hủy"
+            },
+            "filters": {
+                "allStatus": "Tất Cả Trạng Thái",
+                "sortByTableNumber": "Sắp xếp theo Số Bàn",
+                "sortByCapacity": "Sắp xếp theo Sức Chứa",
+                "sortByCreated": "Sắp xếp theo Ngày Tạo"
+            },
+            "empty": {
+                "title": "Không Tìm Thấy Bàn",
+                "descFilter": "Hãy thử điều chỉnh bộ lọc hoặc tạo bàn mới.",
+                "descEmpty": "Bắt đầu bằng cách tạo bàn đầu tiên của bạn.",
+                "createFirst": "Tạo Bàn Đầu Tiên",
+                "summary": "Hiển thị {{count}} bàn",
+                "summaryPlural": "Hiển thị {{count}} bàn"
+            },
+            "card": {
+                "qrReady": "Đã Có QR",
+                "capacityLabel": "Sức chứa",
+                "capacityUnit": "người",
+                "created": "Đã tạo: {{date}}"
+            },
+            "form": {
+                "titleNew": "Tạo Bàn Mới",
+                "titleEdit": "Sửa Bàn",
+                "labels": {
+                    "tableNumber": "Số Bàn",
+                    "capacity": "Sức Chứa (1-20)",
+                    "location": "Vị Trí/Khu Vực",
+                    "status": "Trạng Thái",
+                    "customLocation": "Khác (Tùy Chỉnh)"
+                },
+                "placeholders": {
+                    "tableNumber": "Ví dụ: A1, T-01, Bàn 1",
+                    "capacity": "Số lượng người",
+                    "customLocation": "Nhập vị trí tùy chỉnh",
+                    "selectLocation": "Chọn vị trí"
+                },
+                "validation": {
+                    "tableNumberRequired": "Số bàn là bắt buộc",
+                    "capacityRequired": "Sức chứa là bắt buộc",
+                    "capacityRange": "Sức chứa phải từ 1 đến 20",
+                    "locationRequired": "Vị trí là bắt buộc"
+                },
+                "submit": {
+                    "create": "Tạo Bàn",
+                    "update": "Cập Nhật Bàn",
+                    "saving": "Đang Lưu..."
+                }
+            },
+            "qr": {
+                "noQRTitle": "Chưa Có Mã QR",
+                "noQRDesc": "Tạo mã QR duy nhất cho Bàn {{number}}",
+                "generateBtn": "Tạo Mã QR",
+                "previewTitle": "Xem Trước Mã QR - Bàn {{number}}",
+                "infoTitle": "Thông Tin Bàn",
+                "tableName": "Tên Bàn:",
+                "capacity": "Sức Chứa:",
+                "seats": "{{count}} ghế",
+                "location": "Vị Trí:",
+                "qrCreated": "QR Được Tạo:",
+                "regenerate": "Tạo Lại"
+            },
+            "warning": {
+                "title": "Cảnh Báo Quan Trọng",
+                "message": "Bạn có chắc chắn muốn tạo lại mã QR cho TẤT CẢ các bàn không?",
+                "list": {
+                    "stopWorking": "Tất cả các mã QR hiện có sẽ ngừng hoạt động ngay lập tức.",
+                    "noOrders": "Khách hàng sử dụng mã QR cũ sẽ không thể đặt món được nữa.",
+                    "reprint": "Bạn sẽ cần in lại và thay thế tất cả các mã QR mới."
+                }
+            },
+            "locations": {
+                "Ground Floor": "Tầng Trệt",
+                "Main Hall": "Sảnh Chính",
+                "VIP Section": "Khu VIP",
+                "Outdoor Terrace": "Sân Thượng Ngoài Trời",
+                "Bar Area": "Khu Quầy Bar",
+                "Private Room": "Phòng Riêng",
+                "Garden": "Sân Vườn"
+            },
+            "status": {
+                "AVAILABLE": "Trống",
+                "OCCUPIED": "Đang Có Khách",
+                "RESERVED": "Đã Đặt",
+                "MAINTENANCE": "Bảo Trì"
+            },
+            "errors": {
+                "customerAccess": "Khách hàng không có quyền truy cập vào bàn nhà hàng.",
+                "fetchFailed": "Không thể tải danh sách bàn",
+                "toggleFailed": "Không thể thay đổi trạng thái bàn",
+                "generateFailed": "Không thể tạo mã QR",
+                "regenerateFailed": "Không thể tạo lại mã QR",
+                "downloadFailed": "Tải xuống thất bại. Vui lòng thử lại.",
+                "saveFailed": "Không thể lưu bàn"
+            }
+        },
+        "users": {
+            "title": "Quản Lý Nhân Viên",
+            "titleAdmin": "Quản Lý Admin",
+            "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+            "subtitleAdmin": "Quản lý tài khoản Admin",
+            "management": {
+                "title": "Quản Lý Nhân Viên",
+                "subtitle": "Quản lý tài khoản nhân viên nhà hàng",
+                "adminTitle": "Quản Lý Quản Trị Viên",
+                "adminSubtitle": "Quản lý tài khoản Quản trị viên",
+                "addStaff": "Thêm Nhân Viên",
+                "addAdmin": "Thêm Quản Trị Viên",
+                "filters": {
+                    "role": "Lọc theo Vai Trò",
+                    "status": "Lọc theo Trạng Thái",
+                    "allRoles": "Tất Cả Vai Trò",
+                    "allStatus": "Tất Cả Trạng Thái"
+                },
+                "table": {
+                    "user": "Người Dùng",
+                    "role": "Vai Trò",
+                    "restaurant": "Nhà Hàng",
+                    "status": "Trạng Thái",
+                    "created": "Ngày Tạo",
+                    "actions": "Thao Tác",
+                    "noUsers": "Không tìm thấy người dùng nào"
+                },
+                "create": {
+                    "title": "Thêm Nhân Viên",
+                    "adminTitle": "Thêm Quản Trị Viên",
+                    "subtitle": "Tạo tài khoản Bồi bàn hoặc Đầu bếp mới",
+                    "adminSubtitle": "Tạo tài khoản Quản trị viên mới",
+                    "success": "Tạo người dùng thành công",
+                    "form": {
+                        "fullName": "Họ và Tên",
+                        "fullNamePlaceholder": "Nguyễn Văn A",
+                        "email": "Email",
+                        "emailPlaceholder": "nguyenvana@example.com",
+                        "password": "Mật Khẩu",
+                        "passwordPlaceholder": "Tối thiểu 6 ký tự",
+                        "phone": "Số Điện Thoại",
+                        "phonePlaceholder": "0912 345 678",
+                        "role": "Vai Trò",
+                        "restaurantId": "Mã Nhà Hàng",
+                        "restaurantIdHelp": "Tự động thiết lập cho nhà hàng của bạn",
+                        "adminRoleHelp": "Siêu Quản Trị chỉ có thể tạo tài khoản Quản trị viên",
+                        "submit": "Tạo Nhân Viên",
+                        "adminSubmit": "Tạo Quản Trị Viên",
+                        "submitting": "Đang tạo...",
+                        "cancel": "Hủy"
+                    }
+                },
+                "edit": {
+                    "title": "Sửa Nhân Viên",
+                    "adminTitle": "Sửa Quản Trị Viên",
+                    "subtitle": "Cập nhật thông tin nhân viên",
+                    "adminSubtitle": "Cập nhật thông tin quản trị viên",
+                    "success": "Cập nhật người dùng thành công",
+                    "notFound": "Không tìm thấy người dùng",
+                    "form": {
+                        "fullName": "Họ và Tên",
+                        "email": "Email",
+                        "phone": "Số Điện Thoại",
+                        "password": "Mật Khẩu Mới",
+                        "passwordPlaceholder": "Để trống nếu không muốn thay đổi",
+                        "passwordHelp": "Chỉ điền nếu muốn đổi mật khẩu",
+                        "role": "Vai Trò",
+                        "roleHelp": "Không thể thay đổi vai trò",
+                        "submit": "Lưu Thay Đổi",
+                        "submitting": "Đang lưu...",
+                        "cancel": "Hủy"
+                    }
+                }
+            },
+            "toast": {
+                "updateStatusSuccess": "Cập nhật trạng thái người dùng thành công",
+                "deleteSuccess": "Xóa người dùng thành công"
+            },
+            "roles": {
+                "super_admin": "Quản Trị Viên Cấp Cao",
+                "admin": "Quản Trị Viên",
+                "waiter": "Phục Vụ",
+                "kitchen": "Nhân Viên Bếp"
+            },
+            "actions": {
+                "activate": "Kích Hoạt",
+                "deactivate": "Vô Hiệu Hóa"
+            },
+            "empty": "Không tìm thấy người dùng nào",
+            "summary": "Hiển thị {{count}} người dùng",
+            "summaryPlural": "Hiển thị {{count}} người dùng",
+            "delete": {
+                "title": "Xóa Người Dùng",
+                "message": "Bạn có chắc chắn muốn xóa vĩnh viễn {{email}}? Hành động này không thể hoàn tác."
+            },
+            "status": {
+                "activateTitle": "Kích Hoạt Người Dùng?",
+                "deactivateTitle": "Vô Hiệu Hóa Người Dùng?",
+                "activateMessage": "Bạn có chắc chắn muốn kích hoạt {{name}}? Họ sẽ có thể đăng nhập.",
+                "deactivateMessage": "Bạn có chắc chắn muốn vô hiệu hóa {{name}}? Họ sẽ không thể đăng nhập."
+            }
+        },
+        "dashboard": {
+            "title": "Bảng Điều Khiển",
+            "welcome": "Chào mừng trở lại",
+            "overview": "Tổng Quan",
+            "todayStats": "Thống Kê Hôm Nay",
+            "metrics": {
+                "todayRevenue": "Doanh Thu Hôm Nay",
+                "currentOrders": "Đơn Hàng Hiện Tại",
+                "tableOccupancy": "Tỷ Lệ Lấp Đầy Bàn",
+                "avgOrderValue": "Giá Trị Đơn Trung Bình",
+                "series": {
+                    "revenue": "Doanh Thu",
+                    "orders": "Đơn Hàng"
+                },
+                "vsLastPeriod": "so với kỳ trước"
+            },
+            "sections": {
+                "activeOrders": "Đơn Hàng Đang Hoạt Động",
+                "tableStatus": "Trạng Thái Bàn",
+                "tableStatusDesc": "Tổng quan thời gian thực về khu vực bàn ăn",
+                "liveUpdates": "Cập Nhật Trực Tiếp",
+                "recentActivity": "Hoạt Động Gần Đây",
+                "recentActivityDesc": "Cập nhật mới nhất từ nhà hàng",
+                "revenueChart": "Doanh Thu Theo Thời Gian",
+                "topSelling": "Món Bán Chạy",
+                "quickActions": "Thao Tác Nhanh",
+                "alerts": "Cảnh Báo"
+            },
+            "quickActions": {
+                "manageMenu": "Quản Lý Thực Đơn",
+                "manageMenuDesc": "Thêm hoặc sửa món ăn",
+                "kitchenDisplay": "Màn Hình Bếp",
+                "kitchenDisplayDesc": "Xem đơn hàng trực tiếp",
+                "tableSetup": "Thiết Lập Bàn",
+                "tableSetupDesc": "Cấu hình bàn ăn",
+                "viewReports": "Xem Báo Cáo",
+                "viewReportsDesc": "Phân tích & thống kê"
+            },
+            "orderStatus": {
+                "pending": "Chờ Xử Lý",
+                "preparing": "Đang Chuẩn Bị",
+                "ready": "Sẵn Sàng",
+                "served": "Đã Phục Vụ",
+                "completed": "Hoàn Thành",
+                "overdue": "Quá Giờ",
+                "cancelled": "Đã Hủy",
+                "rejected": "Từ Chối"
+            },
+            "tableStatus": {
+                "available": "Trống",
+                "occupied": "Đang Dùng",
+                "reserved": "Đã Đặt",
+                "cleaning": "Đang Dọn"
+            },
+            "dateRanges": {
+                "today": "Hôm Nay",
+                "yesterday": "Hôm Qua",
+                "week": "Tuần Này",
+                "month": "Tháng Này",
+                "year": "Năm Nay"
+            },
+            "time": {
+                "justNow": "Vừa xong",
+                "minutesAgo": "{{count}} phút trước",
+                "hoursAgo": "{{count}} giờ trước",
+                "daysAgo": "{{count}} ngày trước"
+            },
+            "chart": {
+                "peakHour": "Giờ Cao Điểm",
+                "peakDate": "Ngày Cao Điểm",
+                "peakMonth": "Tháng Cao Điểm",
+                "orders": "Đơn Hàng"
+            },
+            "alerts": {
+                "moreAlerts": "Xem thêm {{count}} cảnh báo"
+            },
+            "orders": {
+                "unknownItem": "Món Không Xác Định",
+                "foodItem": "Món ăn",
+                "qty": "SL:",
+                "details": "Đơn hàng #{{number}}"
+            },
+            "tables": {
+                "tableNumber": "Bàn {{number}}",
+                "seats": "{{count}} Ghế",
+                "noTables": "Không tìm thấy bàn nào. Thêm bàn để xem tại đây."
+            },
+            "revenue": {
+                "title": "Phân Tích Doanh Thu",
+                "subtitle": "Hiệu suất bán hàng và xu hướng đơn hàng",
+                "noData": "Không có dữ liệu cho khoảng thời gian này",
+                "totalRevenue": "Tổng Doanh Thu",
+                "totalOrders": "Tổng Đơn Hàng",
+                "series": {
+                    "revenue": "Doanh Thu",
+                    "orders": "Đơn Hàng"
+                }
+            },
+            "activity": {
+                "noActivity": "Không có hoạt động gần đây"
+            },
+            "items": {
+                "ordersCount": "{{count}} đơn",
+                "growth": "tăng trưởng {{count}}%",
+                "rank": "Hạng #{{number}}",
+                "revenueLabel": "Doanh Thu",
+                "ordersLabel": "Đơn Hàng",
+                "mainMenu": "Thực Đơn Chính"
+            },
+            "actions": {
+                "viewMenu": "Xem Thực Đơn"
+            }
+        },
+        "reports": {
+            "title": "Báo Cáo",
+            "subtitle": "Xem báo cáo doanh thu và hiệu suất",
+            "dateRange": "Khoảng Thời Gian",
+            "topSellingItems": "Món Bán Chạy",
+            "revenueOverTime": "Doanh Thu Theo Thời Gian",
+            "peakHours": "Giờ Cao Điểm",
+            "export": "Xuất Báo Cáo"
+        }
+    },
+    "settings": {
+        "title": "Cài Đặt",
+        "subtitle": "Quản lý tài khoản và tùy chọn nhà hàng",
+        "general": {
+            "title": "Chung",
+            "theme": {
+                "label": "Giao Diện",
+                "description": "Chọn giao diện ưa thích",
+                "light": "Sáng",
+                "dark": "Tối"
+            },
+            "language": {
+                "label": "Ngôn Ngữ",
+                "description": "Chọn ngôn ngữ ưa thích",
+                "english": "Tiếng Anh",
+                "vietnamese": "Tiếng Việt"
+            }
+        },
+        "account": {
+            "title": "Hồ Sơ Tài Khoản",
+            "fullName": "Họ và Tên",
+            "email": "Địa Chỉ Email",
+            "phone": "Số Điện Thoại",
+            "avatar": "Ảnh Đại Diện",
+            "changePassword": "Đổi Mật Khẩu",
+            "updateProfile": "Cập Nhật Hồ Sơ",
+            "uploadAvatar": "Tải Ảnh Lên",
+            "removeAvatar": "Xóa Ảnh"
+        },
+        "restaurant": {
+            "title": "Hồ Sơ Nhà Hàng",
+            "adminOnly": "Chỉ Quản Trị Viên",
+            "name": "Tên Nhà Hàng",
+            "description": "Mô Tả",
+            "logo": "Logo Nhà Hàng",
+            "phone": "Điện Thoại",
+            "email": "Email",
+            "address": "Địa Chỉ",
+            "timezone": "Múi Giờ",
+            "currency": "Tiền Tệ",
+            "businessHours": "Giờ Làm Việc",
+            "updateRestaurant": "Cập Nhật Nhà Hàng",
+            "uploadLogo": "Tải Logo Lên"
+        },
+        "notifications": {
+            "title": "Thông Báo",
+            "comingSoon": "Sắp Ra Mắt"
+        },
+        "advanced": {
+            "title": "Nâng Cao",
+            "comingSoon": "Sắp Ra Mắt"
+        },
+        "actions": {
+            "save": "Lưu Thay Đổi",
+            "cancel": "Hủy",
+            "update": "Cập Nhật",
+            "delete": "Xóa",
+            "upload": "Tải Lên"
+        },
+        "messages": {
+            "updateSuccess": "Cập nhật cài đặt thành công",
+            "updateError": "Không thể cập nhật cài đặt",
+            "uploadSuccess": "Tải tệp lên thành công",
+            "uploadError": "Không thể tải tệp lên"
+        },
+        "tables": {
+            "title": "Quản Lý Bàn",
+            "subtitle": "Thiết lập và quản lý sơ đồ bàn",
+            "saveFailed": "Lưu bàn thất bại",
+            "printPreview": {
+                "titleSingle": "Xem trước in (Một bàn)",
+                "titleAll": "Xem trước in (Tất cả bàn)",
+                "layout": {
+                    "title": "Tùy Chọn Bố Cục",
+                    "single": "Trang Đơn",
+                    "singleDesc": "1 QR mỗi trang",
+                    "grid": "Bố Cục Lưới",
+                    "gridDesc": "6 QR mỗi trang"
+                },
+                "actions": {
+                    "title": "Thao Tác",
+                    "print": "In Ngay",
+                    "download": "Tải PDF"
+                },
+                "failed": "Không thể tải xem trước"
+            }
+        }
+    },
+    "password": {
+        "change": "Đổi Mật Khẩu",
+        "current": "Mật Khẩu Hiện Tại",
+        "new": "Mật Khẩu Mới",
+        "confirm": "Xác Nhận Mật Khẩu Mới",
+        "requirements": "Mật khẩu phải có ít nhất 8 ký tự",
+        "mismatch": "Mật khẩu không khớp",
+        "success": "Đổi mật khẩu thành công",
+        "error": "Không thể đổi mật khẩu"
+    },
+    "kitchen": {
+        "dashboard": {
+            "title": "Hệ Thống Màn Hình Bếp",
+            "subtitle": "Quản lý đơn hàng và theo dõi chế biến theo thời gian thực",
+            "liveUpdates": "Cập Nhật Trực Tiếp"
+        },
+        "columns": {
+            "received": "Đã Nhận",
+            "preparing": "Đang Nấu",
+            "ready": "Sẵn Sàng",
+            "noNewOrders": "Không có đơn mới",
+            "kitchenClear": "Bếp đã xong việc",
+            "noOrdersReady": "Chưa có đơn sẵn sàng"
+        },
+        "stats": {
+            "new": "Đơn Mới",
+            "preparing": "Đang Chế Biến",
+            "ready": "Sẵn Sàng",
+            "avgTime": "Thời Gian TB"
+        },
+        "filters": {
+            "labels": {
+                "status": "Trạng Thái",
+                "priority": "Mức Độ Ưu Tiên",
+                "sort": "Sắp Xếp"
+            },
+            "status": {
+                "all": "Tất Cả Đơn",
+                "new": "Đơn Mới",
+                "preparing": "Đang Chế Biến",
+                "ready": "Sẵn Sàng Phục Vụ"
+            },
+            "priority": {
+                "all": "Tất Cả Mức Độ",
+                "rush": "Đơn Khẩn Cấp",
+                "normal": "Đơn Thường"
+            },
+            "sort": {
+                "oldest": "Cũ Nhất Trước",
+                "newest": "Mới Nhất Trước",
+                "table": "Số Bàn (Thấp đến Cao)",
+                "priority": "Ưu Tiên Trước"
+            },
+            "actions": {
+                "refresh": "Làm Mới"
+            }
+        },
+        "orders": {
+            "status": {
+                "new": "Đơn Mới",
+                "preparing": "Đang Chế Biến",
+                "ready": "Sẵn Sàng Phục Vụ",
+                "unknown": "Không Xác Định"
+            },
+            "card": {
+                "table": "BÀN",
+                "est": "Dự kiến: {{time}} phút",
+                "elapsed": "Đã qua",
+                "overdue": "QUÁ GIỜ",
+                "rush": "Đơn Khẩn - Ưu Tiên Phục Vụ",
+                "allergens": "Dị ứng:",
+                "notes": "Ghi chú đơn hàng"
+            },
+            "actions": {
+                "start": "Bắt Đầu Nấu",
+                "ready": "Báo Sẵn Sàng",
+                "complete": "Hoàn Thành",
+                "startAll": "BẮT ĐẦU TẤT CẢ",
+                "readyAll": "SẴN SÀNG TẤT CẢ",
+                "markAllReady": "Đánh Dấu Tất Cả Sẵn Sàng",
+                "cook": "Nấu",
+                "done": "Xong",
+                "itemReady": "Sẵn Sàng"
+            },
+            "noPendingItems": "Không có món nào cần chuẩn bị.",
+            "waitingForWaiter": "Đợi Phục Vụ",
+            "modal": {
+                "unfinishedItemsTitle": "Món Chưa Hoàn Thành",
+                "unfinishedItemsSubtitle": "Một số món chưa được đánh dấu Xong",
+                "confirmReadyMessage": "Bạn có chắc muốn đánh dấu đơn hàng này là SẴN SÀNG? Các món sau vẫn đang nấu/chờ:"
+            }
+        },
+        "empty": {
+            "title": "Không Có Đơn Hàng",
+            "description": "Tất cả đơn hàng đã hoàn thành. Bếp đã sẵn sàng cho đơn hàng mới.",
+            "action": "Làm Mới Danh Sách"
+        }
+    },
+    "nav": {
+        "sections": {
+            "userManagement": "Quản lý người dùng",
+            "main": "Chính",
+            "management": "Quản lý",
+            "reports": "Báo cáo",
+            "account": "Tài khoản"
+        },
+        "items": {
+            "manageAdmins": "Quản lý Admin",
+            "dashboard": "Bảng điều khiển",
+            "kitchen": "Màn hình bếp",
+            "menu": "Thực đơn",
+            "categories": "Danh mục",
+            "modifiers": "Tùy chọn món",
+            "orders": "Đơn hàng",
+            "tables": "Bàn",
+            "reports": "Báo cáo & Phân tích",
+            "BIreports": "Báo cáo BI",
+            "staff": "Quản lý nhân viên",
+            "settings": "Cài đặt",
+            "help": "Trợ giúp",
+            "menuBrowse": "Thực đơn",
+            "cart": "Giỏ hàng",
+            "orderStatus": "Trạng thái đơn hàng",
+            "profile": "Hồ sơ"
+        },
+        "user": {
+            "member": "Thành viên",
+            "loginRegister": "Đăng nhập / Đăng ký",
+            "logout": "Đăng xuất"
+        },
+        "language": {
+            "title": "Ngôn ngữ",
+            "english": "English",
+            "vietnamese": "Tiếng Việt"
+        },
+        "kitchen": {
+            "title": "Màn hình bếp",
+            "live": "Trực tiếp",
+            "filter": "Lọc đơn hàng",
+            "filters": {
+                "all": "Tất cả đơn",
+                "pending": "Chờ xử lý",
+                "preparing": "Đang chuẩn bị",
+                "ready": "Sẵn sàng"
+            }
+        }
+    },
+    "payment": {
+        "cardForm": {
+            "cardholderName": "Tên chủ thẻ",
+            "cardholderNamePlaceholder": "Nguyen Van A",
+            "cardDetails": "Chi tiết thẻ",
+            "saveCard": "Lưu thẻ này cho lần sau",
+            "secureNote": "Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi sử dụng Stripe để xử lý thanh toán.",
+            "pay": "Thanh toán",
+            "processing": "Đang xử lý...",
+            "errors": {
+                "nameRequired": "Vui lòng nhập tên chủ thẻ",
+                "failed": "Thanh toán thất bại. Vui lòng thử lại."
+            },
+            "loading": "Đang tải biểu mẫu..."
+        }
+    },
+    "restaurant": {
+        "create": {
+            "title": "Tạo nhà hàng",
+            "subtitle": "Tạo nhà hàng cho admin:",
+            "form": {
+                "name": "Tên nhà hàng",
+                "description": "Mô tả",
+                "phone": "Số điện thoại",
+                "email": "Email",
+                "address": "Địa chỉ",
+                "timezone": "Múi giờ",
+                "currency": "Tiền tệ",
+                "placeholders": {
+                    "name": "ví dụ: Café Poirot",
+                    "description": "Mô tả ngắn gọn về nhà hàng của bạn",
+                    "phone": "+84 123 456 789",
+                    "email": "restaurant@example.com",
+                    "address": "123 Tên đường, Thành phố"
+                }
+            },
+            "timezone": "Múi giờ",
+            "currency": "Tiền tệ",
+            "placeholders": {
+                "name": "Ví dụ: Phở Cồ",
+                "description": "Mô tả ngắn về nhà hàng",
+                "phone": "+84 123 456 789",
+                "email": "nhahang@example.com",
+                "address": "123 Đường ABC, Quận X"
+            }
+        },
+        "info": {
+            "title": "Hệ thống đa chi nhánh",
+            "content": "Nhà hàng này sẽ được gán riêng cho tài khoản admin. Admin sẽ có toàn quyền kiểm soát thực đơn, bàn, đơn hàng và nhân viên của nhà hàng này."
+        },
+        "buttons": {
+            "create": "Tạo nhà hàng",
+            "creating": "Đang tạo...",
+            "skip": "Bỏ qua lúc này"
+        }
+    },
+    "customer": {
+        "onboarding": {
+            "title": "Nhà hàng Thông minh",
+            "subtitle": "Trải nghiệm tương lai của ẩm thực",
+            "startMeal": "Bắt đầu bữa ăn",
+            "dineAsGuest": "Dùng bữa với tư cách Khách",
+            "orJoinUs": "Hoặc tham gia cùng chúng tôi",
+            "login": "Đăng nhập",
+            "register": "Đăng ký",
+            "terms": "Bằng cách tiếp tục, bạn đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư của chúng tôi.",
+            "errors": {
+                "scanQR": "Vui lòng quét mã QR tại bàn của bạn để bắt đầu gọi món.",
+                "qrRequired": "Cần có mã QR hợp lệ."
+            }
+        },
+        "menu": {
+            "title": "Khám phá Thực đơn",
+            "subtitle": "Khám phá các món ăn ngon được chế biến từ nguyên liệu tươi sống",
+            "search": {
+                "placeholder": "Tìm món ăn...",
+                "noResults": "Không tìm thấy món ăn nào",
+                "noResultsWithQuery": "Không tìm thấy món nào phù hợp với \"{{query}}\". Thử điều chỉnh tìm kiếm hoặc bộ lọc.",
+                "noResultsFilters": "Không có món nào phù hợp với bộ lọc hiện tại. Thử điều chỉnh lựa chọn của bạn.",
+                "tryAgain": "Thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn"
+            },
+            "sort": {
+                "label": "Sắp xếp theo",
+                "newest": "Món mới nhất",
+                "priceLowHigh": "Giá: Thấp đến Cao",
+                "priceHighLow": "Giá: Cao đến Thấp",
+                "nameAZ": "Tên: A đến Z",
+                "mostOrdered": "Được đặt nhiều nhất"
+            },
+            "showingItems": "Hiển thị {{count}} món",
+            "activeFilters": "Bộ lọc đang dùng:",
+            "categories": {
+                "all": "Tất cả món",
+                "popular": "Phổ biến"
+            },
+            "filters": {
+                "title": "Bộ lọc",
+                "dietary": "Chế độ ăn",
+                "price": "Khoảng giá",
+                "availability": "Tình trạng",
+                "sort": "Sắp xếp",
+                "sortBy": "Sắp xếp theo",
+                "specialOptions": "Tùy chọn đặc biệt",
+                "popularItems": "Chỉ món phổ biến",
+                "chefRecommended": "Đầu bếp khuyên dùng",
+                "availableNow": "Có sẵn ngay",
+                "reset": "Đặt lại tất cả",
+                "apply": "Áp dụng bộ lọc",
+                "active": "{{count}} bộ lọc đang áp dụng",
+                "active_plural": "{{count}} bộ lọc đang áp dụng"
+            },
+            "dietary": {
+                "vegetarian": "Chay",
+                "vegan": "Thuần chay",
+                "glutenFree": "Không Gluten",
+                "dairyFree": "Không sữa",
+                "nutFree": "Không hạt",
+                "halal": "Halal"
+            },
+            "item": {
+                "addToCart": "Thêm vào giỏ",
+                "quickAdd": "Thêm nhanh",
+                "customize": "Tùy chỉnh",
+                "viewDetails": "Xem chi tiết",
+                "unavailable": "Hiện không có sẵn",
+                "availableNow": "Có sẵn",
+                "soldOut": "Hết hàng",
+                "lowStock": "Sắp hết",
+                "popular": "Phổ biến",
+                "chefChoice": "Gợi ý của bếp",
+                "prepTime": "{{time}} phút"
+            },
+            "cart": {
+                "title": "Đơn hàng của bạn",
+                "subtitle": "Xem lại đơn hàng và tiến hành thanh toán",
+                "items": "{{count}} món trong giỏ",
+                "items_plural": "{{count}} món trong giỏ",
+                "yourItems": "Món của bạn ({{count}})",
+                "viewCart": "Xem giỏ hàng",
+                "addMore": "Thêm món",
+                "placeOrder": "Đặt hàng",
+                "continueShopping": "Tiếp tục mua sắm",
+                "billReady": "Hóa đơn đã sẵn sàng - Vui lòng kiểm tra và thanh toán bên dưới",
+                "features": {
+                    "tableService": {
+                        "title": "Phục vụ tại bàn",
+                        "desc": "Đơn hàng sẽ được mang đến bàn của bạn"
+                    },
+                    "multipleOrders": {
+                        "title": "Đặt nhiều lần",
+                        "desc": "Bạn có thể đặt thêm món trong bữa ăn"
+                    },
+                    "securePayment": {
+                        "title": "Thanh toán an toàn",
+                        "desc": "Mọi giao dịch đều được mã hóa và bảo mật"
+                    }
+                },
+                "modals": {
+                    "empty": {
+                        "title": "Giỏ hàng trống",
+                        "message": "Giỏ hàng của bạn đang trống. Vui lòng thêm món từ thực đơn."
+                    },
+                    "paymentRequired": {
+                        "title": "Yêu cầu thanh toán",
+                        "message": "Vui lòng chọn phương thức thanh toán trước khi tiếp tục."
+                    },
+                    "missingInfo": {
+                        "title": "Thiếu thông tin",
+                        "message": "Thiếu thông tin bàn. Vui lòng quét lại mã QR."
+                    },
+                    "orderInProgress": {
+                        "title": "Đơn hàng đang xử lý",
+                        "message": "Bạn đang có đơn hàng đang xử lý ({{status}}). Vui lòng đợi món được phục vụ hết trước khi đặt đơn mới."
+                    },
+                    "addToCurrent": {
+                        "title": "Thêm vào đơn hiện tại",
+                        "message": "Bạn có muốn thêm các món này vào đơn hàng hiện tại không?"
+                    },
+                    "success": {
+                        "title": "Đặt hàng thành công!",
+                        "message": "Đơn hàng #{{orderNumber}} của bạn đã được đặt thành công."
+                    },
+                    "failed": {
+                        "title": "Đặt hàng thất bại",
+                        "message": "Không thể đặt hàng. Vui lòng thử lại."
+                    }
+                },
+                "summary": {
+                    "title": "Tóm tắt đơn hàng",
+                    "items": "Số lượng ({{count}})",
+                    "total": "Tổng cộng",
+                    "estimatedTime": "Thời gian chuẩn bị dự kiến",
+                    "timeRange": "Đơn hàng sẽ sẵn sàng trong khoảng {{min}}-{{max}} phút"
+                },
+                "emptyState": {
+                    "title": "Giỏ hàng của bạn đang trống",
+                    "description": "Có vẻ như bạn chưa thêm món nào vào giỏ. Hãy xem thực đơn và bắt đầu đặt món!",
+                    "browseMenu": "Xem thực đơn",
+                    "quickService": {
+                        "title": "Phục vụ nhanh",
+                        "desc": "Đơn hàng sẵn sàng trong 20-25 phút"
+                    },
+                    "freshIngredients": {
+                        "title": "Nguyên liệu tươi",
+                        "desc": "Được chế biến từ nguyên liệu chất lượng"
+                    },
+                    "securePayment": {
+                        "title": "Thanh toán an toàn",
+                        "desc": "Giao dịch an toàn và bảo mật"
+                    }
+                },
+                "specialInstructions": {
+                    "title": "Hướng dẫn đặc biệt",
+                    "description": "Thêm yêu cầu về chế độ ăn uống, dị ứng hoặc yêu cầu đặc biệt cho nhà bếp",
+                    "placeholder": "Ví dụ: Không hành, thêm cay, không gluten...",
+                    "optional": "Tùy chọn - Giúp chúng tôi phục vụ bạn tốt hơn"
+                },
+                "paymentMethod": {
+                    "title": "Phương thức thanh toán",
+                    "card": "Thẻ tín dụng/Ghi nợ",
+                    "momo": "Ví MoMo",
+                    "cash": "Thanh toán tại quầy",
+                    "secure": "Bảo mật",
+                    "fastSecure": "Nhanh & Bảo mật",
+                    "savedCards": "Thẻ đã lưu",
+                    "addNewCard": "Thêm thẻ mới",
+                    "cardNumber": "Số thẻ",
+                    "cardholderName": "Tên chủ thẻ",
+                    "expiryDate": "Ngày hết hạn",
+                    "cvv": "CVV",
+                    "saveCard": "Lưu thẻ này cho lần sau",
+                    "encrypted": "Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi sử dụng Stripe để xử lý thanh toán."
+                },
+                "tableInfo": {
+                    "title": "Thông tin bàn",
+                    "table": "Bàn {{number}}",
+                    "guests": "Tối đa {{count}} khách",
+                    "available": "Có sẵn",
+                    "occupied": "Đang phục vụ",
+                    "note": "Đơn hàng sẽ được chuẩn bị và mang đến trực tiếp bàn này. Vui lòng ngồi tại Bàn {{number}} để nhận món nhanh nhất."
+                },
+                "item": {
+                    "edit": "(Nhấn để sửa)",
+                    "note": "Ghi chú:",
+                    "each": "mỗi món"
+                }
+            },
+            "empty": {
+                "title": "Không tìm thấy món ăn nào",
+                "description": "Thử điều chỉnh bộ lọc hoặc tiêu chí tìm kiếm của bạn",
+                "action": "Xóa bộ lọc"
+            }
+        },
+        "itemDetail": {
+            "customization": {
+                "title": "Tùy chỉnh món ăn",
+                "required": "Bắt buộc",
+                "optional": "Tùy chọn",
+                "addons": "(Món thêm)",
+                "select": "Chọn {{count}}",
+                "selectUpTo": "Chọn tối đa {{count}}",
+                "requiredError": "Vui lòng chọn {{name}}",
+                "requiredDescription": "Tùy chọn này là bắt buộc."
+            },
+            "quantity": "Số lượng",
+            "addToCart": "Thêm vào giỏ - {{price}}",
+            "updateCart": "Cập nhật giỏ hàng",
+            "totalItems": "Tổng ({{count}} món)",
+            "totalItems_plural": "Tổng ({{count}} món)",
+            "unavailable": "Không có sẵn",
+            "reviewCount": "({{count}} đánh giá)",
+            "caloriesValue": "{{value}} cal",
+            "spicy": "Cay",
+            "allergenInfo": "Thông tin dị ứng",
+            "contains": "Chứa: {{allergens}}",
+            "loading": "Đang tải món ăn...",
+            "notFound": {
+                "title": "Không tìm thấy món",
+                "message": "Không tìm thấy món ăn bạn yêu cầu."
+            },
+            "backToMenu": "Quay lại thực đơn",
+            "reviews": {
+                "title": "Đánh giá của khách hàng",
+                "rating": "{{rating}} trên 5",
+                "viewAll": "Xem tất cả đánh giá",
+                "basedOn": "Dựa trên {{count}} đánh giá"
+            },
+            "relatedItems": {
+                "title": "Có thể bạn cũng thích",
+                "viewAll": "Xem tất cả",
+                "add": "Thêm",
+                "new": "Mới"
+            },
+            "nutritionalInfo": "Thông tin dinh dưỡng & Thành phần",
+            "nutritionFacts": "Giá trị dinh dưỡng",
+            "ingredients": "Thành phần",
+            "nutrition": {
+                "calories": "Calories",
+                "protein": "Protein",
+                "carbs": "Carbs",
+                "fat": "Chất béo",
+                "fiber": "Chất xơ",
+                "sodium": "Natri",
+                "sugar": "Đường",
+                "cholesterol": "Cholesterol"
+            },
+            "specialInstructions": {
+                "title": "Hướng dẫn đặc biệt",
+                "placeholder": "Ví dụ: Không hành, thêm sốt...",
+                "description": "Hãy cho chúng tôi biết nếu bạn có yêu cầu đặc biệt"
+            },
+            "gallery": {
+                "previous": "Ảnh trước",
+                "next": "Ảnh tiếp",
+                "viewImage": "Xem ảnh {{index}}"
+            }
+        },
+        "cart": {
+            "title": "Giỏ hàng của bạn",
+            "subtitle": "Xem lại món ăn và đặt hàng",
+            "empty": {
+                "title": "Giỏ hàng trống",
+                "description": "Thêm món từ thực đơn để bắt đầu",
+                "action": "Xem thực đơn"
+            },
+            "item": {
+                "modifiers": "Tùy chỉnh",
+                "instructions": "Ghi chú đặc biệt",
+                "edit": "Sửa",
+                "remove": "Xóa"
+            },
+            "orderSummary": {
+                "title": "Tóm tắt đơn hàng",
+                "subtotal": "Tạm tính",
+                "tax": "Thuế",
+                "discount": "Giảm giá",
+                "total": "Tổng cộng"
+            },
+            "yourItems": "Món của bạn ({{count}})",
+            "addMore": "Thêm món",
+            "table": {
+                "title": "Thông tin bàn",
+                "number": "Bàn {{number}}",
+                "verify": "Xác minh bàn"
+            },
+            "tableInfo": {
+                "title": "Thông tin bàn",
+                "table": "Bàn {{number}}",
+                "guests": "{{count}} Khách",
+                "available": "Trống",
+                "occupied": "Đang sử dụng",
+                "note": "Bạn đang đặt món cho {{number}}"
+            },
+            "summary": {
+                "title": "Tóm tắt đơn hàng",
+                "items": "{{count}} món",
+                "total": "Tổng cộng",
+                "estimatedTime": "Thời gian chuẩn bị ước tính",
+                "timeRange": "{{min}}-{{max}} phút"
+            },
+            "specialInstructions": {
+                "title": "Ghi chú cho đơn hàng (Tùy chọn)",
+                "placeholder": "Thêm yêu cầu đặc biệt cho đơn hàng của bạn"
+            },
+            "modals": {
+                "empty": {
+                    "title": "Giỏ hàng trống",
+                    "message": "Giỏ hàng của bạn đang trống. Vui lòng thêm món từ thực đơn."
+                },
+                "paymentRequired": {
+                    "title": "Yêu cầu thanh toán",
+                    "message": "Vui lòng chọn phương thức thanh toán trước khi tiếp tục."
+                },
+                "missingInfo": {
+                    "title": "Thiếu thông tin",
+                    "message": "Thiếu thông tin bàn. Vui lòng quét lại mã QR."
+                },
+                "orderInProgress": {
+                    "title": "Đơn hàng đang xử lý",
+                    "message": "Bạn đang có đơn hàng đang xử lý ({{status}}). Vui lòng đợi món được phục vụ hết trước khi đặt đơn mới."
+                },
+                "addToCurrent": {
+                    "title": "Thêm vào đơn hiện tại",
+                    "message": "Bạn có muốn thêm các món này vào đơn hàng hiện tại không?"
+                },
+                "success": {
+                    "title": "Đặt hàng thành công!",
+                    "message": "Đơn hàng #{{orderNumber}} của bạn đã được đặt thành công."
+                },
+                "failed": {
+                    "title": "Đặt hàng thất bại",
+                    "message": "Không thể đặt hàng. Vui lòng thử lại."
+                }
+            },
+            "payment": {
+                "title": "Phương thức thanh toán",
+                "selectMethod": "Chọn phương thức thanh toán",
+                "cash": "Tiền mặt",
+                "card": "Thẻ tín dụng/Ghi nợ",
+                "momo": "Ví MoMo",
+                "payNow": "Thanh toán ngay",
+                "payLater": "Thanh toán sau"
+            },
+            "placeOrder": "Đặt món",
+            "checkout": "Tiến hành thanh toán",
+            "continueShopping": "Tiếp tục mua sắm",
+            "viewCart": "Xem giỏ hàng",
+            "billReady": "Hóa đơn của bạn đã sẵn sàng để thanh toán",
+            "features": {
+                "tableService": {
+                    "title": "Phục vụ tại bàn",
+                    "desc": "Giao món trực tiếp đến bàn của bạn"
+                },
+                "multipleOrders": {
+                    "title": "Đặt nhiều lần",
+                    "desc": "Thêm món trong suốt bữa ăn"
+                },
+                "securePayment": {
+                    "title": "Thanh toán an toàn",
+                    "desc": "Thanh toán bảo mật với nhiều tùy chọn"
+                }
+            }
+        },
+        "orderStatus": {
+            "title": "Trạng thái đơn hàng",
+            "orderNumber": "Đơn hàng #{{number}}",
+            "table": "Bàn {{number}}",
+            "placedAt": "Đặt lúc {{time}}",
+            "status": {
+                "pending": "Đã nhận đơn",
+                "accepted": "Đã chấp nhận",
+                "preparing": "Đang chuẩn bị",
+                "ready": "Sẵn sàng phục vụ",
+                "served": "Đã phục vụ",
+                "completed": "Hoàn thành"
+            },
+            "timeline": {
+                "title": "Tiến trình đơn hàng",
+                "pending": "Đã đặt món",
+                "accepted": "Bếp đã xác nhận",
+                "preparing": "Món ăn đang được chuẩn bị",
+                "ready": "Món ăn đã sẵn sàng",
+                "served": "Món ăn đã được phục vụ tại bàn"
+            },
+            "items": {
+                "title": "Món ăn",
+                "status": {
+                    "queued": "Đang chờ",
+                    "cooking": "Đang nấu",
+                    "ready": "Sẵn sàng"
+                }
+            },
+            "kitchenNotes": {
+                "title": "Ghi chú từ bếp",
+                "estimatedTime": "Thời gian dự kiến: {{time}} phút"
+            },
+            "bill": {
+                "title": "Tóm tắt hóa đơn",
+                "requestBill": "Yêu cầu hóa đơn",
+                "billRequested": "Đã yêu cầu hóa đơn",
+                "payNow": "Thanh toán ngay",
+                "viewDetails": "Xem chi tiết"
+            },
+            "actions": {
+                "backToMenu": "Quay lại thực đơn",
+                "orderMore": "Đặt thêm món",
+                "notifications": "Bật thông báo"
+            },
+            "progress": "{{percent}}% Hoàn thành"
+        },
+        "orderHistory": {
+            "title": "Lịch sử đơn hàng",
+            "empty": {
+                "title": "Chưa có đơn hàng nào",
+                "description": "Các đơn hàng trước đây của bạn sẽ xuất hiện ở đây",
+                "action": "Bắt đầu đặt món"
+            },
+            "filters": {
+                "all": "Tất cả đơn",
+                "completed": "Hoàn thành",
+                "cancelled": "Đã hủy"
+            },
+            "order": {
+                "date": "{{date}}",
+                "items": "{{count}} món",
+                "items_plural": "{{count}} món",
+                "total": "Tổng: {{amount}}",
+                "reorder": "Đặt lại",
+                "viewDetails": "Xem chi tiết"
+            }
+        },
+        "profile": {
+            "title": "Hồ sơ",
+            "personalInfo": {
+                "title": "Thông tin cá nhân",
+                "name": "Họ tên",
+                "email": "Email",
+                "phone": "Số điện thoại",
+                "save": "Lưu thay đổi"
+            },
+            "preferences": {
+                "title": "Tùy chọn",
+                "language": "Ngôn ngữ",
+                "notifications": "Thông báo",
+                "dietary": "Hạn chế ăn uống"
+            },
+            "orderHistory": {
+                "title": "Lịch sử đơn hàng",
+                "viewAll": "Xem tất cả",
+                "empty": "Bạn chưa có đơn hàng nào.",
+                "signInRequired": {
+                    "title": "Yêu cầu đăng nhập",
+                    "message": "Vui lòng đăng nhập để xem lịch sử đơn hàng."
+                },
+                "itemCount": "{{count}} món",
+                "total": "Tổng cộng",
+                "reorder": "Đặt lại",
+                "viewReceipt": "Xem hóa đơn"
+            },
+            "profile": {
+                "title": "Hồ sơ",
+                "guest": "Khách vãng lai",
+                "role": "Thành viên",
+                "edit": "Chỉnh sửa hồ sơ",
+                "tabs": {
+                    "history": "Lịch sử đơn hàng",
+                    "settings": "Cài đặt"
+                },
+                "settings": {
+                    "comingSoon": "Tính năng cài đặt tài khoản sắp ra mắt!"
+                },
+                "items": "Món: "
+            },
+            "logout": "Đăng xuất"
+        },
+        "orderTracking": {
+            "title": "Trạng thái đơn hàng",
+            "subtitle": "Theo dõi quá trình chuẩn bị đơn hàng theo thời gian thực",
+            "noOrder": {
+                "title": "Không có đơn hàng",
+                "message": "Bạn chưa có đơn hàng nào vào lúc này.",
+                "browseMenu": "Xem thực đơn"
+            },
+            "backToMenu": "Quay lại thực đơn",
+            "itemStatusTitle": "Trạng thái món ăn",
+            "notifications": {
+                "on": "Bật thông báo",
+                "off": "Tắt thông báo",
+                "billReady": "Hóa đơn của bạn đã sẵn sàng! Tổng cộng: {{total}}",
+                "proceedPayment": "Bạn có thể tiến hành thanh toán ngay bây giờ.",
+                "paymentSuccess": "Đã nhận thanh toán! Cảm ơn quý khách!",
+                "orderCompleted": "Đơn hàng của bạn đã hoàn tất.",
+                "billRequested": "Đã yêu cầu hóa đơn thành công!",
+                "billRequestDesc": "Nhân viên sẽ mang hóa đơn đến ngay.",
+                "billRequestFail": "Yêu cầu hóa đơn thất bại",
+                "contactStaff": "Vui lòng thử lại hoặc liên hệ nhân viên."
+            },
+            "status": {
+                "submitted": "Đã gửi đơn",
+                "received": "Đã nhận đơn",
+                "preparing": "Đang chuẩn bị",
+                "ready": "Sẵn sàng phục vụ",
+                "served": "Đã phục vụ",
+                "payment_pending": "Đang xử lý hóa đơn",
+                "completed": "Đã thanh toán",
+                "cancelled": "Đã hủy",
+                "rejected": "Đã từ chối",
+                "unknown": "Đang chờ xử lý"
+            },
+            "timeline": {
+                "title": "Tiến độ đơn hàng",
+                "estimatedTime": "Dự kiến hoàn thành",
+                "overallProgress": "Tiến độ tổng thể",
+                "timeRemaining": {
+                    "enjoy": "Chúc quý khách ngon miệng!",
+                    "ready": "Đã sẵn sàng"
+                },
+                "steps": {
+                    "submitted": "Gửi đơn",
+                    "accepted": "Đã nhận",
+                    "preparing": "Chuẩn bị",
+                    "ready": "Sẵn sàng",
+                    "served": "Phục vụ"
+                }
+            },
+            "header": {
+                "table": "Bàn {{number}}",
+                "items": "{{count}} món",
+                "elapsed": "{{time}} trôi qua"
+            },
+            "itemStatus": {
+                "queued": "Hàng chờ",
+                "cooking": "Đang nấu",
+                "ready": "Sẵn sàng",
+                "served": "Đã phục vụ",
+                "completed": "Hoàn tất",
+                "rejected": "Từ chối",
+                "unknown": "Không rõ",
+                "preparedBy": "Chuẩn bị bởi: {{name}}",
+                "readyNow": "Sẵn sàng ngay!",
+                "inProgress": "Đang thực hiện"
+            },
+            "actions": {
+                "readyToPay": "Thanh toán ngay?",
+                "requestBill": "Yêu cầu hóa đơn",
+                "requestBillDesc": "Yêu cầu hóa đơn khi bạn đã dùng bữa xong.",
+                "needHelp": "Cần hỗ trợ?",
+                "contactStaff": "Gọi nhân viên",
+                "helpDesc": "Nếu có thắc mắc, nhân viên của chúng tôi luôn sẵn sàng hỗ trợ bạn."
+            },
+            "info": {
+                "realTimeUpdates": "Cập nhật thời gian thực",
+                "updatesDesc": "Trang này tự động cập nhật tiến độ đơn hàng của bạn."
+            },
+            "bill": {
+                "restaurantName": "Nhà hàng Thông minh",
+                "tableDate": "Bàn {{table}} | {{date}}",
+                "orderNumber": "Đơn #{{number}}",
+                "subtotal": "Tạm tính",
+                "tax": "Thuế (10%)",
+                "discount": "Giảm giá",
+                "total": "Tổng cộng",
+                "payButton": "Thanh toán {{amount}}",
+                "continueMomo": "Tiếp tục với MoMo",
+                "processing": "Đang xử lý thanh toán...",
+                "securePayment": "Thanh toán bảo mật bởi Smart Restaurant"
+            }
+        },
+        "payment": {
+            "result": {
+                "success": {
+                    "title": "Thanh toán thành công!",
+                    "message": "Thanh toán của bạn đã được xử lý",
+                    "orderNumber": "Đơn hàng #{{number}}"
+                },
+                "failed": {
+                    "title": "Thanh toán thất bại",
+                    "message": "Không thể xử lý thanh toán của bạn",
+                    "tryAgain": "Thử lại"
+                },
+                "pending": {
+                    "title": "Đang xử lý thanh toán",
+                    "helmet": "Đang xử lý thanh toán - Nhà hàng Thông minh",
+                    "message": "Thanh toán của bạn đang được xử lý"
+                },
+                "actions": {
+                    "viewOrder": "Xem trạng thái đơn hàng",
+                    "backToMenu": "Quay lại thực đơn",
+                    "backToCart": "Quay lại giỏ hàng"
+                },
+                "orderId": "Mã đơn hàng",
+                "footer": "Cần giúp đỡ? Liên hệ nhân viên để được hỗ trợ."
+            }
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Đăng nhập",
+            "subtitle": "Hệ thống Quản lý Nhà hàng Thông minh",
+            "email": "Địa chỉ Email",
+            "password": "Mật khẩu",
+            "submit": "Đăng nhập",
+            "noAccount": "Chưa có tài khoản?",
+            "signUpLink": "Đăng ký tại đây",
+            "testCredentials": {
+                "title": "Tài khoản thử nghiệm:",
+                "email": "Email: admin@cafepoirot.com",
+                "password": "Mật khẩu: password123"
+            },
+            "errors": {
+                "emailRequired": "Vui lòng nhập Email",
+                "emailInvalid": "Email không hợp lệ",
+                "passwordRequired": "Vui lòng nhập mật khẩu"
+            },
+            "success": "Đăng nhập thành công!",
+            "failed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+        },
+        "register": {
+            "title": "Tạo tài khoản",
+            "subtitle": "Tham gia Smart Restaurant ngay hôm nay",
+            "fullName": "Họ và Tên",
+            "email": "Địa chỉ Email",
+            "password": "Mật khẩu",
+            "confirmPassword": "Xác nhận mật khẩu",
+            "submit": "Đăng ký",
+            "hasAccount": "Đã có tài khoản?",
+            "signInLink": "Đăng nhập",
+            "passwordHint": "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+            "errors": {
+                "nameRequired": "Vui lòng nhập họ tên",
+                "nameMin": "Họ tên phải có ít nhất 2 ký tự",
+                "namePattern": "Họ tên chỉ được chứa chữ cái và khoảng trắng",
+                "emailRequired": "Vui lòng nhập Email",
+                "emailInvalid": "Email không hợp lệ",
+                "passwordRequired": "Vui lòng nhập mật khẩu",
+                "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự",
+                "passwordPattern": "Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+                "confirmRequired": "Vui lòng xác nhận mật khẩu",
+                "passwordMismatch": "Mật khẩu không khớp"
+            },
+            "success": "Đăng ký thành công! Chào mừng bạn!",
+            "successVerify": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực.",
+            "failed": "Đăng ký thất bại. Vui lòng thử lại."
+        },
+        "verifyEmail": {
+            "verifying": {
+                "title": "Đang xác thực Email",
+                "message": "Đang xác thực địa chỉ email của bạn..."
+            },
+            "success": {
+                "title": "Email Đã Được Xác Thực!",
+                "message": "Email của bạn đã được xác thực thành công!",
+                "button": "Đi tới Đăng nhập"
+            },
+            "error": {
+                "title": "Xác Thực Thất Bại",
+                "messageDefault": "Không thể xác thực email. Liên kết có thể không hợp lệ hoặc đã hết hạn.",
+                "messageNoToken": "Liên kết xác thực không hợp lệ. Thiếu mã token.",
+                "button": "Quay lại Đăng nhập"
+            },
+            "footer": "© {{year}} Smart Restaurant. Bảo lưu mọi quyền."
+        }
+    },
+    "notFound": {
+        "title": "Không tìm thấy trang",
+        "message": "Trang bạn tìm kiếm không tồn tại. Hãy quay lại nào!",
+        "goBack": "Quay lại",
+        "backToHome": "Về trang chủ"
+    },
+    "waiter": {
+        "header": {
+            "title": "Bảng Điều Khiển Phục Vụ",
+            "role": "Nhân viên phục vụ",
+            "logout": "Đăng xuất"
+        },
+        "tabs": {
+            "pending": "Chờ duyệt",
+            "accepted": "Đã nhận",
+            "ready": "Sẵn sàng phục vụ",
+            "tables": "Bàn của tôi",
+            "completed": "Hoàn thành"
+        },
+        "loading": "Đang tải...",
+        "error": "Không thể tải đơn hàng. Vui lòng thử lại.",
+        "noOrders": "Không có đơn hàng",
+        "noTables": "Chưa được phân công bàn",
+        "processing": "đang xử lý...",
+        "time": {
+            "justNow": "Vừa xong",
+            "minAgo": "{{count}} phút trước",
+            "hoursAgo": "{{hours}}g {{minutes}}p trước"
+        },
+        "status": {
+            "SUBMITTED": "Chờ duyệt",
+            "RECEIVED": "Đã nhận",
+            "PREPARING": "Đang nấu",
+            "READY": "Sẵn sàng",
+            "SERVED": "Đã phục vụ",
+            "COMPLETED": "Đã thanh toán"
+        },
+        "order": {
+            "number": "Đơn #{{number}}",
+            "table": "Bàn {{number}}",
+            "placedAt": "Đặt lúc {{time}}",
+            "items": "{{count}} món",
+            "note": "Ghi chú",
+            "total": "Tổng cộng",
+            "noActiveItems": "Không có món đang chờ.",
+            "showHistory": "Xem lịch sử ({{count}})",
+            "hideHistory": "Ẩn lịch sử"
+        },
+        "action": {
+            "reject": "Từ chối",
+            "accept": "Nhận & Gửi bếp",
+            "serve": "Đã phục vụ",
+            "viewKitchen": "Xem ở bếp",
+            "cancel": "Hủy"
+        },
+        "table": {
+            "location": "Không có vị trí",
+            "capacity": "Sức chứa: {{count}}",
+            "activeOrders": "{{count}} đơn đang hoạt động"
+        },
+        "bill": {
+            "title": "Chi tiết hóa đơn",
+            "requested": "Khách yêu cầu thanh toán",
+            "requestedTitle": "Yêu cầu hóa đơn",
+            "newRequest": "Yêu cầu mới từ khách",
+            "tableNumber": "Bàn {{number}}",
+            "hasRequested": "đã yêu cầu hóa đơn",
+            "viewDetails": "Xem chi tiết đơn",
+            "summary": {
+                "title": "Tóm tắt hóa đơn",
+                "subtotal": "Tạm tính",
+                "tax": "Thuế (10%)",
+                "discount": "Giảm giá",
+                "total": "Tổng cộng"
+            },
+            "number": "Hóa đơn #{{number}}",
+            "create": "Tạo hóa đơn",
+            "print": "In hóa đơn",
+            "applyDiscount": "Áp dụng giảm giá",
+            "processPayment": "Xử lý thanh toán",
+            "created": "Hóa đơn đã được tạo!",
+            "createdDesc": "Khách hàng có thể tiến hành thanh toán.",
+            "paymentSuccess": "Thanh toán thành công!",
+            "paymentDesc": "Đơn hàng đã được đánh dấu là đã thanh toán."
+        },
+        "reject": {
+            "title": "Từ chối đơn hàng",
+            "reason": "Lý do từ chối",
+            "reasonPlaceholder": "Ví dụ: Hết hàng, Bếp quá tải...",
+            "error": "Vui lòng nhập lý do từ chối",
+            "cancel": "Hủy",
+            "confirm": "Xác nhận từ chối"
+        },
+        "discount": {
+            "title": "Áp dụng giảm giá",
+            "order": "Đơn hàng",
+            "type": "Loại giảm giá",
+            "percentage": "Phần trăm (%)",
+            "fixed": "Số tiền cố định (₫)",
+            "amount": "Số tiền",
+            "value": "Giá trị giảm",
+            "valuePlaceholder": "Nhập số tiền/phần trăm",
+            "current": "Tổng hiện tại",
+            "newTotal": "Tổng mới",
+            "cancel": "Hủy",
+            "apply": "Áp dụng",
+            "errors": {
+                "valueRequired": "Vui lòng nhập giá trị giảm",
+                "valueMin": "Giá trị giảm phải lớn hơn 0"
+            }
+        },
+        "payment": {
+            "title": "Xử lý thanh toán",
+            "method": "Phương thức thanh toán",
+            "methods": {
+                "cash": "Tiền mặt",
+                "card": "Thẻ"
+            },
+            "cash": "Tiền mặt",
+            "card": "Thẻ",
+            "momo": "MoMo",
+            "total": "Tổng tiền",
+            "cancel": "Hủy",
+            "confirm": "Xác nhận thanh toán"
+        },
+        "orderDetails": {
+            "title": "Chi tiết đơn hàng",
+            "table": "Bàn {{number}}",
+            "customerInfo": "Thông tin khách hàng",
+            "name": "Tên",
+            "phone": "Số điện thoại",
+            "orderInfo": "Thông tin đơn hàng",
+            "items": "Danh sách món",
+            "quantity": "Số lượng: {{count}}",
+            "billInfo": "Thông tin hóa đơn",
+            "close": "Đóng"
+        },
+        "notifications": {
+            "billRequested": "Yêu cầu thanh toán",
+            "billDesc": "Bàn {{table}} - {{order}} đã yêu cầu thanh toán ({{total}})",
+            "paymentReceived": "Đã nhận thanh toán",
+            "paymentDesc": "Thanh toán đã được nhận thành công!",
+            "viewOrder": "Xem đơn hàng"
+        },
+        "toasts": {
+            "acceptFailed": "Không thể nhận đơn",
+            "rejectFailed": "Không thể từ chối đơn",
+            "serveFailed": "Không thể đánh dấu đã phục vụ",
+            "billFailed": "Không thể tạo hóa đơn",
+            "discountFailed": "Không thể áp dụng giảm giá",
+            "printFailed": "Không thể in hóa đơn",
+            "paymentFailed": "Không thể xử lý thanh toán",
+            "orderDetailsFailed": "Không thể tải chi tiết đơn hàng",
+            "tryAgain": "Vui lòng thử lại."
+        }
+    }
+}

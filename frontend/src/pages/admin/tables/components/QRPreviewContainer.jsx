@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import Icon from "../../../../components/AppIcon";
 import { tableAPI } from "../../../../services/tableService";
 
 const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
+  const { t } = useTranslation();
   const [downloading, setDownloading] = useState(false);
 
   const handleRegenerateQR = async () => {
@@ -52,13 +54,33 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    if (!dateString) return t('common.status.notAvailable');
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) return t('common.status.notAvailable');
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    } catch (error) {
+      return t('common.status.notAvailable');
+    }
+  };
+
+  // Helper to get location translation with proper fallback
+  const getLocationText = (location) => {
+    if (!location) return t('common.status.notAvailable');
+
+    const translationKey = `admin.tables.locations.${location}`;
+    const translated = t(translationKey);
+
+    // If translation key is returned as-is (not found), return the original location
+    return translated !== translationKey ? translated : location;
   };
 
   // No QR data - show generate prompt
@@ -71,10 +93,10 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
               <Icon name="QrCode" size={40} className="text-muted-foreground" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
-              No QR Code Generated Yet
+              {t('admin.tables.qr.noQRTitle')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Generate a unique QR code for Table {table?.tableNumber}
+              {t('admin.tables.qr.noQRDesc', { number: table?.tableNumber })}
             </p>
             <div className="flex gap-3 justify-center">
               <button
@@ -83,13 +105,13 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 flex items-center gap-2"
               >
                 <Icon name="QrCode" size={18} />
-                Generate QR Code
+                {t('admin.tables.qr.generateBtn')}
               </button>
               <button
                 onClick={onClose}
                 className="px-6 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-muted/80"
               >
-                Cancel
+                {t('admin.tables.actions.cancel')}
               </button>
             </div>
           </div>
@@ -105,7 +127,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
         {/* Header */}
         <div className="bg-primary px-6 py-4 flex justify-between items-center">
           <h2 className="text-xl font-bold text-primary-foreground">
-            QR Code Preview - Table {table?.tableNumber}
+            {t('admin.tables.qr.previewTitle', { number: table?.tableNumber })}
           </h2>
           <div className="flex items-center gap-3">
             <button
@@ -118,7 +140,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                 size={16}
                 className={downloading ? "animate-spin" : ""}
               />
-              Regenerate
+              {t('admin.tables.qr.regenerate')}
             </button>
             <button
               onClick={onClose}
@@ -154,7 +176,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                 </div>
               </div>
               <p className="text-center text-sm text-muted-foreground mt-4 font-semibold">
-                Table {table?.tableNumber}
+                {t('admin.orders.card.table', { number: table?.tableNumber })}
               </p>
             </div>
 
@@ -162,46 +184,46 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
             <div className="flex flex-col justify-between">
               <div>
                 <h3 className="text-xl font-bold text-foreground mb-6 border-b border-border pb-2">
-                  Table Information
+                  {t('admin.tables.qr.infoTitle')}
                 </h3>
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground font-medium">
-                      Table Name:
+                      {t('admin.tables.qr.tableName')}
                     </span>
                     <span className="text-foreground font-bold text-lg">
-                      Table {table?.tableNumber}
+                      {t('admin.orders.card.table', { number: table?.tableNumber })}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground font-medium flex items-center gap-2">
                       <Icon name="Users" size={16} />
-                      Capacity:
+                      {t('admin.tables.qr.capacity')}
                     </span>
                     <span className="text-foreground font-bold text-lg">
-                      {table?.capacity} seats
+                      {t('admin.tables.qr.seats', { count: table?.capacity })}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground font-medium flex items-center gap-2">
                       <Icon name="MapPin" size={16} />
-                      Location:
+                      {t('admin.tables.qr.location')}
                     </span>
                     <span className="text-foreground font-bold text-lg">
-                      {table?.location || "N/A"}
+                      {getLocationText(table?.location)}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center py-2">
                     <span className="text-muted-foreground font-medium flex items-center gap-2">
                       <Icon name="Calendar" size={16} />
-                      QR Created:
+                      {t('admin.tables.qr.qrCreated')}
                     </span>
                     <span className="text-foreground font-bold text-lg">
-                      {formatDate(qrData?.createdAt)}
+                      {formatDate(qrData?.qrGeneratedAt || qrData?.createdAt || table?.qrGeneratedAt)}
                     </span>
                   </div>
                 </div>
@@ -215,7 +237,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                   className="flex-1 bg-error hover:bg-error/90 text-error-foreground px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Icon name="Download" size={20} />
-                  Download PNG
+                  {t('admin.tables.actions.downloadPNG')}
                 </button>
                 <button
                   onClick={handleDownloadPDF}
@@ -223,7 +245,7 @@ const QRPreviewContainer = ({ table, qrData, onRegenerate, onClose }) => {
                   className="flex-1 bg-muted hover:bg-muted/80 text-foreground px-6 py-3 rounded-lg font-semibold transition-colors border border-border flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Icon name="FileText" size={20} />
-                  Download PDF
+                  {t('admin.tables.actions.downloadPDF')}
                 </button>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "sonner";
 import { useCart } from "../../../contexts/CartContext";
@@ -20,6 +21,7 @@ import Icon from "../../../components/AppIcon";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     cartItems,
     updateQuantity,
@@ -134,6 +136,10 @@ const ShoppingCart = () => {
       console.log("SOCKET EVENT: bill_created received!");
       console.log("Order ID:", orderId);
       console.log("Bill Data:", billData);
+      toast.success(`Your bill is ready! Total: ${formatCurrency(billData.total)}`, {
+        description: "You can now proceed with payment.",
+        duration: 5000
+      });
       toast.success(
         `Your bill is ready! Total: ${billData.total.toLocaleString("vi-VN")}₫`,
         {
@@ -175,8 +181,10 @@ const ShoppingCart = () => {
     try {
       setIsProcessing(true);
 
+
       const restaurantId = localStorage.getItem("restaurantId");
       const bill = activeOrder.bill;
+
 
       // Calculate orderItems subtotal
       const orderItems = activeOrder.orderItems || activeOrder.items || [];
@@ -188,9 +196,11 @@ const ShoppingCart = () => {
         return sum + itemPrice * quantity;
       }, 0);
 
+
       const discount = parseFloat(bill.discount || 0);
       const tax = (subtotal - discount) * 0.1;
       const total = subtotal - discount + tax;
+
 
       const response = await paymentService.createPayment({
         orderId: activeOrder.id,
@@ -212,6 +222,7 @@ const ShoppingCart = () => {
         console.log("Redirecting to MoMo payment:", payUrl);
         toast.info("Redirecting to MoMo payment...", { duration: 2000 });
 
+
         // Redirect to MoMo payment page
         setTimeout(() => {
           window.location.href = payUrl;
@@ -219,11 +230,13 @@ const ShoppingCart = () => {
         return;
       }
 
+
       // For other payment methods (CASH, CARD)
       toast.success("Payment processed successfully!", {
         description: "Thank you for your visit!",
         duration: 5000,
       });
+
 
       setActiveOrder(null); // Clear bill after payment
       clearCart(); // Clear cart
@@ -371,7 +384,7 @@ const ShoppingCart = () => {
     return (
       <>
         <Helmet>
-          <title>Shopping Cart - Smart Restaurant</title>
+          <title>{t('customer.cart.title')} - Smart Restaurant</title>
           <meta
             name="description"
             content="Review and manage your order before checkout"
@@ -384,10 +397,13 @@ const ShoppingCart = () => {
     );
   }
 
+  console.log('✅ Rendering FULL CART with items');
+
+
   return (
     <>
       <Helmet>
-        <title>{`My Order (${itemCount}) - Smart Restaurant`}</title>
+        <title>{`${t('customer.cart.title')} (${itemCount}) - Smart Restaurant`}</title>
         <meta
           name="description"
           content="Review your order and proceed to checkout"
@@ -397,10 +413,10 @@ const ShoppingCart = () => {
         <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-              My Order
+              {t('customer.cart.title')}
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              Review your order and proceed to checkout
+              {t('customer.cart.subtitle')}
             </p>
           </div>
 
@@ -414,7 +430,7 @@ const ShoppingCart = () => {
               <div className="space-y-3 md:space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl md:text-2xl font-heading font-semibold text-foreground">
-                    Your Items ({itemCount})
+                    {t('customer.cart.yourItems', { count: itemCount })}
                   </h2>
                   <Button
                     variant="ghost"
@@ -423,7 +439,7 @@ const ShoppingCart = () => {
                     iconPosition="left"
                     onClick={() => navigate("/customer/menu-browse")}
                   >
-                    Add More
+                    {t('customer.cart.addMore')}
                   </Button>
                 </div>
 
@@ -449,9 +465,11 @@ const ShoppingCart = () => {
                   <div className="bg-primary/5 border-2 border-primary rounded-lg p-4 mb-4">
                     <p className="text-sm font-semibold text-primary flex items-center gap-2">
                       <Icon name="Receipt" size={18} />
-                      Bill Ready - Please review and proceed with payment below
+                      {t('customer.cart.billReady')}
                     </p>
                   </div>
+                  <BillPaymentSection
+                    order={activeOrder}
                   <BillPaymentSection
                     order={activeOrder}
                     onPay={handlePayment}
@@ -487,7 +505,7 @@ const ShoppingCart = () => {
                   loading={isProcessing}
                   disabled={!paymentMethod}
                 >
-                  {isProcessing ? "Processing..." : "Place Order"}
+                  {isProcessing ? t('common.status.processing') : t('customer.cart.placeOrder')}
                 </Button>
 
                 <Button
@@ -498,7 +516,7 @@ const ShoppingCart = () => {
                   iconPosition="left"
                   onClick={() => navigate("/customer/menu-browse")}
                 >
-                  Continue Shopping
+                  {t('customer.cart.continueShopping')}
                 </Button>
 
                 <div className="bg-muted/50 rounded-lg p-4 md:p-6 space-y-3">
@@ -510,10 +528,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        Table Service
+                        {t('customer.cart.features.tableService.title')}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        Your order will be delivered to your table
+                        {t('customer.cart.features.tableService.desc')}
                       </p>
                     </div>
                   </div>
@@ -526,10 +544,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        Multiple Orders
+                        {t('customer.cart.features.multipleOrders.title')}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        You can place additional orders during your meal
+                        {t('customer.cart.features.multipleOrders.desc')}
                       </p>
                     </div>
                   </div>
@@ -542,10 +560,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        Secure Payment
+                        {t('customer.cart.features.securePayment.title')}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        All transactions are encrypted and secure
+                        {t('customer.cart.features.securePayment.desc')}
                       </p>
                     </div>
                   </div>

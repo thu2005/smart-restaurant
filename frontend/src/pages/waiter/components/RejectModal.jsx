@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const RejectModal = ({ isOpen, onClose, onConfirm, order }) => {
+    const { t } = useTranslation();
     const [reason, setReason] = useState("");
     const [error, setError] = useState("");
 
@@ -14,7 +16,7 @@ const RejectModal = ({ isOpen, onClose, onConfirm, order }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!reason.trim()) {
-            setError("Please provide a rejection reason");
+            setError(t("waiter.reject.error"));
             return;
         }
         onConfirm(reason);
@@ -35,13 +37,13 @@ const RejectModal = ({ isOpen, onClose, onConfirm, order }) => {
             {/* Modal */}
             <div className="relative bg-card rounded-lg shadow-warm-xl max-w-md w-full p-6 md:p-8">
                 <h2 className="text-xl md:text-2xl font-heading font-bold text-foreground mb-4">
-                    Reject Order
+                    {t("waiter.reject.title")}
                 </h2>
 
                 <p className="text-sm text-muted-foreground mb-4">
-                    Order: <span className="font-semibold text-foreground">{order?.orderNumber}</span>
+                    {t("waiter.discount.order")}: <span className="font-semibold text-foreground">{order?.orderNumber}</span>
                     <br />
-                    Table: <span className="font-semibold text-foreground">T{order?.table?.tableNumber}</span>
+                    {t("waiter.orderDetails.table", { number: order?.table?.tableNumber })}
                 </p>
 
                 <form onSubmit={handleSubmit}>
@@ -50,7 +52,7 @@ const RejectModal = ({ isOpen, onClose, onConfirm, order }) => {
                             htmlFor="reason"
                             className="block text-sm font-medium text-foreground mb-2"
                         >
-                            Rejection Reason <span className="text-error">*</span>
+                            {t("waiter.reject.reason")} <span className="text-error">*</span>
                         </label>
                         <textarea
                             id="reason"
@@ -73,13 +75,13 @@ const RejectModal = ({ isOpen, onClose, onConfirm, order }) => {
                             onClick={onClose}
                             className="flex-1 px-4 py-2.5 md:py-3 border border-border text-foreground bg-card hover:bg-muted rounded-lg font-semibold text-sm transition-smooth"
                         >
-                            Cancel
+                            {t("waiter.action.cancel")}
                         </button>
                         <button
                             type="submit"
                             className="flex-1 px-4 py-2.5 md:py-3 bg-error text-error-foreground hover:bg-error/90 rounded-lg font-semibold text-sm transition-smooth"
                         >
-                            Confirm Reject
+                            {t("waiter.reject.confirm")}
                         </button>
                     </div>
                 </form>

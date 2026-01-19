@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const MetricCard = ({
@@ -10,6 +11,7 @@ const MetricCard = ({
   iconColor,
   trend,
 }) => {
+  const { t } = useTranslation();
   const getChangeColor = () => {
     if (changeType === "positive") return "text-success";
     if (changeType === "negative") return "text-error";
@@ -44,7 +46,7 @@ const MetricCard = ({
           <Icon name={getChangeIcon()} size={14} className="stroke-2" />
           <span className="text-xs font-bold">{change}</span>
         </div>
-        <span className="text-sm text-white/70 font-medium">vs last period</span>
+        <span className="text-sm text-white/70 font-medium">{t('admin.dashboard.metrics.vsLastPeriod')}</span>
       </div>
 
       {/* Decorative background accent */}

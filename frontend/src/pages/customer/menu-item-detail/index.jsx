@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import menuService from "../../../services/menuService";
 import { useCart } from "../../../contexts/CartContext";
 import { useMenuBrowseState } from "../../../hooks/useMenuBrowseState";
@@ -57,6 +58,7 @@ const mockRelatedItems = [
 ];
 
 const MenuItemDetail = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { itemId } = useParams();
@@ -222,7 +224,7 @@ const MenuItemDetail = () => {
 
       reviewsData.forEach((review) => {
         const starIndex = distribution.findIndex(
-          (d) => d.stars === review.rating
+          (d) => d.stars === review.rating,
         );
         if (starIndex !== -1) {
           distribution[starIndex].count++;
@@ -356,6 +358,13 @@ const MenuItemDetail = () => {
           specialInstructions: specialInstructions,
           prepTime: menuItem.prepTime || 15,
         });
+        updateItem(editingItem.cartId, {
+          price: itemPrice,
+          quantity: quantity,
+          modifiers: modifiersList,
+          specialInstructions: specialInstructions,
+          prepTime: menuItem.prepTime || 15,
+        });
       } else {
         addToCart({
           menuItemId: menuItem.id,
@@ -387,7 +396,7 @@ const MenuItemDetail = () => {
     // Check if we have table parameters from localStorage or URL
     const tableNumber = localStorage.getItem("tableNumber");
     const restaurantId = localStorage.getItem("restaurantId");
-    
+
     // Try to navigate to the appropriate route format based on available data
     if (tableNumber && restaurantId) {
       // Navigate to the parameterized route if we have the data
@@ -407,7 +416,7 @@ const MenuItemDetail = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading menu item...</p>
+          <p className="text-gray-600">{t("customer.itemDetail.loading")}</p>
         </div>
       </div>
     );
@@ -422,13 +431,13 @@ const MenuItemDetail = () => {
             <Icon name="AlertCircle" size={48} />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Item Not Found
+            {t("customer.itemDetail.notFound.title")}
           </h2>
           <p className="text-gray-600 mb-4">
-            {error || "The requested menu item could not be found."}
+            {error || t("customer.itemDetail.notFound.message")}
           </p>
           <Button onClick={() => navigate("/customer/menu-browse")}>
-            Back to Menu
+            {t("customer.itemDetail.backToMenu")}
           </Button>
         </div>
       </div>
@@ -445,7 +454,7 @@ const MenuItemDetail = () => {
           >
             <Icon name="ArrowLeft" size={20} />
             <span className="text-sm md:text-base font-medium">
-              Back to Menu
+              {t("customer.itemDetail.backToMenu")}
             </span>
           </button>
 
@@ -480,7 +489,9 @@ const MenuItemDetail = () => {
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        Total ({quantity} {quantity === 1 ? "item" : "items"})
+                        {t("customer.itemDetail.totalItems", {
+                          count: quantity,
+                        })}
                       </p>
                       <p className="text-3xl font-heading font-bold text-primary data-text">
                         {new Intl.NumberFormat("vi-VN", {
@@ -547,7 +558,11 @@ const MenuItemDetail = () => {
         quantity={quantity}
         onAddToCart={handleAddToCart}
         isAvailable={isAvailable}
-        buttonText={editingItem ? "Update Cart" : "Add to Cart"}
+        buttonText={
+          editingItem
+            ? t("customer.itemDetail.updateCart")
+            : t("customer.menu.item.addToCart")
+        }
       />
     </div>
   );

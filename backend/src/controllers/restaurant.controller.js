@@ -60,3 +60,41 @@ exports.deleteRestaurant = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.uploadLogo = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        const logoUrl = `/uploads/logos/${req.file.filename}`;
+        const restaurant = await restaurantService.update(req.params.id, { logo: logoUrl });
+
+        res.status(200).json({
+            success: true,
+            message: 'Logo uploaded successfully',
+            data: restaurant
+        });
+    } catch (error) {
+        if (error.message === 'Restaurant not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.deleteLogo = async (req, res, next) => {
+    try {
+        const restaurant = await restaurantService.update(req.params.id, { logo: null });
+        res.status(200).json({
+            success: true,
+            message: 'Logo deleted successfully',
+            data: restaurant
+        });
+    } catch (error) {
+        if (error.message === 'Restaurant not found') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+        next(error);
+    }
+};

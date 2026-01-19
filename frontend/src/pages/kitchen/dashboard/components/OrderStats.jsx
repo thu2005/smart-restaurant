@@ -1,31 +1,33 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const OrderStats = ({ stats }) => {
+  const { t } = useTranslation();
   const statCards = [
     {
-      label: "New Orders",
+      label: t('kitchen.stats.new'),
       value: stats?.newOrders,
       icon: "Bell",
       color: "accent",
       bgColor: "bg-accent/10",
     },
     {
-      label: "Preparing",
+      label: t('kitchen.stats.preparing'),
       value: stats?.preparing,
       icon: "ChefHat",
       color: "warning",
       bgColor: "bg-warning/10",
     },
     {
-      label: "Ready",
+      label: t('kitchen.stats.ready'),
       value: stats?.ready,
       icon: "CheckCircle",
       color: "success",
       bgColor: "bg-success/10",
     },
     {
-      label: "Avg Prep Time",
+      label: t('kitchen.stats.avgTime'),
       value: `${stats?.avgPrepTime} min`,
       icon: "Clock",
       color: "primary",

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import menuService, { getRestaurantId } from "services/menuService";
 import { useCart } from "../../../contexts/CartContext";
 import { fuzzySearchMenuItems } from "../../../utils/fuzzySearch";
@@ -17,6 +18,7 @@ const BASE_URL =
   import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const MenuBrowse = () => {
+  const { t } = useTranslation();
   const { restaurantId: paramRestaurantId, tableNumber } = useParams();
   const navigate = useNavigate();
   const { addToCart, getCartSummary } = useCart();
@@ -391,18 +393,18 @@ const MenuBrowse = () => {
   const getActiveFilterTags = () => {
     const tags = [];
     const allSortOptions = [
-      { value: "createdAt", label: "Newest Items" },
-      { value: "price", label: "Price: Low to High" },
-      { value: "price_desc", label: "Price: High to Low" },
-      { value: "name", label: "Name: A to Z" },
-      { value: "orderCount", label: "Most Ordered" },
+      { value: "createdAt", label: t("customer.menu.sort.newest") },
+      { value: "price", label: t("customer.menu.sort.priceLowHigh") },
+      { value: "price_desc", label: t("customer.menu.sort.priceHighLow") },
+      { value: "name", label: t("customer.menu.sort.nameAZ") },
+      { value: "orderCount", label: t("customer.menu.sort.mostOrdered") },
     ];
 
     // Special filters
     if (filters.isPopular) {
       tags.push({
         id: "isPopular",
-        label: "Popular",
+        label: t("customer.menu.categories.popular"),
         color: "blue",
         onRemove: () => handleFilterChange("isPopular", false),
       });
@@ -410,7 +412,7 @@ const MenuBrowse = () => {
     if (filters.isChefRecommended) {
       tags.push({
         id: "isChefRecommended",
-        label: "Chef Recommended",
+        label: t("customer.menu.filters.chefRecommended"),
         color: "purple",
         onRemove: () => handleFilterChange("isChefRecommended", false),
       });
@@ -421,7 +423,10 @@ const MenuBrowse = () => {
       filters.dietary.forEach((diet) => {
         tags.push({
           id: `dietary-${diet}`,
-          label: diet.charAt(0).toUpperCase() + diet.slice(1),
+          label: t(
+            `customer.menu.dietary.${diet}`,
+            diet.charAt(0).toUpperCase() + diet.slice(1),
+          ),
           color: "green",
           onRemove: () => {
             const newDietary = filters.dietary.filter((d) => d !== diet);
@@ -434,9 +439,9 @@ const MenuBrowse = () => {
     // Availability filter
     if (filters.availability?.[0] && filters.availability[0] !== "available") {
       const availabilityLabels = {
-        low_stock: "Low Stock",
-        sold_out: "Sold Out",
-        unavailable: "Unavailable",
+        low_stock: t("customer.menu.item.lowStock"),
+        sold_out: t("customer.menu.item.soldOut"),
+        unavailable: t("customer.menu.item.unavailable"),
       };
       tags.push({
         id: "availability",
@@ -455,7 +460,7 @@ const MenuBrowse = () => {
     if (sortLabel && filters.sortBy !== "createdAt") {
       tags.push({
         id: "sortBy",
-        label: `Sort: ${sortLabel}`,
+        label: `${t("customer.menu.sort.label")}: ${sortLabel}`,
         color: "gray",
         onRemove: () => handleFilterChange("sortBy", "createdAt"),
       });
@@ -480,10 +485,10 @@ const MenuBrowse = () => {
       <main className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 pb-24 lg:pb-12">
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-            Browse Our Menu
+            {t("customer.menu.title")}
           </h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Discover delicious dishes crafted with fresh ingredients
+            {t("customer.menu.subtitle")}
           </p>
         </div>
 
@@ -507,7 +512,7 @@ const MenuBrowse = () => {
           <div className="flex-1">
             <SearchBar
               onSearch={setSearchQuery}
-              placeholder="Search for dishes, ingredients..."
+              placeholder={t("customer.menu.search.placeholder")}
             />
           </div>
           <Button
@@ -517,7 +522,7 @@ const MenuBrowse = () => {
             onClick={() => setIsFilterOpen(true)}
             className="w-full md:w-auto"
           >
-            Filters
+            {t("customer.menu.filters.title")}
             {activeFiltersCount > 0 && (
               <span className="ml-2 px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold rounded-full">
                 {activeFiltersCount}
@@ -529,7 +534,7 @@ const MenuBrowse = () => {
         {activeFilterTags.length > 0 && (
           <div className="mb-4 flex items-center gap-2 flex-wrap">
             <p className="text-sm font-medium text-muted-foreground">
-              Active Filters:
+              {t("customer.menu.activeFilters")}
             </p>
             {activeFilterTags.map((tag) => {
               const colorClasses = {
@@ -562,7 +567,7 @@ const MenuBrowse = () => {
               className="text-xs h-auto py-1"
               onClick={handleResetFilters}
             >
-              Clear all
+              {t("customer.menu.filters.reset", "Clear all")}
             </Button>
           </div>
         )}
@@ -571,11 +576,9 @@ const MenuBrowse = () => {
           <>
             <div className="mb-4">
               <p className="text-sm md:text-base text-muted-foreground">
-                Showing{" "}
-                <span className="font-semibold text-foreground">
-                  {filteredItems?.length}
-                </span>{" "}
-                items
+                {t("customer.menu.showingItems", {
+                  count: filteredItems?.length,
+                })}
               </p>
             </div>
 

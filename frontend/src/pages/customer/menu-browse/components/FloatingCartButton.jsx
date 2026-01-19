@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
 const FloatingCartButton = ({ itemCount, totalAmount }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (itemCount === 0) return null;
@@ -26,6 +28,10 @@ const FloatingCartButton = ({ itemCount, totalAmount }) => {
           <div className="flex flex-col items-start">
             <span className="text-xs opacity-90">View Cart</span>
             <span className="text-base font-bold data-text">
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(totalAmount || 0)}
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",

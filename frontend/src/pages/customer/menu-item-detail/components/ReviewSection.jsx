@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Avatar from "../../../../components/ui/Avatar";
 import Button from "../../../../components/ui/Button";
@@ -27,7 +28,7 @@ const ReviewSection = ({
 
   const totalReviews = ratingDistribution?.reduce(
     (sum, item) => sum + item?.count,
-    0
+    0,
   );
 
   const handleSubmitReview = async (e) => {
@@ -61,7 +62,7 @@ const ReviewSection = ({
       if (!error.response || error.response.status !== 400) {
         console.error(error);
       }
-      
+
       const msg = error.response?.data?.message || "Failed to submit review";
       toast.error(msg);
     } finally {
@@ -168,7 +169,9 @@ const ReviewSection = ({
               ))}
             </div>
             <p className="text-sm md:text-base text-muted-foreground">
-              Based on {totalReviews} reviews
+              {t("customer.itemDetail.reviews.basedOn", {
+                count: totalReviews,
+              })}
             </p>
           </div>
 
@@ -184,7 +187,7 @@ const ReviewSection = ({
                     style={{
                       width: `${getRatingPercentage(
                         item?.count,
-                        totalReviews
+                        totalReviews,
                       )}%`,
                     }}
                   />

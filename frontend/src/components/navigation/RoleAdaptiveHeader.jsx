@@ -6,10 +6,14 @@ import Button from "../ui/Button";
 import Avatar from "../ui/Avatar";
 import authService from "../../services/authService";
 import { useCart } from "../../contexts/CartContext";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+  const { changeLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(authService.getCurrentUser());
   const [tableNumber, setTableNumber] = useState(
@@ -65,16 +69,20 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
 
   /* Nav Items Configuration */
   const baseCustomerNavItems = [
-    { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
+    {
+      path: "/customer/menu-browse",
+      label: t("nav.items.menu"),
+      icon: "UtensilsCrossed",
+    },
     {
       path: "/customer/shopping-cart",
-      label: "Cart",
+      label: t("nav.items.cart"),
       icon: "ShoppingCart",
       badge: cartItemCount,
     },
     {
       path: "/customer/order-status-tracking",
-      label: "Order Status",
+      label: t("nav.items.orderStatus"),
       icon: "ClipboardList",
     },
   ];
@@ -83,18 +91,30 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const customerNavItems = user
     ? [
         ...baseCustomerNavItems,
-        { path: "/customer/profile", label: "Profile", icon: "User" },
+        {
+          path: "/customer/profile",
+          label: t("nav.items.profile"),
+          icon: "User",
+        },
       ]
     : baseCustomerNavItems;
 
   const adminNavItems = [
-    { path: "/admin/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+    {
+      path: "/admin/dashboard",
+      label: t("nav.items.dashboard"),
+      icon: "LayoutDashboard",
+    },
     {
       path: "/admin/kitchen/dashboard",
-      label: "Kitchen Display",
+      label: t("nav.items.kitchen"),
       icon: "ChefHat",
     },
-    { path: "/customer/menu-browse", label: "Menu", icon: "UtensilsCrossed" },
+    {
+      path: "/customer/menu-browse",
+      label: t("nav.items.menu"),
+      icon: "UtensilsCrossed",
+    },
   ];
 
   const navItems = userRole === "admin" ? adminNavItems : customerNavItems;
@@ -143,7 +163,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
         <div className="fixed inset-y-0 right-0 w-[280px] bg-background shadow-2xl flex flex-col p-6 animate-in slide-in-from-right duration-300">
           <div className="flex items-center justify-between mb-8 border-b pb-4">
             <span className="font-heading font-bold text-xl text-primary">
-              Menu
+              {t("nav.items.menu")}
             </span>
             <button
               onClick={() => setMobileMenuOpen(false)}
@@ -199,7 +219,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                         .pop()}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Member
+                      {t("nav.user.member")}
                     </span>
                   </div>
                 </div>
@@ -208,7 +228,8 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                   variant="outline"
                   className="w-full justify-start text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200"
                 >
-                  <Icon name="LogOut" className="mr-3" size={18} /> Logout
+                  <Icon name="LogOut" className="mr-3" size={18} />{" "}
+                  {t("nav.user.logout")}
                 </Button>
               </>
             ) : (
@@ -217,9 +238,44 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                 className="w-full"
                 variant="primary"
               >
-                Login / Register
+                {t("nav.user.loginRegister")}
               </Button>
             )}
+          </div>
+
+          {/* Language Toggle - Mobile */}
+          <div className="px-2 py-3 border-b border-border">
+            <p className="text-xs font-medium text-muted-foreground mb-2 px-2">
+              {t("nav.language.title", "Language")}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  changeLanguage("en");
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  i18n.language === "en"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted text-foreground hover:bg-muted/70"
+                }`}
+              >
+                🇬🇧 {t("nav.language.english", "English")}
+              </button>
+              <button
+                onClick={() => {
+                  changeLanguage("vi");
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  i18n.language === "vi"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted text-foreground hover:bg-muted/70"
+                }`}
+              >
+                🇻🇳 {t("nav.language.vietnamese", "Tiếng Việt")}
+              </button>
+            </div>
           </div>
         </div>
       </div>,
@@ -287,10 +343,36 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
             {tableNumber && (
               <div className="flex items-center px-3 py-1.5 border border-primary/20 rounded-full bg-primary/5">
                 <span className="text-xs md:text-sm font-bold text-primary whitespace-nowrap">
-                  Table {tableNumber}
+                  {t("nav.items.tables")} {tableNumber}
                 </span>
               </div>
             )}
+
+            {/* Language Toggle - Desktop */}
+            <div className="hidden md:flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-full border border-border">
+              <button
+                onClick={() => changeLanguage("en")}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  i18n.language === "en"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title={t("nav.language.english", "English")}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => changeLanguage("vi")}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  i18n.language === "vi"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title={t("nav.language.vietnamese", "Tiếng Việt")}
+              >
+                VI
+              </button>
+            </div>
 
             {/* Auth Section */}
             {user ? (
@@ -302,7 +384,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                       .pop()}
                   </span>
                   <span className="text-xs text-gray-500 leading-none mt-1">
-                    Member
+                    {t("nav.user.member")}
                   </span>
                 </div>
                 <Avatar
@@ -314,7 +396,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                 <button
                   onClick={handleLogout}
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                  title="Logout"
+                  title={t("nav.user.logout")}
                 >
                   <Icon name="LogOut" size={20} />
                 </button>
@@ -327,7 +409,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
                   onClick={() => navigate("/login")}
                   className="text-xs h-8 px-3"
                 >
-                  Login
+                  {t("auth.login.submit")}
                 </Button>
               </div>
             )}

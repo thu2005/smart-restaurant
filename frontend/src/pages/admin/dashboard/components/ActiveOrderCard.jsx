@@ -1,18 +1,22 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import Icon from "../../../../components/AppIcon";
 import Image from "../../../../components/AppImage";
 
 const ActiveOrderCard = ({ order, onStatusUpdate }) => {
-    // Calculate order total
-    const getOrderTotal = () => {
-      if (order?.bill?.total) return Number(order.bill.total).toFixed(2);
-      if (order?.totalAmount) return Number(order.totalAmount).toFixed(2);
-      if (order?.total) return Number(order.total).toFixed(2);
-      if (order?.orderItems?.length) {
-        return order.orderItems.reduce((sum, item) => sum + Number(item.unitPrice) * item.quantity, 0).toFixed(2);
-      }
-      return "0.00";
-    };
+  const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
+  // Calculate order total
+  const getOrderTotal = () => {
+    if (order?.bill?.total) return Number(order.bill.total).toFixed(2);
+    if (order?.totalAmount) return Number(order.totalAmount).toFixed(2);
+    if (order?.total) return Number(order.total).toFixed(2);
+    if (order?.orderItems?.length) {
+      return order.orderItems.reduce((sum, item) => sum + Number(item.unitPrice) * item.quantity, 0).toFixed(2);
+    }
+    return "0.00";
+  };
   // Map backend status to frontend display status
   const mapStatus = (backendStatus) => {
     const statusMap = {
@@ -72,10 +76,10 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
           </div>
           <div>
             <p className="font-heading font-semibold text-base text-foreground">
-              Order #{order?.orderNumber || order?.id?.slice(0, 8).toUpperCase()}
+              {t('admin.dashboard.orders.details', { number: order?.orderNumber || order?.id?.slice(0, 8).toUpperCase() })}
             </p>
             <p className="text-sm text-muted-foreground">
-              Table {order?.table?.tableNumber || order?.tableNumber || "N/A"}
+              {t('admin.dashboard.tables.tableNumber', { number: order?.table?.tableNumber || order?.tableNumber || t('common.status.na') })}
             </p>
           </div>
         </div>
@@ -83,32 +87,32 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
           className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 ${getStatusColor(displayStatus)}`}
         >
           <Icon name={getStatusIcon(displayStatus)} size={18} />
-          <span className="capitalize">{displayStatus}</span>
+          <span className="capitalize">{t(`admin.dashboard.orderStatus.${displayStatus}`)}</span>
         </div>
       </div>
-      
+
       <div className="space-y-2 mb-3">
         {order?.orderItems?.map((orderItem) => (
           <div key={orderItem.id} className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
               <Image
                 src={orderItem?.menuItem?.photos?.[0]?.url || orderItem?.menuItem?.image || "/assets/placeholder-food.jpg"}
-                alt={orderItem?.menuItem?.name || "Food item"}
+                alt={orderItem?.menuItem?.name || t('admin.dashboard.orders.foodItem')}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">
-                {orderItem?.menuItem?.name || "Unknown Item"}
+                {orderItem?.menuItem?.name || t('admin.dashboard.orders.unknownItem')}
               </p>
               <p className="text-xs text-muted-foreground">
-                Qty: {orderItem?.quantity}
+                {t('admin.dashboard.orders.qty')} {orderItem?.quantity}
               </p>
             </div>
           </div>
         ))}
       </div>
-      
+
       <div className="flex items-center justify-between pt-3 border-t border-border">
         <div className="flex items-center gap-2">
           <Icon
@@ -122,11 +126,11 @@ const ActiveOrderCard = ({ order, onStatusUpdate }) => {
             className={`text-sm font-medium ${isOverdue ? "text-error" : "text-muted-foreground"
               }`}
           >
-            {prepTime} min
+            {prepTime} {t('common.time.min')}
           </span>
         </div>
         <p className="text-base font-semibold text-foreground">
-          ${getOrderTotal()}
+          {formatCurrency(getOrderTotal())}
         </p>
       </div>
     </div>

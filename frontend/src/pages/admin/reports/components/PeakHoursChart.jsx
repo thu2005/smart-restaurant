@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     BarChart,
     Bar,
@@ -11,14 +12,15 @@ import {
 } from 'recharts';
 
 const PeakHoursChart = ({ data }) => {
+    const { t } = useTranslation();
     if (!data || data.length === 0) {
         return (
             <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
                 <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-4">
-                    Peak Hours
+                    {t('reports.charts.peakHours.title')}
                 </h3>
                 <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">
-                    No peak hours data available
+                    {t('reports.charts.peakHours.noData')}
                 </div>
             </div>
         );
@@ -35,7 +37,7 @@ const PeakHoursChart = ({ data }) => {
                         {payload[0].payload.hourLabel}
                     </p>
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">Orders:</span>
+                        <span className="text-xs text-muted-foreground">{t('reports.charts.peakHours.orders')}:</span>
                         <span className="text-sm font-semibold text-foreground data-text">
                             {payload[0].value}
                         </span>
@@ -50,10 +52,10 @@ const PeakHoursChart = ({ data }) => {
         <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
             <div className="mb-6">
                 <h3 className="text-lg md:text-xl font-heading font-semibold text-foreground mb-1">
-                    Peak Hours
+                    {t('reports.charts.peakHours.title')}
                 </h3>
                 <p className="text-xs md:text-sm text-muted-foreground">
-                    Busiest hours based on order volume
+                    {t('reports.charts.peakHours.subtitle')}
                 </p>
             </div>
 

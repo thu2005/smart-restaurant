@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 
 const NutritionalInfo = ({ data, loading = false }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Transform nutritionalInfo object to array format for display
@@ -29,7 +31,10 @@ const NutritionalInfo = ({ data, loading = false }) => {
             <Icon name="Info" size={20} color="var(--color-primary)" />
           </div>
           <span className="text-base md:text-lg font-heading font-semibold text-foreground">
-            Nutritional Information & Ingredients
+            {t(
+              "customer.itemDetail.nutritionalInfo",
+              "Nutritional Information & Ingredients",
+            )}
           </span>
         </div>
         <Icon

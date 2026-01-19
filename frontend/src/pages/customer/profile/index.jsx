@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import authService from "../../../services/authService";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
@@ -8,6 +9,7 @@ import EditProfileModal from "./components/EditProfileModal";
 import UserReviews from "./components/UserReviews";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState(authService.getCurrentUser());
   const [activeTab, setActiveTab] = useState("history");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -24,7 +26,7 @@ const Profile = () => {
         console.error("Failed to fetch user profile:", error);
       }
     };
-    
+
     fetchUserData();
   }, []);
 
@@ -35,13 +37,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-8">
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-12">
-        
         {/* Profile Header */}
         <div className="bg-card rounded-xl md:rounded-2xl border border-border p-6 md:p-8 mb-6 md:mb-8 flex flex-col md:flex-row items-center gap-6 shadow-warm-sm animate-fade-in-up">
-          <Avatar 
-            user={user} 
-            size="xl" 
-            className="w-24 h-24 md:w-32 md:h-32 border-4 border-white dark:border-white/10 shadow-sm text-4xl md:text-5xl" 
+          <Avatar
+            user={user}
+            size="xl"
+            className="w-24 h-24 md:w-32 md:h-32 border-4 border-white dark:border-white/10 shadow-sm text-4xl md:text-5xl"
           />
           <div className="flex-1 text-center md:text-left space-y-2">
             <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
@@ -49,35 +50,36 @@ const Profile = () => {
             </h1>
             <p className="text-muted-foreground flex items-center justify-center md:justify-start gap-2">
               <Icon name="Mail" size={16} />
-              {user?.email || "No email provided"}
+              {user?.email ||
+                t("customer.profile.noEmail", "No email provided")}
             </p>
             {user?.phone && (
-               <p className="text-muted-foreground flex items-center justify-center md:justify-start gap-2">
-                 <Icon name="Phone" size={16} />
-                 {user.phone}
-               </p>
+              <p className="text-muted-foreground flex items-center justify-center md:justify-start gap-2">
+                <Icon name="Phone" size={16} />
+                {user.phone}
+              </p>
             )}
             <p className="text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 inline-block px-3 py-1 rounded-full border border-emerald-100 dark:border-emerald-800">
               {user?.role || "Member"}
             </p>
           </div>
           <div className="flex-shrink-0">
-             <Button 
-                variant="outline" 
-                iconName="Edit2"
-                onClick={() => setIsEditModalOpen(true)}
-             >
-                Edit Profile
-             </Button>
+            <Button
+              variant="outline"
+              iconName="Edit2"
+              onClick={() => setIsEditModalOpen(true)}
+            >
+              Edit Profile
+            </Button>
           </div>
         </div>
 
         {/* Edit Profile Modal */}
-        <EditProfileModal 
-           isOpen={isEditModalOpen}
-           onClose={() => setIsEditModalOpen(false)}
-           user={user}
-           onUpdateSuccess={handleUpdateSuccess}
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          user={user}
+          onUpdateSuccess={handleUpdateSuccess}
         />
 
         {/* Tabs */}
@@ -92,7 +94,7 @@ const Profile = () => {
           >
             Order History
             {activeTab === "history" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
             )}
           </button>
           <button
@@ -104,19 +106,15 @@ const Profile = () => {
             }`}
           >
             My Reviews
-             {activeTab === "reviews" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
+            {activeTab === "reviews" && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
             )}
           </button>
         </div>
 
         {/* Content */}
         <div className="space-y-6">
-          {activeTab === "history" ? (
-            <OrderHistoryList />
-          ) : (
-            <UserReviews />
-          )}
+          {activeTab === "history" ? <OrderHistoryList /> : <UserReviews />}
         </div>
       </div>
     </div>

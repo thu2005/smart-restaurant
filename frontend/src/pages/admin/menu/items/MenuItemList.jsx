@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Fuse from "fuse.js";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -7,9 +8,12 @@ import Button from "components/ui/Button";
 import Input from "components/ui/Input";
 import Icon from "components/AppIcon";
 import { toast } from "sonner";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
 import MenuItemModal from "./MenuItemModal";
 
 const MenuItemList = () => {
+  const { t } = useTranslation();
+  const { formatCurrency } = useCurrency();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
@@ -63,9 +67,10 @@ const MenuItemList = () => {
       // Check if it's because of missing restaurant
       if (error.response?.data?.message?.includes("No restaurant assigned")) {
         setNoRestaurant(true);
-        toast.error("No restaurant assigned to your account");
+        setNoRestaurant(true);
+        toast.error(t('admin.menu.items.messages.noRestaurant'));
       } else {
-        toast.error("Failed to load menu items");
+        toast.error(t('admin.menu.items.messages.loadError'));
       }
       // Fallback data
       setItems([]);
@@ -125,10 +130,10 @@ const MenuItemList = () => {
     if (!deleteConfirm) return;
     try {
       await menuService.deleteItem(deleteConfirm);
-      toast.success("Item deleted");
+      toast.success(t('admin.menu.items.messages.deleteSuccess'));
       fetchItems();
     } catch (error) {
-      toast.error("Failed to delete item");
+      toast.error(t('admin.menu.items.messages.deleteError'));
     } finally {
       setDeleteConfirm(null);
     }
@@ -160,32 +165,40 @@ const MenuItemList = () => {
     // MenuItemModal calls onSave() after create/update.
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'low_stock': return t('admin.menu.items.status.lowStock');
+      case 'sold_out': return t('admin.menu.items.status.soldOut');
+      default: return t(`admin.menu.items.status.${status}`);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Menu Items</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('admin.menu.items.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your restaurant's menu items.
+            {t('admin.menu.items.subtitle')}
           </p>
         </div>
         <Button onClick={handleCreate}>
           <Icon name="Plus" className="w-4 h-4 mr-2" />
-          Add Item
+          {t('admin.menu.items.addItem')}
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg border shadow-sm flex flex-col md:flex-row gap-4">
+      <div className="bg-card p-4 rounded-lg border shadow-sm flex flex-col md:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <Input
-            placeholder="Search items..."
+            placeholder={t('admin.menu.items.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
           />
           <Button type="submit" variant="secondary">
-            Search
+            {t('common.actions.search')}
           </Button>
         </form>
 
@@ -194,7 +207,7 @@ const MenuItemList = () => {
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <option value="">All Categories</option>
+          <option value="">{t('admin.menu.items.filters.allCategories')}</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -207,11 +220,11 @@ const MenuItemList = () => {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
-          <option value="">All Statuses</option>
-          <option value="available">Available</option>
-          <option value="low_stock">Low Stock</option>
-          <option value="sold_out">Sold Out</option>
-          <option value="unavailable">Unavailable</option>
+          <option value="">{t('admin.menu.items.filters.allStatuses')}</option>
+          <option value="available">{t('admin.menu.items.status.available')}</option>
+          <option value="low_stock">{t('admin.menu.items.status.lowStock')}</option>
+          <option value="sold_out">{t('admin.menu.items.status.soldOut')}</option>
+          <option value="unavailable">{t('admin.menu.items.status.unavailable')}</option>
         </select>
 
         <select
@@ -219,51 +232,51 @@ const MenuItemList = () => {
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option value="createdAt">Newest First</option>
-          <option value="name">Name (A-Z)</option>
-          <option value="price">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="popularity">Most Popular</option>
+          <option value="createdAt">{t('admin.menu.items.filters.newest')}</option>
+          <option value="name">{t('admin.menu.items.sort.nameAz')}</option>
+          <option value="price">{t('admin.menu.items.filters.priceLowHigh')}</option>
+          <option value="price_desc">{t('admin.menu.items.filters.priceHighLow')}</option>
+          <option value="popularity">{t('admin.menu.items.filters.popularity')}</option>
         </select>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+            <thead className="border-b border-border">
               <tr>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
-                  Name
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                  {t('admin.menu.items.table.name')}
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
-                  Category
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                  {t('admin.menu.items.table.category')}
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
-                  Price
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                  {t('admin.menu.items.table.price')}
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap hidden xl:table-cell">
-                  Created Date
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap hidden xl:table-cell">
+                  {t('admin.menu.items.table.createdDate')}
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap">
-                  Status
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                  {t('admin.menu.items.table.status')}
                 </th>
-                <th className="px-4 py-3 font-medium whitespace-nowrap hidden lg:table-cell">
-                  Tags
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap hidden lg:table-cell">
+                  {t('admin.menu.items.table.tags')}
                 </th>
-                <th className="px-4 py-3 font-medium text-right whitespace-nowrap">
-                  Actions
+                <th className="px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right whitespace-nowrap">
+                  {t('admin.menu.items.table.actions')}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-border/50">
               {loading ? (
                 <tr>
                   <td
                     colSpan="7"
                     className="px-4 py-4 text-center text-gray-500"
                   >
-                    Loading...
+                    {t('common.messages.loading')}
                   </td>
                 </tr>
               ) : items.length === 0 ? (
@@ -277,36 +290,34 @@ const MenuItemList = () => {
                         />
                         <div>
                           <p className="text-gray-700 font-medium mb-1">
-                            No Restaurant Assigned
+                            {t('admin.menu.items.empty.noRestaurantTitle')}
                           </p>
                           <p className="text-gray-500 text-sm">
-                            Your account doesn't have a restaurant assigned yet.
-                            Please contact the administrator to set up your
-                            restaurant.
+                            {t('admin.menu.items.empty.noRestaurantDesc')}
                           </p>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-gray-500">No items found.</p>
+                      <p className="text-gray-500">{t('admin.menu.items.empty.noItems')}</p>
                     )}
                   </td>
                 </tr>
               ) : (
                 filteredItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr key={item.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                     <td
-                      className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
+                      className="px-4 py-4 font-medium text-foreground whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
                       title={item.name}
                     >
                       {item.name}
                     </td>
-                    <td className="px-4 py-4 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-4 text-muted-foreground whitespace-nowrap">
                       {item.category_name || "-"}
                     </td>
-                    <td className="px-4 py-4 font-medium whitespace-nowrap">
-                      ${Number(item.price).toFixed(2)}
+                    <td className="px-4 py-4 font-semibold text-foreground whitespace-nowrap">
+                      {formatCurrency(Number(item.price))}
                     </td>
-                    <td className="px-4 py-4 text-gray-500 whitespace-nowrap hidden xl:table-cell">
+                    <td className="px-4 py-4 text-muted-foreground whitespace-nowrap hidden xl:table-cell">
                       {item.created_at
                         ? new Date(item.created_at).toLocaleDateString()
                         : "-"}
@@ -322,13 +333,13 @@ const MenuItemList = () => {
                               : "bg-gray-100 text-gray-800"
                           }`}
                       >
-                        {item.status.replace("_", " ")}
+                        {getStatusLabel(item.status)}
                       </span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
                       {item.is_chef_recommended && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                          Chef's Choice
+                          {t('admin.menu.items.badges.chefChoice')}
                         </span>
                       )}
                     </td>
@@ -361,7 +372,7 @@ const MenuItemList = () => {
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">Showing page {page}</div>
+        <div className="text-sm text-gray-500">{t('common.pagination.showingPage')} {page}</div>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -369,7 +380,7 @@ const MenuItemList = () => {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
-            Previous
+            {t('common.pagination.previous')}
           </Button>
           <Button
             variant="outline"
@@ -377,7 +388,7 @@ const MenuItemList = () => {
             onClick={() => setPage((p) => p + 1)}
             disabled={items.length < limit}
           >
-            Next
+            {t('common.pagination.next')}
           </Button>
         </div>
       </div>
@@ -390,28 +401,29 @@ const MenuItemList = () => {
       />
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm &&
+      {
+        deleteConfirm &&
         createPortal(
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[120]">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-              <h3 className="text-lg font-semibold mb-4">Delete menu item?</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('admin.menu.items.deleteConfirm')}</h3>
               <p className="text-gray-600 mb-6">
-                Are you sure you want to delete this menu item? This action
-                cannot be undone.
+                {t('admin.menu.items.deleteMessage')}
               </p>
               <div className="flex justify-end gap-3">
                 <Button variant="outline" onClick={cancelDelete}>
-                  Cancel
+                  {t('common.actions.cancel')}
                 </Button>
                 <Button variant="destructive" onClick={confirmDelete}>
-                  Delete
+                  {t('common.actions.delete')}
                 </Button>
               </div>
             </div>
           </div>,
           document.body
-        )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

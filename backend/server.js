@@ -30,10 +30,62 @@ app.use(
 );
 app.use(morgan("dev"));
 
+// Initialize Prometheus Client
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+const Registry = client.Registry;
+const register = new Registry();
+collectDefaultMetrics({ register });
+
+// Create custom metrics
+const httpRequestDurationMicroseconds = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'code'],
+  buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10] 
+});
+register.registerMetric(httpRequestDurationMicroseconds);
+
+// Custom Metric: Total Requests Counter
+const totalRequests = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'code']
+});
+register.registerMetric(totalRequests);
+
 // DEBUG: Log all incoming requests
 app.use((req, res, next) => {
   console.log(`🌍 INCOMING REQUEST: ${req.method} ${req.url}`);
+
+  // Start timer for Prometheus metric
+  const end = httpRequestDurationMicroseconds.startTimer();
+
+  // Enhance response object to track when it finishes
+  res.on('finish', () => {
+    if (req.route) {
+      const labels = {
+        method: req.method,
+        route: req.route.path,
+        code: res.statusCode
+      };
+
+      end(labels);
+      totalRequests.inc(labels);
+    }
+  });
+
   next();
+});
+
+// Metrics Endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (ex) {
+    res.status(500).send(ex);
+  }
 });
 
 app.use(express.json());
