@@ -242,25 +242,27 @@ class MenuService {
     ]);
 
     // Transform items to include computed status field and rating stats
-    const transformedItems = await Promise.all(items.map(async item => {
-      let status = 'available';
-      if (item.stockStatus === 'sold_out') {
-        status = 'sold_out';
-      } else if (item.stockStatus === 'low_stock') {
-        status = 'low_stock';
-      } else if (!item.isAvailable) {
-        status = 'unavailable';
-      }
-      
-      // Calculate rating stats
-      const ratingStats = await this._calculateRatingStats(item.id);
-      
-      return {
-        ...item,
-        status, // Add computed status field
-        ...ratingStats,
-      };
-    }));
+    const transformedItems = await Promise.all(
+      items.map(async (item) => {
+        let status = "available";
+        if (item.stockStatus === "sold_out") {
+          status = "sold_out";
+        } else if (item.stockStatus === "low_stock") {
+          status = "low_stock";
+        } else if (!item.isAvailable) {
+          status = "unavailable";
+        }
+
+        // Calculate rating stats
+        const ratingStats = await this._calculateRatingStats(item.id);
+
+        return {
+          ...item,
+          status, // Add computed status field
+          ...ratingStats,
+        };
+      }),
+    );
 
     return {
       data: transformedItems,
@@ -375,8 +377,8 @@ class MenuService {
 
     const newPhotos = [];
     for (const file of files) {
-      // Assuming server serves /uploads
-      const url = `/uploads/${file.filename}`;
+      // Use Cloudinary URL from uploaded file
+      const url = file.path;
       const photo = await prisma.menuItemPhoto.create({
         data: {
           url: url,
@@ -642,13 +644,13 @@ class MenuService {
   // --- Enhanced Methods with Rating Stats ---
   async getMenuItemsWithRatings(restaurantId, options = {}) {
     const result = await this.getMenuItems(restaurantId, options);
-    
+
     // Add rating stats to each item
     const itemsWithRatings = await Promise.all(
       result.data.map(async (item) => {
         const ratingStats = await this._calculateRatingStats(item.id);
         return { ...item, ...ratingStats };
-      })
+      }),
     );
 
     return {
@@ -686,7 +688,7 @@ class MenuService {
     if (!item) throw new Error("Menu item not found");
 
     const updateData = {};
-    
+
     if (data.nutritionalInfo) {
       updateData.nutritionalInfo = data.nutritionalInfo;
     }
@@ -731,7 +733,7 @@ class MenuService {
         photos: { where: { isPrimary: true }, take: 1 },
         category: true,
       },
-      orderBy: { orderCount: 'desc' },
+      orderBy: { orderCount: "desc" },
       take: limit,
     });
 
@@ -740,7 +742,7 @@ class MenuService {
       relatedItems.map(async (relatedItem) => {
         const ratingStats = await this._calculateRatingStats(relatedItem.id);
         return { ...relatedItem, ...ratingStats };
-      })
+      }),
     );
 
     return itemsWithRatings;
@@ -757,7 +759,7 @@ class MenuService {
         photos: { where: { isPrimary: true }, take: 1 },
         category: true,
       },
-      orderBy: { orderCount: 'desc' },
+      orderBy: { orderCount: "desc" },
       take: limit,
     });
 
@@ -766,7 +768,7 @@ class MenuService {
       items.map(async (item) => {
         const ratingStats = await this._calculateRatingStats(item.id);
         return { ...item, ...ratingStats };
-      })
+      }),
     );
 
     return itemsWithRatings;
@@ -774,7 +776,7 @@ class MenuService {
 
   // --- Items by Category ---
   async getItemsByCategory(restaurantId, categoryId, options = {}) {
-    const { page = 1, limit = 20, sortBy = 'orderCount' } = options;
+    const { page = 1, limit = 20, sortBy = "orderCount" } = options;
 
     // Verify category exists and belongs to restaurant
     const category = await prisma.category.findUnique({
@@ -782,7 +784,9 @@ class MenuService {
     });
 
     if (!category || category.restaurantId !== restaurantId) {
-      throw new Error('Category not found or does not belong to this restaurant');
+      throw new Error(
+        "Category not found or does not belong to this restaurant",
+      );
     }
 
     const skip = (page - 1) * limit;
@@ -790,18 +794,18 @@ class MenuService {
 
     let orderBy = {};
     switch (sortBy) {
-      case 'price':
-        orderBy = { price: 'asc' };
+      case "price":
+        orderBy = { price: "asc" };
         break;
-      case 'price_desc':
-        orderBy = { price: 'desc' };
+      case "price_desc":
+        orderBy = { price: "desc" };
         break;
-      case 'name':
-        orderBy = { name: 'asc' };
+      case "name":
+        orderBy = { name: "asc" };
         break;
-      case 'orderCount':
+      case "orderCount":
       default:
-        orderBy = { orderCount: 'desc' };
+        orderBy = { orderCount: "desc" };
         break;
     }
 
@@ -834,7 +838,7 @@ class MenuService {
       items.map(async (item) => {
         const ratingStats = await this._calculateRatingStats(item.id);
         return { ...item, ...ratingStats };
-      })
+      }),
     );
 
     return {

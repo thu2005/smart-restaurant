@@ -4,29 +4,13 @@ const authController = require('../controllers/auth.controller');
 const { protect } = require('../middlewares/auth.middleware');
 const passport = require('passport');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { avatarStorage } = require('../config/cloudinary');
 
 const router = express.Router();
 
-// Ensure uploads directory exists
-const uploadDir = 'uploads/avatars/';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure multer for avatar uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, 'avatar-' + req.user.id + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
-
+// Configure multer for avatar uploads with Cloudinary
 const upload = multer({
-    storage: storage,
+    storage: avatarStorage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {

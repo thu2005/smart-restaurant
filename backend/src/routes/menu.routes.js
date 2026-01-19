@@ -1057,27 +1057,12 @@ router.put(
   menuController.updateMenuItem
 );
 
-// Multer setup for image uploads
+// Multer setup for image uploads with Cloudinary
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-
-const uploadDir = "uploads/";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, "menu-" + Date.now() + path.extname(file.originalname));
-  },
-});
+const { menuStorage } = require("../config/cloudinary");
 
 const upload = multer({
-  storage: storage,
+  storage: menuStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {
