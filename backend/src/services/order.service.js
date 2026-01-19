@@ -874,6 +874,72 @@ class OrderService {
         doc.end();
     }
 
+    /**
+     * Get customer order history (completed orders only)
+     * @param {string} customerId - Customer user ID
+     * @param {Object} options - Pagination options
+     * @returns {Array} List of completed orders with items
+     */
+    async getCustomerOrderHistory(customerId, options = {}) {
+        const { limit = 20, offset = 0 } = options;
+
+        const orders = await prisma.order.findMany({
+            where: {
+                customerId: customerId,
+                status: 'COMPLETED'
+            },
+            include: {
+                orderItems: {
+                    include: {
+                        menuItem: {
+                            include: {
+                                photos: {
+                                    where: { isPrimary: true },
+                                    take: 1
+                                }
+                            }
+                        }
+                    }
+                },
+                table: {
+                    select: {
+                        tableNumber: true,
+                        location: true
+                    }
+                },
+                restaurant: {
+                    select: {
+                        name: true,
+                        address: true
+                    }
+                },
+                payment: {
+                    select: {
+                        total: true,
+                        method: true,
+                        status: true,
+                        paidAt: true
+                    }
+                },
+                bill: {
+                    select: {
+                        billNumber: true,
+                        subtotal: true,
+                        tax: true,
+                        discount: true,
+                        total: true
+                    }
+                }
+            },
+            orderBy: {
+                completedAt: 'desc'
+            },
+            take: limit,
+            skip: offset
+        });
+
+        return orders;
+    }
 }
 
 module.exports = new OrderService();

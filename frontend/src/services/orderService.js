@@ -261,6 +261,19 @@ const orderService = {
   },
 
   /**
+   * Get customer order history (completed orders)
+   */
+  getCustomerOrderHistory: async (params = {}) => {
+    try {
+      const response = await api.get("/orders/customer/history", { params });
+      return response.data;
+    } catch (error) {
+      console.error("Error getting customer order history:", error);
+      throw error;
+    }
+  },
+
+  /**
    * Smart order placement - checks for active order and either creates new or adds to existing
    * This is the main method to use from Cart
    */

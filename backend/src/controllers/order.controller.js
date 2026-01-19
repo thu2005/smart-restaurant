@@ -323,3 +323,23 @@ exports.getBillsByStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Get customer order history (completed orders only)
+ * Requires authentication
+ */
+exports.getCustomerOrderHistory = async (req, res, next) => {
+    try {
+        const customerId = req.user.id; // From auth middleware
+        const { limit = 20, offset = 0 } = req.query;
+
+        const orders = await orderService.getCustomerOrderHistory(customerId, {
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
+
+        res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        next(error);
+    }
+};

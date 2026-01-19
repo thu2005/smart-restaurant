@@ -2,57 +2,24 @@ import React, { useState } from "react";
 import authService from "../../../services/authService";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
+import OrderHistoryList from "./components/OrderHistoryList";
 
 const Profile = () => {
   const user = authService.getCurrentUser();
   const [activeTab, setActiveTab] = useState("history");
-
-  // Mock Order History Data
-  const orderHistory = [
-    {
-      id: "ORD-0051",
-      date: "2024-01-14",
-      total: 820000,
-      status: "completed",
-      items: ["Grilled Salmon", "Caesar Salad", "White Wine"],
-    },
-    {
-      id: "ORD-0048",
-      date: "2024-01-10",
-      total: 450000,
-      status: "completed",
-      items: ["Spaghetti Carbonara", "Tiramisu"],
-    },
-    {
-      id: "ORD-0032",
-      date: "2023-12-28",
-      total: 1250000,
-      status: "completed",
-      items: ["Steak Frites", "Lobster Bisque", "Red Wine", "Cheesecake"],
-    },
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "completed":
-        return "bg-success/10 text-success";
-      case "processing":
-        return "bg-warning/10 text-warning";
-      case "cancelled":
-        return "bg-destructive/10 text-destructive";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-8">
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-12">
         
         {/* Profile Header */}
-        <div className="bg-card rounded-xl md:rounded-2xl border border-border p-6 md:p-8 mb-6 md:mb-8 flex flex-col md:flex-row items-center gap-6 shadow-warm-sm">
-          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 flex items-center justify-center text-primary text-4xl md:text-5xl font-bold border-4 border-white shadow-sm">
-            {(user?.name || "C").charAt(0).toUpperCase()}
+        <div className="bg-card rounded-xl md:rounded-2xl border border-border p-6 md:p-8 mb-6 md:mb-8 flex flex-col md:flex-row items-center gap-6 shadow-warm-sm animate-fade-in-up">
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 flex items-center justify-center text-primary text-4xl md:text-5xl font-bold border-4 border-white dark:border-white/10 shadow-sm relative overflow-hidden">
+             {user?.avatar ? (
+                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+             ) : (
+                <span>{(user?.name || "C").charAt(0).toUpperCase()}</span>
+             )}
           </div>
           <div className="flex-1 text-center md:text-left space-y-2">
             <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
@@ -62,7 +29,7 @@ const Profile = () => {
               <Icon name="Mail" size={16} />
               {user?.email || "No email provided"}
             </p>
-            <p className="text-sm font-medium text-primary bg-primary/10 inline-block px-3 py-1 rounded-full">
+            <p className="text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 inline-block px-3 py-1 rounded-full border border-emerald-100 dark:border-emerald-800">
               {user?.role || "Member"}
             </p>
           </div>
@@ -77,87 +44,43 @@ const Profile = () => {
         <div className="flex border-b border-border mb-6">
           <button
             onClick={() => setActiveTab("history")}
-            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors ${
+            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors relative ${
               activeTab === "history"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             Order History
+            {activeTab === "history" && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
+            )}
           </button>
           <button
             onClick={() => setActiveTab("settings")}
-            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors ${
+            className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors relative ${
               activeTab === "settings"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             Settings
+             {activeTab === "settings" && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
+            )}
           </button>
         </div>
 
         {/* Content */}
         <div className="space-y-6">
           {activeTab === "history" ? (
-            <div className="space-y-4">
-              {orderHistory.map((order) => (
-                <div
-                  key={order.id}
-                  className="bg-card rounded-lg md:rounded-xl border border-border p-4 md:p-6 hover:shadow-warm transition-smooth"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="font-heading font-bold text-lg">
-                          Order #{order.id}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${getStatusColor(
-                            order.status
-                          )}`}
-                        >
-                          {order.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Icon name="Calendar" size={14} />
-                        {new Date(order.date).toLocaleDateString("vi-VN")}
-                      </p>
-                    </div>
-                    <div className="text-left md:text-right">
-                      <p className="text-sm text-muted-foreground">Total Amount</p>
-                      <p className="font-heading font-bold text-xl text-primary data-text">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(order.total)}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-muted/50 rounded-lg p-3">
-                    <p className="text-sm text-foreground">
-                      <span className="font-medium">Items: </span>
-                      {order.items.join(", ")}
-                    </p>
-                  </div>
-                  
-                  <div className="mt-4 flex justify-end gap-3">
-                    <Button variant="outline" size="sm" iconName="Repeat">
-                      Reorder
-                    </Button>
-                    <Button variant="ghost" size="sm" iconName="FileText">
-                      View Receipt
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <OrderHistoryList />
           ) : (
-            <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
-              <Icon name="Settings" size={48} className="mx-auto mb-4 opacity-50" />
-              <p>Account settings are coming soon!</p>
+            <div className="bg-card rounded-lg border border-border p-12 text-center text-muted-foreground animate-fade-in">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                 <Icon name="Settings" size={32} className="opacity-50" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground mb-2">Account Settings</h3>
+              <p>Profile management and settings are coming soon!</p>
             </div>
           )}
         </div>
