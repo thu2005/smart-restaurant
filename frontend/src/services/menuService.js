@@ -644,7 +644,11 @@ const menuService = {
       return rawReviews.map((review) => ({
         id: review.id,
         userName: review.user?.fullName || "Anonymous",
-        userAvatar: review.user?.avatar || null, // Use real avatar from user
+        userAvatar: review.user?.avatar
+          ? (review.user.avatar.startsWith("http")
+              ? review.user.avatar
+              : `${API_URL.replace("/api", "")}${review.user.avatar}`)
+          : null,
         userAvatarAlt: review.user?.fullName || "User Avatar",
         rating: review.rating,
         date: new Date(review.createdAt).toLocaleDateString("en-US", {
@@ -666,6 +670,43 @@ const menuService = {
       return response.data;
     } catch (error) {
       console.error("Error creating review:", error);
+      throw error;
+    }
+  },
+
+  getMyReviews: async () => {
+    try {
+      const response = await api.get("/reviews/me");
+      const rawReviews = response.data.reviews || response.data.data || [];
+
+      const baseUrl = API_URL.replace("/api", "");
+
+      // Transform data
+      return rawReviews.map((review) => {
+        const item = review.menuItem;
+        let imageUrl = item?.image || item?.photos?.[0]?.url || null;
+
+        if (imageUrl && !imageUrl.startsWith("http")) {
+          imageUrl = `${baseUrl}${imageUrl}`;
+        }
+
+        return {
+          id: review.id,
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+          menuItem: item
+            ? {
+                id: item.id,
+                name: item.name,
+                image: imageUrl,
+              }
+            : null,
+          restaurant: review.restaurant,
+        };
+      });
+    } catch (error) {
+      console.error("Error getting my reviews:", error);
       throw error;
     }
   },

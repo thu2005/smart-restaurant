@@ -5,6 +5,7 @@ import Button from "../../../components/ui/Button";
 import Avatar from "../../../components/ui/Avatar";
 import OrderHistoryList from "./components/OrderHistoryList";
 import EditProfileModal from "./components/EditProfileModal";
+import UserReviews from "./components/UserReviews";
 
 const Profile = () => {
   const [user, setUser] = useState(authService.getCurrentUser());
@@ -95,15 +96,15 @@ const Profile = () => {
             )}
           </button>
           <button
-            onClick={() => setActiveTab("settings")}
+            onClick={() => setActiveTab("reviews")}
             className={`px-6 py-3 text-sm md:text-base font-medium border-b-2 transition-colors relative ${
-              activeTab === "settings"
+              activeTab === "reviews"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            Settings
-             {activeTab === "settings" && (
+            My Reviews
+             {activeTab === "reviews" && (
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
             )}
           </button>
@@ -114,13 +115,7 @@ const Profile = () => {
           {activeTab === "history" ? (
             <OrderHistoryList />
           ) : (
-            <div className="bg-card rounded-lg border border-border p-12 text-center text-muted-foreground animate-fade-in">
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                 <Icon name="Settings" size={32} className="opacity-50" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Account Settings</h3>
-              <p>Profile management and settings are coming soon!</p>
-            </div>
+            <UserReviews />
           )}
         </div>
       </div>

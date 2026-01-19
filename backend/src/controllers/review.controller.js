@@ -45,3 +45,18 @@ exports.getReviews = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getMyReviews = async (req, res, next) => {
+    try {
+        const { page, limit } = req.query;
+
+        const result = await reviewService.getReviewsByUserId(req.user.id, {
+            page: page ? parseInt(page) : 1,
+            limit: limit ? parseInt(limit) : 10
+        });
+
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        next(error);
+    }
+};

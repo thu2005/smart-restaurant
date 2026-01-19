@@ -54,7 +54,7 @@ const OrderHistoryItem = ({ order }) => {
         {/* Content: Image + Items Summary + Total */}
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
            {/* Thumbnail of first item */}
-           <div className="w-full md:w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/50">
+           <div className="w-full md:w-36 h-36 md:h-28 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-border/50">
               {firstItemPhoto ? (
                   <Image 
                     src={firstItemPhoto} 

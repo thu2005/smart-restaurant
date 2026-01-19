@@ -93,6 +93,43 @@ class ReviewService {
             },
         };
     }
+    /**
+     * Get reviews by a specific user
+     * @param {String} userId
+     * @param {Object} options Pagination options
+     */
+    async getReviewsByUserId(userId, options = {}) {
+        const { page = 1, limit = 10 } = options;
+        const skip = (page - 1) * limit;
+
+        const [reviews, total] = await Promise.all([
+            prisma.review.findMany({
+                where: { userId },
+                include: {
+                    menuItem: {
+                        select: { id: true, name: true, image: true, photos: true }
+                    },
+                    restaurant: {
+                        select: { id: true, name: true }
+                    }
+                },
+                orderBy: { createdAt: "desc" },
+                take: limit,
+                skip: skip,
+            }),
+            prisma.review.count({ where: { userId } }),
+        ]);
+
+        return {
+            reviews,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
 }
 
 module.exports = new ReviewService();
