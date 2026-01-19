@@ -6,7 +6,7 @@ Welcome to the comprehensive documentation for the Smart Restaurant QR Ordering 
 
 This documentation is organized into the following sections:
 
-### 📖 [SETUP.md](./SETUP.md)
+### 📖 [SETUP.md](../docs/04-dev/SETUP.md)
 **Complete setup and installation guide**
 - Prerequisites and requirements
 - Backend environment configuration
@@ -21,7 +21,7 @@ This documentation is organized into the following sections:
 
 ---
 
-### 🔌 [API.md](./API.md)
+### 🔌 [APIs.md](../docs/02-api/APIs.md)
 **Comprehensive API documentation**
 - Base URL and authentication
 - All API endpoints organized by feature:
@@ -44,7 +44,7 @@ This documentation is organized into the following sections:
 
 ---
 
-### 🗄️ [DATABASE.md](./DATABASE.md)
+### 🗄️ [DATABASE.md](../docs/03-architecture/DATABASE_STRUCTURE.md) | [ER_DIAGRAM.md](../docs/03-architecture/ER_DIAGRAM.md) | [DATABASE_IMPORT_GUIDE.md](../docs/03-architecture/DATABASE_IMPORT_GUIDE.md)
 **Database schema and design documentation**
 - Entity Relationship Diagram (ERD)
 - Complete database schema
@@ -59,7 +59,7 @@ This documentation is organized into the following sections:
 
 ---
 
-### 🏗️ [ARCHITECTURE.md](./ARCHITECTURE.md)
+### 🏗️ [ARCHITECTURE.md](../docs/03-architecture/ARCHITECTURE.md)
 **System architecture overview**
 - High-level architecture diagram
 - Technology stack (Frontend, Backend, Database)
@@ -76,23 +76,34 @@ This documentation is organized into the following sections:
 **👉 Read this for understanding the overall system design!**
 
 ---
-
+### 🏗️ [DEPLOYMENT_GUIDE.md](../docs/05-infra/DEPLOYMENT_GUIDE.md)
+- Overview of cloud-native/serverless deployment
+- Production architecture diagram and explanation
+- Backend deployment on Render (auto deploy, migrations, health checks)
+- Frontend deployment on Vercel (auto deploy, build, CDN)
+- Database setup and management with Supabase
+- Environment variable configuration for all services
+- CI/CD pipeline details (GitHub triggers, auto deploy)
+- Post-deployment verification steps
+- Monitoring and logging (Prometheus, Grafana Metrics)
+- Troubleshooting common deployment issues
+---
 ## 🎯 Quick Navigation
 
 ### For Developers
-1. **First time setup?** → Start with [SETUP.md](./SETUP.md)
-2. **Integrating with API?** → Go to [API.md](./API.md)
-3. **Database queries?** → Check [DATABASE.md](./DATABASE.md)
-4. **Understanding architecture?** → Read [ARCHITECTURE.md](./ARCHITECTURE.md)
+1. **First time setup?** → Start with [SETUP.md](../docs/04-dev/SETUP.md)
+2. **Integrating with API?** → Go to [API.md](../docs/02-api/APIs.md)
+3. **Database queries?** → Check [DATABASE.md](../docs/03-architecture/DATABASE_STRUCTURE.md)
+4. **Understanding architecture?** → Read [ARCHITECTURE.md](../docs/03-architecture/ARCHITECTURE.md)
 
 ### For Project Managers
-- System overview: [ARCHITECTURE.md](./ARCHITECTURE.md)
-- Feature capabilities: [API.md](./API.md)
-- Data model: [DATABASE.md](./DATABASE.md)
+- System overview: [ARCHITECTURE.md](../docs/03-architecture/ARCHITECTURE.md)
+- Feature capabilities: [API.md](../docs/02-api/APIs.md)
+- Data model: [DATABASE.md](../docs/03-architecture/DATABASE_STRUCTURE.md)
 
 ### For DevOps/Deployment
-- Setup guide: [SETUP.md](./SETUP.md)
-- Architecture: [ARCHITECTURE.md](./ARCHITECTURE.md) (see Deployment section)
+- Setup guide: [SETUP.md](../docs/04-dev/SETUP.md)
+- Architecture: [ARCHITECTURE.md](../docs/03-architecture/ARCHITECTURE.md) (see Deployment section)
 
 ---
 
@@ -102,7 +113,7 @@ This documentation is organized into the following sections:
 **Note**: User guide documentation has been intentionally omitted as the project is still under active development and features may change. User-facing documentation will be created once the application stabilizes.
 
 ### API Documentation Maintenance
-The [API.md](./API.md) file is structured for easy extension. When adding new endpoints:
+The [API.md](../docs/02-api/APIs.md) file is structured for easy extension. When adding new endpoints:
 - Follow the existing template format
 - Include request/response examples
 - Document authentication requirements
@@ -112,7 +123,7 @@ The [API.md](./API.md) file is structured for easy extension. When adding new en
 When modifying the database schema:
 1. Update `backend/prisma/schema.prisma`
 2. Run `npx prisma migrate dev --name description`
-3. Update [DATABASE.md](./DATABASE.md) accordingly
+3. Update [DATABASE.md](../docs/03-architecture/DATABASE_STRUCTURE.md) accordingly
 4. Update ERD diagram if relationships change
 
 ---
@@ -140,12 +151,6 @@ When contributing to this documentation:
 ## 📧 Support
 
 For questions or issues:
-- Check the troubleshooting section in [SETUP.md](./SETUP.md)
+- Check the troubleshooting section in [SETUP.md](../docs/04-dev/SETUP.md)
 - Review the relevant documentation section
 - Check existing issues in the project repository
-
----
-
-**Last Updated**: January 2026
-
-**Documentation Version**: 1.0.0

@@ -1,5 +1,46 @@
 # Setup Guide - Smart Restaurant QR Ordering System
 
+## Quick setup
+1. **Clone the repository:**
+  ```bash
+  git clone <your-repo-url>
+  cd smart-restaurant
+  ```
+
+2. **Install dependencies:**
+  ```bash
+  cd backend && npm install
+  cd ../frontend && npm install
+  ```
+
+3. **Configure environment variables:**
+  - Copy `.env.example` to `.env` in the backend folder and fill in required values (see SETUP.md for details).
+
+4. **Set up the database:**
+  ```bash
+  cd ../backend
+  npx prisma migrate dev --name init
+  npm run seed
+  ```
+
+5. **Start the apps:**
+  - Backend:  
+    ```bash
+    npm start
+    ```
+  - Frontend:  
+    ```bash
+    cd ../frontend
+    npm run dev
+    ```
+
+6. **Access the app:**
+  - Frontend: http://localhost:5173
+  - Backend API: http://localhost:5000
+  - Metabase: http://localhost:3000
+  - Grafana: http://localhost:3001
+  - Prometheous: http://localhost:9090
+
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Backend Setup](#backend-setup)
