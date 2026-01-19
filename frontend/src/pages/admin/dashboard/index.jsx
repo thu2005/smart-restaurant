@@ -68,7 +68,7 @@ const AdminDashboard = () => {
       const newMetrics = [
         {
           title: "Today's Revenue",
-          value: `$${((data.revenue.totalRevenue || 0) / 100)}`,
+          value: `${(data.revenue.totalRevenue || 0).toLocaleString('vi-VN')} ₫`,
           change: revChange,
           changeType: revChangeType,
           icon: "DollarSign",
@@ -95,7 +95,7 @@ const AdminDashboard = () => {
         },
         {
           title: "Avg Order Value",
-          value: `$${((data.revenue.averageOrderValue || 0) / 100)}`,
+          value: `${(data.revenue.averageOrderValue || 0).toLocaleString('vi-VN')} ₫`,
           change: aovChange,
           changeType: aovChangeType,
           icon: "TrendingUp",
@@ -108,21 +108,19 @@ const AdminDashboard = () => {
       setActiveOrders(data.activeOrders || []);
       setTables(data.tableOccupancy?.tables || []);
       setRecentActivities(data.recentActivity || []);
-      setTopSellingItems(data.topItems || []);
-      setAlerts(data.alerts || []);
+      setRecentActivities(data.recentActivity || []);
+
+      // Filter out dismissed alerts
+      const dismissedAlerts = JSON.parse(localStorage.getItem('dismissedAlerts') || '[]');
+      const activeAlerts = (data.alerts || []).filter(alert => !dismissedAlerts.includes(alert.id));
+      setAlerts(activeAlerts);
+
+      // Revenue data and Top Selling Items are handled by fetchPeriodData useEffect now
 
       // Debug log for active orders
       console.log("Active Orders Data:", data.activeOrders);
 
-      // Transform revenue chart data
-      if (data.revenueChart?.chartData) {
-        const transformedData = data.revenueChart.chartData.map((item) => ({
-          name: item.period || item.date,
-          revenue: parseFloat(item.revenue) || 0,
-          orders: item.orderCount || 0,
-        }));
-        setRevenueData(transformedData);
-      }
+      setLoading(false);
 
       setLoading(false);
     } catch (err) {
@@ -176,30 +174,43 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  // Fetch chart data when dateRange changes
+  // Fetch chart data and top selling items when dateRange changes
   useEffect(() => {
-    const fetchChartData = async () => {
+    const fetchPeriodData = async () => {
       try {
         const restaurantId = getRestaurantId();
-        const data = await dashboardApi.getRevenueChartData(restaurantId, dateRange);
 
-        if (data.chartData) {
-          const transformedData = data.chartData.map((item) => ({
+        // Fetch chart data and top items in parallel
+        const [chartDataResponse, topItemsResponse] = await Promise.all([
+          dashboardApi.getRevenueChartData(restaurantId, dateRange),
+          dashboardApi.getTopSellingItems(restaurantId, dateRange)
+        ]);
+
+        // Process Chart Data
+        if (chartDataResponse.chartData) {
+          const transformedData = chartDataResponse.chartData.map((item) => ({
             name: item.period || item.date,
             revenue: parseFloat(item.revenue) || 0,
             orders: item.orderCount || 0,
           }));
           setRevenueData(transformedData);
+        } else {
+          // Handle case where chartData might be missing or different format
+          setRevenueData([]);
         }
+
+        // Process Top Items
+        setTopSellingItems(topItemsResponse || []);
+
       } catch (err) {
-        console.error("Error fetching chart data:", err);
+        console.error("Error fetching period data:", err);
       }
     };
 
     if (getRestaurantId()) {
-      fetchChartData();
+      fetchPeriodData();
     }
-  }, [dateRange]);
+  }, [dateRange, refreshKey]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -216,7 +227,7 @@ const AdminDashboard = () => {
       menu: "/admin/menu/items",
       kitchen: "/admin/kitchen/dashboard",
       tables: "/admin/tables",
-      reports: "/admin/dashboard",
+      reports: "/admin/reports",
     };
 
     if (routes?.[actionId]) {
@@ -237,12 +248,28 @@ const AdminDashboard = () => {
   };
 
   const handleAlertDismiss = (alertId) => {
+    // Save dismissed alert to localStorage
+    const dismissedAlerts = JSON.parse(localStorage.getItem('dismissedAlerts') || '[]');
+    if (!dismissedAlerts.includes(alertId)) {
+      localStorage.setItem('dismissedAlerts', JSON.stringify([...dismissedAlerts, alertId]));
+    }
     setAlerts((prev) => prev.filter((alert) => alert.id !== alertId));
   };
 
   const handleAlertViewDetails = (alertId) => {
-    console.log("View alert details:", alertId);
-    // TODO: Navigate to relevant page or show modal
+    const alert = alerts.find(a => a.id === alertId);
+    if (!alert) return;
+
+    if (alert.orderId || alert.title?.toLowerCase().includes('order')) {
+      // Navigate to kitchen dashboard for order issues
+      navigate('/admin/kitchen/dashboard');
+    } else if (alert.itemId || alert.title?.toLowerCase().includes('stock')) {
+      // Navigate to menu items for stock issues
+      navigate('/admin/menu/items');
+    } else {
+      // Default fallback
+      console.log("View alert details:", alert);
+    }
   };
 
   // Loading state
@@ -338,7 +365,7 @@ const AdminDashboard = () => {
                 </span>
               </div>
             </div>
-            <div className="space-y-3 md:space-y-4 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 md:space-y-4 max-h-[600px] overflow-y-auto scrollbar-hide">
               {activeOrders?.length > 0 ? (
                 activeOrders.map((order) => (
                   <ActiveOrderCard
