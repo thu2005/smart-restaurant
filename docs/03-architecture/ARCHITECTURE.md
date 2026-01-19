@@ -1,11 +1,6 @@
 # System Architecture Documentation
 ## Smart Restaurant QR Ordering System
 
-> **Version:** 1.0.0  
-> **Last Updated:** January 2026  
-> **Document Type:** Technical Architecture Specification  
-> **Status:** Production Ready
-
 ---
 
 ## Executive Summary

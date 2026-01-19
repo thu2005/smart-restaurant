@@ -1,9 +1,5 @@
 # Entity Relationship Diagram - Smart Restaurant QR Ordering System
 
-> **Last Updated**: January 19, 2026  
-> **Database**: PostgreSQL 16 with Prisma ORM  
-> **Platform**: Supabase Cloud
-
 ## Table of Contents
 - [Overview](#overview)
 - [ER Diagram Visualization](#er-diagram-visualization)
@@ -944,6 +940,3 @@ graph TD
 - **API Documentation**: [API.md](../02-api/API.md)
 - **Setup Guide**: [SETUP.md](../04-dev/SETUP.md)
 
----
-
-> **Note**: This ER diagram is synchronized with the Prisma schema. Any schema changes should be reflected in this document and vice versa.
