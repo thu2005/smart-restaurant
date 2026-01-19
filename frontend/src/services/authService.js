@@ -10,6 +10,15 @@ const api = axios.create({
   },
 });
 
+// Add interceptor for auth token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 const authService = {
   login: async (email, password) => {
     try {
@@ -76,6 +85,49 @@ const authService = {
     const userStr = localStorage.getItem("user");
     if (userStr) return JSON.parse(userStr);
     return null;
+  },
+
+  getMe: async () => {
+    try {
+      const response = await api.get("/auth/me");
+      const user = response.data.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return user;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  updateProfile: async (data) => {
+    try {
+      const response = await api.put("/auth/profile", data);
+      const user = response.data.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  updateAvatar: async (formData) => {
+    try {
+      const response = await api.put("/auth/avatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const user = response.data.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
   },
 
   getToken: () => {
