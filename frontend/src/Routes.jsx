@@ -41,6 +41,7 @@ import ModifierList from "./pages/admin/menu/modifiers/ModifierList";
 import TableManagement from "./pages/admin/tables/TableList";
 import OrderList from "./pages/admin/orders/OrderList";
 import Reports from "./pages/admin/reports";
+import MetabaseDashboard from "./pages/admin/reports/MetabaseDashboard";
 
 // User Management Pages
 import UserManagement from "./pages/admin/users/UserManagement";
@@ -144,7 +145,7 @@ const Routes = () => {
               }
             />
             <Route path="dashboard" element={<AdminDashboard />} />
-            
+
             {/* Kitchen Display for Admin - with sidebar */}
             <Route path="kitchen/dashboard" element={<KitchenDashboard />} />
 
@@ -155,7 +156,8 @@ const Routes = () => {
             <Route path="tables" element={<TableManagement />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="reports" element={<Reports />} />
-            
+            <Route path="analytics" element={<MetabaseDashboard />} />
+
             {/* User Management Routes */}
             <Route path="users" element={<UserManagement />} />
             <Route path="users/create" element={<CreateUser />} />

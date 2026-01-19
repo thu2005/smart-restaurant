@@ -1,4 +1,41 @@
 const reportService = require('../services/report.service');
+const jwt = require('jsonwebtoken');
+
+// ... existing code ...
+
+// @desc    Get Metabase Signed Embedding URL
+// @route   GET /api/reports/metabase-dashboard
+// @access  Private (Admin)
+exports.getMetabaseDashboardUrl = async (req, res, next) => {
+    try {
+        const METABASE_SITE_URL = process.env.METABASE_SITE_URL || "http://localhost:3000";
+        const METABASE_SECRET_KEY = process.env.METABASE_SECRET_KEY;
+        const METABASE_DASHBOARD_ID = process.env.METABASE_DASHBOARD_ID ? parseInt(process.env.METABASE_DASHBOARD_ID) : null;
+
+        if (!METABASE_SECRET_KEY || !METABASE_DASHBOARD_ID) {
+            return res.status(500).json({
+                success: false,
+                message: "Metabase configuration missing. Please set METABASE_SECRET_KEY and METABASE_DASHBOARD_ID in .env"
+            });
+        }
+
+        const payload = {
+            resource: { dashboard: METABASE_DASHBOARD_ID },
+            params: {}, // Pass user-specific params here if needed (e.g. { "restaurant_id": req.user.restaurantId })
+            exp: Math.round(Date.now() / 1000) + (10 * 60) // 10 minute expiration
+        };
+
+        const token = jwt.sign(payload, METABASE_SECRET_KEY);
+        const iframeUrl = `${METABASE_SITE_URL}/embed/dashboard/${token}#bordered=true&titled=true`;
+
+        res.status(200).json({
+            success: true,
+            data: { iframeUrl }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 // @desc    Get revenue report
 // @route   GET /api/reports/revenue
