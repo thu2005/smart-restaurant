@@ -15,8 +15,30 @@ class ReviewService {
         });
         if (!menuItem) throw new Error("Menu item not found");
 
-        // Check if user has ordered this item (optional but recommended rule)
-        // For now, allow any logged-in user to review
+        // Check if user has ordered this item and it has been served
+        // For multi-batch orders, we need to check the specific item status, not just the order status
+        const existingOrder = await prisma.order.findFirst({
+            where: {
+                customerId: userId,
+                // Order must not be cancelled or rejected entirely
+                status: {
+                    notIn: ["CANCELLED", "REJECTED", "DRAFT", "SUBMITTED"]
+                },
+                orderItems: {
+                    some: {
+                        menuItemId: menuItemId,
+                        // The specific item MUST be served or completed
+                        itemStatus: {
+                            in: ["served", "completed"]
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!existingOrder) {
+            throw new Error("You can only review items that you have ordered and have been served.");
+        }
 
         // Create review
         const review = await prisma.review.create({

@@ -23,6 +23,9 @@ exports.createReview = async (req, res, next) => {
         if (error.message === 'Menu item not found') {
             return res.status(404).json({ success: false, message: error.message });
         }
+        if (error.message.includes('You can only review items that you have ordered')) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
         next(error);
     }
 };

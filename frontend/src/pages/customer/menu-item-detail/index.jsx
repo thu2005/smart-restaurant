@@ -201,42 +201,42 @@ const MenuItemDetail = () => {
     fetchNutritionalData();
   }, [itemId, menuItem]);
 
+  const fetchReviews = async () => {
+    if (!itemId) return;
+
+    try {
+      setReviewsLoading(true);
+      const reviewsData = await menuService.getReviews(itemId);
+      setReviews(reviewsData);
+
+      // Calculate rating distribution from reviews
+      const distribution = [
+        { stars: 5, count: 0 },
+        { stars: 4, count: 0 },
+        { stars: 3, count: 0 },
+        { stars: 2, count: 0 },
+        { stars: 1, count: 0 },
+      ];
+
+      reviewsData.forEach((review) => {
+        const starIndex = distribution.findIndex(
+          (d) => d.stars === review.rating
+        );
+        if (starIndex !== -1) {
+          distribution[starIndex].count++;
+        }
+      });
+
+      setRatingDistribution(distribution);
+    } catch (err) {
+      console.error("Failed to fetch reviews:", err);
+      setReviews([]);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchReviews = async () => {
-      if (!itemId) return;
-
-      try {
-        setReviewsLoading(true);
-        const reviewsData = await menuService.getReviews(itemId);
-        setReviews(reviewsData);
-
-        // Calculate rating distribution from reviews
-        const distribution = [
-          { stars: 5, count: 0 },
-          { stars: 4, count: 0 },
-          { stars: 3, count: 0 },
-          { stars: 2, count: 0 },
-          { stars: 1, count: 0 },
-        ];
-
-        reviewsData.forEach((review) => {
-          const starIndex = distribution.findIndex(
-            (d) => d.stars === review.rating
-          );
-          if (starIndex !== -1) {
-            distribution[starIndex].count++;
-          }
-        });
-
-        setRatingDistribution(distribution);
-      } catch (err) {
-        console.error("Failed to fetch reviews:", err);
-        setReviews([]);
-      } finally {
-        setReviewsLoading(false);
-      }
-    };
-
     fetchReviews();
   }, [itemId]);
 
@@ -510,6 +510,9 @@ const MenuItemDetail = () => {
             <section id="reviews">
               <ReviewSection
                 reviews={reviews}
+                itemId={menuItem.id}
+                restaurantId={menuItem.restaurantId}
+                onReviewAdded={fetchReviews}
                 overallRating={menuItem.averageRating || 0}
                 ratingDistribution={ratingDistribution}
                 loading={reviewsLoading}

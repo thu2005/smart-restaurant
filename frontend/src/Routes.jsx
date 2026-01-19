@@ -11,6 +11,8 @@ import NotFound from "pages/NotFound";
 import ProtectedRoute from "components/ProtectedRoute";
 import authService from "services/authService";
 
+import { CustomerAuthProvider } from "./contexts/CustomerAuthContext";
+
 // Layouts
 import CustomerLayout from "./layouts/CustomerLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -103,7 +105,14 @@ const Routes = () => {
           </Route>
 
           {/* Customer Routes */}
-          <Route path="/customer" element={<CustomerLayout />}>
+          <Route
+            path="/customer"
+            element={
+              <CustomerAuthProvider>
+                <CustomerLayout />
+              </CustomerAuthProvider>
+            }
+          >
             <Route
               index
               element={<Navigate to="/customer/menu-browse" replace />}
