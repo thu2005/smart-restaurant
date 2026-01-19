@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Fuse from "fuse.js";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import menuService from "services/menuService";
@@ -11,6 +12,7 @@ import MenuItemModal from "./MenuItemModal";
 const MenuItemList = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noRestaurant, setNoRestaurant] = useState(false);
@@ -80,10 +82,39 @@ const MenuItemList = () => {
     fetchItems();
   }, [selectedCategory, statusFilter, sortBy, page, limit]); // Trigger fetch on filter change
 
+  useEffect(() => {
+    if (!search) {
+      setFilteredItems(items);
+      return;
+    }
+    // Prefix search (case-insensitive)
+    const prefixMatches = items.filter(
+      (item) =>
+        item.name?.toLowerCase().startsWith(search.toLowerCase()) ||
+        item.category_name?.toLowerCase().startsWith(search.toLowerCase())
+    );
+
+    if (prefixMatches.length > 0) {
+      setFilteredItems(prefixMatches);
+    } else {
+      // Fuzzy search fallback
+      const fuse = new Fuse(items, {
+        keys: [
+          { name: "name", weight: 0.8 },
+          { name: "category_name", weight: 0.2 },
+        ],
+        threshold: 0.4,
+        ignoreLocation: true,
+      });
+      const result = fuse.search(search);
+      setFilteredItems(result.map((r) => r.item));
+    }
+  }, [search, items]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1); // Reset to page 1 on search
-    fetchItems();
+    // No need to fetchItems here, fuzzy search is client-side
   };
 
   const handleDelete = async (id) => {
@@ -261,7 +292,7 @@ const MenuItemList = () => {
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
+                filteredItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td
                       className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap max-w-[150px] sm:max-w-[200px] truncate"
@@ -282,15 +313,14 @@ const MenuItemList = () => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          item.status === "available"
-                            ? "bg-green-100 text-green-800"
-                            : item.status === "low_stock"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.status === "available"
+                          ? "bg-green-100 text-green-800"
+                          : item.status === "low_stock"
                             ? "bg-yellow-100 text-yellow-800"
                             : item.status === "sold_out"
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
+                              ? "bg-orange-100 text-orange-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
                       >
                         {item.status.replace("_", " ")}
                       </span>

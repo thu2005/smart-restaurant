@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { toast } from "sonner";
 import menuService from "../../../services/menuService";
 import { useCart } from "../../../contexts/CartContext";
 import ImageGallery from "./components/ImageGallery";
@@ -247,7 +248,10 @@ const MenuItemDetail = () => {
             group.selectionType === "single" &&
             !selectedModifiers[group.id]
           ) {
-            alert(`Please select a ${group.name}`);
+            toast.error(`Please select a ${group.name}`, {
+              description: "This option is required.",
+              duration: 3000
+            });
             return;
           }
         }
@@ -324,7 +328,10 @@ const MenuItemDetail = () => {
       navigate("/customer/shopping-cart");
     } catch (error) {
       console.error("Failed to add/update cart:", error);
-      alert("Failed to process request. Please try again.");
+      toast.error("Failed to process request", {
+        description: "Please try again.",
+        duration: 3000
+      });
     }
   };
 

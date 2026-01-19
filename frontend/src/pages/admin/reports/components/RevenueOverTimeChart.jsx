@@ -25,27 +25,28 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
         if (isNaN(date.getTime())) return value;
 
         if (period === 'daily') {
-            // Show day of week for daily view
-            const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
-            const dayNum = date.getDate();
-            return `${dayOfWeek} ${dayNum}`;
+            // Show hour for daily view
+            return date.toLocaleTimeString([], { hour: 'numeric', hour12: true });
         }
         if (period === 'weekly') {
-            // Show week start date
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            // Show day name for weekly view
+            return date.toLocaleDateString([], { weekday: 'short' });
         }
         if (period === 'monthly') {
             // Show month name
-            return date.toLocaleDateString('en-US', { month: 'short' });
+            return date.toLocaleDateString([], { month: 'short' });
         }
         return value;
     };
 
     const formatYAxis = (value) => {
-        if (value >= 1000) {
-            return `$${(value / 1000).toFixed(1)}k`;
+        if (value >= 1000000) {
+            return `${(value / 1000000).toFixed(1)}M ₫`;
         }
-        return `$${value}`;
+        if (value >= 1000) {
+            return `${(value / 1000).toFixed(0)}k ₫`;
+        }
+        return `${value} ₫`;
     };
 
     const CustomTooltip = ({ active, payload, label }) => {
@@ -60,7 +61,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#e74c3c' }} />
                             <span className="text-xs text-muted-foreground">Revenue:</span>
                             <span className="text-sm font-semibold text-foreground data-text">
-                                ${(payload[0]?.value || 0).toFixed(2)}
+                                {(payload[0]?.value || 0).toLocaleString('vi-VN')} ₫
                             </span>
                         </div>
                         {payload[1] && (
@@ -79,11 +80,116 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
         return null;
     };
 
-    // Transform data for chart (revenue in cents to dollars for display)
-    const chartData = (data || []).map(item => ({
-        ...item,
-        revenueDisplay: (item.revenue || 0) / 100,
-    }));
+    // Process data to fill missing time slots
+    const processChartData = () => {
+        const rawData = data || [];
+        const fullSlots = [];
+        const now = new Date();
+
+        // Helper to get consistent YYYY-MM-DD key
+        const getDateKey = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        if (period === 'daily') {
+            const dataMap = {};
+            rawData.forEach(item => {
+                const d = new Date(item.period || item.date);
+                if (!isNaN(d.getTime())) {
+                    dataMap[d.getHours()] = item;
+                }
+            });
+
+            for (let i = 8; i <= 19; i++) {
+                const slotDate = new Date();
+                slotDate.setHours(i, 0, 0, 0);
+
+                const existingData = dataMap[i];
+                fullSlots.push(existingData ? {
+                    ...existingData,
+                    revenueDisplay: existingData.revenue || 0
+                } : {
+                    period: slotDate.toISOString(),
+                    revenue: 0,
+                    revenueDisplay: 0,
+                    orders: 0
+                });
+            }
+            return fullSlots;
+        }
+
+        if (period === 'weekly') {
+            const currentDay = now.getDay();
+            const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // Adjust to Monday
+            const monday = new Date(now);
+            monday.setDate(diff);
+            monday.setHours(0, 0, 0, 0);
+
+            const dataMap = {};
+            rawData.forEach(item => {
+                const d = new Date(item.period || item.date);
+                if (!isNaN(d.getTime())) {
+                    dataMap[getDateKey(d)] = item;
+                }
+            });
+
+            for (let i = 0; i < 7; i++) {
+                const slotDate = new Date(monday);
+                slotDate.setDate(monday.getDate() + i);
+                const key = getDateKey(slotDate);
+
+                const existingData = dataMap[key];
+                fullSlots.push(existingData ? {
+                    ...existingData,
+                    revenueDisplay: existingData.revenue || 0
+                } : {
+                    period: slotDate.toISOString(),
+                    revenue: 0,
+                    revenueDisplay: 0,
+                    orders: 0
+                });
+            }
+            return fullSlots;
+        }
+
+        if (period === 'monthly') {
+            const year = now.getFullYear();
+            const dataMap = {};
+
+            rawData.forEach(item => {
+                const d = new Date(item.period || item.date);
+                if (!isNaN(d.getTime())) {
+                    dataMap[d.getMonth()] = item;
+                }
+            });
+
+            for (let i = 0; i < 12; i++) {
+                const slotDate = new Date(year, i, 1);
+
+                const existingData = dataMap[i];
+                fullSlots.push(existingData ? {
+                    ...existingData,
+                    revenueDisplay: existingData.revenue || 0
+                } : {
+                    period: slotDate.toISOString(),
+                    revenue: 0,
+                    revenueDisplay: 0,
+                    orders: 0
+                });
+            }
+            return fullSlots;
+        }
+
+        return rawData.map(item => ({
+            ...item,
+            revenueDisplay: item.revenue || 0,
+        }));
+    };
+
+    const chartData = processChartData();
 
     return (
         <div className="bg-card rounded-lg border border-border p-4 md:p-6 shadow-warm">
@@ -137,6 +243,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                                 tickLine={{ stroke: '#7f8c8d' }}
                                 axisLine={{ stroke: '#7f8c8d' }}
                                 tickFormatter={formatXAxis}
+                                interval={0}
                             />
                             <YAxis
                                 stroke="#7f8c8d"
@@ -144,6 +251,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                                 tickLine={{ stroke: '#7f8c8d' }}
                                 axisLine={{ stroke: '#7f8c8d' }}
                                 tickFormatter={formatYAxis}
+                                domain={[0, (dataMax) => (dataMax === 0 ? 1000000 : Math.ceil(dataMax * 1.1))]}
                             />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend />
@@ -153,7 +261,7 @@ const RevenueOverTimeChart = ({ data, period, onPeriodChange }) => {
                                 stroke="#e74c3c"
                                 strokeWidth={3}
                                 fill="url(#colorRevenue)"
-                                name="Revenue ($)"
+                                name="Revenue (₫)"
                             />
                         </AreaChart>
                     </ResponsiveContainer>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import Icon from "../../../components/AppIcon";
 import { tableAPI } from "../../../services/tableService";
 import { getRestaurantId } from "../../../services/menuService";
@@ -143,11 +144,16 @@ const TableManagement = () => {
     try {
       setIsRegenerating(true);
       const result = await tableAPI.regenerateAllQRs();
-      alert(`Success! ${result.count || 0} QR codes regenerated.`);
+      toast.success(`Success! ${result.count || 0} QR codes regenerated.`, {
+        duration: 4000
+      });
       setShowRegenModal(false);
       await fetchTables();
     } catch (err) {
-      alert("An error occurred while regenerating QR codes.");
+      toast.error("An error occurred while regenerating QR codes.", {
+        description: err.message,
+        duration: 4000
+      });
       console.error("Bulk regen failed:", err);
     } finally {
       setIsRegenerating(false);

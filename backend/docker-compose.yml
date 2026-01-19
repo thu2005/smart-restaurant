@@ -30,8 +30,23 @@ services:
     networks:
       - smart-restaurant-network
 
+  metabase:
+    image: metabase/metabase:v0.49.1
+    container_name: smart-restaurant-metabase
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    # environment:
+    #   MB_DB_FILE: /metabase-data/metabase.db
+    networks:
+      - smart-restaurant-network
+
 volumes:
   postgres_data:
+    driver: local
+  metabase_data:
     driver: local
 
 networks:

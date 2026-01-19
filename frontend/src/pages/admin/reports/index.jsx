@@ -33,6 +33,21 @@ const Reports = () => {
         let startDate, endDate;
 
         switch (selection) {
+            case 'today':
+                startDate = new Date(now.setHours(0, 0, 0, 0));
+                endDate = new Date();
+                break;
+            case 'thisWeek':
+                const day = now.getDay();
+                const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+                startDate = new Date(now.setDate(diff));
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date();
+                break;
+            case 'thisYear':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                endDate = new Date();
+                break;
             case 'last7days':
                 startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
                 endDate = now;
@@ -102,7 +117,7 @@ const Reports = () => {
             const newMetrics = [
                 {
                     title: 'Total Revenue',
-                    value: `$${(comparison.totalRevenue.current / 100).toFixed(2)}`,
+                    value: `${comparison.totalRevenue.current.toLocaleString('vi-VN')} ₫`,
                     change: `${comparison.totalRevenue.change >= 0 ? '+' : ''}${comparison.totalRevenue.change.toFixed(1)}% vs last period`,
                     changeType: comparison.totalRevenue.change >= 0 ? 'positive' : 'negative',
                     icon: 'DollarSign',
@@ -118,7 +133,7 @@ const Reports = () => {
                 },
                 {
                     title: 'Average Order Value',
-                    value: `$${(comparison.averageOrderValue.current / 100).toFixed(2)}`,
+                    value: `${comparison.averageOrderValue.current.toLocaleString('vi-VN')} ₫`,
                     change: `${comparison.averageOrderValue.change >= 0 ? '+' : ''}${comparison.averageOrderValue.change.toFixed(1)}% vs last period`,
                     changeType: comparison.averageOrderValue.change >= 0 ? 'positive' : 'negative',
                     icon: 'TrendingUp',
@@ -159,7 +174,7 @@ const Reports = () => {
                 const { startDate, endDate } = getDateRangeFromSelection(dateRange);
                 const chartData = await reportApi.getRevenueChartData(
                     restaurantId,
-                    chartPeriod,
+                    chartPeriod === 'daily' ? 'hourly' : chartPeriod,
                     startDate,
                     endDate
                 );
@@ -170,7 +185,17 @@ const Reports = () => {
         };
 
         fetchChartData();
-    }, [chartPeriod]);
+        fetchChartData();
+    }, [chartPeriod, dateRange]); // Re-fetch when either changes
+
+    // Handle period change from chart
+    const handlePeriodChange = (newPeriod) => {
+        setChartPeriod(newPeriod);
+        // Auto-update date range based on period
+        if (newPeriod === 'daily') setDateRange('today');
+        if (newPeriod === 'weekly') setDateRange('thisWeek');
+        if (newPeriod === 'monthly') setDateRange('thisYear');
+    };
 
     // Handle export to PDF
     const handleExportPDF = () => {
@@ -279,7 +304,7 @@ const Reports = () => {
                     <RevenueOverTimeChart
                         data={revenueChartData}
                         period={chartPeriod}
-                        onPeriodChange={setChartPeriod}
+                        onPeriodChange={handlePeriodChange}
                     />
                 </div>
                 <div>

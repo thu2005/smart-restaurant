@@ -114,7 +114,7 @@ const TopSellingItemsTable = ({ items, onViewAll }) => {
                                         {item.orderCount || item.totalQuantity}
                                     </td>
                                     <td className="py-4 px-2 text-right font-semibold text-foreground data-text">
-                                        ${((item.revenue || item.totalRevenue) / 100).toFixed(2)}
+                                        {(item.revenue || item.totalRevenue).toLocaleString('vi-VN') + ' ₫'}
                                     </td>
                                     <td className="py-4 px-2 text-right">
                                         <span className={`inline-flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-success' : 'text-error'}`}>

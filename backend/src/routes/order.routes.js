@@ -100,6 +100,56 @@ router.get(
 
 /**
  * @swagger
+ * /api/orders/active:
+ *   get:
+ *     summary: Get active order for a table (not completed/cancelled)
+ *     tags: [Order]
+ *     parameters:
+ *       - in: query
+ *         name: tableId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Active order found (or null if none)
+ */
+router.get('/active', orderController.getActiveOrderByTable);
+
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Get order by ID
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Order details
+ *       404:
+ *         description: Order not found
+ */
+router.get(
+    '/:id',
+    protect,
+    orderController.getOrderById
+);
+
+/**
+ * @swagger
  * /api/orders/{id}/status:
  *   patch:
  *     summary: Update order status
@@ -165,6 +215,32 @@ router.post(
     '/:id/bill',
     protect,
     authorize('ADMIN', 'WAITER'),
+    orderController.createBill
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}/request-bill:
+ *   post:
+ *     tags: [Orders]
+ *     summary: Customer requests bill (Updates status to PAYMENT_PENDING)
+ *     description: Allows customers to request their bill when ready to pay
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Bill request successful
+ *       404:
+ *         description: Order not found
+ */
+router.post(
+    '/:id/request-bill',
+    protect,
     orderController.createBill
 );
 
@@ -398,29 +474,6 @@ router.get(
 
 /**
  * @swagger
- * /api/orders/active:
- *   get:
- *     summary: Get active order for a table (not completed/cancelled)
- *     tags: [Order]
- *     parameters:
- *       - in: query
- *         name: tableId
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
- *         name: restaurantId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Active order found (or null if none)
- */
-router.get('/active', orderController.getActiveOrderByTable);
-
-/**
- * @swagger
  * /api/orders/{orderId}/items:
  *   post:
  *     summary: Add items to existing order (for "add more items" flow)
@@ -467,6 +520,36 @@ router.post(
         check('items.*.quantity', 'Quantity must be greater than 0').isInt({ min: 1 })
     ],
     orderController.addItemsToOrder
+);
+
+/**
+ * @swagger
+ * /api/orders/bills:
+ *   get:
+ *     summary: Get bills for restaurant, filter by paid/unpaid
+ *     tags: [Order]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: restaurantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [PAID, UNPAID]
+ *     responses:
+ *       200:
+ *         description: List of bills
+ */
+router.get(
+    '/bills',
+    protect,
+    authorize('WAITER', 'ADMIN', 'SUPER_ADMIN'),
+    orderController.getBillsByStatus
 );
 
 module.exports = router;
