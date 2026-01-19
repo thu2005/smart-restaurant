@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import authService from "../../../services/authService";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
+import Avatar from "../../../components/ui/Avatar";
 import OrderHistoryList from "./components/OrderHistoryList";
 import EditProfileModal from "./components/EditProfileModal";
 
@@ -36,13 +37,11 @@ const Profile = () => {
         
         {/* Profile Header */}
         <div className="bg-card rounded-xl md:rounded-2xl border border-border p-6 md:p-8 mb-6 md:mb-8 flex flex-col md:flex-row items-center gap-6 shadow-warm-sm animate-fade-in-up">
-          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary/10 flex items-center justify-center text-primary text-4xl md:text-5xl font-bold border-4 border-white dark:border-white/10 shadow-sm relative overflow-hidden">
-             {user?.avatar ? (
-                <img src={user.avatar} alt={user.name || user.fullName} className="w-full h-full object-cover" />
-             ) : (
-                <span>{(user?.fullName || user?.name || "C").charAt(0).toUpperCase()}</span>
-             )}
-          </div>
+          <Avatar 
+            user={user} 
+            size="xl" 
+            className="w-24 h-24 md:w-32 md:h-32 border-4 border-white dark:border-white/10 shadow-sm text-4xl md:text-5xl" 
+          />
           <div className="flex-1 text-center md:text-left space-y-2">
             <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
               {user?.fullName || user?.name || "Guest Customer"}

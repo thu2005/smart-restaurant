@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
+import Avatar from "../ui/Avatar";
 import authService from "../../services/authService";
 import { useCart } from "../../contexts/CartContext";
 
@@ -12,7 +13,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(authService.getCurrentUser());
   const [tableNumber, setTableNumber] = useState(
-    localStorage.getItem("tableNumber")
+    localStorage.getItem("tableNumber"),
   );
   const { getCartSummary } = useCart();
   const { itemCount: cartItemCount } = getCartSummary();
@@ -22,13 +23,39 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
     setUser(authService.getCurrentUser());
     const storedTableNumber = localStorage.getItem("tableNumber");
     setTableNumber(storedTableNumber);
+
+    // Listen for storage changes (when user data is updated in other components)
+    const handleStorageChange = (e) => {
+      if (e.key === "user") {
+        setUser(authService.getCurrentUser());
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Function to refresh user data from API
+  const refreshUserData = async () => {
+    try {
+      const updatedUser = await authService.getMe();
+      setUser(updatedUser);
+    } catch (error) {
+      console.log("Could not refresh user data:", error);
+    }
+  };
+
+  // Refresh user data periodically or when needed
+  useEffect(() => {
+    const interval = setInterval(refreshUserData, 5 * 60 * 1000); // Every 5 minutes
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
-    const isCustomer = !user?.role || user.role === 'CUSTOMER';
+    const isCustomer = !user?.role || user.role === "CUSTOMER";
     authService.logout();
     setUser(null);
-    
+
     if (isCustomer) {
       navigate("/customer-onboarding");
     } else {
@@ -53,8 +80,11 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
   ];
 
   // Add Profile for logged-in users
-  const customerNavItems = user 
-    ? [...baseCustomerNavItems, { path: "/customer/profile", label: "Profile", icon: "User" }]
+  const customerNavItems = user
+    ? [
+        ...baseCustomerNavItems,
+        { path: "/customer/profile", label: "Profile", icon: "User" },
+      ]
     : baseCustomerNavItems;
 
   const adminNavItems = [
@@ -76,9 +106,12 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
 
   const isActivePath = (targetPath) => {
     if (!location?.pathname) return false;
-    
+
     // Fix: Keep Menu active when viewing item detail
-    if (targetPath === "/customer/menu-browse" && location.pathname.includes("/customer/menu-item-detail")) {
+    if (
+      targetPath === "/customer/menu-browse" &&
+      location.pathname.includes("/customer/menu-item-detail")
+    ) {
       return true;
     }
 
@@ -158,12 +191,12 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
             {user ? (
               <>
                 <div className="flex items-center gap-3 p-2 mb-2">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar user={user} size="md" />
                   <div className="flex flex-col overflow-hidden">
                     <span className="font-semibold text-foreground truncate">
-                      {(user.fullName || user.name || "Customer").split(" ").pop()}
+                      {(user.fullName || user.name || "Customer")
+                        .split(" ")
+                        .pop()}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       Member
@@ -190,7 +223,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
           </div>
         </div>
       </div>,
-      document.body
+      document.body,
     );
   };
 
@@ -205,7 +238,7 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
               handleNavigation(
                 userRole === "admin"
                   ? "/admin/dashboard"
-                  : "/customer/menu-browse"
+                  : "/customer/menu-browse",
               )
             }
           >
@@ -264,15 +297,20 @@ const RoleAdaptiveHeader = ({ userRole = "customer" }) => {
               <div className="flex items-center gap-2">
                 <div className="hidden md:flex flex-col items-end mr-2">
                   <span className="text-sm font-medium text-gray-700 leading-none">
-                    {(user.fullName || user.name || "Customer").split(" ").pop()}
+                    {(user.fullName || user.name || "Customer")
+                      .split(" ")
+                      .pop()}
                   </span>
                   <span className="text-xs text-gray-500 leading-none mt-1">
                     Member
                   </span>
                 </div>
-                <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border border-primary-200">
-                  {(user.fullName || user.name || "C").charAt(0).toUpperCase()}
-                </div>
+                <Avatar
+                  user={user}
+                  size="sm"
+                  className="md:h-9 md:w-9"
+                  showBorder={true}
+                />
                 <button
                   onClick={handleLogout}
                   className="p-2 text-gray-400 hover:text-red-500 transition-colors"
