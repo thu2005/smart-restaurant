@@ -1,6 +1,6 @@
 import React from "react";
 import Icon from "../../../../components/AppIcon";
-import Image from "../../../../components/AppImage";
+import Avatar from "../../../../components/ui/Avatar";
 
 const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
   const getRatingPercentage = (count, total) => {
@@ -74,10 +74,13 @@ const ReviewSection = ({ reviews, overallRating, ratingDistribution }) => {
               className="p-4 md:p-6 bg-card rounded-lg md:rounded-xl border border-border"
             >
               <div className="flex items-start gap-3 md:gap-4 mb-3">
-                <Image
-                  src={review?.userAvatar}
-                  alt={review?.userAvatarAlt}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover flex-shrink-0"
+                <Avatar
+                  user={{
+                    avatar: review?.userAvatar,
+                    fullName: review?.userName,
+                  }}
+                  size="md"
+                  className="flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">

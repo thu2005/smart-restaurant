@@ -16,14 +16,6 @@ import StickyAddToCart from "./components/StickyAddToCart";
 import Button from "../../../components/ui/Button";
 import Icon from "../../../components/AppIcon";
 
-const mockRatingDistribution = [
-  { stars: 5, count: 0 },
-  { stars: 4, count: 0 },
-  { stars: 3, count: 0 },
-  { stars: 2, count: 0 },
-  { stars: 1, count: 0 },
-];
-
 const mockRelatedItems = [
   {
     id: "item-002",
@@ -82,6 +74,13 @@ const MenuItemDetail = () => {
   const [selectedModifiers, setSelectedModifiers] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [ratingDistribution, setRatingDistribution] = useState([
+    { stars: 5, count: 0 },
+    { stars: 4, count: 0 },
+    { stars: 3, count: 0 },
+    { stars: 2, count: 0 },
+    { stars: 1, count: 0 },
+  ]);
 
   useEffect(() => {
     const fetchMenuItem = async () => {
@@ -210,6 +209,26 @@ const MenuItemDetail = () => {
         setReviewsLoading(true);
         const reviewsData = await menuService.getReviews(itemId);
         setReviews(reviewsData);
+
+        // Calculate rating distribution from reviews
+        const distribution = [
+          { stars: 5, count: 0 },
+          { stars: 4, count: 0 },
+          { stars: 3, count: 0 },
+          { stars: 2, count: 0 },
+          { stars: 1, count: 0 },
+        ];
+
+        reviewsData.forEach((review) => {
+          const starIndex = distribution.findIndex(
+            (d) => d.stars === review.rating
+          );
+          if (starIndex !== -1) {
+            distribution[starIndex].count++;
+          }
+        });
+
+        setRatingDistribution(distribution);
       } catch (err) {
         console.error("Failed to fetch reviews:", err);
         setReviews([]);
@@ -491,8 +510,8 @@ const MenuItemDetail = () => {
             <section id="reviews">
               <ReviewSection
                 reviews={reviews}
-                avgRating={menuItem.averageRating}
-                totalReviews={menuItem.totalReviews}
+                overallRating={menuItem.averageRating || 0}
+                ratingDistribution={ratingDistribution}
                 loading={reviewsLoading}
               />
             </section>

@@ -51,7 +51,7 @@ class ReviewService {
                 where: { menuItemId },
                 include: {
                     user: {
-                        select: { id: true, fullName: true, role: true },
+                        select: { id: true, fullName: true, avatar: true, role: true },
                     },
                 },
                 orderBy: { createdAt: "desc" },

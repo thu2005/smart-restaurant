@@ -42,13 +42,14 @@ const Avatar = ({ user, size = "md", className = "", showBorder = false }) => {
           alt={user.fullName || user.name || "User"}
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.target.style.display = "none";
-            e.target.nextSibling.style.display = "flex";
+            e.target.parentElement.querySelector('.avatar-initials').classList.remove('hidden');
+            e.target.remove();
           }}
         />
       ) : null}
       <div
         className={`
+        avatar-initials
         w-full h-full flex items-center justify-center 
         ${textSizeClasses[size]} 
         ${user?.avatar ? "hidden" : ""}

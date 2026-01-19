@@ -628,7 +628,6 @@ const menuService = {
   },
 
   // --- Reviews ---
-  // --- Reviews ---
   getReviews: async (menuItemId) => {
     try {
       const response = await publicApi.get(`/reviews/${menuItemId}`);
@@ -638,8 +637,8 @@ const menuService = {
       return rawReviews.map((review) => ({
         id: review.id,
         userName: review.user?.fullName || "Anonymous",
-        userAvatar: `https://api.dicebear.com/7.x/initials/svg?seed=${review.user?.fullName || "User"}`, // Generating avatar based on name
-        userAvatarAlt: "User Avatar",
+        userAvatar: review.user?.avatar || null, // Use real avatar from user
+        userAvatarAlt: review.user?.fullName || "User Avatar",
         rating: review.rating,
         date: new Date(review.createdAt).toLocaleDateString("en-US", {
           year: "numeric",
