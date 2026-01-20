@@ -56,7 +56,9 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
       try {
         setLoading(true);
         const cats = await menuService.getCategories();
-        setCategories(Array.isArray(cats) ? cats : []);
+        // Filter only active categories for menu item creation/editing
+        const activeCats = (Array.isArray(cats) ? cats : []).filter(cat => cat.isActive !== false);
+        setCategories(activeCats);
 
         if (currentId) {
           const item = await menuService.getItemById(currentId);
@@ -112,7 +114,12 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(t('admin.menu.items.messages.saveError'));
+      const errorMessage = error.response?.data?.message || error.message;
+      if (errorMessage?.includes('inactive category')) {
+        toast.error(errorMessage);
+      } else {
+        toast.error(t('admin.menu.items.messages.saveError'));
+      }
     }
   };
 
@@ -231,6 +238,9 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                         })}
                       >
                         <option value="">{t('admin.menu.items.form.placeholders.selectCategory')}</option>
+                        {categories.length === 0 && (
+                          <option disabled>No active categories available</option>
+                        )}
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
                             {cat.name}
@@ -240,6 +250,11 @@ const MenuItemModal = ({ isOpen, onClose, itemId, onSave }) => {
                       {errors.category_id && (
                         <p className="text-sm text-red-500 mt-1">
                           {errors.category_id.message}
+                        </p>
+                      )}
+                      {categories.length === 0 && (
+                        <p className="text-sm text-amber-600 mt-1">
+                          ⚠️ No active categories found. Please create and activate a category first.
                         </p>
                       )}
                     </div>

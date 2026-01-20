@@ -309,6 +309,11 @@ class MenuService {
       throw new Error("Invalid category for this restaurant");
     }
 
+    // Check if category is active
+    if (!category.isActive) {
+      throw new Error("Cannot add menu item to inactive category. Please activate the category first.");
+    }
+
     // Only pass fields that exist in the schema
     const createData = {
       name: data.name,
@@ -345,6 +350,19 @@ class MenuService {
     } = data;
 
     if (data.categoryId) {
+      // Check if new category is active
+      const newCategory = await prisma.category.findUnique({
+        where: { id: data.categoryId },
+      });
+      
+      if (!newCategory) {
+        throw new Error("Category not found");
+      }
+      
+      if (!newCategory.isActive) {
+        throw new Error("Cannot move menu item to inactive category. Please activate the category first.");
+      }
+      
       updateData.category = { connect: { id: data.categoryId } };
     }
 
