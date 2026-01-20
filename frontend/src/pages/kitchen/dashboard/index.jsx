@@ -244,8 +244,45 @@ const KitchenDisplaySystem = () => {
     return filtered;
   };
 
-  const getGroupedOrders = () => {
-    const filtered = getFilteredOrders();
+  const groupedOrders = React.useMemo(() => {
+    // Filter orders
+    let filtered = [...orders];
+
+    if (statusFilter !== "all") {
+      filtered = filtered?.filter((order) => order?.status === statusFilter);
+    }
+
+    if (priorityFilter !== "all") {
+      filtered = filtered?.filter(
+        (order) => order?.priority === priorityFilter
+      );
+    }
+
+    // Sort orders
+    switch (sortBy) {
+      case "time-asc":
+        filtered?.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        break;
+      case "time-desc":
+        filtered?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        break;
+      case "table-asc":
+        filtered?.sort(
+          (a, b) => parseInt(a?.tableNumber) - parseInt(b?.tableNumber)
+        );
+        break;
+      case "priority":
+        filtered?.sort((a, b) => {
+          if (a?.priority === "rush" && b?.priority !== "rush") return -1;
+          if (a?.priority !== "rush" && b?.priority === "rush") return 1;
+          return new Date(a.timestamp) - new Date(b.timestamp);
+        });
+        break;
+      default:
+        break;
+    }
+
+    // Group by status
     const columns = { received: [], preparing: [], ready: [] };
     filtered.forEach(order => {
       const status = order.status === 'new' ? 'received' : order.status;
@@ -255,10 +292,9 @@ const KitchenDisplaySystem = () => {
         columns.received.push(order);
       }
     });
+    
     return columns;
-  };
-
-  const groupedOrders = getGroupedOrders();
+  }, [orders, statusFilter, priorityFilter, sortBy]);
 
   return (
     <>
@@ -296,7 +332,30 @@ const KitchenDisplaySystem = () => {
               </div>
             </div>
 
-            <OrderStats stats={stats} />
+            <OrderStats 
+              stats={{
+                ...stats,
+                newOrders: groupedOrders.received.length,
+                preparing: groupedOrders.preparing.length,
+                ready: groupedOrders.ready.length,
+                avgPrepTime: (() => {
+                  // Calculate average prep time from all visible orders
+                  const allOrders = [
+                    ...groupedOrders.received,
+                    ...groupedOrders.preparing,
+                    ...groupedOrders.ready
+                  ];
+                  
+                  if (allOrders.length === 0) return 0;
+                  
+                  const totalPrepTime = allOrders.reduce((sum, order) => {
+                    return sum + (order.estimatedPrepTime || 0);
+                  }, 0);
+                  
+                  return Math.round(totalPrepTime / allOrders.length);
+                })()
+              }} 
+            />
 
             <OrderFilters
               statusFilter={statusFilter}
