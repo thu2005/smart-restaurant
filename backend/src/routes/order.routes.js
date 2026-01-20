@@ -296,7 +296,7 @@ router.post(
  *       404:
  *         description: Order not found
  */
-router.post("/:id/request-bill", protect, orderController.createBill);
+router.post("/:id/request-bill", orderController.createBill);
 
 /**
  * @swagger

@@ -236,7 +236,7 @@ const WaiterDashboard = () => {
 
         try {
             // Fetch all data in parallel for better performance
-            const [currentTabData, pendingRes, receivedCount, preparingCount, readyRes, completedRes] = await Promise.all([
+            const [currentTabData, pendingRes, receivedCount, preparingCount, readyRes, completedRes, tablesRes] = await Promise.all([
                 // Current tab data
                 (async () => {
                     switch (activeTab) {
@@ -263,17 +263,15 @@ const WaiterDashboard = () => {
                 waiterService.getWaiterOrders("RECEIVED"),
                 waiterService.getWaiterOrders("PREPARING"),
                 waiterService.getWaiterOrders("READY"),
-                waiterService.getWaiterOrders("COMPLETED")
+                waiterService.getWaiterOrders("COMPLETED"),
+                waiterService.getWaiterTables() // Fetch tables for accurate count
             ]);
 
             // Set orders for current tab
-            // For completed tab, filter out orders with AVAILABLE table status
-            let ordersToDisplay = currentTabData.data || [];
-            if (activeTab === "completed") {
-                ordersToDisplay = ordersToDisplay.filter(order => 
-                    order.table?.status !== "AVAILABLE"
-                );
-            }
+            // Filter out orders with AVAILABLE table status (session ended)
+            let ordersToDisplay = (currentTabData.data || []).filter(order => 
+                order.table?.status !== "AVAILABLE"
+            );
             setOrders(ordersToDisplay);
 
             // Filter completed count to exclude AVAILABLE tables
@@ -285,7 +283,7 @@ const WaiterDashboard = () => {
                 pending: pendingRes.data?.length || 0,
                 accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
                 ready: readyRes.data?.length || 0,
-                tables: tables.length,
+                tables: tablesRes.data?.length || 0,
                 completed: activeCompletedOrders.length,
             });
         } catch (err) {
@@ -517,14 +515,14 @@ const WaiterDashboard = () => {
             // Reset table status to AVAILABLE
             await waiterService.markTableAsAvailable(order.table.id);
             
+            // Refresh orders to remove from completed list
+            await fetchOrders();
+            await fetchTables();
+            
             toast.success(t("waiter.table.completed", "Table marked as completed"), {
                 description: t("waiter.table.completedDesc", "Table is now available for new customers"),
                 duration: 4000
             });
-            
-            // Refresh orders to remove from completed list
-            fetchOrders();
-            fetchTables();
         } catch (err) {
             console.error("Error marking table as completed:", err);
             toast.error(t("waiter.toasts.completeFailed", "Failed to mark table as completed"), {
