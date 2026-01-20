@@ -1,5 +1,22 @@
 const menuService = require("../services/menu.service");
 const { validationResult } = require("express-validator");
+const { cache } = require("../config/redis");
+
+// Helper function to invalidate menu cache for a menu item
+const invalidateMenuCacheForItem = async (itemId) => {
+  try {
+    // Get the menu item to find its restaurantId
+    const item = await menuService.getMenuItemById(itemId);
+    if (item && item.restaurantId) {
+      // Invalidate all menu cache for this restaurant
+      await cache.delPattern(`menu:items:${item.restaurantId}*`);
+      await cache.delPattern(`menu:item:${item.restaurantId}*`);
+      console.log(`🗑️ Cache invalidated for restaurant: ${item.restaurantId}`);
+    }
+  } catch (error) {
+    console.error("Error invalidating menu cache:", error);
+  }
+};
 
 exports.getCategories = async (req, res, next) => {
   try {
@@ -185,6 +202,10 @@ exports.uploadMenuItemPhotos = async (req, res, next) => {
     const { id: itemId } = req.params;
     const files = req.files;
     const result = await menuService.uploadMenuItemPhotos(itemId, files);
+    
+    // Invalidate cache after uploading photos
+    await invalidateMenuCacheForItem(itemId);
+    
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     next(error);
@@ -195,6 +216,10 @@ exports.deleteMenuItemPhoto = async (req, res, next) => {
   try {
     const { id: itemId, photoId } = req.params;
     await menuService.deleteMenuItemPhoto(itemId, photoId);
+    
+    // Invalidate cache after deleting photo
+    await invalidateMenuCacheForItem(itemId);
+    
     res.status(200).json({ success: true, message: "Photo deleted" });
   } catch (error) {
     next(error);
@@ -205,6 +230,10 @@ exports.setMenuItemPrimaryPhoto = async (req, res, next) => {
   try {
     const { id: itemId, photoId } = req.params;
     await menuService.setMenuItemPrimaryPhoto(itemId, photoId);
+    
+    // Invalidate cache after setting primary photo
+    await invalidateMenuCacheForItem(itemId);
+    
     res.status(200).json({ success: true, message: "Primary photo updated" });
   } catch (error) {
     next(error);
