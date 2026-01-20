@@ -129,6 +129,12 @@ class OrderService {
       });
     }
 
+    // Update table status to OCCUPIED
+    await prisma.table.update({
+      where: { id: tableId },
+      data: { status: "OCCUPIED" },
+    });
+
     return order;
   }
 
