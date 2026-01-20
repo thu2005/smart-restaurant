@@ -71,7 +71,12 @@ const MenuBrowse = () => {
   const [filters, setFilters] = useState(initialState.filters);
 
   const [categories, setCategories] = useState([
-    { value: "all", label: "All Items", icon: "UtensilsCrossed", count: 0 },
+    {
+      value: "all",
+      label: t("customer.menu.categories.all"),
+      icon: "UtensilsCrossed",
+      count: 0,
+    },
   ]);
   const [allMenuItems, setAllMenuItems] = useState([]); // Store all items for fuzzy search
   const [menuItems, setMenuItems] = useState([]);
@@ -149,7 +154,7 @@ const MenuBrowse = () => {
         const formattedCats = [
           {
             value: "all",
-            label: "All Items",
+            label: t("customer.menu.categories.all"),
             icon: "UtensilsCrossed",
             count: Array.isArray(itemsData) ? itemsData.length : 0,
           },
@@ -269,7 +274,7 @@ const MenuBrowse = () => {
         setCategories([
           {
             value: "all",
-            label: "All Items",
+            label: t("customer.menu.categories.all"),
             icon: "UtensilsCrossed",
             count: 0,
           },

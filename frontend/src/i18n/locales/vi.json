@@ -1639,12 +1639,40 @@
         },
         "profile": {
             "title": "Hồ sơ",
+            "guest": "Khách",
+            "guestDesc": "Đăng nhập để xem hồ sơ và lịch sử đơn hàng",
+            "noEmail": "Chưa có email",
+            "editProfile": "Chỉnh sửa hồ sơ",
             "personalInfo": {
                 "title": "Thông tin cá nhân",
                 "name": "Họ tên",
                 "email": "Email",
                 "phone": "Số điện thoại",
                 "save": "Lưu thay đổi"
+            },
+            "editModal": {
+                "title": "Chỉnh sửa hồ sơ",
+                "fullName": "Họ tên",
+                "fullNamePlaceholder": "Nhập họ tên của bạn",
+                "fullNameHint": "Chỉ được dùng chữ cái và khoảng trắng",
+                "phone": "Số điện thoại",
+                "phonePlaceholder": "Nhập số điện thoại",
+                "email": "Email",
+                "errors": {
+                    "fullNameLetters": "Họ tên chỉ được chứa chữ cái và khoảng trắng",
+                    "fullNameMin": "Họ tên phải có ít nhất 2 ký tự",
+                    "fixErrors": "Vui lòng sửa các lỗi bên dưới",
+                    "updateFailed": "Không thể cập nhật hồ sơ"
+                }
+            },
+            "tabs": {
+                "orderHistory": "Lịch sử đơn hàng",
+                "myReviews": "Đánh giá của tôi",
+                "settings": "Cài đặt"
+            },
+            "settings": {
+                "title": "Cài đặt",
+                "language": "Ngôn ngữ"
             },
             "preferences": {
                 "title": "Tùy chọn",
@@ -1664,20 +1692,6 @@
                 "total": "Tổng cộng",
                 "reorder": "Đặt lại",
                 "viewReceipt": "Xem hóa đơn"
-            },
-            "profile": {
-                "title": "Hồ sơ",
-                "guest": "Khách vãng lai",
-                "role": "Thành viên",
-                "edit": "Chỉnh sửa hồ sơ",
-                "tabs": {
-                    "history": "Lịch sử đơn hàng",
-                    "settings": "Cài đặt"
-                },
-                "settings": {
-                    "comingSoon": "Tính năng cài đặt tài khoản sắp ra mắt!"
-                },
-                "items": "Món: "
             },
             "logout": "Đăng xuất"
         },
@@ -1779,12 +1793,13 @@
                 "success": {
                     "title": "Thanh toán thành công!",
                     "message": "Thanh toán của bạn đã được xử lý",
+                    "thankYou": "Cảm ơn quý khách đã ghé thăm!",
                     "orderNumber": "Đơn hàng #{{number}}"
                 },
                 "failed": {
                     "title": "Thanh toán thất bại",
                     "message": "Không thể xử lý thanh toán của bạn",
-                    "tryAgain": "Thử lại"
+                    "tryAgain": "Vui lòng thử lại hoặc liên hệ nhân viên."
                 },
                 "pending": {
                     "title": "Đang xử lý thanh toán",

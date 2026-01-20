@@ -1565,12 +1565,40 @@
         },
         "profile": {
             "title": "Profile",
+            "guest": "Guest",
+            "guestDesc": "Sign in to access your profile and order history",
+            "noEmail": "No email provided",
+            "editProfile": "Edit Profile",
             "personalInfo": {
                 "title": "Personal Information",
                 "name": "Full Name",
                 "email": "Email",
                 "phone": "Phone Number",
                 "save": "Save Changes"
+            },
+            "editModal": {
+                "title": "Edit Profile",
+                "fullName": "Full Name",
+                "fullNamePlaceholder": "Enter your full name",
+                "fullNameHint": "Only letters and spaces allowed",
+                "phone": "Phone Number",
+                "phonePlaceholder": "Enter phone number",
+                "email": "Email",
+                "errors": {
+                    "fullNameLetters": "Full name must only contain letters and spaces",
+                    "fullNameMin": "Full name must be at least 2 characters",
+                    "fixErrors": "Please fix the errors below",
+                    "updateFailed": "Failed to update profile"
+                }
+            },
+            "tabs": {
+                "orderHistory": "Order History",
+                "myReviews": "My Reviews",
+                "settings": "Settings"
+            },
+            "settings": {
+                "title": "Settings",
+                "language": "Language"
             },
             "preferences": {
                 "title": "Preferences",
@@ -1590,20 +1618,6 @@
                 "total": "Total",
                 "reorder": "Reorder",
                 "viewReceipt": "View Receipt"
-            },
-            "profile": {
-                "title": "Profile",
-                "guest": "Guest Customer",
-                "role": "Member",
-                "edit": "Edit Profile",
-                "tabs": {
-                    "history": "Order History",
-                    "settings": "Settings"
-                },
-                "settings": {
-                    "comingSoon": "Account settings are coming soon!"
-                },
-                "items": "Items: "
             },
             "logout": "Logout"
         },
@@ -1705,12 +1719,13 @@
                 "success": {
                     "title": "Payment Successful!",
                     "message": "Your payment has been processed",
+                    "thankYou": "Thank you for your visit!",
                     "orderNumber": "Order #{{number}}"
                 },
                 "failed": {
                     "title": "Payment Failed",
                     "message": "Your payment could not be processed",
-                    "tryAgain": "Try Again"
+                    "tryAgain": "Please try again or contact staff."
                 },
                 "pending": {
                     "title": "Payment Pending",

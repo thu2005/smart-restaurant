@@ -512,9 +512,9 @@ const MenuItemDetail = () => {
                   >
                     {isAvailable
                       ? editingItem
-                        ? "Update Cart"
-                        : "Add to Cart"
-                      : "Currently Unavailable"}
+                        ? t("customer.itemDetail.updateCart")
+                        : t("customer.itemDetail.addToCart", { price: "" })
+                      : t("customer.menu.item.unavailable")}
                   </Button>
                 </div>
               </div>

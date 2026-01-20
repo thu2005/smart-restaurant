@@ -57,7 +57,7 @@ const FilterPanel = ({
             size="icon"
             iconName="X"
             onClick={onClose}
-            aria-label="Close filters"
+            aria-label={t("common.actions.close")}
           />
         </div>
 
@@ -70,7 +70,7 @@ const FilterPanel = ({
               options={sortOptions}
               value={filters?.sortBy || "createdAt"}
               onChange={(value) => onFilterChange("sortBy", value)}
-              placeholder="Select sorting"
+              placeholder={t("customer.menu.filters.sortBy")}
             />
           </div>
 
@@ -158,7 +158,7 @@ const FilterPanel = ({
         </div>
       </div>
     </>,
-    document.body
+    document.body,
   );
 };
 

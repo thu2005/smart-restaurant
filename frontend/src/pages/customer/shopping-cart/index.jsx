@@ -136,10 +136,13 @@ const ShoppingCart = () => {
       console.log("SOCKET EVENT: bill_created received!");
       console.log("Order ID:", orderId);
       console.log("Bill Data:", billData);
-      toast.success(`Your bill is ready! Total: ${formatCurrency(billData.total)}`, {
-        description: "You can now proceed with payment.",
-        duration: 5000
-      });
+      toast.success(
+        `Your bill is ready! Total: ${formatCurrency(billData.total)}`,
+        {
+          description: "You can now proceed with payment.",
+          duration: 5000,
+        },
+      );
       toast.success(
         `Your bill is ready! Total: ${billData.total.toLocaleString("vi-VN")}₫`,
         {
@@ -181,10 +184,8 @@ const ShoppingCart = () => {
     try {
       setIsProcessing(true);
 
-
       const restaurantId = localStorage.getItem("restaurantId");
       const bill = activeOrder.bill;
-
 
       // Calculate orderItems subtotal
       const orderItems = activeOrder.orderItems || activeOrder.items || [];
@@ -196,11 +197,9 @@ const ShoppingCart = () => {
         return sum + itemPrice * quantity;
       }, 0);
 
-
       const discount = parseFloat(bill.discount || 0);
       const tax = (subtotal - discount) * 0.1;
       const total = subtotal - discount + tax;
-
 
       const response = await paymentService.createPayment({
         orderId: activeOrder.id,
@@ -219,12 +218,13 @@ const ShoppingCart = () => {
         response.data?.data?.gatewayResponse
       ) {
         const gatewayResponse = response.data.data.gatewayResponse;
-        
+
         // Detect if user is on mobile device
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-        
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+
         // Choose appropriate URL based on device
         let redirectUrl;
         if (isMobile && gatewayResponse.deeplink) {
@@ -248,21 +248,20 @@ const ShoppingCart = () => {
         return;
       }
 
-
       // For other payment methods (CASH, CARD)
-      toast.success("Payment processed successfully!", {
-        description: "Thank you for your visit!",
+      toast.success(t("customer.payment.result.success.title"), {
+        description: t("customer.payment.result.success.thankYou"),
         duration: 5000,
       });
-
 
       setActiveOrder(null); // Clear bill after payment
       clearCart(); // Clear cart
     } catch (err) {
       console.error("Error processing payment:", err);
-      toast.error("Payment failed", {
+      toast.error(t("customer.payment.result.failed.title"), {
         description:
-          err.response?.data?.message || "Please try again or contact staff.",
+          err.response?.data?.message ||
+          t("customer.payment.result.failed.tryAgain"),
         duration: 4000,
       });
     } finally {
@@ -306,10 +305,10 @@ const ShoppingCart = () => {
       console.error("Checkout error:", error);
       showModal(
         "error",
-        "Order Failed",
+        t("customer.cart.modals.failed.title"),
         error.response?.data?.message ||
           error.message ||
-          "Failed to place order. Please try again.",
+          t("customer.cart.modals.failed.message"),
       );
     } finally {
       setIsProcessing(false);
@@ -320,8 +319,8 @@ const ShoppingCart = () => {
     if (!paymentMethod) {
       showModal(
         "error",
-        "Payment Required",
-        "Please select a payment method before proceeding.",
+        t("customer.cart.modals.paymentRequired.title"),
+        t("customer.cart.modals.paymentRequired.message"),
       );
       return;
     }
@@ -329,8 +328,8 @@ const ShoppingCart = () => {
     if (cartItems.length === 0) {
       showModal(
         "error",
-        "Empty Cart",
-        "Your cart is empty. Please add items from the menu.",
+        t("customer.cart.modals.empty.title"),
+        t("customer.cart.modals.empty.message"),
       );
       return;
     }
@@ -342,8 +341,8 @@ const ShoppingCart = () => {
     if (!restaurantId || !tableId) {
       showModal(
         "error",
-        "Missing Information",
-        "Missing table information. Please scan the QR code again.",
+        t("customer.cart.modals.missingInfo.title"),
+        t("customer.cart.modals.missingInfo.message"),
       );
       return;
     }
@@ -365,8 +364,8 @@ const ShoppingCart = () => {
         if (!ALLOWED_STATUSES_TO_ADD.includes(status)) {
           showModal(
             "error",
-            "Order In Progress",
-            `You have an order in progress (${status}). Please wait for all items to be served before placing a new order.`,
+            t("customer.cart.modals.orderInProgress.title"),
+            t("customer.cart.modals.orderInProgress.message", { status }),
           );
           setIsProcessing(false);
           return;
@@ -375,8 +374,8 @@ const ShoppingCart = () => {
         // Show Confirmation Modal
         showModal(
           "confirm",
-          "Add to Current Order",
-          "Would you like to add these items to your current order?",
+          t("customer.cart.modals.addToCurrent.title"),
+          t("customer.cart.modals.addToCurrent.message"),
           () => confirmPlaceOrder(),
         );
         return;
@@ -388,8 +387,8 @@ const ShoppingCart = () => {
       console.error("Checkout check error:", error);
       showModal(
         "error",
-        "Error",
-        "Failed to check order status. Please try again.",
+        t("common.messages.error"),
+        t("customer.cart.modals.failed.message"),
       );
       setIsProcessing(false);
     }
@@ -402,7 +401,7 @@ const ShoppingCart = () => {
     return (
       <>
         <Helmet>
-          <title>{t('customer.cart.title')} - Smart Restaurant</title>
+          <title>{t("customer.cart.title")} - Smart Restaurant</title>
           <meta
             name="description"
             content="Review and manage your order before checkout"
@@ -415,13 +414,12 @@ const ShoppingCart = () => {
     );
   }
 
-  console.log('✅ Rendering FULL CART with items');
-
+  console.log("✅ Rendering FULL CART with items");
 
   return (
     <>
       <Helmet>
-        <title>{`${t('customer.cart.title')} (${itemCount}) - Smart Restaurant`}</title>
+        <title>{`${t("customer.cart.title")} (${itemCount}) - Smart Restaurant`}</title>
         <meta
           name="description"
           content="Review your order and proceed to checkout"
@@ -431,10 +429,10 @@ const ShoppingCart = () => {
         <main className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-12">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-              {t('customer.cart.title')}
+              {t("customer.cart.title")}
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              {t('customer.cart.subtitle')}
+              {t("customer.cart.subtitle")}
             </p>
           </div>
 
@@ -448,7 +446,7 @@ const ShoppingCart = () => {
               <div className="space-y-3 md:space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl md:text-2xl font-heading font-semibold text-foreground">
-                    {t('customer.cart.yourItems', { count: itemCount })}
+                    {t("customer.cart.yourItems", { count: itemCount })}
                   </h2>
                   <Button
                     variant="ghost"
@@ -457,7 +455,7 @@ const ShoppingCart = () => {
                     iconPosition="left"
                     onClick={() => navigate("/customer/menu-browse")}
                   >
-                    {t('customer.cart.addMore')}
+                    {t("customer.cart.addMore")}
                   </Button>
                 </div>
 
@@ -483,7 +481,7 @@ const ShoppingCart = () => {
                   <div className="bg-primary/5 border-2 border-primary rounded-lg p-4 mb-4">
                     <p className="text-sm font-semibold text-primary flex items-center gap-2">
                       <Icon name="Receipt" size={18} />
-                      {t('customer.cart.billReady')}
+                      {t("customer.cart.billReady")}
                     </p>
                   </div>
                   <BillPaymentSection
@@ -521,7 +519,9 @@ const ShoppingCart = () => {
                   loading={isProcessing}
                   disabled={!paymentMethod}
                 >
-                  {isProcessing ? t('common.status.processing') : t('customer.cart.placeOrder')}
+                  {isProcessing
+                    ? t("common.status.processing")
+                    : t("customer.cart.placeOrder")}
                 </Button>
 
                 <Button
@@ -532,7 +532,7 @@ const ShoppingCart = () => {
                   iconPosition="left"
                   onClick={() => navigate("/customer/menu-browse")}
                 >
-                  {t('customer.cart.continueShopping')}
+                  {t("customer.cart.continueShopping")}
                 </Button>
 
                 <div className="bg-muted/50 rounded-lg p-4 md:p-6 space-y-3">
@@ -544,10 +544,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        {t('customer.cart.features.tableService.title')}
+                        {t("customer.cart.features.tableService.title")}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        {t('customer.cart.features.tableService.desc')}
+                        {t("customer.cart.features.tableService.desc")}
                       </p>
                     </div>
                   </div>
@@ -560,10 +560,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        {t('customer.cart.features.multipleOrders.title')}
+                        {t("customer.cart.features.multipleOrders.title")}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        {t('customer.cart.features.multipleOrders.desc')}
+                        {t("customer.cart.features.multipleOrders.desc")}
                       </p>
                     </div>
                   </div>
@@ -576,10 +576,10 @@ const ShoppingCart = () => {
                     />
                     <div>
                       <p className="text-sm md:text-base font-medium text-foreground mb-1">
-                        {t('customer.cart.features.securePayment.title')}
+                        {t("customer.cart.features.securePayment.title")}
                       </p>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        {t('customer.cart.features.securePayment.desc')}
+                        {t("customer.cart.features.securePayment.desc")}
                       </p>
                     </div>
                   </div>
@@ -669,7 +669,7 @@ const ShoppingCart = () => {
                     variant="default"
                     size="sm"
                   >
-                    Confirm
+                    {t("common.actions.confirm")}
                   </Button>
                 </>
               ) : (
@@ -683,7 +683,9 @@ const ShoppingCart = () => {
                   }
                   fullWidth
                 >
-                  {modalState.type === "success" ? "Awesome!" : "Close"}
+                  {modalState.type === "success"
+                    ? t("common.actions.confirm")
+                    : t("common.actions.close")}
                 </Button>
               )}
             </div>
