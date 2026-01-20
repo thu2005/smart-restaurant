@@ -2,6 +2,7 @@
 
 ## Table of Contents
 - [Overview](#overview)
+- [Quick Setup](#quick-reference)
 - [Database Schema](#database-schema)
 - [Seeding Database](#seeding-database)
 - [Importing Production Data](#importing-production-data)
@@ -103,7 +104,7 @@ npm run seed
 💰 Creating Sample Bills...
 💳 Creating Sample Payments...
 ⭐ Creating Sample Reviews...
-✅ Seed completed successfully!
+Seed completed successfully!
 ```
 
 **Duration**: ~10-15 seconds
@@ -234,7 +235,7 @@ async function exportData() {
   };
   
   fs.writeFileSync('export.json', JSON.stringify(data, null, 2));
-  console.log('✅ Data exported to export.json');
+  console.log('Data exported to export.json');
 }
 
 exportData()
@@ -271,7 +272,7 @@ async function importData() {
   
   // ... (continue for other tables)
   
-  console.log('✅ Data imported successfully');
+  console.log('Data imported successfully');
 }
 
 importData()
@@ -574,14 +575,14 @@ QR code generation failed
 
 ### Before Seeding Production
 
-✅ **Always:**
+**Always:**
 1. Create full database backup
 2. Test seed on staging environment first
 3. Review seed data for sensitive information
 4. Notify team of maintenance window
 5. Have rollback plan ready
 
-❌ **Never:**
+**Never:**
 1. Seed production with test data
 2. Seed without backup
 3. Use weak passwords in production seed

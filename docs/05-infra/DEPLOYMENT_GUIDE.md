@@ -143,7 +143,7 @@ GitHub Webhook Trigger
 
 ### Step 2: Configure Environment Variables
 
-In Render dashboard, go to **Environment** tab and add:
+In Render dashboard, go to **Environment** tab and add these lines (or you can embed directly .env in your project):
 
 ```env
 # Node Environment
@@ -164,6 +164,15 @@ QR_BASE_URL=https://smart-restaurant-neon.vercel.app
 # Stripe Payment
 STRIPE_SECRET_KEY=sk_live_... (or sk_test_... for testing)
 STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Momo Configuration (Vietnamese e-wallet)
+# For testing: Use public sandbox credentials
+MOMO_PARTNER_CODE=MOMO
+MOMO_ACCESS_KEY=F8BBA842ECF85
+MOMO_SECRET_KEY=K951B6PE1waDMi640xX08PD3vg6EkVlz
+MOMO_ENDPOINT=https://test-payment.momo.vn/v2/gateway/api/create
+MOMO_RETURN_URL=http://host-device-ip:5173/customer/payment/result
+MOMO_NOTIFY_URL=http://localhost:5000/api/payments/momo/callback
 
 # Google OAuth (optional)
 GOOGLE_CLIENT_ID=your-google-client-id
@@ -237,10 +246,10 @@ services:
 ==> Running build command: npm install && npx prisma generate
 ==> Prisma schema loaded from prisma/schema.prisma
 ==> Prisma Client generated to node_modules/@prisma/client
-==> Build succeeded 🎉
+==> Build succeeded 
 ==> Starting service: npm start
 ==> Server listening on port 10000
-==> Your service is live 🎉
+==> Your service is live 
 ```
 
 **Service URL**: `https://smart-restaurant-neon.onrender.com`
@@ -436,7 +445,7 @@ npx prisma migrate deploy
 ✔ Generated Prisma Client
 ✔ Applied migration 20240115_init
 ✔ Applied migration 20240120_add_item_status
-✅ All migrations applied successfully
+All migrations applied successfully
 ```
 
 ### Step 5: Seed Database (Optional)
