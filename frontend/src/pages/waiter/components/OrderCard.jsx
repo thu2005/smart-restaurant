@@ -213,14 +213,32 @@ const OrderCard = ({ order, onAccept, onReject, onServe, onMarkCompleted, showAc
                     return null;
                 })()}
 
-                {/* Total */}
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <span className="font-semibold text-sm md:text-base text-foreground">
-                        {t("waiter.order.total")}
-                    </span>
-                    <span className="font-bold text-base md:text-lg text-foreground data-text">
-                        {calculateTotal().toLocaleString('vi-VN')}₫
-                    </span>
+                {/* Totals */}
+                <div className="pt-2 border-t border-border space-y-1">
+                     <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                            {t("waiter.order.subtotal", "Subtotal")}
+                        </span>
+                        <span className="text-sm font-medium text-foreground data-text">
+                            {calculateTotal().toLocaleString('vi-VN')}₫
+                        </span>
+                    </div>
+                     <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                            {t("waiter.order.tax", "Tax (10%)")}
+                        </span>
+                        <span className="text-sm font-medium text-foreground data-text">
+                            {(calculateTotal() * 0.1).toLocaleString('vi-VN')}₫
+                        </span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-dashed border-border">
+                        <span className="font-semibold text-sm md:text-base text-foreground">
+                            {t("waiter.order.total")}
+                        </span>
+                        <span className="font-bold text-base md:text-lg text-foreground data-text">
+                            {(calculateTotal() * 1.1).toLocaleString('vi-VN')}₫
+                        </span>
+                    </div>
                 </div>
             </div>
 
