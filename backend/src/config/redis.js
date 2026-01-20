@@ -4,6 +4,7 @@ const Redis = require('ioredis');
 const redisConfig = {
     host: process.env.REDIS_HOST || 'localhost',
     port: process.env.REDIS_PORT || 6379,
+    username: process.env.REDIS_USERNAME || undefined,
     password: process.env.REDIS_PASSWORD || undefined,
     db: process.env.REDIS_DB || 0,
     retryStrategy: (times) => {
@@ -37,11 +38,12 @@ const cache = {
      * @returns {Promise<any>} - Parsed value or null
      */
     async get(key) {
+        if (!redis || !redisReady) return null;
         try {
             const data = await redis.get(key);
             return data ? JSON.parse(data) : null;
         } catch (error) {
-            console.error(`Cache get error for key ${key}:`, error);
+            console.error(`Cache get error for key ${key}:`, error.message);
             return null;
         }
     },
@@ -54,6 +56,7 @@ const cache = {
      * @returns {Promise<boolean>} - Success status
      */
     async set(key, value, ttl = 3600) {
+        if (!redis || !redisReady) return false;
         try {
             const serialized = JSON.stringify(value);
             if (ttl) {
@@ -63,7 +66,7 @@ const cache = {
             }
             return true;
         } catch (error) {
-            console.error(`Cache set error for key ${key}:`, error);
+            console.error(`Cache set error for key ${key}:`, error.message);
             return false;
         }
     },
@@ -74,11 +77,12 @@ const cache = {
      * @returns {Promise<number>} - Number of keys deleted
      */
     async del(keys) {
+        if (!redis || !redisReady) return 0;
         try {
             const keysArray = Array.isArray(keys) ? keys : [keys];
             return await redis.del(...keysArray);
         } catch (error) {
-            console.error(`Cache delete error:`, error);
+            console.error(`Cache delete error:`, error.message);
             return 0;
         }
     },
@@ -89,6 +93,7 @@ const cache = {
      * @returns {Promise<number>} - Number of keys deleted
      */
     async delPattern(pattern) {
+        if (!redis || !redisReady) return 0;
         try {
             const keys = await redis.keys(pattern);
             if (keys.length > 0) {
@@ -96,7 +101,7 @@ const cache = {
             }
             return 0;
         } catch (error) {
-            console.error(`Cache delete pattern error:`, error);
+            console.error(`Cache delete pattern error:`, error.message);
             return 0;
         }
     },
@@ -107,10 +112,11 @@ const cache = {
      * @returns {Promise<boolean>} - Existence status
      */
     async exists(key) {
+        if (!redis || !redisReady) return false;
         try {
             return (await redis.exists(key)) === 1;
         } catch (error) {
-            console.error(`Cache exists error for key ${key}:`, error);
+            console.error(`Cache exists error for key ${key}:`, error.message);
             return false;
         }
     },
@@ -122,10 +128,11 @@ const cache = {
      * @returns {Promise<boolean>} - Success status
      */
     async expire(key, ttl) {
+        if (!redis || !redisReady) return false;
         try {
             return (await redis.expire(key, ttl)) === 1;
         } catch (error) {
-            console.error(`Cache expire error for key ${key}:`, error);
+            console.error(`Cache expire error for key ${key}:`, error.message);
             return false;
         }
     },
@@ -135,11 +142,12 @@ const cache = {
      * @returns {Promise<boolean>} - Success status
      */
     async flushAll() {
+        if (!redis || !redisReady) return false;
         try {
             await redis.flushall();
             return true;
         } catch (error) {
-            console.error('Cache flush error:', error);
+            console.error('Cache flush error:', error.message);
             return false;
         }
     },

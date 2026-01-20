@@ -1,5 +1,33 @@
 const menuService = require("../services/menu.service");
 const { validationResult } = require("express-validator");
+const { cache } = require("../config/redis");
+
+// Helper function to invalidate all menu cache for a restaurant
+const invalidateMenuCacheByRestaurantId = async (restaurantId) => {
+  try {
+    if (restaurantId) {
+      await cache.delPattern(`menu:items:${restaurantId}*`);
+      await cache.delPattern(`menu:item:${restaurantId}*`);
+      await cache.delPattern(`menu:categories:${restaurantId}*`);
+      await cache.delPattern(`menu:category:*`);
+      console.log(`🗑️ Menu cache invalidated for restaurant: ${restaurantId}`);
+    }
+  } catch (error) {
+    console.error("Error invalidating menu cache:", error);
+  }
+};
+
+// Helper function to invalidate menu cache for a menu item (gets restaurantId from item)
+const invalidateMenuCacheForItem = async (itemId) => {
+  try {
+    const item = await menuService.getMenuItemById(itemId);
+    if (item && item.restaurantId) {
+      await invalidateMenuCacheByRestaurantId(item.restaurantId);
+    }
+  } catch (error) {
+    console.error("Error invalidating menu cache for item:", error);
+  }
+};
 
 exports.getCategories = async (req, res, next) => {
   try {
@@ -53,6 +81,10 @@ exports.createCategory = async (req, res, next) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
     const category = await menuService.createCategory(req.body);
+    
+    // Invalidate cache after creating category
+    await invalidateMenuCacheByRestaurantId(req.body.restaurantId);
+    
     res.status(201).json({ success: true, data: category });
   } catch (error) {
     next(error);
@@ -67,6 +99,10 @@ exports.updateCategory = async (req, res, next) => {
     }
     const { id } = req.params;
     const category = await menuService.updateCategory(id, req.body);
+    
+    // Invalidate cache after updating category
+    await invalidateMenuCacheByRestaurantId(category.restaurantId);
+    
     res.status(200).json({ success: true, data: category });
   } catch (error) {
     next(error);
@@ -78,6 +114,10 @@ exports.updateCategoryStatus = async (req, res, next) => {
     const { id } = req.params;
     const { isActive } = req.body;
     const category = await menuService.updateCategoryStatus(id, isActive);
+    
+    // Invalidate cache after updating category status
+    await invalidateMenuCacheByRestaurantId(category.restaurantId);
+    
     res.status(200).json({ success: true, data: category });
   } catch (error) {
     next(error);
@@ -145,6 +185,10 @@ exports.createMenuItem = async (req, res, next) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
     const item = await menuService.createMenuItem(req.body);
+    
+    // Invalidate cache after creating menu item
+    await invalidateMenuCacheByRestaurantId(req.body.restaurantId);
+    
     res.status(201).json({ success: true, data: item });
   } catch (error) {
     next(error);
@@ -157,6 +201,10 @@ exports.updateMenuItem = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
+    
+    // Invalidate cache before update (in case restaurantId changes)
+    await invalidateMenuCacheForItem(req.params.id);
+    
     const item = await menuService.updateMenuItem(req.params.id, req.body);
     res.status(200).json({ success: true, data: item });
   } catch (error) {
@@ -169,11 +217,31 @@ exports.updateMenuItem = async (req, res, next) => {
 
 exports.deleteMenuItem = async (req, res, next) => {
   try {
-    await menuService.deleteMenuItem(req.params.id);
+    // Invalidate cache BEFORE deleting (so we can still get restaurantId)
+    await invalidateMenuCacheForItem(req.params.id);
+    
+    const result = await menuService.deleteMenuItem(req.params.id);
+    
+    // Check if it was soft deleted (has order history)
+    if (result.name && result.name.startsWith("[DELETED]")) {
+      return res.status(200).json({ 
+        success: true, 
+        message: "Item has order history and was deactivated instead of deleted",
+        softDeleted: true
+      });
+    }
+    
     res.status(200).json({ success: true, message: "Item deleted" });
   } catch (error) {
     if (error.message === "Menu item not found") {
       return res.status(404).json({ success: false, message: error.message });
+    }
+    // Handle Prisma foreign key constraint error
+    if (error.code === "P2003") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Cannot delete menu item with existing order history" 
+      });
     }
     next(error);
   }
@@ -185,6 +253,10 @@ exports.uploadMenuItemPhotos = async (req, res, next) => {
     const { id: itemId } = req.params;
     const files = req.files;
     const result = await menuService.uploadMenuItemPhotos(itemId, files);
+    
+    // Invalidate cache after uploading photos
+    await invalidateMenuCacheForItem(itemId);
+    
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     next(error);
@@ -195,6 +267,10 @@ exports.deleteMenuItemPhoto = async (req, res, next) => {
   try {
     const { id: itemId, photoId } = req.params;
     await menuService.deleteMenuItemPhoto(itemId, photoId);
+    
+    // Invalidate cache after deleting photo
+    await invalidateMenuCacheForItem(itemId);
+    
     res.status(200).json({ success: true, message: "Photo deleted" });
   } catch (error) {
     next(error);
@@ -205,6 +281,10 @@ exports.setMenuItemPrimaryPhoto = async (req, res, next) => {
   try {
     const { id: itemId, photoId } = req.params;
     await menuService.setMenuItemPrimaryPhoto(itemId, photoId);
+    
+    // Invalidate cache after setting primary photo
+    await invalidateMenuCacheForItem(itemId);
+    
     res.status(200).json({ success: true, message: "Primary photo updated" });
   } catch (error) {
     next(error);
@@ -247,6 +327,10 @@ exports.createModifierGroup = async (req, res, next) => {
     const restaurantId = req.body.restaurantId || req.user.restaurantId;
     const data = { ...req.body, restaurantId };
     const group = await menuService.createModifierGroup(data);
+    
+    // Invalidate cache after creating modifier group
+    await invalidateMenuCacheByRestaurantId(restaurantId);
+    
     res.status(201).json({ success: true, data: group });
   } catch (error) {
     next(error);
@@ -259,6 +343,10 @@ exports.updateModifierGroup = async (req, res, next) => {
       req.params.id,
       req.body
     );
+    
+    // Invalidate cache after updating modifier group
+    await invalidateMenuCacheByRestaurantId(group.restaurantId);
+    
     res.status(200).json({ success: true, data: group });
   } catch (error) {
     next(error);
@@ -267,7 +355,16 @@ exports.updateModifierGroup = async (req, res, next) => {
 
 exports.deleteModifierGroup = async (req, res, next) => {
   try {
+    // Get restaurantId before deleting for cache invalidation
+    const restaurantId = req.query.restaurantId || req.body.restaurantId || req.user?.restaurantId;
+    
     await menuService.deleteModifierGroup(req.params.id);
+    
+    // Invalidate cache after deleting modifier group
+    if (restaurantId) {
+      await invalidateMenuCacheByRestaurantId(restaurantId);
+    }
+    
     res.status(200).json({ success: true, message: "Modifier group deleted" });
   } catch (error) {
     next(error);
@@ -278,6 +375,13 @@ exports.createModifierOption = async (req, res, next) => {
   try {
     const { groupId } = req.params;
     const option = await menuService.createModifierOption(groupId, req.body);
+    
+    // Invalidate cache after creating modifier option
+    const restaurantId = req.query.restaurantId || req.body.restaurantId || req.user?.restaurantId;
+    if (restaurantId) {
+      await invalidateMenuCacheByRestaurantId(restaurantId);
+    }
+    
     res.status(201).json({ success: true, data: option });
   } catch (error) {
     next(error);
@@ -290,6 +394,13 @@ exports.updateModifierOption = async (req, res, next) => {
       req.params.id,
       req.body
     );
+    
+    // Invalidate cache after updating modifier option
+    const restaurantId = req.query.restaurantId || req.body.restaurantId || req.user?.restaurantId;
+    if (restaurantId) {
+      await invalidateMenuCacheByRestaurantId(restaurantId);
+    }
+    
     res.status(200).json({ success: true, data: option });
   } catch (error) {
     next(error);
@@ -301,6 +412,10 @@ exports.attachModifierGroupToItem = async (req, res, next) => {
     const { id: itemId } = req.params;
     const { groupIds } = req.body;
     await menuService.attachModifierGroupToItem(itemId, groupIds);
+    
+    // Invalidate cache after attaching modifier groups
+    await invalidateMenuCacheForItem(itemId);
+    
     res
       .status(200)
       .json({ success: true, message: "Modifier groups attached" });
