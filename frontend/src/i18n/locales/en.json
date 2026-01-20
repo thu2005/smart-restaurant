@@ -1762,7 +1762,12 @@
                 "passwordRequired": "Password is required"
             },
             "success": "Login successful!",
-            "failed": "Failed to login. Please check your credentials."
+            "failed": "Failed to login. Please check your credentials.",
+            "verifyRequired": "Your email is not verified. Please check your inbox for the verification link.",
+            "resendLink": "Resend verification email",
+            "resending": "Sending...",
+            "resendSuccess": "Verification email sent! Please check your inbox.",
+            "resendFailed": "Failed to send verification email. Please try again."
         },
         "register": {
             "title": "Create an account",

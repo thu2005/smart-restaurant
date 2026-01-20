@@ -1836,7 +1836,12 @@
                 "passwordRequired": "Vui lòng nhập mật khẩu"
             },
             "success": "Đăng nhập thành công!",
-            "failed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+            "failed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+            "verifyRequired": "Email của bạn chưa được xác thực. Vui lòng kiểm tra hộp thư để tìm liên kết xác thực.",
+            "resendLink": "Gửi lại email xác thực",
+            "resending": "Đang gửi...",
+            "resendSuccess": "Đã gửi email xác thực! Vui lòng kiểm tra hộp thư.",
+            "resendFailed": "Gửi email thất bại. Vui lòng thử lại."
         },
         "register": {
             "title": "Tạo tài khoản",

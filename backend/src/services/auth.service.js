@@ -50,6 +50,10 @@ class AuthService {
         }
 
         // Create user
+        // Only require email verification for CUSTOMER role
+        const isCustomer = (role || 'CUSTOMER') === 'CUSTOMER';
+        const requiresVerification = isCustomer && process.env.RESEND_API_KEY;
+        
         const user = await prisma.user.create({
             data: {
                 email,
@@ -58,34 +62,40 @@ class AuthService {
                 phone,
                 role: role || 'CUSTOMER',
                 restaurantId: finalRestaurantId,
-                verificationToken,
-                emailVerified: true // Auto-verify for development (TODO: set to false in production)
+                verificationToken: requiresVerification ? verificationToken : null,
+                emailVerified: !requiresVerification // Auto-verify non-customers, require verification for customers
             },
         });
 
-        // Send verification email (disabled for development)
-        // TODO: Enable email verification in production
-        // try {
-        //     await emailService.sendVerificationEmail(user.email, verificationToken);
-        // } catch (error) {
-        //     console.error('Email send failed:', error);
-        //     // Don't fail registration, but log it
-        // }
+        // Send verification email only for CUSTOMER role
+        if (requiresVerification) {
+            try {
+                await emailService.sendVerificationEmail(user.email, verificationToken);
+                console.log(`✅ Verification email sent to ${user.email}`);
+            } catch (error) {
+                console.error('❌ Email send failed:', error);
+                // Don't fail registration, but log it
+            }
+        }
 
-        // Generate token for immediate login
-        const token = generateToken(user.id, user.role);
+        // Generate token for immediate login (only if email is verified)
+        const token = user.emailVerified ? generateToken(user.id, user.role) : null;
 
         return {
-            message: 'Registration successful.',
+            message: requiresVerification 
+                ? 'Registration successful. Please check your email to verify your account.'
+                : 'Registration successful.',
             userId: user.id,
             user: {
                 id: user.id,
                 email: user.email,
                 fullName: user.fullName,
                 role: user.role,
-                restaurantId: user.restaurantId
+                restaurantId: user.restaurantId,
+                emailVerified: user.emailVerified
             },
-            token // Return token for immediate login
+            token, // Return token only if verified
+            requiresVerification
         };
     }
 
@@ -116,11 +126,10 @@ class AuthService {
             throw new Error('Account is deactivated');
         }
 
-        // Check verification (disabled for development)
-        // TODO: Enable email verification in production
-        // if (!user.emailVerified) {
-        //     throw new Error('Please verify your email address.');
-        // }
+        // Check verification for CUSTOMER role only
+        if (user.role === 'CUSTOMER' && !user.emailVerified) {
+            throw new Error('Please verify your email address before logging in.');
+        }
 
         // Generate token
         const token = generateToken(user.id, user.role);
@@ -152,6 +161,25 @@ class AuthService {
             }
         });
 
+        return true;
+    }
+
+    async resendVerificationEmail(email) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        
+        if (!user) throw new Error('User not found');
+        if (user.emailVerified) throw new Error('Email already verified');
+        if (user.role !== 'CUSTOMER') throw new Error('Not allowed');
+
+        // Generate new verification token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { verificationToken }
+        });
+
+        await emailService.sendVerificationEmail(user.email, verificationToken);
         return true;
     }
 
