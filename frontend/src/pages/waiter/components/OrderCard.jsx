@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) => {
+const OrderCard = ({ order, onAccept, onReject, onServe, onMarkCompleted, showActions = true }) => {
     const { t } = useTranslation();
 
     // Calculate time elapsed
@@ -257,6 +257,14 @@ const OrderCard = ({ order, onAccept, onReject, onServe, showActions = true }) =
                             onClick={() => window.open("/kitchen/dashboard", "_blank")}
                         >
                             {t("waiter.action.viewKitchen")}
+                        </button>
+                    )}
+                    {order.status === "COMPLETED" && onMarkCompleted && (
+                        <button
+                            onClick={() => onMarkCompleted(order)}
+                            className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-semibold text-sm transition-smooth touch-target"
+                        >
+                            {t("waiter.action.markCompleted", "Mark as Completed")}
                         </button>
                     )}
                 </div>

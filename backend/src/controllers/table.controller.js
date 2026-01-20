@@ -115,3 +115,28 @@ exports.regenerateAllQRs = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.updateTableStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ success: false, message: 'Status is required' });
+        }
+
+        const validStatuses = ['AVAILABLE', 'OCCUPIED', 'RESERVED', 'CLEANING'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
+            });
+        }
+
+        const table = await tableService.updateTable(id, { status });
+        res.status(200).json({ success: true, data: table });
+    } catch (error) {
+        next(error);
+    }
+};
+

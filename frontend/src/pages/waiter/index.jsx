@@ -267,14 +267,26 @@ const WaiterDashboard = () => {
             ]);
 
             // Set orders for current tab
-            setOrders(currentTabData.data || []);
+            // For completed tab, filter out orders with AVAILABLE table status
+            let ordersToDisplay = currentTabData.data || [];
+            if (activeTab === "completed") {
+                ordersToDisplay = ordersToDisplay.filter(order => 
+                    order.table?.status !== "AVAILABLE"
+                );
+            }
+            setOrders(ordersToDisplay);
+
+            // Filter completed count to exclude AVAILABLE tables
+            const activeCompletedOrders = (completedRes.data || []).filter(order => 
+                order.table?.status !== "AVAILABLE"
+            );
 
             setCounts({
                 pending: pendingRes.data?.length || 0,
                 accepted: (receivedCount.data?.length || 0) + (preparingCount.data?.length || 0),
                 ready: readyRes.data?.length || 0,
                 tables: tables.length,
-                completed: completedRes.data?.length || 0,
+                completed: activeCompletedOrders.length,
             });
         } catch (err) {
             console.error("Error fetching orders:", err);
@@ -500,6 +512,28 @@ const WaiterDashboard = () => {
         }
     };
 
+    const handleMarkTableCompleted = async (order) => {
+        try {
+            // Reset table status to AVAILABLE
+            await waiterService.markTableAsAvailable(order.table.id);
+            
+            toast.success(t("waiter.table.completed", "Table marked as completed"), {
+                description: t("waiter.table.completedDesc", "Table is now available for new customers"),
+                duration: 4000
+            });
+            
+            // Refresh orders to remove from completed list
+            fetchOrders();
+            fetchTables();
+        } catch (err) {
+            console.error("Error marking table as completed:", err);
+            toast.error(t("waiter.toasts.completeFailed", "Failed to mark table as completed"), {
+                description: t("waiter.toasts.tryAgain"),
+                duration: 3000
+            });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-background">
             <WaiterHeader />
@@ -538,6 +572,7 @@ const WaiterDashboard = () => {
                                         onAccept={handleAcceptOrder}
                                         onReject={handleRejectOrder}
                                         onServe={handleServeOrder}
+                                        onMarkCompleted={handleMarkTableCompleted}
                                     />
                                 ))}
                             </div>
