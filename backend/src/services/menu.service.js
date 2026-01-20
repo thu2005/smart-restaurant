@@ -355,10 +355,31 @@ class MenuService {
   }
 
   async deleteMenuItem(id) {
-    // Check existence (simplified, avoiding circular calls if modify getMenuItemById)
-    const item = await prisma.menuItem.findUnique({ where: { id } });
+    // Check existence
+    const item = await prisma.menuItem.findUnique({ 
+      where: { id },
+      include: {
+        orderItems: { take: 1 }, // Check if there are any order items
+      }
+    });
     if (!item) throw new Error("Menu item not found");
 
+    // Check if menu item has any order history
+    if (item.orderItems && item.orderItems.length > 0) {
+      // Option: Soft delete by marking as unavailable instead of hard delete
+      // This preserves order history
+      console.log(`⚠️ Menu item ${id} has order history, soft deleting instead`);
+      return await prisma.menuItem.update({
+        where: { id },
+        data: { 
+          isAvailable: false,
+          stockStatus: "out-of-stock",
+          name: `[DELETED] ${item.name}`,
+        },
+      });
+    }
+
+    // No order history, safe to hard delete
     return await prisma.menuItem.delete({
       where: { id },
     });
