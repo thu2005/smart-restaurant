@@ -35,6 +35,8 @@ import Onboarding from "./pages/customer/Onboarding";
 import TableEntry from "./pages/customer/TableEntry";
 import QREntry from "./pages/customer/QREntry";
 import VerifyEmail from "./pages/auth/VerifyEmail";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 // Admin Menu Management Pages
 import CategoryList from "./pages/admin/menu/categories/CategoryList";
@@ -86,6 +88,8 @@ const Routes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Dedicated Customer Onboarding Route - for QR scans */}
           <Route path="/customer-onboarding" element={<Onboarding />} />
