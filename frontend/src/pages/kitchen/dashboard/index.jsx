@@ -136,7 +136,8 @@ const KitchenDisplaySystem = () => {
         modifiers: item.modifiers || [],
         specialInstructions: item.specialInstructions || "",
         allergens: [], // TODO: Add allergens field to MenuItem schema (different from dietary)
-        itemStatus: item.itemStatus || 'queued' // Add itemStatus
+        itemStatus: item.itemStatus || 'queued', // Add itemStatus
+        menuItem: item.menuItem // Keep menuItem for prepTime calculation
       })) || [],
       orderNotes: order.specialInstructions || ""
     };
@@ -165,10 +166,34 @@ const KitchenDisplaySystem = () => {
     return (isOld || hasSpecialInstructions) ? "rush" : "normal";
   };
 
+
   const calculateEstimatedPrepTime = (order) => {
-    // Simple estimation based on number of items
-    const itemCount = order.orderItems?.length || 0;
-    return Math.max(10, itemCount * 5);
+    const KITCHEN_CAPACITY = 4; // Max concurrent items
+    const SERVING_BUFFER = 5; // Minutes for plating/serving
+    
+    // Flatten items based on quantity
+    let allTasks = [];
+    order.orderItems?.forEach(item => {
+      const time = item.menuItem?.prepTime || 15; // Default 15 mins if missing
+      for (let i = 0; i < item.quantity; i++) {
+        allTasks.push(time);
+      }
+    });
+    
+    if (allTasks.length === 0) return 10;
+    
+    // Sort descending (longest tasks first)
+    allTasks.sort((a, b) => b - a);
+    
+    // Process in batches
+    let totalPrepTime = 0;
+    for (let i = 0; i < allTasks.length; i += KITCHEN_CAPACITY) {
+      const batch = allTasks.slice(i, i + KITCHEN_CAPACITY);
+      const batchTime = Math.max(...batch);
+      totalPrepTime += batchTime;
+    }
+    
+    return totalPrepTime + SERVING_BUFFER;
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -339,7 +364,7 @@ const KitchenDisplaySystem = () => {
                 preparing: groupedOrders.preparing.length,
                 ready: groupedOrders.ready.length,
                 avgPrepTime: (() => {
-                  // Calculate average prep time from all visible orders
+                  // Calculate average from estimatedPrepTime of all visible orders
                   const allOrders = [
                     ...groupedOrders.received,
                     ...groupedOrders.preparing,
