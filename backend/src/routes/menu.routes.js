@@ -2,6 +2,11 @@ const express = require("express");
 const { check } = require("express-validator");
 const menuController = require("../controllers/menu.controller");
 const { protect, authorize } = require("../middlewares/auth.middleware");
+const { 
+    menuCacheMiddleware, 
+    categoryCacheMiddleware,
+    invalidateMenuCache 
+} = require("../middlewares/cache.middleware");
 
 const router = express.Router();
 
@@ -217,7 +222,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/:restaurantId/categories", menuController.getCategories);
+router.get("/:restaurantId/categories", categoryCacheMiddleware, menuController.getCategories);
 
 /**
  * @swagger
@@ -253,7 +258,7 @@ router.get("/:restaurantId/categories", menuController.getCategories);
  *                   items:
  *                     $ref: '#/components/schemas/MenuItem'
  */
-router.get("/:restaurantId/items/popular", menuController.getPopularItems);
+router.get("/:restaurantId/items/popular", menuCacheMiddleware, menuController.getPopularItems);
 
 /**
  * @swagger
@@ -322,7 +327,7 @@ router.get("/:restaurantId/items/popular", menuController.getPopularItems);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/:restaurantId/items", menuController.getMenuItems);
+router.get("/:restaurantId/items", menuCacheMiddleware, menuController.getMenuItems);
 
 /**
  * @swagger
@@ -381,7 +386,7 @@ router.get("/:restaurantId/items", menuController.getMenuItems);
  *       404:
  *         description: Category not found
  */
-router.get("/:restaurantId/categories/:categoryId/items", menuController.getItemsByCategory);
+router.get("/:restaurantId/categories/:categoryId/items", menuCacheMiddleware, menuController.getItemsByCategory);
 
 /**
  * @swagger
@@ -533,7 +538,7 @@ router.get("/:restaurantId/items/:id/related", menuController.getRelatedItems);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/:restaurantId/items/:id", menuController.getMenuItemById);
+router.get("/:restaurantId/items/:id", menuCacheMiddleware, menuController.getMenuItemById);
 
 // --- Protected Routes (Admin) ---
 
@@ -611,6 +616,7 @@ router.post(
       .isLength({ max: 500 })
       .withMessage("Description must not exceed 500 characters"),
   ],
+  invalidateMenuCache,
   menuController.createCategory
 );
 
@@ -1057,27 +1063,12 @@ router.put(
   menuController.updateMenuItem
 );
 
-// Multer setup for image uploads
+// Multer setup for image uploads with Cloudinary
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-
-const uploadDir = "uploads/";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, "menu-" + Date.now() + path.extname(file.originalname));
-  },
-});
+const { menuStorage } = require("../config/cloudinary");
 
 const upload = multer({
-  storage: storage,
+  storage: menuStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {

@@ -36,6 +36,7 @@ const orderService = {
       const payload = {
         restaurantId: orderData.restaurantId || getRestaurantId(),
         tableId: orderData.tableId || getTableId(),
+        customerId: orderData.customerId || null, // Add customerId to payload
         items: orderData.items.map((item) => {
           // Ensure we have a valid menuItemId
           const menuItemId = item.menuItemId;
@@ -222,7 +223,7 @@ const orderService = {
    * Add items to existing order (for "add more items" flow)
    * Maintains single order per table session
    */
-  addItemsToOrder: async (orderId, items) => {
+  addItemsToOrder: async (orderId, items, customerId = null) => {
     try {
       const payload = {
         items: items.map((item) => {
@@ -252,10 +253,28 @@ const orderService = {
         }),
       };
 
+      // Add customerId if provided (to link order to customer)
+      if (customerId) {
+        payload.customerId = customerId;
+      }
+
       const response = await api.post(`/orders/${orderId}/items`, payload);
       return response.data;
     } catch (error) {
       console.error("Error adding items to order:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get customer order history (completed orders)
+   */
+  getCustomerOrderHistory: async (params = {}) => {
+    try {
+      const response = await api.get("/orders/customer/history", { params });
+      return response.data;
+    } catch (error) {
+      console.error("Error getting customer order history:", error);
       throw error;
     }
   },
@@ -277,12 +296,10 @@ const orderService = {
       const activeOrder = activeOrderResponse?.data;
 
       if (activeOrder) {
-        // Add to existing order
-        console.log("Adding items to existing order:", activeOrder.id);
-        return await orderService.addItemsToOrder(activeOrder.id, cartItems);
+        // Add to existing order (pass customerId to link order if user logged in)
+        return await orderService.addItemsToOrder(activeOrder.id, cartItems, orderData.customerId);
       } else {
         // Create new order
-        console.log("Creating new order");
         return await orderService.createOrder({
           ...orderData,
           items: cartItems,

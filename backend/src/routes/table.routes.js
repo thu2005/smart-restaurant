@@ -170,6 +170,36 @@ router.post('/qr/regenerate-all', protect, authorize('ADMIN', 'SUPER_ADMIN'), ta
 
 /**
  * @swagger
+ * /api/tables/{id}/status:
+ *   patch:
+ *     summary: Update table status
+ *     tags: [Tables]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [AVAILABLE, OCCUPIED, RESERVED, CLEANING]
+ *     responses:
+ *       200:
+ *         description: Table status updated
+ */
+router.patch('/:id/status', protect, authorize('ADMIN', 'WAITER', 'SUPER_ADMIN'), tableController.updateTableStatus);
+
+/**
+ * @swagger
  * /api/tables/{id}:
  *   put:
  *     summary: Update a table

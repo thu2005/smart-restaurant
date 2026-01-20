@@ -223,6 +223,18 @@ const waiterService = {
         const response = await api.get("/orders/bills", { params });
         return response.data;
     },
+
+    /**
+     * Mark table as available (reset table status after order completion)
+     * @param {string} tableId - Table ID
+     * @returns {Promise} Updated table
+     */
+    markTableAsAvailable: async (tableId) => {
+        const response = await api.patch(`/tables/${tableId}/status`, {
+            status: "AVAILABLE"
+        });
+        return response.data;
+    },
 };
 
 export default waiterService;

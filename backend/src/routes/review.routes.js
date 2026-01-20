@@ -58,6 +58,18 @@ router.post(
 
 /**
  * @swagger
+ * /api/reviews/me:
+ *   get:
+ *     summary: Get current user's reviews
+ *     tags: [Review]
+ *     responses:
+ *       200:
+ *         description: List of user reviews
+ */
+router.get('/me', protect, reviewController.getMyReviews);
+
+/**
+ * @swagger
  * /api/reviews/{menuItemId}:
  *   get:
  *     summary: Get reviews for a specific menu item

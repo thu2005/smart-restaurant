@@ -31,7 +31,7 @@ api.interceptors.request.use((config) => {
 const getRestaurantId = () => {
   // First try to get from QR scan or direct storage
   let restaurantId = localStorage.getItem("restaurantId");
-  
+
   // If not found, try to get from logged-in user
   if (!restaurantId) {
     try {
@@ -41,7 +41,7 @@ const getRestaurantId = () => {
       console.error("Error getting restaurantId from user data:", e);
     }
   }
-  
+
   // Fallback to environment variable or default
   return restaurantId || import.meta.env.VITE_DEFAULT_RESTAURANT_ID || null;
 };
@@ -52,7 +52,7 @@ const toSnakeCase = (obj) => {
   for (const [key, value] of Object.entries(obj)) {
     const snakeKey = key.replace(
       /[A-Z]/g,
-      (letter) => `_${letter.toLowerCase()}`
+      (letter) => `_${letter.toLowerCase()}`,
     );
     result[snakeKey] = value;
   }
@@ -63,7 +63,7 @@ const toCamelCase = (obj) => {
   const result = {};
   for (const [key, value] of Object.entries(obj)) {
     const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
-      letter.toUpperCase()
+      letter.toUpperCase(),
     );
     result[camelKey] = value;
   }
@@ -152,7 +152,7 @@ const menuService = {
       const payload = { isActive: status === "active" };
       const response = await api.patch(
         `/menu/categories/${id}/status`,
-        payload
+        payload,
       );
       return response.data.data || response.data;
     } catch (error) {
@@ -187,8 +187,8 @@ const menuService = {
               item.stockStatus === "out-of-stock"
                 ? "sold_out"
                 : item.isAvailable
-                ? "available"
-                : "unavailable",
+                  ? "available"
+                  : "unavailable",
             is_chef_recommended: item.isChefRecommended || false,
             is_popular: item.isPopular || false,
             dietary: item.dietary || [],
@@ -197,6 +197,9 @@ const menuService = {
             prep_time_minutes: item.prepTime || 0,
             photos: item.photos || [],
             image: item.image,
+            averageRating: item.averageRating || 0,
+            reviewCount: item.reviewCount || 0,
+            rating: item.averageRating || 0, // alias
           })),
           pagination: result.pagination,
         };
@@ -214,8 +217,8 @@ const menuService = {
           item.stockStatus === "out-of-stock"
             ? "sold_out"
             : item.isAvailable
-            ? "available"
-            : "unavailable",
+              ? "available"
+              : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         is_popular: item.isPopular || false,
         dietary: item.dietary || [],
@@ -224,6 +227,9 @@ const menuService = {
         prep_time_minutes: item.prepTime || 0,
         photos: item.photos || [],
         image: item.image,
+        averageRating: item.averageRating || 0,
+        reviewCount: item.reviewCount || 0,
+        rating: item.averageRating || 0, // alias
       }));
     } catch (error) {
       console.error("Failed to fetch items:", error);
@@ -244,6 +250,7 @@ const menuService = {
         description: item.description,
         price: parseFloat(item.price),
         basePrice: parseFloat(item.price), // alias for compatibility
+        restaurantId: item.restaurantId || restId, // Add restaurantId for API calls
         category_id: item.categoryId,
         category: item.category,
         prep_time_minutes: item.prepTime || 0,
@@ -253,14 +260,14 @@ const menuService = {
           item.stockStatus === "out-of-stock"
             ? "sold_out"
             : item.isAvailable
-            ? "available"
-            : "unavailable",
+              ? "available"
+              : "unavailable",
         availability:
           item.stockStatus === "out-of-stock"
             ? "sold_out"
             : item.isAvailable
-            ? "available"
-            : "unavailable",
+              ? "available"
+              : "unavailable",
         is_chef_recommended: item.isChefRecommended || false,
         isChefRecommended: item.isChefRecommended || false, // alias
         is_popular: item.isPopular || false,
@@ -283,8 +290,8 @@ const menuService = {
           id: group.id,
           name: group.name,
           description: group.description,
-          selectionType: group.selectionType || 'single',
-          modifierType: group.modifierType || 'choice', // 'choice' or 'addon'
+          selectionType: group.selectionType || "single",
+          modifierType: group.modifierType || "choice", // 'choice' or 'addon'
           isRequired: group.isRequired,
           maxSelections: group.maxSelections,
           minSelections: group.minSelections,
@@ -296,9 +303,10 @@ const menuService = {
             isAvailable: option.isAvailable !== false,
           })),
         })),
-        // Mock data for features not yet in backend
-        rating: 4.5,
-        reviewCount: Math.floor(Math.random() * 100) + 10,
+        // Rating data from backend
+        averageRating: item.averageRating || 0,
+        reviewCount: item.reviewCount || 0,
+        rating: item.averageRating || 0, // alias for compatibility
         isSpicy: false,
       };
     } catch (error) {
@@ -343,7 +351,7 @@ const menuService = {
       };
       const response = await api.put(
         `/menu/${restaurantId}/items/${id}`,
-        payload
+        payload,
       );
       return response.data.data || response.data;
     } catch (error) {
@@ -373,7 +381,7 @@ const menuService = {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       return response.data.data || response.data;
     } catch (error) {
@@ -385,7 +393,7 @@ const menuService = {
   deletePhoto: async (itemId, photoId) => {
     try {
       const response = await api.delete(
-        `/menu/items/${itemId}/photos/${photoId}`
+        `/menu/items/${itemId}/photos/${photoId}`,
       );
       return response.data;
     } catch (error) {
@@ -397,7 +405,7 @@ const menuService = {
   setPrimaryPhoto: async (itemId, photoId) => {
     try {
       const response = await api.patch(
-        `/menu/items/${itemId}/photos/${photoId}/primary`
+        `/menu/items/${itemId}/photos/${photoId}/primary`,
       );
       return response.data;
     } catch (error) {
@@ -518,7 +526,7 @@ const menuService = {
       };
       const response = await api.post(
         `/menu/modifier-groups/${groupId}/options`,
-        payload
+        payload,
       );
       return response.data.data || response.data;
     } catch (error) {
@@ -627,23 +635,29 @@ const menuService = {
   },
 
   // --- Reviews ---
-  // --- Reviews ---
   getReviews: async (menuItemId) => {
     try {
       const response = await publicApi.get(`/reviews/${menuItemId}`);
       const rawReviews = response.data.reviews || response.data.data || [];
-      
+
       // Transform backend data to frontend format
-      return rawReviews.map(review => ({
+      return rawReviews.map((review) => ({
         id: review.id,
         userName: review.user?.fullName || "Anonymous",
-        userAvatar: `https://api.dicebear.com/7.x/initials/svg?seed=${review.user?.fullName || "User"}`, // Generating avatar based on name
-        userAvatarAlt: "User Avatar",
+        userAvatar: review.user?.avatar
+          ? (review.user.avatar.startsWith("http")
+              ? review.user.avatar
+              : `${API_URL.replace("/api", "")}${review.user.avatar}`)
+          : null,
+        userAvatarAlt: review.user?.fullName || "User Avatar",
         rating: review.rating,
-        date: new Date(review.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }),
-        comment: review.comment || ""
+        date: new Date(review.createdAt).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+        comment: review.comment || "",
       }));
-
     } catch (error) {
       console.error("Error getting reviews:", error);
       throw error;
@@ -656,6 +670,59 @@ const menuService = {
       return response.data;
     } catch (error) {
       console.error("Error creating review:", error);
+      throw error;
+    }
+  },
+
+  getMyReviews: async (params = {}) => {
+    try {
+      const response = await api.get("/reviews/me", { params });
+      const rawReviews = response.data.reviews || response.data.data || [];
+      const pagination = response.data.pagination || null;
+
+      const baseUrl = API_URL.replace("/api", "");
+
+      // Transform data
+      const reviews = rawReviews.map((review) => {
+        const item = review.menuItem;
+        let imageUrl = item?.image || item?.photos?.[0]?.url || null;
+
+        if (imageUrl && !imageUrl.startsWith("http")) {
+          imageUrl = `${baseUrl}${imageUrl}`;
+        }
+
+        return {
+          id: review.id,
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+          menuItem: item
+            ? {
+                id: item.id,
+                name: item.name,
+                image: imageUrl,
+              }
+            : null,
+          restaurant: review.restaurant,
+        };
+      });
+
+      return { reviews, pagination };
+    } catch (error) {
+      console.error("Error getting my reviews:", error);
+      throw error;
+    }
+  },
+
+  // Nutritional Information
+  getNutritionalInfo: async (restaurantId, itemId) => {
+    try {
+      const response = await publicApi.get(
+        `/menu/${restaurantId}/items/${itemId}/nutrition`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error getting nutritional info:", error);
       throw error;
     }
   },

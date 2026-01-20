@@ -5,7 +5,7 @@ import Image from "../../../../components/AppImage";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 
-const MenuItemCard = ({ item, onQuickAdd }) => {
+const MenuItemCard = ({ item, onQuickAdd, onItemClick }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -36,7 +36,11 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
   const availabilityConfig = getAvailabilityConfig(item?.availability);
 
   const handleCardClick = () => {
-    navigate(`/customer/menu-item-detail/${item?.id}`);
+    if (onItemClick) {
+      onItemClick(item);
+    } else {
+      navigate(`/customer/menu-item-detail/${item?.id}`);
+    }
   };
 
   const handleQuickAdd = (e) => {
@@ -110,7 +114,9 @@ const MenuItemCard = ({ item, onQuickAdd }) => {
           </div>
           <div className="flex items-center gap-1">
             <Icon name="Clock" size={16} />
-            <span>{t("customer.menu.item.prepTime", { time: item?.prepTime })}</span>
+            <span>
+              {t("customer.menu.item.prepTime", { time: item?.prepTime })}
+            </span>
           </div>
         </div>
 

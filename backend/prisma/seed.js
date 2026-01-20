@@ -1306,6 +1306,16 @@ async function main() {
         });
     }
 
+    // Update table status to OCCUPIED for tables with active orders
+    console.log('🪑 Updating table status for occupied tables...');
+    const occupiedTableIds = [...new Set(createdOrders.map(order => order.tableId))];
+    for (const tableId of occupiedTableIds) {
+        await prisma.table.update({
+            where: { id: tableId },
+            data: { status: 'OCCUPIED' }
+        });
+    }
+
   // --- Create Bulk Reviews ---
   console.log("Seeding reviews...");
   const allMenuItems = await prisma.menuItem.findMany();

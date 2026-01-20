@@ -5,8 +5,31 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/qr/:restaurantId/:tableId",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/customer/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
     }
   ]
 }

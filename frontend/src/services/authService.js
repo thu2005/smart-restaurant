@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-// Add auth token interceptor
+// Add interceptor for auth token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -60,7 +60,7 @@ const authService = {
   logout: () => {
     const userStr = localStorage.getItem("user");
     let isStaff = false;
-    
+
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -73,7 +73,7 @@ const authService = {
 
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    
+
     // Only clear restaurant context if it was a staff session
     // Customers need to keep restaurantId/tableId to continue ordering as guest or re-login
     if (isStaff) {
@@ -85,6 +85,49 @@ const authService = {
     const userStr = localStorage.getItem("user");
     if (userStr) return JSON.parse(userStr);
     return null;
+  },
+
+  getMe: async () => {
+    try {
+      const response = await api.get("/auth/me");
+      const user = response.data.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return user;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  updateProfile: async (data) => {
+    try {
+      const response = await api.put("/auth/profile", data);
+      const user = response.data.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  updateAvatar: async (formData) => {
+    try {
+      const response = await api.put("/auth/avatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const user = response.data.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
   },
 
   getToken: () => {
@@ -194,4 +237,3 @@ const authService = {
 };
 
 export default authService;
-

@@ -15,8 +15,30 @@ class ReviewService {
         });
         if (!menuItem) throw new Error("Menu item not found");
 
-        // Check if user has ordered this item (optional but recommended rule)
-        // For now, allow any logged-in user to review
+        // Check if user has ordered this item and it has been served
+        // For multi-batch orders, we need to check the specific item status, not just the order status
+        const existingOrder = await prisma.order.findFirst({
+            where: {
+                customerId: userId,
+                // Order must not be cancelled or rejected entirely
+                status: {
+                    notIn: ["CANCELLED", "REJECTED", "DRAFT", "SUBMITTED"]
+                },
+                orderItems: {
+                    some: {
+                        menuItemId: menuItemId,
+                        // The specific item MUST be served or completed
+                        itemStatus: {
+                            in: ["served", "completed"]
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!existingOrder) {
+            throw new Error("You can only review items that you have ordered and have been served.");
+        }
 
         // Create review
         const review = await prisma.review.create({
@@ -51,7 +73,7 @@ class ReviewService {
                 where: { menuItemId },
                 include: {
                     user: {
-                        select: { id: true, fullName: true, role: true },
+                        select: { id: true, fullName: true, avatar: true, role: true },
                     },
                 },
                 orderBy: { createdAt: "desc" },
@@ -59,6 +81,43 @@ class ReviewService {
                 skip: skip,
             }),
             prisma.review.count({ where: { menuItemId } }),
+        ]);
+
+        return {
+            reviews,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
+    /**
+     * Get reviews by a specific user
+     * @param {String} userId
+     * @param {Object} options Pagination options
+     */
+    async getReviewsByUserId(userId, options = {}) {
+        const { page = 1, limit = 10 } = options;
+        const skip = (page - 1) * limit;
+
+        const [reviews, total] = await Promise.all([
+            prisma.review.findMany({
+                where: { userId },
+                include: {
+                    menuItem: {
+                        select: { id: true, name: true, image: true, photos: true }
+                    },
+                    restaurant: {
+                        select: { id: true, name: true }
+                    }
+                },
+                orderBy: { createdAt: "desc" },
+                take: limit,
+                skip: skip,
+            }),
+            prisma.review.count({ where: { userId } }),
         ]);
 
         return {
