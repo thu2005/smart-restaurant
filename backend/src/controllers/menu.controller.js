@@ -191,6 +191,9 @@ exports.createMenuItem = async (req, res, next) => {
     
     res.status(201).json({ success: true, data: item });
   } catch (error) {
+    if (error.message?.includes("inactive category")) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
     next(error);
   }
 };
@@ -210,6 +213,9 @@ exports.updateMenuItem = async (req, res, next) => {
   } catch (error) {
     if (error.message === "Menu item not found") {
       return res.status(404).json({ success: false, message: error.message });
+    }
+    if (error.message?.includes("inactive category")) {
+      return res.status(400).json({ success: false, message: error.message });
     }
     next(error);
   }
