@@ -25,23 +25,17 @@ The Smart Restaurant QR Ordering System represents a comprehensive, enterprise-g
 1. [System Overview](#1-system-overview)
 2. [Architectural Principles & Design Patterns](#2-architectural-principles--design-patterns)
 3. [High-Level System Architecture](#3-high-level-system-architecture)
-4. [Technology Stack & Justification](#4-technology-stack--justification)
-5. [Frontend Architecture](#5-frontend-architecture)
-6. [Backend Architecture](#6-backend-architecture)
-7. [Database Design & Data Architecture](#7-database-design--data-architecture)
-8. [Authentication & Authorization](#8-authentication--authorization)
-9. [Business Process Flows](#9-business-process-flows)
-10. [Real-Time Communication Architecture](#10-real-time-communication-architecture)
-11. [API Design & Documentation](#11-api-design--documentation)
-12. [Security Architecture](#12-security-architecture)
-13. [Performance & Optimization](#13-performance--optimization)
-14. [Monitoring & Observability](#14-monitoring--observability)
-15. [Deployment Architecture](#15-deployment-architecture)
-16. [Scalability & High Availability](#16-scalability--high-availability)
-17. [Error Handling & Resilience](#17-error-handling--resilience)
-18. [Testing Strategy](#18-testing-strategy)
-19. [Future Enhancements](#19-future-enhancements)
-20. [Appendices](#20-appendices)
+4. [Technologies Used](#technologies-used)
+5. [Frontend Structure](#frontend-structure)
+6. [Backend Structure](#backend-structure)
+7. [Database Design](#database-design)
+8. [User Login System](#user-login-system)
+9. [Order Workflow](#order-workflow)
+10. [Real-Time System](#real-time-system)
+11. [Deployment Setup](#deployment-setup)
+12. [Security Measures](#security-measures)
+13. [Growth Capacity](#growth-capacity)
+14. [Related Documents](#related-documents)
 
 ---
 
@@ -309,17 +303,6 @@ graph TB
 ```
 
 ### 3.3 Component-Level Architecture
-
-**Frontend Components:**
-
-```
-┌─────────────────────────────────────────┐
-│         Browser Environment            │
-├─────────────────────────────────────────┤
-│  React Application (SPA)                │
-│  ├── Routing Layer (React Router)
-
----
 
 ## System Architecture Diagram
 
@@ -1006,42 +989,42 @@ io.to(`${restaurantId}_waiters`).emit('waiter_notification', data);
 ### Development Mode
 
 ```
-┌────────────┐
-│  Developer │
-└──────┬─────┘
-       │
-  ┌────▼────┐
-  │ Computer│
-  ├─────────┤
+ ┌──────────────┐
+ │   Developer  │
+ └──────┬───────┘
+        │
+  ┌──── ▼──────┐
+  │ Computer   │
+  ├────────────┤
   │ React:5173 │
   │ Node:5000  │
   │ Prisma UI  │
-  └────┬────┘
-       │
-  ┌────▼────┐
-  │Supabase │
-  │Database │
-  └─────────┘
+  └────────────┘
+        │
+  ┌──── ▼──────┐
+  │  Supabase  │
+  │  Database  │
+  └────────────┘
 ```
 
 ### Production Mode
 
 ```
-┌────────┐
-│  Users │
-└────┬───┘
-     │
-┌────▼────┐
-│ Vercel  │ ← React App
-└────┬────┘
-     │
-┌────▼────┐
-│ Render  │ ← Node Server
-└────┬────┘
-     │
-┌────▼────┐
-│Supabase │ ← Database
-└─────────┘
+┌────────────┐
+│   Users    │
+└─────┬──────┘
+      │
+┌─────▼──────┐
+│   Vercel   │ ← React App
+└─────┬──────┘
+      │
+┌─────▼──────┐
+│   Render   │ ← Node Server
+└─────┬──────┘
+      │
+┌─────▼──────┐
+│  Supabase  │ ← Database
+└────────────┘
 ```
 
 **Hosting Choices**:
@@ -1104,6 +1087,6 @@ io.to(`${restaurantId}_waiters`).emit('waiter_notification', data);
 
 ## Related Documents
 
-- **Setup Instructions**: See [SETUP.md](./SETUP.md)
-- **API Guide**: See [API.md](./API.md)
-- **Database Info**: See [DATABASE.md](./DATABASE.md)
+- **Setup Instructions**: See [SETUP.md](../04-dev/SETUP.md)
+- **API Guide**: See [API.md](../02-api/APIs.md)
+- **Database Info**: See [DATABASE.md](../03-architecture/DATABASE_STRUCTURE.md)

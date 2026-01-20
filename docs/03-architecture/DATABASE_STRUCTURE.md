@@ -29,6 +29,7 @@ The Smart Restaurant system uses **PostgreSQL 16** as the database, managed thro
 
 ```mermaid
 erDiagram
+
     Restaurant ||--o{ User : "has"
     Restaurant ||--o{ Category : "has"
     Restaurant ||--o{ MenuItem : "has"
@@ -63,7 +64,7 @@ erDiagram
     Order ||--|| Payment : "has"
     
     Cart ||--o{ CartItem : "contains"
-    
+
     Restaurant {
         uuid id PK
         string name
@@ -207,7 +208,7 @@ erDiagram
         decimal tax
         decimal discount
         decimal total
-        uuid orderId FK UK
+        uuid orderId FK "Unique"
         uuid restaurantId FK
         string createdBy
         timestamp createdAt
@@ -224,7 +225,7 @@ erDiagram
         enum status
         string gatewayTransactionId
         json gatewayResponse
-        uuid orderId FK UK
+        uuid orderId FK "Unique"
         uuid restaurantId FK
         timestamp paidAt
         timestamp createdAt

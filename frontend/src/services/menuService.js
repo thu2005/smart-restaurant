@@ -279,8 +279,8 @@ const menuService = {
           url: photo.url?.startsWith("http")
             ? photo.url
             : `${
-                process.env.VITE_API_BASE_URL?.replace("/api", "") ||
-                "http://localhost:5001"
+                import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
+                "http://localhost:5000"
               }${photo.url}`,
           alt: item.name,
           is_primary: photo.isPrimary,

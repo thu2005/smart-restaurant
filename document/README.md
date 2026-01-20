@@ -2,11 +2,11 @@
 
 Welcome to the comprehensive documentation for the Smart Restaurant QR Ordering System.
 
-## 📚 Documentation Structure
+## Documentation Structure
 
 This documentation is organized into the following sections:
 
-### 📖 [SETUP.md](../docs/04-dev/SETUP.md)
+### [SETUP.md](../docs/04-dev/SETUP.md)
 **Complete setup and installation guide**
 - Prerequisites and requirements
 - Backend environment configuration
@@ -17,11 +17,10 @@ This documentation is organized into the following sections:
 - Running the application (dev & production)
 - Troubleshooting common issues
 
-**👉 Start here if you're setting up the project for the first time!**
 
 ---
 
-### 🔌 [APIs.md](../docs/02-api/APIs.md)
+### [APIs.md](../docs/02-api/APIs.md)
 **Comprehensive API documentation**
 - Base URL and authentication
 - All API endpoints organized by feature:
@@ -40,14 +39,13 @@ This documentation is organized into the following sections:
 - Error handling
 - Notes for extending the API
 
-**👉 Use this for API integration and endpoint reference!**
 
 ---
 
-### 🗄️ [DATABASE.md](../docs/03-architecture/DATABASE_STRUCTURE.md) | [ER_DIAGRAM.md](../docs/03-architecture/ER_DIAGRAM.md) | [DATABASE_IMPORT_GUIDE.md](../docs/03-architecture/DATABASE_IMPORT_GUIDE.md)
+### [DATABASE_IMPORT_GUIDE.md](../docs/03-architecture/DATABASE_IMPORT_GUIDE.md)
 **Database schema and design documentation**
-- Entity Relationship Diagram (ERD)
-- Complete database schema
+- Entity Relationship Diagram (ERD) [ER_DIAGRAM.md](../docs/03-architecture/ER_DIAGRAM.md)
+- Complete database schema [DATABASE.md](../docs/03-architecture/DATABASE_STRUCTURE.md)
 - Detailed table descriptions
 - Column specifications and constraints
 - Relationships (One-to-Many, One-to-One, Many-to-Many)
@@ -55,11 +53,10 @@ This documentation is organized into the following sections:
 - Enum types
 - Database migration guidelines
 
-**👉 Reference this for database structure and relationships!**
 
 ---
 
-### 🏗️ [ARCHITECTURE.md](../docs/03-architecture/ARCHITECTURE.md)
+### [ARCHITECTURE.md](../docs/03-architecture/ARCHITECTURE.md)
 **System architecture overview**
 - High-level architecture diagram
 - Technology stack (Frontend, Backend, Database)
@@ -73,10 +70,9 @@ This documentation is organized into the following sections:
 - Security considerations
 - Scalability considerations
 
-**👉 Read this for understanding the overall system design!**
 
 ---
-### 🏗️ [DEPLOYMENT_GUIDE.md](../docs/05-infra/DEPLOYMENT_GUIDE.md)
+### [DEPLOYMENT_GUIDE.md](../docs/05-infra/DEPLOYMENT_GUIDE.md)
 - Overview of cloud-native/serverless deployment
 - Production architecture diagram and explanation
 - Backend deployment on Render (auto deploy, migrations, health checks)
@@ -88,7 +84,7 @@ This documentation is organized into the following sections:
 - Monitoring and logging (Prometheus, Grafana Metrics)
 - Troubleshooting common deployment issues
 ---
-## 🎯 Quick Navigation
+## Quick Navigation
 
 ### For Developers
 1. **First time setup?** → Start with [SETUP.md](../docs/04-dev/SETUP.md)
@@ -107,7 +103,7 @@ This documentation is organized into the following sections:
 
 ---
 
-## 📝 Important Notes
+## Important Notes
 
 ### User Guide
 **Note**: User guide documentation has been intentionally omitted as the project is still under active development and features may change. User-facing documentation will be created once the application stabilizes.
@@ -128,7 +124,7 @@ When modifying the database schema:
 
 ---
 
-## 🔗 Related Resources
+## Related Resources
 
 - **Live API Documentation**: `http://localhost:5000/api-docs` (Swagger UI)
 - **Prisma Studio**: `npx prisma studio` (Visual database browser)
@@ -137,7 +133,7 @@ When modifying the database schema:
 
 ---
 
-## 🤝 Contributing to Documentation
+## Contributing to Documentation
 
 When contributing to this documentation:
 - Keep explanations clear and concise
@@ -148,7 +144,7 @@ When contributing to this documentation:
 
 ---
 
-## 📧 Support
+## Support
 
 For questions or issues:
 - Check the troubleshooting section in [SETUP.md](../docs/04-dev/SETUP.md)

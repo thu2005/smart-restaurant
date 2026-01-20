@@ -201,8 +201,8 @@ erDiagram
     }
     
     MenuItemModifierGroup {
-        uuid menuItemId PK_FK "Menu item"
-        uuid modifierGroupId PK_FK "Modifier group"
+        uuid menuItemId PK "Menu item (FK)"
+        uuid modifierGroupId PK "Modifier group (FK)"
     }
     
     Cart {
@@ -270,7 +270,7 @@ erDiagram
         decimal tax "Tax amount (10,2)"
         decimal discount "Discount amount (10,2)"
         decimal total "Final total (10,2)"
-        uuid orderId UK_FK "Order (1-to-1)"
+        uuid orderId UK "Order (1-to-1, FK)"
         uuid restaurantId FK "Restaurant"
         string createdBy "Waiter ID"
         timestamp createdAt
@@ -287,7 +287,7 @@ erDiagram
         enum status "PENDING|PROCESSING|COMPLETED|FAILED|REFUNDED"
         string gatewayTransactionId "External transaction ID"
         json gatewayResponse "Gateway response"
-        uuid orderId UK_FK "Order (1-to-1)"
+        uuid orderId UK "Order (1-to-1, FK)"
         uuid restaurantId FK "Restaurant"
         timestamp paidAt "Payment time"
         timestamp createdAt
