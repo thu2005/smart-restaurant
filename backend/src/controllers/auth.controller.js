@@ -84,6 +84,18 @@ exports.verifyEmail = async (req, res, next) => {
   }
 };
 
+exports.resendVerification = async (req, res, next) => {
+  try {
+    await authService.resendVerificationEmail(req.body.email);
+    res
+      .status(200)
+      .json({ success: true, message: "Verification email sent" });
+  } catch (error) {
+    // Always return success to not reveal if email exists
+    res.status(200).json({ success: true, message: "If your email is registered and not yet verified, you will receive a verification link." });
+  }
+};
+
 exports.forgotPassword = async (req, res, next) => {
   try {
     await authService.forgotPassword(req.body.email);

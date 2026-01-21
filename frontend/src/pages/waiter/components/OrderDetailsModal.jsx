@@ -45,9 +45,9 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onCreateBill, bill, onPrint
 
             {/* Modal */}
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-green-700 to-primary px-6 py-4 flex items-center justify-between">
+                    <div className="bg-gradient-to-r from-green-700 to-primary px-6 py-4 flex items-center justify-between shrink-0">
                         <div>
                             <h2 className="text-2xl font-bold text-white">{t("waiter.orderDetails.title")}</h2>
                             <p className="text-green-50 text-sm mt-1">
@@ -65,7 +65,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onCreateBill, bill, onPrint
                     </div>
 
                     {/* Content */}
-                    <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                    <div className="p-6 overflow-y-auto flex-1">
                         {/* Customer Info */}
                         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                             <h3 className="font-semibold text-gray-900 mb-2">{t("waiter.orderDetails.customerInfo")}</h3>
@@ -136,7 +136,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onCreateBill, bill, onPrint
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-wrap gap-3">
+                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-wrap gap-3 shrink-0">
                         <Button
                             onClick={onClose}
                             variant="outline"

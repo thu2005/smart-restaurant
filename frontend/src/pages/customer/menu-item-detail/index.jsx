@@ -18,45 +18,6 @@ import StickyAddToCart from "./components/StickyAddToCart";
 import Button from "../../../components/ui/Button";
 import Icon from "../../../components/AppIcon";
 
-const mockRelatedItems = [
-  {
-    id: "item-002",
-    name: "Pan-Seared Sea Bass",
-    image: "https://images.unsplash.com/photo-1580959375944-0b7b9e7d6b3e",
-    rating: 4.6,
-    reviewCount: 89,
-    price: 270000,
-    isNew: false,
-  },
-  {
-    id: "item-003",
-    name: "Lobster Tail Dinner",
-    image: "https://images.unsplash.com/photo-1559339352-11d035aa65de",
-    rating: 4.9,
-    reviewCount: 124,
-    price: 350000,
-    isNew: true,
-  },
-  {
-    id: "item-004",
-    name: "Shrimp Scampi Pasta",
-    image: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9",
-    rating: 4.5,
-    reviewCount: 76,
-    price: 230000,
-    isNew: false,
-  },
-  {
-    id: "item-005",
-    name: "Grilled Tuna Steak",
-    image: "https://images.unsplash.com/photo-1614187973334-9e1d30848d3c",
-    rating: 4.7,
-    reviewCount: 92,
-    price: 290000,
-    isNew: false,
-  },
-];
-
 const MenuItemDetail = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -512,9 +473,9 @@ const MenuItemDetail = () => {
                   >
                     {isAvailable
                       ? editingItem
-                        ? "Update Cart"
-                        : "Add to Cart"
-                      : "Currently Unavailable"}
+                        ? t("customer.itemDetail.updateCart")
+                        : t("customer.itemDetail.addToCart", { price: "" })
+                      : t("customer.menu.item.unavailable")}
                   </Button>
                 </div>
               </div>

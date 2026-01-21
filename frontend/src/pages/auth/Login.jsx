@@ -13,6 +13,8 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState(null);
 
   // Get return url from location state or default to menu items
   const from = location.state?.from?.pathname || "/admin/menu/items";
@@ -22,6 +24,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -30,8 +33,24 @@ const Login = () => {
     },
   });
 
+  const handleResendVerification = async () => {
+    const email = unverifiedEmail || getValues("email");
+    if (!email) return;
+    
+    setIsResending(true);
+    try {
+      await authService.resendVerification(email);
+      toast.success(t("auth.login.resendSuccess"));
+    } catch (error) {
+      toast.error(error.message || t("auth.login.resendFailed"));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     setIsLoading(true);
+    setUnverifiedEmail(null);
     try {
       const response = await authService.login(data.email, data.password);
       toast.success(t("auth.login.success"));
@@ -60,9 +79,14 @@ const Login = () => {
       navigate(targetPath, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
-      toast.error(
-        error.message || t("auth.login.failed")
-      );
+      const errorMessage = error.message || t("auth.login.failed");
+      
+      // Check if the error is about email verification
+      if (errorMessage.toLowerCase().includes("verify")) {
+        setUnverifiedEmail(data.email);
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -133,6 +157,23 @@ const Login = () => {
               {t("auth.login.submit")}
             </Button>
           </div>
+
+          {/* Email verification notice */}
+          {unverifiedEmail && (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-sm">
+              <p className="text-yellow-800 mb-2">
+                {t("auth.login.verifyRequired")}
+              </p>
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                disabled={isResending}
+                className="text-primary hover:text-primary/80 font-medium underline disabled:opacity-50"
+              >
+                {isResending ? t("auth.login.resending") : t("auth.login.resendLink")}
+              </button>
+            </div>
+          )}
 
           <div className="text-center">
             <p className="text-sm text-muted-foreground">

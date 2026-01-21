@@ -726,6 +726,20 @@ const menuService = {
       throw error;
     }
   },
+
+  // Related Items
+  getRelatedItems: async (restaurantId, itemId, limit = 4) => {
+    try {
+      const response = await publicApi.get(
+        `/menu/${restaurantId}/items/${itemId}/related`,
+        { params: { limit } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error getting related items:", error);
+      throw error;
+    }
+  },
 };
 
 export default menuService;

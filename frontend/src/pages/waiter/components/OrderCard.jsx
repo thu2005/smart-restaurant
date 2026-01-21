@@ -213,14 +213,57 @@ const OrderCard = ({ order, onAccept, onReject, onServe, onMarkCompleted, showAc
                     return null;
                 })()}
 
-                {/* Total */}
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <span className="font-semibold text-sm md:text-base text-foreground">
-                        {t("waiter.order.total")}
-                    </span>
-                    <span className="font-bold text-base md:text-lg text-foreground data-text">
-                        {calculateTotal().toLocaleString('vi-VN')}₫
-                    </span>
+                {/* Totals */}
+                {/* Totals */}
+                <div className="pt-2 border-t border-border space-y-1">
+                     <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                            {t("waiter.order.subtotal", "Subtotal")}
+                        </span>
+                        <span className="text-sm font-medium text-foreground data-text">
+                            {calculateTotal().toLocaleString('vi-VN')}₫
+                        </span>
+                    </div>
+
+                    {/* Discount (if any) */}
+                    {(order.discount > 0 || order.bill?.discount > 0) && (
+                        <div className="flex items-center justify-between text-success">
+                            <span className="text-sm font-medium">
+                                {t("waiter.bill.summary.discount", "Discount")}
+                            </span>
+                            <span className="text-sm font-medium data-text">
+                                -{(order.discount || order.bill?.discount || 0).toLocaleString('vi-VN')}₫
+                            </span>
+                        </div>
+                    )}
+
+                     <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                            {t("waiter.order.tax", "Tax (10%)")}
+                        </span>
+                        <span className="text-sm font-medium text-foreground data-text">
+                            {(() => {
+                                const subtotal = calculateTotal();
+                                const discount = order.discount || order.bill?.discount || 0;
+                                const taxable = Math.max(0, subtotal - discount);
+                                return (taxable * 0.1).toLocaleString('vi-VN');
+                            })()}₫
+                        </span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-dashed border-border">
+                        <span className="font-semibold text-sm md:text-base text-foreground">
+                            {t("waiter.order.total")}
+                        </span>
+                        <span className="font-bold text-base md:text-lg text-foreground data-text">
+                            {(() => {
+                                const subtotal = calculateTotal();
+                                const discount = order.discount || order.bill?.discount || 0;
+                                const taxable = Math.max(0, subtotal - discount);
+                                const tax = taxable * 0.1;
+                                return (taxable + tax).toLocaleString('vi-VN');
+                            })()}₫
+                        </span>
+                    </div>
                 </div>
             </div>
 

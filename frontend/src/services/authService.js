@@ -57,6 +57,15 @@ const authService = {
     }
   },
 
+  resendVerification: async (email) => {
+    try {
+      const response = await api.post('/auth/resend-verification', { email });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
   forgotPassword: async (email) => {
     try {
       const response = await api.post("/auth/forgot-password", { email });

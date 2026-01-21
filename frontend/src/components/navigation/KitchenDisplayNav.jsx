@@ -2,26 +2,19 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "../ui/Button";
-import Select from "../ui/Select";
 import authService from "../../services/authService";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const KitchenDisplayNav = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { changeLanguage } = useLanguage();
   const [isHidden, setIsHidden] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [filterStatus, setFilterStatus] = useState("all");
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const user = authService.getCurrentUser();
-
-  const filterOptions = [
-    { value: "all", label: t("nav.kitchen.filters.all") },
-    { value: "pending", label: t("nav.kitchen.filters.pending") },
-    { value: "preparing", label: t("nav.kitchen.filters.preparing") },
-    { value: "ready", label: t("nav.kitchen.filters.ready") },
-  ];
 
   const toggleSound = () => {
     setSoundEnabled(!soundEnabled);
@@ -53,22 +46,14 @@ const KitchenDisplayNav = () => {
                 {t("nav.kitchen.title")}
               </span>
             </div>
-
-            <div className="hidden md:block ml-8">
-              <Select
-                options={filterOptions}
-                value={filterStatus}
-                onChange={setFilterStatus}
-                placeholder={t("nav.kitchen.filter")}
-                className="w-48"
-              />
-            </div>
           </div>
 
           <div className="kitchen-nav-section">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              <span className="text-sm font-medium text-foreground">{t("nav.kitchen.live")}</span>
+              <span className="text-sm font-medium text-foreground">
+                {t("nav.kitchen.live")}
+              </span>
             </div>
 
             <Button
@@ -82,13 +67,29 @@ const KitchenDisplayNav = () => {
               }
             />
 
-            <Button
-              variant="ghost"
-              size="icon"
-              iconName="Settings"
-              className="touch-target"
-              aria-label={t("nav.items.settings")}
-            />
+            {/* Language Toggle */}
+            <div className="flex items-center bg-muted rounded-lg p-1">
+              <button
+                onClick={() => changeLanguage("en")}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  i18n.language === "en"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => changeLanguage("vi")}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  i18n.language === "vi"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                VI
+              </button>
+            </div>
 
             {/* User Profile & Logout */}
             <div className="relative">
@@ -103,7 +104,11 @@ const KitchenDisplayNav = () => {
                 <span className="hidden md:block text-sm font-medium text-foreground">
                   {user?.fullName || "Kitchen"}
                 </span>
-                <Icon name="ChevronDown" size={16} className={`transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                <Icon
+                  name="ChevronDown"
+                  size={16}
+                  className={`transition-transform ${showUserMenu ? "rotate-180" : ""}`}
+                />
               </button>
 
               {/* Dropdown Menu */}
@@ -118,8 +123,12 @@ const KitchenDisplayNav = () => {
                   {/* Menu */}
                   <div className="absolute right-0 mt-2 w-56 bg-card rounded-lg shadow-warm-lg border border-border overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-border">
-                      <p className="text-sm font-semibold text-foreground">{user?.fullName || "Kitchen Staff"}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{user?.email || "kitchen@restaurant.com"}</p>
+                      <p className="text-sm font-semibold text-foreground">
+                        {user?.fullName || "Kitchen Staff"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {user?.email || "kitchen@restaurant.com"}
+                      </p>
                       <div className="mt-2">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
                           {user?.role || "KITCHEN"}
@@ -132,8 +141,14 @@ const KitchenDisplayNav = () => {
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-smooth"
                       >
-                        <Icon name="LogOut" size={16} className="text-destructive" />
-                        <span className="font-medium">{t("nav.user.logout")}</span>
+                        <Icon
+                          name="LogOut"
+                          size={16}
+                          className="text-destructive"
+                        />
+                        <span className="font-medium">
+                          {t("nav.user.logout")}
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -151,16 +166,6 @@ const KitchenDisplayNav = () => {
       >
         <Icon name={isHidden ? "ChevronDown" : "ChevronUp"} size={20} />
       </button>
-
-      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] bg-card rounded-full shadow-warm-lg px-4 py-2">
-        <Select
-          options={filterOptions}
-          value={filterStatus}
-          onChange={setFilterStatus}
-          placeholder={t("nav.kitchen.filter")}
-          className="w-32"
-        />
-      </div>
     </>
   );
 };

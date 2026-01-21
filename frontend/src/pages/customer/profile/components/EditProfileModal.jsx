@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Button from "../../../../components/ui/Button";
 import authService from "../../../../services/authService";
 
 const EditProfileModal = ({ isOpen, onClose, user, onUpdateSuccess }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -50,14 +52,14 @@ const EditProfileModal = ({ isOpen, onClose, user, onUpdateSuccess }) => {
 
   const validateForm = () => {
     const errors = {};
-    
+
     // Validate fullName: only letters and spaces
     if (formData.fullName && !/^[A-Za-z\s]+$/.test(formData.fullName)) {
-      errors.fullName = "Full name must only contain letters and spaces";
+      errors.fullName = t("customer.profile.editModal.errors.fullNameLetters");
     }
-    
+
     if (formData.fullName && formData.fullName.trim().length < 2) {
-      errors.fullName = "Full name must be at least 2 characters";
+      errors.fullName = t("customer.profile.editModal.errors.fullNameMin");
     }
 
     return errors;
@@ -90,24 +92,26 @@ const EditProfileModal = ({ isOpen, onClose, user, onUpdateSuccess }) => {
 
       // 3. Refresh user data
       const updatedUser = await authService.getMe();
-      
+
       onUpdateSuccess(updatedUser);
       onClose();
     } catch (err) {
       console.error("Update profile error:", err);
-      
+
       // Handle validation errors from backend
       if (err.errors && Array.isArray(err.errors)) {
         const backendErrors = {};
-        err.errors.forEach(error => {
+        err.errors.forEach((error) => {
           if (error.path) {
             backendErrors[error.path] = error.msg;
           }
         });
         setFieldErrors(backendErrors);
-        setError("Please fix the errors below");
+        setError(t("customer.profile.editModal.errors.fixErrors"));
       } else {
-        setError(err.message || "Failed to update profile");
+        setError(
+          err.message || t("customer.profile.editModal.errors.updateFailed"),
+        );
       }
     } finally {
       setLoading(false);
@@ -118,14 +122,16 @@ const EditProfileModal = ({ isOpen, onClose, user, onUpdateSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div 
+      <div
         className="bg-card w-full max-w-md rounded-2xl shadow-xl border border-border overflow-hidden animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-xl font-heading font-bold">Edit Profile</h2>
-          <button 
+          <h2 className="text-xl font-heading font-bold">
+            {t("customer.profile.editModal.title")}
+          </h2>
+          <button
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -137,8 +143,8 @@ const EditProfileModal = ({ isOpen, onClose, user, onUpdateSuccess }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {error && (
             <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg border border-destructive/20 flex items-start gap-2">
-               <Icon name="AlertCircle" size={16} className="mt-0.5" />
-               <span>{error}</span>
+              <Icon name="AlertCircle" size={16} className="mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -146,109 +152,121 @@ const EditProfileModal = ({ isOpen, onClose, user, onUpdateSuccess }) => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative group cursor-pointer">
               <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-muted bg-muted flex items-center justify-center">
-                 {avatarPreview ? (
-                   <img 
-                     src={avatarPreview} 
-                     alt="Avatar Preview" 
-                     className="w-full h-full object-cover"
-                   />
-                 ) : (
-                   <span className="text-3xl font-bold text-muted-foreground">
-                     {(formData.fullName || "U").charAt(0).toUpperCase()}
-                   </span>
-                 )}
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-3xl font-bold text-muted-foreground">
+                    {(formData.fullName || "U").charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
-              <label 
+              <label
                 htmlFor="avatar-upload"
                 className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer"
               >
                 <Icon name="Camera" size={24} />
               </label>
-              <input 
+              <input
                 id="avatar-upload"
-                type="file" 
+                type="file"
                 accept="image/*"
                 className="hidden"
                 onChange={handleFileChange}
               />
             </div>
-            <p className="text-xs text-muted-foreground">Click image to change avatar</p>
+            <p className="text-xs text-muted-foreground">
+              Click image to change avatar
+            </p>
           </div>
 
           {/* Form Fields */}
           <div className="space-y-4">
-             <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Full Name</label>
-                <div className="relative">
-                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <Icon name="User" size={18} />
-                   </div>
-                   <input 
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-2 bg-background border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all ${
-                        fieldErrors.fullName 
-                          ? 'border-destructive focus:border-destructive' 
-                          : 'border-border focus:border-primary'
-                      }`}
-                      placeholder="Enter your full name"
-                      required
-                   />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Full Name
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <Icon name="User" size={18} />
                 </div>
-                {fieldErrors.fullName && (
-                   <p className="text-xs text-destructive flex items-center gap-1">
-                      <Icon name="AlertCircle" size={12} />
-                      {fieldErrors.fullName}
-                   </p>
-                )}
-                <p className="text-xs text-muted-foreground">Only letters and spaces allowed</p>
-             </div>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-2 bg-background border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all ${
+                    fieldErrors.fullName
+                      ? "border-destructive focus:border-destructive"
+                      : "border-border focus:border-primary"
+                  }`}
+                  placeholder={t(
+                    "customer.profile.editModal.fullNamePlaceholder",
+                  )}
+                  required
+                />
+              </div>
+              {fieldErrors.fullName && (
+                <p className="text-xs text-destructive flex items-center gap-1">
+                  <Icon name="AlertCircle" size={12} />
+                  {fieldErrors.fullName}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                {t("customer.profile.editModal.fullNameHint")}
+              </p>
+            </div>
 
-             <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Phone Number</label>
-                <div className="relative">
-                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <Icon name="Phone" size={18} />
-                   </div>
-                   <input 
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                      placeholder="Enter phone number"
-                   />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                {t("customer.profile.editModal.phone")}
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <Icon name="Phone" size={18} />
                 </div>
-             </div>
-             
-             {/* Email (Read-only) */}
-             <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Email</label>
-                 <div className="relative">
-                   <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <Icon name="Mail" size={18} />
-                   </div>
-                   <input 
-                      type="email"
-                      value={user?.email || ""}
-                      readOnly
-                      disabled
-                      className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border rounded-lg text-muted-foreground cursor-not-allowed"
-                   />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                  placeholder={t("customer.profile.editModal.phonePlaceholder")}
+                />
+              </div>
+            </div>
+
+            {/* Email (Read-only) */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                {t("customer.profile.editModal.email")}
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <Icon name="Mail" size={18} />
                 </div>
-             </div>
+                <input
+                  type="email"
+                  value={user?.email || ""}
+                  readOnly
+                  disabled
+                  className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border rounded-lg text-muted-foreground cursor-not-allowed"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-2">
-             <Button variant="ghost" onClick={onClose} type="button">
-                Cancel
-             </Button>
-             <Button type="submit" isLoading={loading}>
-                Save Changes
-             </Button>
+            <Button variant="ghost" onClick={onClose} type="button">
+              {t("common.actions.cancel")}
+            </Button>
+            <Button type="submit" isLoading={loading}>
+              {t("common.actions.save")}
+            </Button>
           </div>
         </form>
       </div>
