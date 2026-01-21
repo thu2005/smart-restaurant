@@ -142,6 +142,16 @@ const Login = () => {
             />
           </div>
 
+          <div className="flex items-center justify-end">
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              Forgot password?
+            </button>
+          </div>
+
           <div>
             <Button type="submit" className="w-full" isLoading={isLoading}>
               {t("auth.login.submit")}

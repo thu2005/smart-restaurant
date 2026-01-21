@@ -1384,6 +1384,112 @@ async function main() {
     console.log("Reviews seeded successfully.");
   }
 
+  // --- Create Sample Payments ---
+  console.log("💳 Creating sample payments...");
+  
+  // Get some completed orders that need payments
+  const ordersForPayment = await prisma.order.findMany({
+    where: {
+      status: { in: ['READY', 'PREPARING'] },
+      restaurantId: restaurant.id
+    },
+    include: {
+      orderItems: true
+    },
+    take: 3
+  });
+
+  if (ordersForPayment.length > 0) {
+    // Payment 1: Completed Stripe payment
+    const order1 = ordersForPayment[0];
+    const subtotal1 = order1.orderItems.reduce((sum, item) => 
+      sum + (Number(item.unitPrice) * item.quantity), 0
+    );
+    const tax1 = subtotal1 * 0.1;
+    const tip1 = 50000; // 50k VND tip
+    const total1 = subtotal1 + tax1 + tip1;
+
+    await prisma.payment.create({
+      data: {
+        orderId: order1.id,
+        restaurantId: restaurant.id,
+        amount: subtotal1,
+        tax: tax1,
+        tip: tip1,
+        total: total1,
+        method: 'STRIPE',
+        status: 'COMPLETED',
+        gatewayTransactionId: 'txn_stripe_' + Math.random().toString(36).substr(2, 9),
+        gatewayResponse: {
+          payment_intent: 'pi_' + Math.random().toString(36).substr(2, 15),
+          status: 'succeeded',
+          currency: 'vnd'
+        },
+        paidAt: new Date(Date.now() - 5 * 60000)
+      }
+    });
+
+    // Payment 2: Completed Cash payment
+    if (ordersForPayment[1]) {
+      const order2 = ordersForPayment[1];
+      const subtotal2 = order2.orderItems.reduce((sum, item) => 
+        sum + (Number(item.unitPrice) * item.quantity), 0
+      );
+      const tax2 = subtotal2 * 0.1;
+      const tip2 = 0; // No tip for cash
+      const total2 = subtotal2 + tax2 + tip2;
+
+      await prisma.payment.create({
+        data: {
+          orderId: order2.id,
+          restaurantId: restaurant.id,
+          amount: subtotal2,
+          tax: tax2,
+          tip: tip2,
+          total: total2,
+          method: 'CASH',
+          status: 'COMPLETED',
+          gatewayTransactionId: null,
+          gatewayResponse: null,
+          paidAt: new Date(Date.now() - 10 * 60000)
+        }
+      });
+    }
+
+    // Payment 3: Pending MoMo payment
+    if (ordersForPayment[2]) {
+      const order3 = ordersForPayment[2];
+      const subtotal3 = order3.orderItems.reduce((sum, item) => 
+        sum + (Number(item.unitPrice) * item.quantity), 0
+      );
+      const tax3 = subtotal3 * 0.1;
+      const tip3 = 30000; // 30k VND tip
+      const total3 = subtotal3 + tax3 + tip3;
+
+      await prisma.payment.create({
+        data: {
+          orderId: order3.id,
+          restaurantId: restaurant.id,
+          amount: subtotal3,
+          tax: tax3,
+          tip: tip3,
+          total: total3,
+          method: 'MOMO',
+          status: 'PENDING',
+          gatewayTransactionId: 'momo_' + Math.random().toString(36).substr(2, 9),
+          gatewayResponse: {
+            requestId: Math.random().toString(36).substr(2, 9),
+            orderInfo: 'Payment for ' + order3.orderNumber,
+            message: 'Transaction is being processed'
+          },
+          paidAt: null
+        }
+      });
+    }
+
+    console.log("✅ Sample payments created successfully.");
+  }
+
   console.log("✅ Seed completed successfully!");
   console.log("");
   console.log("📊 Summary:");
@@ -1396,7 +1502,8 @@ async function main() {
   console.log("   - Menu Items: 16 (with photos, dietary info, reviews)");
   console.log("   - Modifier Groups: 3");
   console.log("   - Reviews: 6");
-  console.log("   - Sample Orders: 1");
+  console.log("   - Sample Orders: 6");
+  console.log("   - Sample Payments: 3 (Stripe, Cash, MoMo)");
   console.log("");
   console.log("🔑 Login credentials (password for all: password123):");
   console.log("   - Admin: admin@cafepoirot.com");

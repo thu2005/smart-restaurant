@@ -204,11 +204,13 @@
                     "phonePlaceholder": "Nhập số điện thoại (tùy chọn)",
                     "role": "Vai Trò",
                     "rolePlaceholder": "Chọn vai trò",
+                    "adminRoleHelp": "Siêu Quản Trị chỉ có thể tạo tài khoản Quản trị viên",
                     "restaurant": "Nhà Hàng",
                     "restaurantPlaceholder": "Chọn nhà hàng",
                     "restaurantId": "Nhà Hàng",
                     "restaurantIdHelp": "Chọn nhà hàng cho người dùng này",
                     "submit": "Tạo Tài Khoản",
+                    "adminSubmit": "Tạo Quản Trị Viên",
                     "cancel": "Hủy"
                 },
                 "validation": {
@@ -351,7 +353,7 @@
                     "labels": {
                         "name": "Tên Món *",
                         "category": "Danh Mục *",
-                        "price": "Giá ($) *",
+                        "price": "Giá (₫) *",
                         "prepTime": "Thời Gian Chuẩn Bị (phút)",
                         "description": "Mô Tả",
                         "status": "Trạng Thái",
