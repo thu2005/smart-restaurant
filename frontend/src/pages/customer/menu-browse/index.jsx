@@ -517,6 +517,7 @@ const MenuBrowse = () => {
           <div className="flex-1">
             <SearchBar
               onSearch={setSearchQuery}
+              value={searchQuery}
               placeholder={t("customer.menu.search.placeholder")}
             />
           </div>

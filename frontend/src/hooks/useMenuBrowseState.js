@@ -23,10 +23,12 @@ export const useMenuBrowseState = () => {
   // Save current menu state
   const saveMenuState = useCallback((state) => {
     try {
+      // Get existing state to preserve scrollPosition if not provided
+      const existingState = getInitialState();
+      
       const stateToSave = {
-        ...state,
-        scrollPosition:
-          window.pageYOffset || document.documentElement.scrollTop,
+        ...existingState, // Preserve existing state (including scrollPosition)
+        ...state, // Override with new state
         timestamp: Date.now(),
       };
 
@@ -42,24 +44,13 @@ export const useMenuBrowseState = () => {
     }
   }, []);
 
-  // Restore menu state and scroll position
+  // Restore menu state (without automatic scroll - component handles that)
   const restoreMenuState = useCallback(() => {
     const state = getInitialState();
 
     if (state && Date.now() - state.timestamp < 30 * 60 * 1000) {
       // Valid for 30 minutes
       console.log("📱 Restoring menu state:", state);
-
-      // Restore scroll position after a short delay to ensure content is loaded
-      setTimeout(() => {
-        if (state.scrollPosition) {
-          window.scrollTo({
-            top: state.scrollPosition,
-            behavior: "auto", // Instant scroll on restore
-          });
-        }
-      }, 100);
-
       return state;
     }
 

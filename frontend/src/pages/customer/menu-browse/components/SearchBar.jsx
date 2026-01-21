@@ -1,19 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "../../../../components/AppIcon";
 import Input from "../../../../components/ui/Input";
 
-const SearchBar = ({ onSearch, placeholder }) => {
+const SearchBar = ({ onSearch, placeholder, value }) => {
   const { t } = useTranslation();
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(value || "");
+
+  // Sync with parent value if provided (e.g. restored state or reset)
+  useEffect(() => {
+    if (value !== undefined) {
+      setSearchValue(value);
+    }
+  }, [value]);
 
   // Use passed placeholder or default translated one
   const inputPlaceholder = placeholder || t("customer.menu.search.placeholder");
 
   const handleSearch = (e) => {
-    const value = e?.target?.value;
-    setSearchValue(value);
-    onSearch(value);
+    const newVal = e?.target?.value;
+    setSearchValue(newVal);
+    onSearch(newVal);
   };
 
   const handleClear = () => {
