@@ -34,8 +34,6 @@ class EmailService {
             return data;
         } catch (error) {
             console.error('Email send failed:', error);
-            // We might want to throw this depending on if we want the caller to know
-            // but for now logging is sufficient as auth service handles the try-catch for registration
             throw error;
         }
     }

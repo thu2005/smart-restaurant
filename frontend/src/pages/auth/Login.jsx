@@ -140,6 +140,16 @@ const Login = () => {
               onTogglePassword={() => setShowPassword((v) => !v)}
               {...register("password", { required: t("auth.login.errors.passwordRequired") })}
             />
+            
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                {t("auth.login.forgotPassword", "Forgot password?")}
+              </button>
+            </div>
           </div>
 
           <div>

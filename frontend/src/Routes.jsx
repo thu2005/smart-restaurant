@@ -31,6 +31,8 @@ import AdminDashboard from "./pages/admin/dashboard";
 import KitchenDashboard from "./pages/kitchen/dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import Onboarding from "./pages/customer/Onboarding";
 import TableEntry from "./pages/customer/TableEntry";
 import QREntry from "./pages/customer/QREntry";
@@ -86,6 +88,8 @@ const Routes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Dedicated Customer Onboarding Route - for QR scans */}
           <Route path="/customer-onboarding" element={<Onboarding />} />
