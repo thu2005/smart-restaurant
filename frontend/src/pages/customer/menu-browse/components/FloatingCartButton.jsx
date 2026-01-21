@@ -34,10 +34,6 @@ const FloatingCartButton = ({ itemCount, totalAmount }) => {
                 style: "currency",
                 currency: "VND",
               }).format(totalAmount || 0)}
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(totalAmount || 0)}
             </span>
           </div>
         </div>
