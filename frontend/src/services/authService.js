@@ -227,39 +227,6 @@ const authService = {
       throw error.response?.data || error.message;
     }
   },
-
-  /**
-   * Request password reset
-   * @param {string} email - User email
-   * @returns {Promise} Success message
-   */
-  forgotPassword: async (email) => {
-    try {
-      const response = await api.post("/auth/forgot-password", { email });
-      return response.data;
-    } catch (error) {
-      console.error("Failed to request password reset:", error);
-      throw error.response?.data || error.message;
-    }
-  },
-
-  /**
-   * Reset password with token
-   * @param {string} token - Reset token
-   * @param {string} newPassword - New password
-   * @returns {Promise} Success message
-   */
-  resetPassword: async (token, newPassword) => {
-    try {
-      const response = await api.post(`/auth/reset-password/${token}`, {
-        password: newPassword,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Failed to reset password:", error);
-      throw error.response?.data || error.message;
-    }
-  },
 };
 
 export default authService;
