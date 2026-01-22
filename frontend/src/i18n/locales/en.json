@@ -216,11 +216,13 @@
                     "phonePlaceholder": "Enter phone number (optional)",
                     "role": "Role",
                     "rolePlaceholder": "Select role",
+                    "adminRoleHelp": "Super Admin can only create Admin accounts",
                     "restaurant": "Restaurant",
                     "restaurantPlaceholder": "Select restaurant",
                     "restaurantId": "Restaurant",
                     "restaurantIdHelp": "Select the restaurant for this user",
                     "submit": "Create Account",
+                    "adminSubmit": "Create Admin Account",
                     "cancel": "Cancel"
                 },
                 "validation": {
@@ -364,7 +366,7 @@
                     "labels": {
                         "name": "Item Name *",
                         "category": "Category *",
-                        "price": "Price ($) *",
+                        "price": "Price (₫) *",
                         "prepTime": "Prep Time (mins)",
                         "description": "Description",
                         "status": "Status",
