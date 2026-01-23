@@ -1,6 +1,7 @@
 # 🍽️ Smart Restaurant - QR-Based Ordering System
 
 A modern, full-stack restaurant management and ordering system featuring QR code-based table ordering, real-time kitchen display, and comprehensive admin controls.
+[demo](https://smartrestaurant-nu.vercel.app/)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
